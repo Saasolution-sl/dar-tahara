@@ -246,6 +246,7 @@ const es: DeepPartial<Dictionary> = {
       visitsValue: "{n} al mes",
       subtotal: "Subtotal antes del descuento",
       discount: "Descuento por frecuencia",
+      areaSurcharge: "Superficie adicional",
       youSave: "Ahorras",
       monthlyTotal: "Total mensual estimado",
       perMonth: "/ mes",
@@ -253,7 +254,7 @@ const es: DeepPartial<Dictionary> = {
     },
     custom: {
       title: "Un hogar distinguido merece un presupuesto a medida.",
-      body: "Las propiedades de más de 125 m² requieren un presupuesto personalizado.",
+      body: "Las propiedades de más de 250 m² requieren un presupuesto personalizado.",
       cta: "Solicitar un presupuesto a medida",
     },
     cta: {
@@ -290,7 +291,7 @@ const es: DeepPartial<Dictionary> = {
     successTitle: "Gracias.",
     successBody: "Tus datos están listos para enviar. Elige WhatsApp o correo para completar tu solicitud.",
     monthlyEstimate: "Total mensual estimado",
-    customSelected: "Presupuesto a medida (más de 125 m²)",
+    customSelected: "Presupuesto a medida (más de 250 m²)",
   },
   footer: {
     tagline: "Cuidado del hogar y conserjería de propiedades premium en todo Marruecos.",

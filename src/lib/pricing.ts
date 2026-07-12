@@ -17,8 +17,25 @@ export const pricingTiers = [
 /** The absolute minimum charged per cleaning visit. */
 export const MINIMUM_PRICE_PER_VISIT = 50;
 
-/** Above this size a fixed price is not offered — a custom quote is required. */
-export const CUSTOM_QUOTE_THRESHOLD_M2 = 125;
+/**
+ * Above this size the tiered price no longer grows in bands; instead the
+ * top-tier monthly price is taken as a base and a per-m² surcharge is added
+ * for every square metre beyond the threshold.
+ */
+export const LARGE_HOME_THRESHOLD_M2 = 125;
+
+/**
+ * Per-m² monthly surcharge applied to the area above LARGE_HOME_THRESHOLD_M2,
+ * by frequency. Example: 183 m² bi-weekly = €238 base + (183 − 125) × €0.90.
+ */
+export const extraPerM2Rate: Record<FrequencyKey, number> = {
+  monthly: 1.0,
+  biweekly: 0.9,
+  weekly: 0.85,
+};
+
+/** Beyond this size the online estimator defers to a bespoke quotation. */
+export const CUSTOM_QUOTE_THRESHOLD_M2 = 250;
 
 /** Slider / input bounds for the property-size control. */
 export const SIZE_LIMITS = { min: 20, max: 250, step: 1 } as const;
@@ -37,6 +54,12 @@ export const frequencies: Record<
 /** Stable order for rendering frequency options. */
 export const frequencyOrder: FrequencyKey[] = ["monthly", "biweekly", "weekly"];
 
+/** The top base tier price per visit (used as the base for large homes). */
+const TOP_TIER_PRICE_PER_VISIT = Math.max(
+  pricingTiers[pricingTiers.length - 1].pricePerVisit,
+  MINIMUM_PRICE_PER_VISIT,
+);
+
 export type PriceBreakdown = {
   status: "ok";
   sizeM2: number;
@@ -46,6 +69,12 @@ export type PriceBreakdown = {
   discountPercentage: number;
   subtotal: number;
   discountAmount: number;
+  /** Square metres beyond LARGE_HOME_THRESHOLD_M2 (0 for standard homes). */
+  extraM2: number;
+  /** Per-m² surcharge rate applied to the extra area (0 for standard homes). */
+  extraRatePerM2: number;
+  /** Total surcharge for the extra area (0 for standard homes). */
+  areaSurcharge: number;
   monthlyTotal: number;
   effectivePricePerVisit: number;
 };
@@ -67,7 +96,7 @@ function round2(value: number): number {
  * Returns `null` when the size requires a custom quote.
  */
 export function getPricePerVisit(sizeM2: number): number | null {
-  if (sizeM2 > CUSTOM_QUOTE_THRESHOLD_M2) return null;
+  if (sizeM2 > LARGE_HOME_THRESHOLD_M2) return null;
   const tier = pricingTiers.find((t) => sizeM2 <= t.maxM2);
   if (!tier) return null;
   return Math.max(tier.pricePerVisit, MINIMUM_PRICE_PER_VISIT);
@@ -78,8 +107,13 @@ export function getPricePerVisit(sizeM2: number): number | null {
  *
  *   subtotal              = pricePerVisit × visitsPerMonth
  *   discountAmount        = subtotal × (discountPercentage / 100)
- *   monthlyTotal          = subtotal − discountAmount
+ *   discountedBase        = subtotal − discountAmount
+ *   areaSurcharge         = max(0, sizeM2 − 125) × extraPerM2Rate[frequency]
+ *   monthlyTotal          = discountedBase + areaSurcharge
  *   effectivePricePerVisit = monthlyTotal / visitsPerMonth
+ *
+ * For homes over 125 m² the top base tier price (€140/visit) is used as the
+ * base and the per-m² surcharge covers the additional area.
  */
 export function calculatePrice(
   sizeM2: number,
@@ -95,15 +129,21 @@ export function calculatePrice(
     return { status: "custom", sizeM2 };
   }
 
-  const pricePerVisit = getPricePerVisit(sizeM2);
-  if (pricePerVisit === null) {
-    return { status: "custom", sizeM2 };
-  }
+  const isLarge = sizeM2 > LARGE_HOME_THRESHOLD_M2;
+  const pricePerVisit = isLarge
+    ? TOP_TIER_PRICE_PER_VISIT
+    : (getPricePerVisit(sizeM2) as number);
 
   const { visitsPerMonth, discountPercentage } = frequencies[frequency];
   const subtotal = round2(pricePerVisit * visitsPerMonth);
   const discountAmount = round2(subtotal * (discountPercentage / 100));
-  const monthlyTotal = round2(subtotal - discountAmount);
+  const discountedBase = round2(subtotal - discountAmount);
+
+  const extraM2 = isLarge ? round2(sizeM2 - LARGE_HOME_THRESHOLD_M2) : 0;
+  const extraRatePerM2 = isLarge ? extraPerM2Rate[frequency] : 0;
+  const areaSurcharge = round2(extraM2 * extraRatePerM2);
+
+  const monthlyTotal = round2(discountedBase + areaSurcharge);
   const effectivePricePerVisit = round2(monthlyTotal / visitsPerMonth);
 
   return {
@@ -115,6 +155,9 @@ export function calculatePrice(
     discountPercentage,
     subtotal,
     discountAmount,
+    extraM2,
+    extraRatePerM2,
+    areaSurcharge,
     monthlyTotal,
     effectivePricePerVisit,
   };

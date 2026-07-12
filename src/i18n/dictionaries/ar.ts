@@ -246,6 +246,7 @@ const ar: DeepPartial<Dictionary> = {
       visitsValue: "{n} شهريًا",
       subtotal: "المجموع الفرعي قبل الخصم",
       discount: "خصم التكرار",
+      areaSurcharge: "مساحة إضافية",
       youSave: "توفّر",
       monthlyTotal: "الإجمالي الشهري التقديري",
       perMonth: "/ شهريًا",
@@ -253,7 +254,7 @@ const ar: DeepPartial<Dictionary> = {
     },
     custom: {
       title: "منزل مميّز يستحق عرض سعر مخصّصًا.",
-      body: "العقارات التي تزيد مساحتها عن 125 م² تتطلّب عرض سعر مخصّصًا.",
+      body: "العقارات التي تزيد مساحتها عن 250 م² تتطلّب عرض سعر مخصّصًا.",
       cta: "اطلب عرض سعر مخصّصًا",
     },
     cta: {
@@ -290,7 +291,7 @@ const ar: DeepPartial<Dictionary> = {
     successTitle: "شكرًا لك.",
     successBody: "بياناتك جاهزة للإرسال. اختر واتساب أو البريد لإتمام طلبك.",
     monthlyEstimate: "الإجمالي الشهري التقديري",
-    customSelected: "عرض سعر مخصّص (أكثر من 125 م²)",
+    customSelected: "عرض سعر مخصّص (أكثر من 250 م²)",
   },
   footer: {
     tagline: "عناية منزلية راقية وكونسيرج للعقارات في جميع أنحاء المغرب.",

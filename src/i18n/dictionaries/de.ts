@@ -21,7 +21,7 @@ const de: DeepPartial<Dictionary> = {
     pricing: "Preise",
     how: "So funktioniert’s",
     gallery: "Galerie",
-    faq: "Häufige Fragen",
+    faq: "FAQ",
     book: "Reinigung buchen",
     quote: "Angebot anfordern",
     menu: "Menü",
@@ -246,6 +246,7 @@ const de: DeepPartial<Dictionary> = {
       visitsValue: "{n} pro Monat",
       subtotal: "Zwischensumme vor Rabatt",
       discount: "Frequenzrabatt",
+      areaSurcharge: "Zusatzfläche",
       youSave: "Sie sparen",
       monthlyTotal: "Geschätzte Monatssumme",
       perMonth: "/ Monat",
@@ -253,7 +254,7 @@ const de: DeepPartial<Dictionary> = {
     },
     custom: {
       title: "Ein außergewöhnliches Zuhause verdient ein maßgeschneidertes Angebot.",
-      body: "Immobilien über 125 m² erfordern ein individuelles Angebot.",
+      body: "Immobilien über 250 m² erfordern ein individuelles Angebot.",
       cta: "Individuelles Angebot anfordern",
     },
     cta: {
@@ -290,7 +291,7 @@ const de: DeepPartial<Dictionary> = {
     successTitle: "Vielen Dank.",
     successBody: "Ihre Angaben sind bereit zum Versand. Wählen Sie WhatsApp oder E-Mail, um Ihre Anfrage abzuschließen.",
     monthlyEstimate: "Geschätzte Monatssumme",
-    customSelected: "Individuelles Angebot (über 125 m²)",
+    customSelected: "Individuelles Angebot (über 250 m²)",
   },
   footer: {
     tagline: "Premium-Hauspflege & Immobilien-Concierge in ganz Marokko.",

@@ -246,6 +246,7 @@ const pt: DeepPartial<Dictionary> = {
       visitsValue: "{n} por mês",
       subtotal: "Subtotal antes do desconto",
       discount: "Desconto por frequência",
+      areaSurcharge: "Área adicional",
       youSave: "Poupa",
       monthlyTotal: "Total mensal estimado",
       perMonth: "/ mês",
@@ -253,7 +254,7 @@ const pt: DeepPartial<Dictionary> = {
     },
     custom: {
       title: "Uma casa de distinção merece um orçamento à medida.",
-      body: "Imóveis com mais de 125 m² requerem um orçamento personalizado.",
+      body: "Imóveis com mais de 250 m² requerem um orçamento personalizado.",
       cta: "Pedir um orçamento à medida",
     },
     cta: {
@@ -290,7 +291,7 @@ const pt: DeepPartial<Dictionary> = {
     successTitle: "Obrigado.",
     successBody: "Os seus dados estão prontos a enviar. Escolha WhatsApp ou e-mail para concluir o seu pedido.",
     monthlyEstimate: "Total mensal estimado",
-    customSelected: "Orçamento à medida (mais de 125 m²)",
+    customSelected: "Orçamento à medida (mais de 250 m²)",
   },
   footer: {
     tagline: "Cuidado premium do lar e concierge de imóveis em todo Marrocos.",

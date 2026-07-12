@@ -54,9 +54,36 @@ test("125 m² weekly returns €448", () => {
   assert.equal(ok(125, "weekly").monthlyTotal, 448);
 });
 
-test("126 m² returns custom quotation status", () => {
-  assert.equal(calculatePrice(126, "monthly").status, "custom");
-  assert.equal(calculatePrice(250, "weekly").status, "custom");
+test("large homes over 125 m² add a per-m² area surcharge", () => {
+  // Documented example: 183 m² bi-weekly = €238 base + (58 × €0.90) = €290.20
+  const r = ok(183, "biweekly");
+  assert.equal(r.pricePerVisit, 140);
+  assert.equal(r.subtotal, 280);
+  assert.equal(r.discountAmount, 42);
+  assert.equal(r.extraM2, 58);
+  assert.equal(r.extraRatePerM2, 0.9);
+  assert.equal(r.areaSurcharge, 52.2);
+  assert.equal(r.monthlyTotal, 290.2);
+  assert.equal(r.effectivePricePerVisit, 145.1);
+});
+
+test("area surcharge rates differ by frequency", () => {
+  // 183 m² → 58 extra m²
+  assert.equal(ok(183, "monthly").monthlyTotal, 198); // 140 + 58×1.00
+  assert.equal(ok(183, "biweekly").monthlyTotal, 290.2); // 238 + 58×0.90
+  assert.equal(ok(183, "weekly").monthlyTotal, 497.3); // 448 + 58×0.85
+});
+
+test("125/126 m² boundary is continuous", () => {
+  assert.equal(ok(125, "biweekly").monthlyTotal, 238); // no surcharge at threshold
+  assert.equal(ok(125, "biweekly").areaSurcharge, 0);
+  assert.equal(ok(126, "biweekly").monthlyTotal, 238.9); // 238 + 1×0.90
+});
+
+test("slider maximum (250 m²) is priced, above it is custom", () => {
+  assert.equal(ok(250, "biweekly").monthlyTotal, 350.5); // 238 + 125×0.90
+  assert.equal(calculatePrice(251, "monthly").status, "custom");
+  assert.equal(calculatePrice(400, "weekly").status, "custom");
 });
 
 test("invalid and negative input is rejected", () => {

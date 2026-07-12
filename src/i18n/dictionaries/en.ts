@@ -243,6 +243,7 @@ const en = {
       visitsValue: "{n} per month",
       subtotal: "Subtotal before discount",
       discount: "Frequency discount",
+      areaSurcharge: "Large-home area",
       youSave: "You save",
       monthlyTotal: "Estimated monthly total",
       perMonth: "/ month",
@@ -250,7 +251,7 @@ const en = {
     },
     custom: {
       title: "A home of distinction deserves a tailored quote.",
-      body: "Properties larger than 125 m² require a personalised quotation.",
+      body: "Properties larger than 250 m² require a personalised quotation.",
       cta: "Request a custom quote",
     },
     cta: {
@@ -287,7 +288,7 @@ const en = {
     successTitle: "Thank you.",
     successBody: "Your details are ready to send. Choose WhatsApp or email to complete your request.",
     monthlyEstimate: "Estimated monthly total",
-    customSelected: "Custom quotation (over 125 m²)",
+    customSelected: "Custom quotation (over 250 m²)",
   },
   footer: {
     tagline: "Premium home care & property concierge across Morocco.",

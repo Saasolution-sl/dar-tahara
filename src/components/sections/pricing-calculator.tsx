@@ -333,6 +333,15 @@ function ResultPanel({
             <dd className="font-medium text-accent">−{formatEuro(result.discountAmount)}</dd>
           </div>
         ) : null}
+
+        {result.areaSurcharge > 0 ? (
+          <div className="flex items-center justify-between gap-4 text-sm">
+            <dt className="text-muted-foreground">
+              {c.result.areaSurcharge} · {result.extraM2} {c.sizeUnit} × {formatEuro(result.extraRatePerM2, true)}
+            </dt>
+            <dd className="font-medium text-foreground">+{formatEuro(result.areaSurcharge)}</dd>
+          </div>
+        ) : null}
       </dl>
 
       {/* Prominent monthly total */}

@@ -64,12 +64,12 @@ export function Navbar({
           <Logo variant="wordmark" />
         </Link>
 
-        <ul className="hidden items-center gap-1 lg:flex">
+        <ul className="hidden items-center gap-0.5 xl:flex">
           {links.map((l) => (
             <li key={l.href}>
               <Link
                 href={l.href}
-                className="rounded-full px-3.5 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                className="whitespace-nowrap rounded-full px-3 py-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
               >
                 {l.label}
               </Link>
@@ -77,7 +77,7 @@ export function Navbar({
           ))}
         </ul>
 
-        <div className="hidden items-center gap-2 lg:flex">
+        <div className="hidden items-center gap-2 xl:flex">
           <LanguageSwitcher locale={locale} label={dict.language} />
           <ThemeToggle label={dict.theme} />
           <Link
@@ -89,7 +89,7 @@ export function Navbar({
         </div>
 
         {/* Mobile controls */}
-        <div className="flex items-center gap-2 lg:hidden">
+        <div className="flex items-center gap-2 xl:hidden">
           <ThemeToggle label={dict.theme} />
           <button
             type="button"
@@ -110,7 +110,7 @@ export function Navbar({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -8 }}
             transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="lg:hidden"
+            className="xl:hidden"
           >
             <div className="container flex flex-col gap-1 border-t border-border bg-background/95 pb-8 pt-4 backdrop-blur-xl">
               {links.map((l) => (

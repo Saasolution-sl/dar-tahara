@@ -21,7 +21,7 @@ const nl: DeepPartial<Dictionary> = {
     pricing: "Tarieven",
     how: "Hoe het werkt",
     gallery: "Galerij",
-    faq: "Veelgestelde vragen",
+    faq: "FAQ",
     book: "Schoonmaak boeken",
     quote: "Offerte aanvragen",
     menu: "Menu",
@@ -246,6 +246,7 @@ const nl: DeepPartial<Dictionary> = {
       visitsValue: "{n} per maand",
       subtotal: "Subtotaal vóór korting",
       discount: "Frequentiekorting",
+      areaSurcharge: "Extra oppervlak",
       youSave: "U bespaart",
       monthlyTotal: "Geschat maandtotaal",
       perMonth: "/ maand",
@@ -253,7 +254,7 @@ const nl: DeepPartial<Dictionary> = {
     },
     custom: {
       title: "Een woning van niveau verdient een offerte op maat.",
-      body: "Woningen groter dan 125 m² vereisen een gepersonaliseerde offerte.",
+      body: "Woningen groter dan 250 m² vereisen een gepersonaliseerde offerte.",
       cta: "Vraag een offerte op maat aan",
     },
     cta: {
@@ -290,7 +291,7 @@ const nl: DeepPartial<Dictionary> = {
     successTitle: "Dank u wel.",
     successBody: "Uw gegevens zijn klaar om te versturen. Kies WhatsApp of e-mail om uw aanvraag te voltooien.",
     monthlyEstimate: "Geschat maandtotaal",
-    customSelected: "Offerte op maat (meer dan 125 m²)",
+    customSelected: "Offerte op maat (meer dan 250 m²)",
   },
   footer: {
     tagline: "Premium woningverzorging & vastgoedconciërge in heel Marokko.",

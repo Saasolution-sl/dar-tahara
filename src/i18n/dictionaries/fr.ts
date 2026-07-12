@@ -246,6 +246,7 @@ const fr: DeepPartial<Dictionary> = {
       visitsValue: "{n} par mois",
       subtotal: "Sous-total avant remise",
       discount: "Remise de fréquence",
+      areaSurcharge: "Surface additionnelle",
       youSave: "Vous économisez",
       monthlyTotal: "Total mensuel estimé",
       perMonth: "/ mois",
@@ -253,7 +254,7 @@ const fr: DeepPartial<Dictionary> = {
     },
     custom: {
       title: "Une demeure d’exception mérite un devis sur mesure.",
-      body: "Les biens de plus de 125 m² nécessitent un devis personnalisé.",
+      body: "Les biens de plus de 250 m² nécessitent un devis personnalisé.",
       cta: "Demander un devis sur mesure",
     },
     cta: {
@@ -290,7 +291,7 @@ const fr: DeepPartial<Dictionary> = {
     successTitle: "Merci.",
     successBody: "Vos informations sont prêtes à être envoyées. Choisissez WhatsApp ou e-mail pour finaliser votre demande.",
     monthlyEstimate: "Total mensuel estimé",
-    customSelected: "Devis sur mesure (plus de 125 m²)",
+    customSelected: "Devis sur mesure (plus de 250 m²)",
   },
   footer: {
     tagline: "Conciergerie & entretien de résidence premium partout au Maroc.",
