@@ -63,16 +63,17 @@ export function EnquiryModal({ open, onClose, payload, dict: _dict, locale }: { 
   async function checkout() {
     if (!payload || !validCurrent()) { setError(c.required); return; }
     setLoading(true); setError("");
-    try {
-      const res = await fetch("/api/assessment/start-payment", { method:"POST", headers:{ "Content-Type":"application/json" }, cache:"no-store", body:JSON.stringify({ ...form, sizeM2:Number(form.sizeM2), overMax:payload.overMax, frequency:payload.frequencyKey, locale, addressLine2:form.addressLine2 || null, postalCode:form.postalCode || null, alternateDate:form.alternateDate || null, petDetails:form.petDetails || null, accessNotes:form.accessNotes || null }) });
-      const data = await res.json() as { checkoutUrl?: string; error?: string };
-      if (!res.ok || !data.checkoutUrl) {
-        setError(res.status < 500 && data.error !== "checkout_not_configured" ? c.required : c.failed);
-        setLoading(false);
-        return;
-      }
-      window.location.assign(data.checkoutUrl);
-    } catch { setError(c.failed); setLoading(false); }
+    const checkoutForm = document.createElement("form");
+    const payloadInput = document.createElement("input");
+    checkoutForm.method = "POST";
+    checkoutForm.action = "/api/assessment/visit";
+    checkoutForm.style.display = "none";
+    payloadInput.type = "hidden";
+    payloadInput.name = "payload";
+    payloadInput.value = JSON.stringify({ ...form, sizeM2:Number(form.sizeM2), overMax:payload.overMax, frequency:payload.frequencyKey, locale, addressLine2:form.addressLine2 || null, postalCode:form.postalCode || null, alternateDate:form.alternateDate || null, petDetails:form.petDetails || null, accessNotes:form.accessNotes || null });
+    checkoutForm.appendChild(payloadInput);
+    document.body.appendChild(checkoutForm);
+    checkoutForm.submit();
   }
 
   return <AnimatePresence>{open && payload ? (

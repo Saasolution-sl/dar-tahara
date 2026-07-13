@@ -6,12 +6,17 @@ import { isServiceRoleConfigured, serviceInsert, serviceUpdate, serviceUpsert } 
 export const runtime = "nodejs";
 
 type IdRow = { id: string; reference?: string };
+export type AssessmentCheckoutResult =
+  | { ok: true; checkoutUrl: string; reference?: string }
+  | { ok: false; error: string; status: number };
 
-export async function POST(req: NextRequest) {
+export async function createAssessmentCheckout(
+  body: unknown,
+  req: NextRequest,
+): Promise<AssessmentCheckoutResult> {
   if (!isServiceRoleConfigured() || !process.env.STRIPE_SECRET_KEY) {
-    return NextResponse.json({ error: "checkout_not_configured" }, { status: 503 });
+    return { ok: false, error: "checkout_not_configured", status: 503 };
   }
-  const body = await req.json().catch(() => null);
   const parsed = validateAssessmentBooking(body);
   if (!parsed.ok) {
     const details = body && typeof body === "object" ? body as Record<string, unknown> : {};
@@ -25,7 +30,7 @@ export async function POST(req: NextRequest) {
       hasAddress: Boolean(details.addressLine1 && details.city && details.countryCode),
       legalAccepted: details.propertyAccuracyAccepted === true && details.termsAccepted === true,
     });
-    return NextResponse.json({ error: parsed.error }, { status: 400 });
+    return { ok: false, error: parsed.error, status: 400 };
   }
   const { value, quote } = parsed;
   try {
@@ -81,9 +86,16 @@ export async function POST(req: NextRequest) {
       requestOrigin: req.nextUrl.origin,
     });
     await serviceUpdate("home_assessments", `id=eq.${assessment.id}`, { stripe_checkout_session_id: session.id });
-    return NextResponse.json({ checkoutUrl: session.url, reference: assessment.reference });
+    if (!session.url) return { ok: false, error: "checkout_failed", status: 502 };
+    return { ok: true, checkoutUrl: session.url, reference: assessment.reference };
   } catch (error) {
     console.error("[assessment-checkout]", error instanceof Error ? error.message : "unknown");
-    return NextResponse.json({ error: "checkout_failed" }, { status: 500 });
+    return { ok: false, error: "checkout_failed", status: 500 };
   }
+}
+
+export async function POST(req: NextRequest) {
+  const result = await createAssessmentCheckout(await req.json().catch(() => null), req);
+  if (!result.ok) return NextResponse.json({ error: result.error }, { status: result.status });
+  return NextResponse.json({ checkoutUrl: result.checkoutUrl, reference: result.reference });
 }
