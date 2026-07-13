@@ -9,7 +9,8 @@ they are not copied into this repository.
 - Compose project: `dar-tahara-supabase`
 - Private Docker network: `dar-tahara-supabase`
 - Caddy network: external `public-net`
-- HTTPS API: `https://supabase-dartahara.85-215-221-142.sslip.io`
+- Website: `https://dartahara.com`
+- HTTPS API: `https://supabase.dartahara.com`
 - PostgreSQL: not publicly exposed
 - Studio: not publicly exposed
 - Backups: `/srv/dartahara/backups`, retained for 14 days

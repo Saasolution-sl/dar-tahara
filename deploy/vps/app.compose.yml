@@ -1,0 +1,22 @@
+name: dar-tahara-app
+
+services:
+  web:
+    image: ${DAR_TAHARA_IMAGE:-dar-tahara-web:latest}
+    container_name: dar-tahara-web
+    restart: unless-stopped
+    env_file:
+      - /srv/dartahara/app/.env
+    networks:
+      - public
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1:3000/en"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+networks:
+  public:
+    external: true
+    name: public-net

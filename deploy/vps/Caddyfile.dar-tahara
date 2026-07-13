@@ -1,5 +1,4 @@
-# Temporary staging hostname. Replace with supabase.dartahara.com after DNS is set.
-supabase-dartahara.85-215-221-142.sslip.io {
+supabase.dartahara.com {
     encode zstd gzip
 
     @supabase_api path /auth/v1/* /rest/v1/* /realtime/v1/* /storage/v1/* /functions/v1/* /.well-known/*
