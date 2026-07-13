@@ -13,6 +13,7 @@ import { Testimonials } from "@/components/sections/testimonials";
 import { Gallery } from "@/components/sections/gallery";
 import { Faq } from "@/components/sections/faq";
 import { Cta } from "@/components/sections/cta";
+import { LaunchSignup } from "@/components/sections/launch-signup";
 
 export default async function HomePage({
   params,
@@ -38,6 +39,7 @@ export default async function HomePage({
       <Testimonials dict={dict} />
       <Gallery dict={dict} />
       <Faq dict={dict} />
+      <LaunchSignup locale={typedLocale} dict={dict} />
       <Cta locale={typedLocale} dict={dict} />
     </>
   );

@@ -227,6 +227,7 @@ const pt: DeepPartial<Dictionary> = {
     sizeLabel: "Área do imóvel",
     sizeUnit: "m²",
     sizeHelp: "Introduza ou deslize entre 20 e 250 m².",
+    overMax: "O meu imóvel tem mais de 250 m²",
     frequencyLabel: "Frequência de limpeza",
     visitsSuffix: "por mês",
     recommended: "Mais popular",
@@ -236,6 +237,11 @@ const pt: DeepPartial<Dictionary> = {
       monthly: { name: "Uma vez por mês", visits: "1 visita por mês", note: "Uma renovação mensal completa." },
       biweekly: { name: "Quinzenal", visits: "2 visitas por mês", note: "O equilíbrio ponderado entre cuidado e valor." },
       weekly: { name: "Semanal", visits: "4 visitas por mês", note: "Sempre impecável, sempre pronto." },
+      irregular: {
+        name: "Airbnb e arrendamentos",
+        visits: "Preço por semana",
+        note: "Limpeza de rotação para Airbnb e arrendamentos de curta duração. Inclui materiais básicos, produtos de limpeza e papel higiénico.",
+      },
     },
     result: {
       heading: "A sua estimativa",
@@ -250,6 +256,8 @@ const pt: DeepPartial<Dictionary> = {
       youSave: "Poupa",
       monthlyTotal: "Total mensal estimado",
       perMonth: "/ mês",
+      perWeek: "/ semana",
+      pricePerWeek: "Preço por semana",
       effective: "Preço efetivo por visita",
     },
     custom: {
@@ -265,6 +273,8 @@ const pt: DeepPartial<Dictionary> = {
       "Este é um preço estimado com base na área do imóvel e na frequência de limpeza selecionada. O preço final pode variar consoante o estado do imóvel, a acessibilidade, os serviços adicionais e os requisitos de limpeza específicos.",
     optionalNote:
       "Serviços opcionais como limpeza profunda, limpeza de vidros, lavandaria, mudança de roupa de cama, limpeza de terraços e limpeza pós-construção podem ser cobrados à parte.",
+    materialsNote:
+      "Este plano inclui materiais de limpeza básicos, produtos e papel higiénico, reabastecidos em cada visita.",
   },
   enquiry: {
     title: "Reserve a sua limpeza",
@@ -292,6 +302,36 @@ const pt: DeepPartial<Dictionary> = {
     successBody: "Os seus dados estão prontos a enviar. Escolha WhatsApp ou e-mail para concluir o seu pedido.",
     monthlyEstimate: "Total mensal estimado",
     customSelected: "Orçamento à medida (mais de 250 m²)",
+  },
+  mailing: {
+    popupHeadline: "Seja o primeiro a saber quando lançarmos",
+    popupBody:
+      "Junte-se à nossa lista de acesso antecipado e avisamos assim que as nossas subscrições de limpeza estiverem disponíveis.",
+    emailPlaceholder: "Introduza o seu e-mail",
+    button: "Avise-me",
+    success: "Obrigado. Está na lista e avisamos quando entrarmos em funcionamento.",
+    consent:
+      "Ao subscrever, concorda em receber novidades sobre o lançamento e o serviço. Pode cancelar a qualquer momento.",
+    close: "Fechar",
+    errors: {
+      invalid_email: "Introduza um endereço de e-mail válido.",
+      rate_limited: "Demasiadas tentativas. Tente novamente dentro de um minuto.",
+      captcha_failed: "Falha na verificação. Tente novamente.",
+      consent_required: "Aceite para continuar.",
+      server_error: "Algo correu mal. Tente novamente em breve.",
+      network: "Erro de rede. Verifique a sua ligação e tente novamente.",
+    },
+    footerEyebrow: "Brevemente",
+    footerTitle: "Chegue a mais do que uma casa limpa.",
+    footerBody:
+      "Deixe o seu e-mail e avisamos assim que as nossas subscrições de limpeza estiverem disponíveis.",
+    confirmedTitle: "Subscrição confirmada",
+    confirmedBody: "Obrigado por confirmar. Está tudo pronto — entraremos em contacto no lançamento.",
+    unsubscribedTitle: "A sua subscrição foi cancelada",
+    unsubscribedBody: "Deixará de receber novidades do lançamento. Pode voltar a inscrever-se quando quiser.",
+    invalidTitle: "Ligação expirada ou inválida",
+    invalidBody: "Esta ligação já não é válida. Inscreva-se novamente se quiser receber novidades.",
+    backHome: "Voltar ao início",
   },
   footer: {
     tagline: "Cuidado premium do lar e concierge de imóveis em todo Marrocos.",

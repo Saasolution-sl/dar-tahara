@@ -24,14 +24,19 @@ export const MINIMUM_PRICE_PER_VISIT = 50;
  */
 export const LARGE_HOME_THRESHOLD_M2 = 125;
 
+export type FrequencyKey = "monthly" | "biweekly" | "weekly" | "irregular";
+
 /**
- * Per-m² monthly surcharge applied to the area above LARGE_HOME_THRESHOLD_M2,
- * by frequency. Example: 183 m² bi-weekly = €238 base + (183 − 125) × €0.90.
+ * Per-m² surcharge applied to the area above LARGE_HOME_THRESHOLD_M2, by
+ * frequency. For the recurring plans this is a monthly add-on; for the
+ * irregular (per-stay) plan it is charged per cleaning at the full rate.
+ * Example: 183 m² bi-weekly = €238 base + (183 − 125) × €0.90.
  */
 export const extraPerM2Rate: Record<FrequencyKey, number> = {
   monthly: 1.0,
   biweekly: 0.9,
   weekly: 0.85,
+  irregular: 1.0,
 };
 
 /** Beyond this size the online estimator defers to a bespoke quotation. */
@@ -40,19 +45,28 @@ export const CUSTOM_QUOTE_THRESHOLD_M2 = 250;
 /** Slider / input bounds for the property-size control. */
 export const SIZE_LIMITS = { min: 20, max: 250, step: 1 } as const;
 
-export type FrequencyKey = "monthly" | "biweekly" | "weekly";
-
 export const frequencies: Record<
   FrequencyKey,
-  { visitsPerMonth: number; discountPercentage: number; recommended?: boolean }
+  {
+    visitsPerMonth: number;
+    discountPercentage: number;
+    recommended?: boolean;
+    /** Irregular / on-demand plan billed per cleaning (Airbnb & rentals). */
+    irregular?: boolean;
+    /** Whether cleaning materials & consumables are bundled into the price. */
+    materialsIncluded: boolean;
+  }
 > = {
-  monthly: { visitsPerMonth: 1, discountPercentage: 0 },
-  biweekly: { visitsPerMonth: 2, discountPercentage: 15, recommended: true },
-  weekly: { visitsPerMonth: 4, discountPercentage: 20 },
+  monthly: { visitsPerMonth: 1, discountPercentage: 0, materialsIncluded: true },
+  biweekly: { visitsPerMonth: 2, discountPercentage: 15, recommended: true, materialsIncluded: true },
+  weekly: { visitsPerMonth: 4, discountPercentage: 20, materialsIncluded: true },
+  // Airbnb / short-stay rentals: a per-week price (one cleaning), no discount,
+  // with basic materials, cleaning supplies and toilet paper included.
+  irregular: { visitsPerMonth: 1, discountPercentage: 0, irregular: true, materialsIncluded: true },
 };
 
 /** Stable order for rendering frequency options. */
-export const frequencyOrder: FrequencyKey[] = ["monthly", "biweekly", "weekly"];
+export const frequencyOrder: FrequencyKey[] = ["monthly", "biweekly", "weekly", "irregular"];
 
 /** The top base tier price per visit (used as the base for large homes). */
 const TOP_TIER_PRICE_PER_VISIT = Math.max(
@@ -77,6 +91,10 @@ export type PriceBreakdown = {
   areaSurcharge: number;
   monthlyTotal: number;
   effectivePricePerVisit: number;
+  /** Irregular / on-demand plan: `monthlyTotal` is the per-cleaning price. */
+  irregular: boolean;
+  /** Whether cleaning materials & consumables are included in the price. */
+  materialsIncluded: boolean;
 };
 
 export type PriceResult =
@@ -134,7 +152,8 @@ export function calculatePrice(
     ? TOP_TIER_PRICE_PER_VISIT
     : (getPricePerVisit(sizeM2) as number);
 
-  const { visitsPerMonth, discountPercentage } = frequencies[frequency];
+  const freqCfg = frequencies[frequency];
+  const { visitsPerMonth, discountPercentage } = freqCfg;
   const subtotal = round2(pricePerVisit * visitsPerMonth);
   const discountAmount = round2(subtotal * (discountPercentage / 100));
   const discountedBase = round2(subtotal - discountAmount);
@@ -160,6 +179,8 @@ export function calculatePrice(
     areaSurcharge,
     monthlyTotal,
     effectivePricePerVisit,
+    irregular: freqCfg.irregular ?? false,
+    materialsIncluded: freqCfg.materialsIncluded,
   };
 }
 

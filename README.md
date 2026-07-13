@@ -26,6 +26,17 @@ npm run lint     # eslint
 npm run typecheck
 ```
 
+Copy `.env.example` to `.env.local` before enabling the launch mailing list.
+The public Supabase URL and publishable key are required for signup; the
+server-only secret key, Resend and Turnstile settings enable the optional admin
+export, double opt-in email and bot protection respectively.
+
+The mailing-list API expects these Supabase RPCs to exist in the configured
+project: `subscribe_to_mailing_list`, `confirm_mailing_list` and
+`unsubscribe_mailing_list`. Direct table access should remain protected by RLS;
+only the narrowly scoped signup/confirmation functions should be executable by
+the public role.
+
 ## Design system
 
 The palette is derived from the official logo — **forest green** primary,

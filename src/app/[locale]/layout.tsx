@@ -8,6 +8,8 @@ import { site, whatsappLink } from "@/lib/site";
 import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
+import { DetectionTracker } from "@/components/layout/detection-tracker";
+import { LaunchPopup } from "@/components/mailing-list/launch-popup";
 import { cn } from "@/lib/utils";
 
 export function generateStaticParams() {
@@ -108,9 +110,11 @@ export default async function LocaleLayout({
           >
             Skip to content
           </a>
+          <DetectionTracker locale={typedLocale} />
           <Navbar locale={typedLocale} dict={dict.nav} whatsappHref={whatsappLink()} />
           <main id="main">{children}</main>
           <Footer locale={typedLocale} dict={dict} />
+          <LaunchPopup locale={typedLocale} dict={dict.mailing} />
         </ThemeProvider>
       </body>
     </html>

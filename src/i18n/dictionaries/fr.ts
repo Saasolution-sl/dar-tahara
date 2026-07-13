@@ -227,6 +227,7 @@ const fr: DeepPartial<Dictionary> = {
     sizeLabel: "Surface du bien",
     sizeUnit: "m²",
     sizeHelp: "Saisissez ou faites glisser entre 20 et 250 m².",
+    overMax: "Mon bien fait plus de 250 m²",
     frequencyLabel: "Fréquence de ménage",
     visitsSuffix: "par mois",
     recommended: "Le plus populaire",
@@ -236,6 +237,11 @@ const fr: DeepPartial<Dictionary> = {
       monthly: { name: "Une fois par mois", visits: "1 visite par mois", note: "Un rafraîchissement mensuel en profondeur." },
       biweekly: { name: "Bimensuel", visits: "2 visites par mois", note: "L’équilibre réfléchi entre soin et valeur." },
       weekly: { name: "Hebdomadaire", visits: "4 visites par mois", note: "Toujours impeccable, toujours prêt." },
+      irregular: {
+        name: "Airbnb & locations",
+        visits: "Prix par semaine",
+        note: "Ménage de rotation pour Airbnb & locations de courte durée. Inclut les produits de base, le matériel d’entretien et le papier toilette.",
+      },
     },
     result: {
       heading: "Votre estimation",
@@ -250,6 +256,8 @@ const fr: DeepPartial<Dictionary> = {
       youSave: "Vous économisez",
       monthlyTotal: "Total mensuel estimé",
       perMonth: "/ mois",
+      perWeek: "/ semaine",
+      pricePerWeek: "Prix par semaine",
       effective: "Prix effectif par visite",
     },
     custom: {
@@ -265,6 +273,8 @@ const fr: DeepPartial<Dictionary> = {
       "Ceci est un prix estimé basé sur la surface du bien et la fréquence de ménage sélectionnée. Le prix final peut varier selon l’état du bien, l’accessibilité, les services complémentaires et les exigences de nettoyage spécifiques.",
     optionalNote:
       "Des services optionnels tels que le nettoyage en profondeur, le lavage des vitres, la blanchisserie, le changement de linge, le nettoyage de terrasse et le nettoyage après construction peuvent être facturés séparément.",
+    materialsNote:
+      "Cette formule inclut les produits d’entretien de base, le matériel et le papier toilette, réapprovisionnés à chaque visite.",
   },
   enquiry: {
     title: "Réservez votre ménage",
@@ -292,6 +302,36 @@ const fr: DeepPartial<Dictionary> = {
     successBody: "Vos informations sont prêtes à être envoyées. Choisissez WhatsApp ou e-mail pour finaliser votre demande.",
     monthlyEstimate: "Total mensuel estimé",
     customSelected: "Devis sur mesure (plus de 250 m²)",
+  },
+  mailing: {
+    popupHeadline: "Soyez le premier informé de notre lancement",
+    popupBody:
+      "Rejoignez notre liste d'accès anticipé et nous vous préviendrons dès que nos formules de ménage seront disponibles.",
+    emailPlaceholder: "Saisissez votre adresse e-mail",
+    button: "Tenez-moi informé",
+    success: "Merci. Vous êtes sur la liste et nous vous préviendrons dès le lancement.",
+    consent:
+      "En vous inscrivant, vous acceptez de recevoir des informations sur le lancement et le service. Vous pouvez vous désabonner à tout moment.",
+    close: "Fermer",
+    errors: {
+      invalid_email: "Veuillez saisir une adresse e-mail valide.",
+      rate_limited: "Trop de tentatives. Réessayez dans une minute.",
+      captcha_failed: "Échec de la vérification. Veuillez réessayer.",
+      consent_required: "Veuillez accepter pour continuer.",
+      server_error: "Une erreur s'est produite. Veuillez réessayer sous peu.",
+      network: "Erreur réseau. Vérifiez votre connexion et réessayez.",
+    },
+    footerEyebrow: "Bientôt disponible",
+    footerTitle: "Rentrez dans bien plus qu'une maison propre.",
+    footerBody:
+      "Laissez votre e-mail et nous vous préviendrons dès que nos formules de ménage seront disponibles.",
+    confirmedTitle: "Inscription confirmée",
+    confirmedBody: "Merci d'avoir confirmé. Tout est prêt — nous vous contacterons au lancement.",
+    unsubscribedTitle: "Vous êtes désabonné",
+    unsubscribedBody: "Vous ne recevrez plus d'informations sur le lancement. Vous pouvez vous réinscrire à tout moment.",
+    invalidTitle: "Lien expiré ou invalide",
+    invalidBody: "Ce lien n'est plus valide. Veuillez vous réinscrire si vous souhaitez recevoir des nouvelles.",
+    backHome: "Retour à l'accueil",
   },
   footer: {
     tagline: "Conciergerie & entretien de résidence premium partout au Maroc.",

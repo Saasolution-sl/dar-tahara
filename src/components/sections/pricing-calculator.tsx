@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
-import { Check, ArrowRight, Sparkles, Info } from "lucide-react";
+import { Check, ArrowRight, Sparkles, Info, Package } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import {
@@ -36,6 +36,7 @@ export function PricingCalculator({
   const [size, setSize] = React.useState(68);
   const [sizeInput, setSizeInput] = React.useState("68");
   const [frequency, setFrequency] = React.useState<FrequencyKey>("biweekly");
+  const [overMax, setOverMax] = React.useState(false);
   const [modalPayload, setModalPayload] = React.useState<EnquiryPayload | null>(null);
   const [modalOpen, setModalOpen] = React.useState(false);
 
@@ -44,7 +45,9 @@ export function PricingCalculator({
     [size, frequency],
   );
 
-  const isCustom = size > CUSTOM_QUOTE_THRESHOLD_M2;
+  // Properties over the 250 m² slider ceiling are quoted personally — the user
+  // opts in via a toggle since the slider itself is capped at 250 m².
+  const isCustom = overMax || size > CUSTOM_QUOTE_THRESHOLD_M2;
   const percent = ((size - SIZE_LIMITS.min) / (SIZE_LIMITS.max - SIZE_LIMITS.min)) * 100;
 
   function onSliderChange(value: number) {
@@ -77,7 +80,7 @@ export function PricingCalculator({
   function openEnquiry(mode: "book" | "quote") {
     const freqCfg = frequencies[frequency];
     const payload: EnquiryPayload =
-      result.status === "ok"
+      result.status === "ok" && !isCustom
         ? {
             mode,
             sizeM2: size,
@@ -89,6 +92,9 @@ export function PricingCalculator({
             monthlyTotal: result.monthlyTotal,
             effectivePricePerVisit: result.effectivePricePerVisit,
             isCustom: false,
+            perCleaning: result.irregular,
+            materialsIncluded: result.materialsIncluded,
+            overMax: false,
           }
         : {
             mode,
@@ -101,6 +107,9 @@ export function PricingCalculator({
             monthlyTotal: null,
             effectivePricePerVisit: null,
             isCustom: true,
+            perCleaning: freqCfg.irregular ?? false,
+            materialsIncluded: freqCfg.materialsIncluded,
+            overMax,
           };
     setModalPayload(payload);
     setModalOpen(true);
@@ -128,11 +137,12 @@ export function PricingCalculator({
                       id="pc-size"
                       type="text"
                       inputMode="numeric"
-                      value={sizeInput}
+                      value={overMax ? "250+" : sizeInput}
                       onChange={(e) => onInputChange(e.target.value)}
                       onBlur={commitInput}
+                      disabled={overMax}
                       aria-label={`${c.sizeLabel} (${c.sizeUnit})`}
-                      className="h-11 w-24 rounded-xl border border-border bg-background px-3 text-right font-serif text-lg text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
+                      className="h-11 w-24 rounded-xl border border-border bg-background px-3 text-right font-serif text-lg text-foreground outline-none transition focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
                     />
                     <span className="text-sm text-muted-foreground">{c.sizeUnit}</span>
                   </div>
@@ -145,20 +155,31 @@ export function PricingCalculator({
                   step={SIZE_LIMITS.step}
                   value={size}
                   onChange={(e) => onSliderChange(Number(e.target.value))}
+                  disabled={overMax}
                   aria-label={c.sizeLabel}
                   aria-valuetext={`${size} ${c.sizeUnit}`}
-                  className="pc-range mt-5 w-full"
+                  className={cn("pc-range mt-5 w-full", overMax && "opacity-40")}
                   style={
                     {
                       "--pc-fill": `${percent}%`,
                     } as React.CSSProperties
                   }
                 />
-                <div className="mt-2 flex justify-between text-xs text-muted-foreground">
+                <div className={cn("mt-2 flex justify-between text-xs text-muted-foreground", overMax && "opacity-40")}>
                   <span>{SIZE_LIMITS.min} {c.sizeUnit}</span>
                   <span>{c.sizeHelp}</span>
                   <span>{SIZE_LIMITS.max} {c.sizeUnit}</span>
                 </div>
+
+                <label className="mt-4 flex cursor-pointer items-center gap-2.5 rounded-xl border border-border bg-card px-4 py-3 text-sm text-foreground transition-colors hover:border-foreground/25 has-[:checked]:border-primary has-[:checked]:bg-primary/[0.04] dark:has-[:checked]:bg-primary/[0.08]">
+                  <input
+                    type="checkbox"
+                    checked={overMax}
+                    onChange={(e) => setOverMax(e.target.checked)}
+                    className="h-4 w-4 shrink-0 accent-[hsl(var(--primary))]"
+                  />
+                  <span>{c.overMax}</span>
+                </label>
               </div>
 
               {/* Frequency */}
@@ -302,16 +323,27 @@ function ResultPanel({
     );
   }
 
-  const rows = [
-    { label: c.result.propertySize, value: `${result.sizeM2} ${c.sizeUnit}` },
-    { label: c.result.pricePerCleaning, value: formatEuro(result.pricePerVisit) },
-    { label: c.result.frequency, value: frequencyLabel },
-    {
-      label: c.result.visits,
-      value: c.result.visitsValue.replace("{n}", String(result.visitsPerMonth)),
-    },
-    { label: c.result.subtotal, value: formatEuro(result.subtotal) },
-  ];
+  const irregular = result.irregular;
+
+  const rows = irregular
+    ? [
+        { label: c.result.propertySize, value: `${result.sizeM2} ${c.sizeUnit}` },
+        { label: c.result.frequency, value: frequencyLabel },
+        // Show the base price only when a surcharge follows, so the maths reads clearly.
+        ...(result.areaSurcharge > 0
+          ? [{ label: c.result.pricePerCleaning, value: formatEuro(result.pricePerVisit) }]
+          : []),
+      ]
+    : [
+        { label: c.result.propertySize, value: `${result.sizeM2} ${c.sizeUnit}` },
+        { label: c.result.pricePerCleaning, value: formatEuro(result.pricePerVisit) },
+        { label: c.result.frequency, value: frequencyLabel },
+        {
+          label: c.result.visits,
+          value: c.result.visitsValue.replace("{n}", String(result.visitsPerMonth)),
+        },
+        { label: c.result.subtotal, value: formatEuro(result.subtotal) },
+      ];
 
   return (
     <div className="flex h-full flex-col rounded-2xl border border-border bg-card p-7 shadow-soft">
@@ -344,11 +376,13 @@ function ResultPanel({
         ) : null}
       </dl>
 
-      {/* Prominent monthly total */}
+      {/* Prominent headline price */}
       <div className="mt-6 border-t border-border pt-6">
         <div className="flex items-end justify-between gap-3">
-          <span className="text-sm text-muted-foreground">{c.result.monthlyTotal}</span>
-          {result.discountAmount > 0 ? (
+          <span className="text-sm text-muted-foreground">
+            {irregular ? c.result.pricePerWeek : c.result.monthlyTotal}
+          </span>
+          {!irregular && result.discountAmount > 0 ? (
             <span className="rounded-full bg-accent/15 px-2.5 py-1 text-xs font-medium text-accent">
               {c.result.youSave} {formatEuro(result.discountAmount)}
             </span>
@@ -364,14 +398,24 @@ function ResultPanel({
           >
             {formatEuro(result.monthlyTotal)}
           </motion.span>
-          <span className="text-sm text-muted-foreground">{c.result.perMonth}</span>
+          <span className="text-sm text-muted-foreground">
+            {irregular ? c.result.perWeek : c.result.perMonth}
+          </span>
         </div>
-        <p className="mt-1.5 text-sm text-muted-foreground">
-          {c.result.effective}: <span className="text-foreground">{formatEuro(result.effectivePricePerVisit, true)}</span>
-        </p>
+        {!irregular ? (
+          <p className="mt-1.5 text-sm text-muted-foreground">
+            {c.result.effective}: <span className="text-foreground">{formatEuro(result.effectivePricePerVisit, true)}</span>
+          </p>
+        ) : null}
+        {irregular ? (
+          <p className="mt-3 flex gap-2 rounded-xl bg-secondary/60 px-3.5 py-3 text-xs leading-relaxed text-muted-foreground">
+            <Package className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />
+            <span>{c.materialsNote}</span>
+          </p>
+        ) : null}
       </div>
 
-      <div className="mt-7 flex flex-col gap-2.5">
+      <div className="mt-7">
         <button
           type="button"
           onClick={onBook}
@@ -379,13 +423,6 @@ function ResultPanel({
         >
           {c.cta.book}
           <ArrowRight className="h-4 w-4" />
-        </button>
-        <button
-          type="button"
-          onClick={onQuote}
-          className={cn(buttonVariants({ variant: "outline", size: "lg" }), "w-full")}
-        >
-          {c.cta.quote}
         </button>
       </div>
     </div>

@@ -5,7 +5,17 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Globe, Check, ChevronDown } from "lucide-react";
 import { locales, localeMeta, type Locale } from "@/i18n/config";
+import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
+
+/** Persist a manual language choice for one year (priority 1 on future visits). */
+function saveLocalePreference(target: Locale) {
+  try {
+    document.cookie = `NEXT_LOCALE=${target};path=/;max-age=31536000;samesite=lax`;
+  } catch {
+    /* cookies may be blocked — detection still falls back to browser/geo */
+  }
+}
 
 export function LanguageSwitcher({
   locale,
@@ -59,7 +69,13 @@ export function LanguageSwitcher({
             <li key={l} role="option" aria-selected={l === locale}>
               <Link
                 href={pathFor(l)}
-                onClick={() => setOpen(false)}
+                onClick={() => {
+                  if (l !== locale) {
+                    saveLocalePreference(l);
+                    track("language_changed", { from: locale, to: l });
+                  }
+                  setOpen(false);
+                }}
                 lang={localeMeta[l].hreflang}
                 className={cn(
                   "flex items-center justify-between rounded-xl px-3 py-2 text-sm transition-colors hover:bg-secondary",

@@ -227,6 +227,7 @@ const nl: DeepPartial<Dictionary> = {
     sizeLabel: "Woninggrootte",
     sizeUnit: "m²",
     sizeHelp: "Voer in of schuif tussen 20 en 250 m².",
+    overMax: "Mijn woning is groter dan 250 m²",
     frequencyLabel: "Schoonmaakfrequentie",
     visitsSuffix: "per maand",
     recommended: "Populairst",
@@ -236,6 +237,11 @@ const nl: DeepPartial<Dictionary> = {
       monthly: { name: "Eén keer per maand", visits: "1 bezoek per maand", note: "Een grondige maandelijkse opfrisbeurt." },
       biweekly: { name: "Tweewekelijks", visits: "2 bezoeken per maand", note: "De weloverwogen balans tussen zorg en waarde." },
       weekly: { name: "Wekelijks", visits: "4 bezoeken per maand", note: "Altijd onberispelijk, altijd klaar." },
+      irregular: {
+        name: "Airbnb & verhuur",
+        visits: "Prijs per week",
+        note: "Wisselschoonmaak voor Airbnb & kortverblijfverhuur. Inclusief basismaterialen, schoonmaakmiddelen en toiletpapier.",
+      },
     },
     result: {
       heading: "Uw schatting",
@@ -250,6 +256,8 @@ const nl: DeepPartial<Dictionary> = {
       youSave: "U bespaart",
       monthlyTotal: "Geschat maandtotaal",
       perMonth: "/ maand",
+      perWeek: "/ week",
+      pricePerWeek: "Prijs per week",
       effective: "Effectieve prijs per bezoek",
     },
     custom: {
@@ -265,6 +273,8 @@ const nl: DeepPartial<Dictionary> = {
       "Dit is een geschatte prijs op basis van de woninggrootte en de gekozen schoonmaakfrequentie. De uiteindelijke prijs kan variëren afhankelijk van de staat van de woning, de toegankelijkheid, aanvullende diensten en specifieke schoonmaakwensen.",
     optionalNote:
       "Optionele diensten zoals dieptereiniging, ramen wassen, wasgoed, linnengoed verschonen, terrasreiniging en reiniging na bouwwerkzaamheden kunnen apart worden geprijsd.",
+    materialsNote:
+      "Dit abonnement omvat basisschoonmaakmaterialen, -middelen en toiletpapier, bij elk bezoek aangevuld.",
   },
   enquiry: {
     title: "Boek uw schoonmaak",
@@ -292,6 +302,36 @@ const nl: DeepPartial<Dictionary> = {
     successBody: "Uw gegevens zijn klaar om te versturen. Kies WhatsApp of e-mail om uw aanvraag te voltooien.",
     monthlyEstimate: "Geschat maandtotaal",
     customSelected: "Offerte op maat (meer dan 250 m²)",
+  },
+  mailing: {
+    popupHeadline: "Wees de eerste die het weet bij onze lancering",
+    popupBody:
+      "Sluit u aan bij onze early-access-lijst en we laten het u weten zodra onze schoonmaakabonnementen beschikbaar zijn.",
+    emailPlaceholder: "Voer uw e-mailadres in",
+    button: "Houd mij op de hoogte",
+    success: "Bedankt. U staat op de lijst en we laten het u weten zodra we live gaan.",
+    consent:
+      "Door u aan te melden gaat u akkoord met het ontvangen van lancerings- en service-updates. U kunt zich op elk moment afmelden.",
+    close: "Sluiten",
+    errors: {
+      invalid_email: "Voer een geldig e-mailadres in.",
+      rate_limited: "Te veel pogingen. Probeer het over een minuut opnieuw.",
+      captcha_failed: "Verificatie mislukt. Probeer het opnieuw.",
+      consent_required: "Ga akkoord om door te gaan.",
+      server_error: "Er is iets misgegaan. Probeer het zo dadelijk opnieuw.",
+      network: "Netwerkfout. Controleer uw verbinding en probeer het opnieuw.",
+    },
+    footerEyebrow: "Binnenkort live",
+    footerTitle: "Kom thuis in meer dan een schoon huis.",
+    footerBody:
+      "Laat uw e-mailadres achter en we laten het u weten zodra onze schoonmaakabonnementen beschikbaar zijn.",
+    confirmedTitle: "Inschrijving bevestigd",
+    confirmedBody: "Bedankt voor uw bevestiging. Alles is in orde—we nemen contact op zodra we live gaan.",
+    unsubscribedTitle: "U bent uitgeschreven",
+    unsubscribedBody: "U ontvangt geen lancerings-updates meer. U kunt zich altijd opnieuw aanmelden.",
+    invalidTitle: "Link verlopen of ongeldig",
+    invalidBody: "Deze link is niet meer geldig. Meld u opnieuw aan als u updates wilt ontvangen.",
+    backHome: "Terug naar home",
   },
   footer: {
     tagline: "Premium woningverzorging & vastgoedconciërge in heel Marokko.",

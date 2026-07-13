@@ -224,6 +224,7 @@ const en = {
     sizeLabel: "Property size",
     sizeUnit: "m²",
     sizeHelp: "Enter or slide between 20 and 250 m².",
+    overMax: "My property is larger than 250 m²",
     frequencyLabel: "Cleaning frequency",
     visitsSuffix: "per month",
     recommended: "Most popular",
@@ -233,6 +234,11 @@ const en = {
       monthly: { name: "Once per month", visits: "1 visit per month", note: "A thorough monthly refresh." },
       biweekly: { name: "Bi-weekly", visits: "2 visits per month", note: "The considered balance of care and value." },
       weekly: { name: "Weekly", visits: "4 visits per month", note: "Always immaculate, always ready." },
+      irregular: {
+        name: "Airbnb & rentals",
+        visits: "Priced per week",
+        note: "Turnover cleaning for Airbnb & short-stay rentals. Includes basic materials, cleaning supplies and toilet paper.",
+      },
     },
     result: {
       heading: "Your estimate",
@@ -247,6 +253,8 @@ const en = {
       youSave: "You save",
       monthlyTotal: "Estimated monthly total",
       perMonth: "/ month",
+      perWeek: "/ week",
+      pricePerWeek: "Price per week",
       effective: "Effective price per visit",
     },
     custom: {
@@ -262,6 +270,8 @@ const en = {
       "This is an estimated price based on the property size and selected cleaning frequency. The final price may vary depending on the condition of the property, accessibility, additional services and specific cleaning requirements.",
     optionalNote:
       "Optional services such as deep cleaning, window cleaning, laundry, linen changes, terrace cleaning and post-construction cleaning may be priced separately.",
+    materialsNote:
+      "This plan includes basic cleaning materials, supplies and toilet paper, restocked at every visit.",
   },
   enquiry: {
     title: "Book your cleaning",
@@ -289,6 +299,36 @@ const en = {
     successBody: "Your details are ready to send. Choose WhatsApp or email to complete your request.",
     monthlyEstimate: "Estimated monthly total",
     customSelected: "Custom quotation (over 250 m²)",
+  },
+  mailing: {
+    popupHeadline: "Be the first to know when we launch",
+    popupBody:
+      "Join our early-access list and we'll let you know as soon as our cleaning subscriptions become available.",
+    emailPlaceholder: "Enter your email address",
+    button: "Notify me",
+    success: "Thank you. You're on the list, and we'll let you know when we go live.",
+    consent:
+      "By subscribing, you agree to receive launch and service updates. You can unsubscribe at any time.",
+    close: "Close",
+    errors: {
+      invalid_email: "Please enter a valid email address.",
+      rate_limited: "Too many attempts. Please try again in a minute.",
+      captcha_failed: "Verification failed. Please try again.",
+      consent_required: "Please accept to continue.",
+      server_error: "Something went wrong. Please try again shortly.",
+      network: "Network error. Please check your connection and try again.",
+    },
+    footerEyebrow: "Launching soon",
+    footerTitle: "Arrive to more than a clean home.",
+    footerBody:
+      "Leave your email and we'll let you know the moment our cleaning subscriptions become available.",
+    confirmedTitle: "Subscription confirmed",
+    confirmedBody: "Thank you for confirming. You're all set—we'll be in touch when we go live.",
+    unsubscribedTitle: "You've been unsubscribed",
+    unsubscribedBody: "You will no longer receive launch updates. You can rejoin anytime.",
+    invalidTitle: "Link expired or invalid",
+    invalidBody: "This link is no longer valid. Please sign up again if you'd like updates.",
+    backHome: "Back to home",
   },
   footer: {
     tagline: "Premium home care & property concierge across Morocco.",

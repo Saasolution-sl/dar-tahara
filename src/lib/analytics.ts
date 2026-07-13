@@ -1,0 +1,33 @@
+/**
+ * Privacy-conscious analytics. Forwards named events to Plausible and/or a
+ * dataLayer when present, and no-ops otherwise. NEVER pass an email address or
+ * other personal data here — only coarse, non-identifying props (locale, source).
+ */
+export type AnalyticsEvent =
+  | "popup_shown"
+  | "popup_dismissed"
+  | "mailing_list_signup_started"
+  | "mailing_list_signup_completed"
+  | "mailing_list_confirmation_completed"
+  | "language_detected"
+  | "language_changed";
+
+type Props = Record<string, string | number | boolean>;
+
+export function track(event: AnalyticsEvent, props: Props = {}): void {
+  if (typeof window === "undefined") return;
+  const w = window as unknown as {
+    plausible?: (e: string, o?: { props: Props }) => void;
+    dataLayer?: unknown[];
+  };
+  try {
+    if (typeof w.plausible === "function") w.plausible(event, { props });
+    if (Array.isArray(w.dataLayer)) w.dataLayer.push({ event, ...props });
+    if (process.env.NODE_ENV !== "production") {
+      // eslint-disable-next-line no-console
+      console.debug("[analytics]", event, props);
+    }
+  } catch {
+    /* analytics must never break the UI */
+  }
+}

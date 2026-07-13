@@ -21,6 +21,12 @@ export type EnquiryPayload = {
   monthlyTotal: number | null;
   effectivePricePerVisit: number | null;
   isCustom: boolean;
+  /** Irregular per-stay plan: the total is a per-cleaning price. */
+  perCleaning: boolean;
+  /** Whether cleaning materials are included in the price. */
+  materialsIncluded: boolean;
+  /** Property is above the 250 m² estimator ceiling — quote only. */
+  overMax: boolean;
 };
 
 export function EnquiryModal({
@@ -128,11 +134,18 @@ export function EnquiryModal({
       `Location: ${form.location}`,
       form.startDate ? `Preferred start: ${form.startDate}` : "",
       "",
-      `Property size: ${payload.sizeM2} m²`,
-      `Frequency: ${payload.frequencyLabel} (${payload.visitsPerMonth} visit(s)/month)`,
+      payload.overMax ? "Property size: over 250 m²" : `Property size: ${payload.sizeM2} m²`,
+      payload.perCleaning
+        ? `Plan: ${payload.frequencyLabel} (per-stay / on-demand)`
+        : `Frequency: ${payload.frequencyLabel} (${payload.visitsPerMonth} visit(s)/month)`,
     ];
     if (payload.isCustom || payload.monthlyTotal === null) {
-      lines.push("Estimate: Custom quotation (over 125 m²)");
+      lines.push("Estimate: Custom quotation (over 250 m²)");
+    } else if (payload.perCleaning) {
+      lines.push(
+        `Price per week: ${formatEuro(payload.monthlyTotal)}`,
+        "Includes: basic materials, cleaning supplies and toilet paper",
+      );
     } else {
       lines.push(
         `Base price per cleaning: ${formatEuro(payload.pricePerVisit ?? 0)}`,
@@ -210,13 +223,13 @@ export function EnquiryModal({
                     {e.summary}
                   </p>
                   <div className="mt-2 flex flex-wrap items-baseline gap-x-6 gap-y-1 text-sm">
-                    <span className="text-foreground">{payload.sizeM2} m²</span>
-                    <span className="text-foreground">{payload.frequencyLabel}</span>
+                    <span className="text-foreground">{payload.overMax ? "> 250 m²" : `${payload.sizeM2} m²`}</span>
+                    {payload.overMax ? null : <span className="text-foreground">{payload.frequencyLabel}</span>}
                     {payload.isCustom || payload.monthlyTotal === null ? (
                       <span className="text-accent">{e.customSelected}</span>
                     ) : (
                       <span className="font-medium text-foreground">
-                        {e.monthlyEstimate}: {formatEuro(payload.monthlyTotal)}
+                        {payload.perCleaning ? dict.calculator.result.pricePerWeek : e.monthlyEstimate}: {formatEuro(payload.monthlyTotal)}
                       </span>
                     )}
                   </div>

@@ -5,6 +5,7 @@ import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import { site, whatsappLink, sections } from "@/lib/site";
 import { Logo } from "@/components/brand/logo";
+import { SubscribeForm } from "@/components/mailing-list/subscribe-form";
 import { cn } from "@/lib/utils";
 
 export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
@@ -44,23 +45,11 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             </p>
 
             <div className="mt-8 max-w-sm">
-              <p className="font-serif text-lg text-foreground">{f.newsletterTitle}</p>
+              <p className="font-serif text-lg text-foreground">{dict.mailing.footerTitle}</p>
               <p className="mt-1 text-sm text-muted-foreground">{f.newsletterBody}</p>
-              <form className="mt-4 flex gap-2" action="#" aria-label={f.newsletterCta}>
-                <input
-                  type="email"
-                  required
-                  placeholder={f.newsletterPlaceholder}
-                  aria-label={f.newsletterPlaceholder}
-                  className="h-11 w-full rounded-full border border-border bg-background px-4 text-sm outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
-                />
-                <button
-                  type="submit"
-                  className="h-11 shrink-0 rounded-full bg-primary px-5 text-sm font-medium text-primary-foreground transition hover:opacity-90"
-                >
-                  {f.newsletterCta}
-                </button>
-              </form>
+              <div className="mt-4">
+                <SubscribeForm locale={locale} dict={dict.mailing} source="homepage_footer" />
+              </div>
             </div>
           </div>
 

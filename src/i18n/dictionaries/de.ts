@@ -227,6 +227,7 @@ const de: DeepPartial<Dictionary> = {
     sizeLabel: "Wohnfläche",
     sizeUnit: "m²",
     sizeHelp: "Geben Sie einen Wert zwischen 20 und 250 m² ein oder schieben Sie.",
+    overMax: "Meine Immobilie ist größer als 250 m²",
     frequencyLabel: "Reinigungsfrequenz",
     visitsSuffix: "pro Monat",
     recommended: "Am beliebtesten",
@@ -236,6 +237,11 @@ const de: DeepPartial<Dictionary> = {
       monthly: { name: "Einmal pro Monat", visits: "1 Besuch pro Monat", note: "Eine gründliche monatliche Auffrischung." },
       biweekly: { name: "Zweiwöchentlich", visits: "2 Besuche pro Monat", note: "Die durchdachte Balance aus Pflege und Wert." },
       weekly: { name: "Wöchentlich", visits: "4 Besuche pro Monat", note: "Immer makellos, immer bereit." },
+      irregular: {
+        name: "Airbnb & Vermietung",
+        visits: "Preis pro Woche",
+        note: "Wechselreinigung für Airbnb & Kurzzeitvermietungen. Inklusive Basismaterialien, Reinigungsmitteln und Toilettenpapier.",
+      },
     },
     result: {
       heading: "Ihre Schätzung",
@@ -250,6 +256,8 @@ const de: DeepPartial<Dictionary> = {
       youSave: "Sie sparen",
       monthlyTotal: "Geschätzte Monatssumme",
       perMonth: "/ Monat",
+      perWeek: "/ Woche",
+      pricePerWeek: "Preis pro Woche",
       effective: "Effektiver Preis pro Besuch",
     },
     custom: {
@@ -265,6 +273,8 @@ const de: DeepPartial<Dictionary> = {
       "Dies ist ein geschätzter Preis auf Basis der Wohnfläche und der gewählten Reinigungsfrequenz. Der endgültige Preis kann je nach Zustand der Immobilie, Zugänglichkeit, Zusatzleistungen und spezifischen Reinigungsanforderungen variieren.",
     optionalNote:
       "Optionale Leistungen wie Grundreinigung, Fensterreinigung, Wäsche, Bettwäschewechsel, Terrassenreinigung und Reinigung nach Bauarbeiten können separat berechnet werden.",
+    materialsNote:
+      "Dieses Paket enthält grundlegende Reinigungsmaterialien, Reinigungsmittel und Toilettenpapier, bei jedem Besuch aufgefüllt.",
   },
   enquiry: {
     title: "Buchen Sie Ihre Reinigung",
@@ -292,6 +302,36 @@ const de: DeepPartial<Dictionary> = {
     successBody: "Ihre Angaben sind bereit zum Versand. Wählen Sie WhatsApp oder E-Mail, um Ihre Anfrage abzuschließen.",
     monthlyEstimate: "Geschätzte Monatssumme",
     customSelected: "Individuelles Angebot (über 250 m²)",
+  },
+  mailing: {
+    popupHeadline: "Erfahren Sie als Erste von unserem Start",
+    popupBody:
+      "Tragen Sie sich in unsere Early-Access-Liste ein und wir informieren Sie, sobald unsere Reinigungsabos verfügbar sind.",
+    emailPlaceholder: "Geben Sie Ihre E-Mail-Adresse ein",
+    button: "Benachrichtigen",
+    success: "Vielen Dank. Sie stehen auf der Liste und wir melden uns, sobald wir live gehen.",
+    consent:
+      "Mit der Anmeldung stimmen Sie zu, Start- und Service-Updates zu erhalten. Sie können sich jederzeit abmelden.",
+    close: "Schließen",
+    errors: {
+      invalid_email: "Bitte geben Sie eine gültige E-Mail-Adresse ein.",
+      rate_limited: "Zu viele Versuche. Bitte versuchen Sie es in einer Minute erneut.",
+      captcha_failed: "Verifizierung fehlgeschlagen. Bitte erneut versuchen.",
+      consent_required: "Bitte stimmen Sie zu, um fortzufahren.",
+      server_error: "Etwas ist schiefgelaufen. Bitte versuchen Sie es gleich erneut.",
+      network: "Netzwerkfehler. Bitte prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
+    },
+    footerEyebrow: "Bald verfügbar",
+    footerTitle: "Kommen Sie nach Hause zu mehr als nur einem sauberen Zuhause.",
+    footerBody:
+      "Hinterlassen Sie Ihre E-Mail und wir informieren Sie, sobald unsere Reinigungsabos verfügbar sind.",
+    confirmedTitle: "Anmeldung bestätigt",
+    confirmedBody: "Danke für die Bestätigung. Alles bereit — wir melden uns zum Start.",
+    unsubscribedTitle: "Sie wurden abgemeldet",
+    unsubscribedBody: "Sie erhalten keine Start-Updates mehr. Sie können jederzeit wieder beitreten.",
+    invalidTitle: "Link abgelaufen oder ungültig",
+    invalidBody: "Dieser Link ist nicht mehr gültig. Bitte melden Sie sich erneut an, wenn Sie Updates möchten.",
+    backHome: "Zurück zur Startseite",
   },
   footer: {
     tagline: "Premium-Hauspflege & Immobilien-Concierge in ganz Marokko.",

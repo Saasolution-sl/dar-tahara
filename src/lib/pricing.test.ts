@@ -86,6 +86,28 @@ test("slider maximum (250 m²) is priced, above it is custom", () => {
   assert.equal(calculatePrice(400, "weekly").status, "custom");
 });
 
+test("Airbnb (per-week) plan: full per-week price, no discount, materials included", () => {
+  // Per week = base tier price for one cleaning, no frequency discount.
+  assert.equal(ok(100, "irregular").monthlyTotal, 120);
+  assert.equal(ok(100, "irregular").discountPercentage, 0);
+  assert.equal(ok(100, "irregular").visitsPerMonth, 1);
+  assert.equal(ok(100, "irregular").materialsIncluded, true);
+  assert.equal(ok(100, "irregular").irregular, true);
+  // Recurring plans also keep materials included.
+  assert.equal(ok(100, "biweekly").materialsIncluded, true);
+  assert.equal(ok(100, "biweekly").irregular, false);
+});
+
+test("Airbnb plan applies the full per-m² surcharge above 125 m²", () => {
+  // 183 m² per week = €140 + (58 × €1.00) = €198
+  const r = ok(183, "irregular");
+  assert.equal(r.pricePerVisit, 140);
+  assert.equal(r.extraM2, 58);
+  assert.equal(r.extraRatePerM2, 1);
+  assert.equal(r.areaSurcharge, 58);
+  assert.equal(r.monthlyTotal, 198);
+});
+
 test("invalid and negative input is rejected", () => {
   assert.equal(calculatePrice(NaN, "monthly").status, "invalid");
   assert.equal(calculatePrice(Number.POSITIVE_INFINITY, "monthly").status, "invalid");

@@ -227,6 +227,7 @@ const es: DeepPartial<Dictionary> = {
     sizeLabel: "Tamaño de la propiedad",
     sizeUnit: "m²",
     sizeHelp: "Introduce o desliza entre 20 y 250 m².",
+    overMax: "Mi propiedad supera los 250 m²",
     frequencyLabel: "Frecuencia de limpieza",
     visitsSuffix: "al mes",
     recommended: "El más popular",
@@ -236,6 +237,11 @@ const es: DeepPartial<Dictionary> = {
       monthly: { name: "Una vez al mes", visits: "1 visita al mes", note: "Una renovación mensual a fondo." },
       biweekly: { name: "Quincenal", visits: "2 visitas al mes", note: "El equilibrio ponderado entre cuidado y valor." },
       weekly: { name: "Semanal", visits: "4 visitas al mes", note: "Siempre impecable, siempre listo." },
+      irregular: {
+        name: "Airbnb y alquileres",
+        visits: "Precio por semana",
+        note: "Limpieza de rotación para Airbnb y alquileres de corta estancia. Incluye materiales básicos, productos de limpieza y papel higiénico.",
+      },
     },
     result: {
       heading: "Tu estimación",
@@ -250,6 +256,8 @@ const es: DeepPartial<Dictionary> = {
       youSave: "Ahorras",
       monthlyTotal: "Total mensual estimado",
       perMonth: "/ mes",
+      perWeek: "/ semana",
+      pricePerWeek: "Precio por semana",
       effective: "Precio efectivo por visita",
     },
     custom: {
@@ -265,6 +273,8 @@ const es: DeepPartial<Dictionary> = {
       "Este es un precio estimado basado en el tamaño de la propiedad y la frecuencia de limpieza seleccionada. El precio final puede variar según el estado de la propiedad, la accesibilidad, los servicios adicionales y los requisitos de limpieza específicos.",
     optionalNote:
       "Servicios opcionales como limpieza a fondo, limpieza de cristales, lavandería, cambio de ropa de cama, limpieza de terrazas y limpieza tras obras pueden cobrarse por separado.",
+    materialsNote:
+      "Este plan incluye materiales de limpieza básicos, productos y papel higiénico, repuestos en cada visita.",
   },
   enquiry: {
     title: "Reserva tu limpieza",
@@ -292,6 +302,36 @@ const es: DeepPartial<Dictionary> = {
     successBody: "Tus datos están listos para enviar. Elige WhatsApp o correo para completar tu solicitud.",
     monthlyEstimate: "Total mensual estimado",
     customSelected: "Presupuesto a medida (más de 250 m²)",
+  },
+  mailing: {
+    popupHeadline: "Sé el primero en saber cuándo lanzamos",
+    popupBody:
+      "Únete a nuestra lista de acceso anticipado y te avisaremos en cuanto nuestras suscripciones de limpieza estén disponibles.",
+    emailPlaceholder: "Introduce tu correo electrónico",
+    button: "Avísame",
+    success: "Gracias. Estás en la lista y te avisaremos cuando estemos en marcha.",
+    consent:
+      "Al suscribirte, aceptas recibir novedades sobre el lanzamiento y el servicio. Puedes darte de baja en cualquier momento.",
+    close: "Cerrar",
+    errors: {
+      invalid_email: "Introduce una dirección de correo válida.",
+      rate_limited: "Demasiados intentos. Inténtalo de nuevo en un minuto.",
+      captcha_failed: "La verificación falló. Inténtalo de nuevo.",
+      consent_required: "Acepta para continuar.",
+      server_error: "Algo salió mal. Inténtalo de nuevo en breve.",
+      network: "Error de red. Comprueba tu conexión e inténtalo de nuevo.",
+    },
+    footerEyebrow: "Muy pronto",
+    footerTitle: "Llega a algo más que un hogar limpio.",
+    footerBody:
+      "Deja tu correo y te avisaremos en cuanto nuestras suscripciones de limpieza estén disponibles.",
+    confirmedTitle: "Suscripción confirmada",
+    confirmedBody: "Gracias por confirmar. Todo listo: te avisaremos cuando estemos en marcha.",
+    unsubscribedTitle: "Te has dado de baja",
+    unsubscribedBody: "Ya no recibirás novedades del lanzamiento. Puedes volver a unirte cuando quieras.",
+    invalidTitle: "Enlace caducado o no válido",
+    invalidBody: "Este enlace ya no es válido. Vuelve a suscribirte si quieres recibir novedades.",
+    backHome: "Volver al inicio",
   },
   footer: {
     tagline: "Cuidado del hogar y conserjería de propiedades premium en todo Marruecos.",
