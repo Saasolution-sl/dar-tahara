@@ -7,9 +7,9 @@ const PUBLIC_FILE = /\.(.*)$/;
 
 export function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
-  const host = request.headers.get("host") || "";
+  const host = request.headers.get("host")?.split(":")[0] || "";
 
-  if (host.endsWith(".vercel.app")) {
+  if (host && host !== site.domain && host !== "localhost" && host !== "127.0.0.1") {
     const url = request.nextUrl.clone();
     url.protocol = "https";
     url.host = site.domain;
