@@ -8,6 +8,7 @@ import type { Dictionary } from "@/i18n/dictionaries/en";
 import { assessmentCopy } from "@/i18n/assessment-copy";
 import { calculateAssessmentQuote, formatMoneyFromCents, type BillingInterval, type PropertyCondition, type TimeSlot } from "@/lib/assessment";
 import type { FrequencyKey } from "@/lib/pricing";
+import { site } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
@@ -66,7 +67,7 @@ export function EnquiryModal({ open, onClose, payload, dict: _dict, locale }: { 
     const checkoutForm = document.createElement("form");
     const payloadInput = document.createElement("input");
     checkoutForm.method = "POST";
-    checkoutForm.action = "/api/assessment/visit";
+    checkoutForm.action = `${site.url}/api/assessment/visit`;
     checkoutForm.style.display = "none";
     payloadInput.type = "hidden";
     payloadInput.name = "payload";
