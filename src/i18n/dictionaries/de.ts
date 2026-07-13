@@ -22,7 +22,7 @@ const de: DeepPartial<Dictionary> = {
     how: "So funktioniert’s",
     gallery: "Galerie",
     faq: "FAQ",
-    book: "Reinigung buchen",
+    book: "Ersteinschätzung buchen",
     quote: "Angebot anfordern",
     menu: "Menü",
     close: "Schließen",
@@ -34,7 +34,7 @@ const de: DeepPartial<Dictionary> = {
     title: "Ihr Zuhause verdient mehr als Reinigung — es verdient außergewöhnliche Pflege.",
     subtitle:
       "Für Eigentümer, Expats und Ferienhausbesitzer in ganz Marokko. Wir reinigen, prüfen und pflegen Ihre Immobilie mit stiller Präzision — damit Sie zum Komfort zurückkehren, nie zur Sorge.",
-    ctaPrimary: "Reinigung buchen",
+    ctaPrimary: "Ersteinschätzung buchen",
     ctaSecondary: "Angebot anfordern",
     ctaTertiary: "Mehr erfahren",
     stat1Value: "500+",
@@ -215,7 +215,7 @@ const de: DeepPartial<Dictionary> = {
     title: "Kommen Sie immer nach Hause zum Komfort.",
     subtitle:
       "Überlassen Sie uns die Pflege Ihres Zuhauses, damit Sie nie daran denken müssen. Buchen Sie einen ersten Besuch oder fordern Sie noch heute ein maßgeschneidertes Angebot an.",
-    ctaPrimary: "Reinigung buchen",
+    ctaPrimary: "Ersteinschätzung buchen",
     ctaSecondary: "Angebot anfordern",
     whatsapp: "Auf WhatsApp chatten",
   },
@@ -266,7 +266,7 @@ const de: DeepPartial<Dictionary> = {
       cta: "Individuelles Angebot anfordern",
     },
     cta: {
-      book: "Buchen Sie Ihre Reinigung",
+      book: "Ersteinschätzung buchen",
       quote: "Persönliches Angebot anfordern",
     },
     disclaimer:

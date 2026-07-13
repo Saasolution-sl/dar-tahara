@@ -22,7 +22,7 @@ const nl: DeepPartial<Dictionary> = {
     how: "Hoe het werkt",
     gallery: "Galerij",
     faq: "FAQ",
-    book: "Schoonmaak boeken",
+    book: "Eerste woningbeoordeling boeken",
     quote: "Offerte aanvragen",
     menu: "Menu",
     close: "Sluiten",
@@ -34,7 +34,7 @@ const nl: DeepPartial<Dictionary> = {
     title: "Uw huis verdient meer dan schoonmaken—het verdient uitzonderlijke zorg.",
     subtitle:
       "Voor huiseigenaren, expats en eigenaren van vakantiewoningen in heel Marokko. Wij reinigen, inspecteren en onderhouden uw woning met stille precisie—zodat u terugkeert naar comfort, nooit naar zorgen.",
-    ctaPrimary: "Schoonmaak boeken",
+    ctaPrimary: "Eerste woningbeoordeling boeken",
     ctaSecondary: "Offerte aanvragen",
     ctaTertiary: "Meer weten",
     stat1Value: "500+",
@@ -215,7 +215,7 @@ const nl: DeepPartial<Dictionary> = {
     title: "Kom altijd thuis in comfort.",
     subtitle:
       "Laat ons voor uw huis zorgen, zodat u er nooit aan hoeft te denken. Boek een eerste bezoek of vraag vandaag nog een offerte op maat aan.",
-    ctaPrimary: "Schoonmaak boeken",
+    ctaPrimary: "Eerste woningbeoordeling boeken",
     ctaSecondary: "Offerte aanvragen",
     whatsapp: "Chat via WhatsApp",
   },
@@ -266,7 +266,7 @@ const nl: DeepPartial<Dictionary> = {
       cta: "Vraag een offerte op maat aan",
     },
     cta: {
-      book: "Boek uw schoonmaak",
+      book: "Boek uw eerste woningbeoordeling",
       quote: "Vraag een persoonlijke offerte aan",
     },
     disclaimer:

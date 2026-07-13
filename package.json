@@ -7,9 +7,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint",
+    "lint": "set ESLINT_USE_FLAT_CONFIG=false&& eslint src --no-cache",
     "typecheck": "tsc --noEmit",
-    "test": "tsx --test \"src/**/*.test.ts\"",
+    "test": "tsx --conditions=react-server --test \"src/**/*.test.ts\"",
     "check:i18n": "tsx scripts/check-i18n.ts"
   },
   "dependencies": {
@@ -21,6 +21,7 @@
     "next-themes": "^0.4.4",
     "react": "19.0.0",
     "react-dom": "19.0.0",
+    "server-only": "^0.0.1",
     "tailwind-merge": "^2.6.0"
   },
   "devDependencies": {

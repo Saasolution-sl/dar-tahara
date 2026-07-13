@@ -109,6 +109,10 @@
 }
 
 @layer components {
+  .input {
+    @apply h-11 w-full rounded-xl border border-border bg-background px-3.5 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring;
+  }
+
   .container-tight {
     @apply mx-auto w-full max-w-5xl px-6;
   }

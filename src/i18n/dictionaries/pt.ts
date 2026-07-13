@@ -22,7 +22,7 @@ const pt: DeepPartial<Dictionary> = {
     how: "Como funciona",
     gallery: "Galeria",
     faq: "Perguntas frequentes",
-    book: "Reservar limpeza",
+    book: "Reservar Avaliação Inicial",
     quote: "Pedir orçamento",
     menu: "Menu",
     close: "Fechar",
@@ -34,7 +34,7 @@ const pt: DeepPartial<Dictionary> = {
     title: "A sua casa merece mais do que limpeza — merece um cuidado excecional.",
     subtitle:
       "Para proprietários, expatriados e donos de casas de férias em todo Marrocos. Limpamos, inspecionamos e mantemos o seu imóvel com precisão discreta — para que regresse ao conforto, nunca à preocupação.",
-    ctaPrimary: "Reservar limpeza",
+    ctaPrimary: "Reservar Avaliação Inicial",
     ctaSecondary: "Pedir orçamento",
     ctaTertiary: "Saber mais",
     stat1Value: "500+",
@@ -215,7 +215,7 @@ const pt: DeepPartial<Dictionary> = {
     title: "Chegue sempre a um lar de conforto.",
     subtitle:
       "Deixe-nos cuidar da sua casa, para que nunca tenha de pensar nela. Reserve uma primeira visita ou peça hoje um orçamento à medida.",
-    ctaPrimary: "Reservar limpeza",
+    ctaPrimary: "Reservar Avaliação Inicial",
     ctaSecondary: "Pedir orçamento",
     whatsapp: "Falar no WhatsApp",
   },
@@ -266,7 +266,7 @@ const pt: DeepPartial<Dictionary> = {
       cta: "Pedir um orçamento à medida",
     },
     cta: {
-      book: "Reserve a sua limpeza",
+      book: "Reserve a Avaliação Inicial",
       quote: "Pedir um orçamento personalizado",
     },
     disclaimer:

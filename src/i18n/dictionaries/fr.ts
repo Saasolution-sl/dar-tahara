@@ -22,7 +22,7 @@ const fr: DeepPartial<Dictionary> = {
     how: "Comment ça marche",
     gallery: "Galerie",
     faq: "FAQ",
-    book: "Réserver un ménage",
+    book: "Réserver l’Évaluation Initiale",
     quote: "Demander un devis",
     menu: "Menu",
     close: "Fermer",
@@ -34,7 +34,7 @@ const fr: DeepPartial<Dictionary> = {
     title: "Votre maison mérite mieux qu’un ménage — elle mérite un soin d’exception.",
     subtitle:
       "Pour les propriétaires, expatriés et propriétaires de résidences secondaires partout au Maroc. Nous nettoyons, inspectons et entretenons votre bien avec une précision discrète — pour que vous retrouviez le confort, jamais les soucis.",
-    ctaPrimary: "Réserver un ménage",
+    ctaPrimary: "Réserver l’Évaluation Initiale",
     ctaSecondary: "Demander un devis",
     ctaTertiary: "En savoir plus",
     stat1Value: "500+",
@@ -215,7 +215,7 @@ const fr: DeepPartial<Dictionary> = {
     title: "Rentrez toujours dans le confort.",
     subtitle:
       "Laissez-nous prendre soin de votre maison, pour ne plus jamais y penser. Réservez une première visite ou demandez un devis sur mesure dès aujourd’hui.",
-    ctaPrimary: "Réserver un ménage",
+    ctaPrimary: "Réserver l’Évaluation Initiale",
     ctaSecondary: "Demander un devis",
     whatsapp: "Discuter sur WhatsApp",
   },
@@ -266,7 +266,7 @@ const fr: DeepPartial<Dictionary> = {
       cta: "Demander un devis sur mesure",
     },
     cta: {
-      book: "Réservez votre ménage",
+      book: "Réservez l’Évaluation Initiale",
       quote: "Demander un devis personnalisé",
     },
     disclaimer:

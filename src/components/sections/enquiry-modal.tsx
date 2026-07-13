@@ -2,406 +2,99 @@
 
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, MessageCircle, Mail, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight, Check, CreditCard, LockKeyhole, X } from "lucide-react";
+import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
+import { assessmentCopy } from "@/i18n/assessment-copy";
+import { calculateAssessmentQuote, formatMoneyFromCents, type BillingInterval, type PropertyCondition, type TimeSlot } from "@/lib/assessment";
 import type { FrequencyKey } from "@/lib/pricing";
-import { formatEuro } from "@/lib/pricing";
-import { site, whatsappLink } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
 
 export type EnquiryPayload = {
-  mode: "book" | "quote";
-  sizeM2: number;
-  frequencyKey: FrequencyKey;
-  frequencyLabel: string;
-  visitsPerMonth: number;
-  pricePerVisit: number | null;
-  discountPercentage: number;
-  monthlyTotal: number | null;
-  effectivePricePerVisit: number | null;
-  isCustom: boolean;
-  /** Irregular per-stay plan: the total is a per-cleaning price. */
-  perCleaning: boolean;
-  /** Whether cleaning materials are included in the price. */
-  materialsIncluded: boolean;
-  /** Property is above the 250 m² estimator ceiling — quote only. */
-  overMax: boolean;
+  mode: "book" | "quote"; sizeM2: number; frequencyKey: FrequencyKey; frequencyLabel: string;
+  visitsPerMonth: number; pricePerVisit: number | null; discountPercentage: number; monthlyTotal: number | null;
+  effectivePricePerVisit: number | null; isCustom: boolean; perCleaning: boolean; materialsIncluded: boolean; overMax: boolean;
 };
 
-export function EnquiryModal({
-  open,
-  onClose,
-  payload,
-  dict,
-}: {
-  open: boolean;
-  onClose: () => void;
-  payload: EnquiryPayload | null;
-  dict: Dictionary;
-}) {
-  const e = dict.enquiry;
+type FormState = {
+  preferredDate: string; alternateDate: string; timeSlot: TimeSlot; addressLine1: string; addressLine2: string; city: string; postalCode: string; countryCode: string;
+  sizeM2: string; bedrooms: string; bathrooms: string; pets: boolean; petDetails: string; smoking: boolean; condition: PropertyCondition; accessNotes: string;
+  fullName: string; email: string; phone: string; billingInterval: BillingInterval; propertyAccuracyAccepted: boolean; termsAccepted: boolean;
+};
+
+const initial: FormState = { preferredDate:"", alternateDate:"", timeSlot:"flexible", addressLine1:"", addressLine2:"", city:"", postalCode:"", countryCode:"MA", sizeM2:"68", bedrooms:"2", bathrooms:"1", pets:false, petDetails:"", smoking:false, condition:"standard", accessNotes:"", fullName:"", email:"", phone:"", billingInterval:"monthly", propertyAccuracyAccepted:false, termsAccepted:false };
+
+export function EnquiryModal({ open, onClose, payload, dict: _dict, locale }: { open: boolean; onClose: () => void; payload: EnquiryPayload | null; dict: Dictionary; locale: Locale }) {
+  const c = assessmentCopy[locale];
+  const subtitle = locale === "en"
+    ? "Your first visit allows us to professionally assess your home, perform an initial deep clean where required and prepare your personalised cleaning plan."
+    : c.subtitle;
   const dialogRef = React.useRef<HTMLDivElement>(null);
-  const firstFieldRef = React.useRef<HTMLInputElement>(null);
-  const previouslyFocused = React.useRef<HTMLElement | null>(null);
+  const [step, setStep] = React.useState(0);
+  const [form, setForm] = React.useState<FormState>(initial);
+  const [error, setError] = React.useState("");
+  const [loading, setLoading] = React.useState(false);
   const titleId = React.useId();
+  const minDate = new Date().toISOString().slice(0, 10);
 
-  const [form, setForm] = React.useState({
-    name: "",
-    email: "",
-    phone: "",
-    location: "",
-    startDate: "",
-    message: "",
-  });
-  const [errors, setErrors] = React.useState<Record<string, string>>({});
-  const [ready, setReady] = React.useState(false);
-
-  // Focus management + Esc + basic focus trap.
+  React.useEffect(() => { if (open && payload) { setStep(0); setError(""); setForm({ ...initial, sizeM2: String(payload.sizeM2) }); } }, [open, payload]);
   React.useEffect(() => {
     if (!open) return;
-    previouslyFocused.current = document.activeElement as HTMLElement;
-    const t = setTimeout(() => firstFieldRef.current?.focus(), 30);
-
-    function onKey(ev: KeyboardEvent) {
-      if (ev.key === "Escape") {
-        onClose();
-        return;
-      }
-      if (ev.key === "Tab" && dialogRef.current) {
-        const focusable = dialogRef.current.querySelectorAll<HTMLElement>(
-          'a[href],button:not([disabled]),input:not([disabled]),select,textarea,[tabindex]:not([tabindex="-1"])',
-        );
-        if (focusable.length === 0) return;
-        const first = focusable[0];
-        const last = focusable[focusable.length - 1];
-        if (ev.shiftKey && document.activeElement === first) {
-          ev.preventDefault();
-          last.focus();
-        } else if (!ev.shiftKey && document.activeElement === last) {
-          ev.preventDefault();
-          first.focus();
-        }
-      }
-    }
-
-    document.addEventListener("keydown", onKey);
+    const before = document.activeElement as HTMLElement;
     document.body.style.overflow = "hidden";
-    return () => {
-      clearTimeout(t);
-      document.removeEventListener("keydown", onKey);
-      document.body.style.overflow = "";
-      previouslyFocused.current?.focus?.();
-    };
+    const onKey = (event: KeyboardEvent) => { if (event.key === "Escape") onClose(); };
+    document.addEventListener("keydown", onKey);
+    dialogRef.current?.focus();
+    return () => { document.body.style.overflow = ""; document.removeEventListener("keydown", onKey); before?.focus?.(); };
   }, [open, onClose]);
 
-  React.useEffect(() => {
-    if (!open) {
-      setReady(false);
-      setErrors({});
-    }
-  }, [open]);
+  function update<K extends keyof FormState>(key: K, value: FormState[K]) { setForm((old) => ({ ...old, [key]: value })); setError(""); }
+  function validCurrent() {
+    if (step === 0 && !form.preferredDate) return false;
+    if (step === 1 && (!form.addressLine1.trim() || !form.city.trim() || Number(form.sizeM2) < 20 || !form.countryCode.trim() || (form.pets && !form.petDetails.trim()))) return false;
+    if (step === 2 && (!form.fullName.trim() || !/^\S+@\S+\.\S+$/.test(form.email) || !form.phone.trim())) return false;
+    if (step === 3 && (!form.propertyAccuracyAccepted || !form.termsAccepted)) return false;
+    return true;
+  }
+  function advance() { if (!validCurrent()) { setError(c.required); return; } setStep((value) => Math.min(3, value + 1)); }
 
-  function update(field: keyof typeof form, value: string) {
-    setForm((f) => ({ ...f, [field]: value }));
-    setErrors((prev) => {
-      if (!prev[field]) return prev;
-      const next = { ...prev };
-      delete next[field];
-      return next;
-    });
+  const quote = payload ? calculateAssessmentQuote(Number(form.sizeM2) || payload.sizeM2, payload.frequencyKey, payload.overMax) : null;
+  async function checkout() {
+    if (!payload || !validCurrent()) { setError(c.required); return; }
+    setLoading(true); setError("");
+    try {
+      const res = await fetch("/api/assessment/checkout", { method:"POST", headers:{ "Content-Type":"application/json" }, body:JSON.stringify({ ...form, sizeM2:Number(form.sizeM2), overMax:payload.overMax, frequency:payload.frequencyKey, locale, addressLine2:form.addressLine2 || null, postalCode:form.postalCode || null, alternateDate:form.alternateDate || null, petDetails:form.petDetails || null, accessNotes:form.accessNotes || null }) });
+      const data = await res.json() as { checkoutUrl?: string };
+      if (!res.ok || !data.checkoutUrl) throw new Error("checkout");
+      window.location.assign(data.checkoutUrl);
+    } catch { setError(c.failed); setLoading(false); }
   }
 
-  function validate(): boolean {
-    const next: Record<string, string> = {};
-    if (!form.name.trim()) next.name = e.required;
-    if (!form.email.trim()) next.email = e.required;
-    else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) next.email = e.invalidEmail;
-    if (!form.phone.trim()) next.phone = e.required;
-    if (!form.location.trim()) next.location = e.required;
-    setErrors(next);
-    return Object.keys(next).length === 0;
-  }
-
-  function buildMessage(): string {
-    if (!payload) return "";
-    const lines = [
-      `New ${payload.mode === "book" ? "booking" : "quote"} request — Dar Tahara`,
-      "",
-      `Name: ${form.name}`,
-      `Email: ${form.email}`,
-      `Phone/WhatsApp: ${form.phone}`,
-      `Location: ${form.location}`,
-      form.startDate ? `Preferred start: ${form.startDate}` : "",
-      "",
-      payload.overMax ? "Property size: over 250 m²" : `Property size: ${payload.sizeM2} m²`,
-      payload.perCleaning
-        ? `Plan: ${payload.frequencyLabel} (per-stay / on-demand)`
-        : `Frequency: ${payload.frequencyLabel} (${payload.visitsPerMonth} visit(s)/month)`,
-    ];
-    if (payload.isCustom || payload.monthlyTotal === null) {
-      lines.push("Estimate: Custom quotation (over 250 m²)");
-    } else if (payload.perCleaning) {
-      lines.push(
-        `Price per week: ${formatEuro(payload.monthlyTotal)}`,
-        "Includes: basic materials, cleaning supplies and toilet paper",
-      );
-    } else {
-      lines.push(
-        `Base price per cleaning: ${formatEuro(payload.pricePerVisit ?? 0)}`,
-        `Discount: ${payload.discountPercentage}%`,
-        `Estimated monthly total: ${formatEuro(payload.monthlyTotal)}`,
-        `Effective price per visit: ${formatEuro(payload.effectivePricePerVisit ?? 0)}`,
-      );
-    }
-    if (form.message.trim()) lines.push("", `Message: ${form.message}`);
-    return lines.filter((l) => l !== "").join("\n");
-  }
-
-  function onSend(channel: "whatsapp" | "email") {
-    if (!validate()) return;
-    const message = buildMessage();
-    if (channel === "whatsapp") {
-      window.open(whatsappLink(message), "_blank", "noopener,noreferrer");
-    } else {
-      const subject = encodeURIComponent(
-        payload?.mode === "book" ? e.title : e.quoteTitle,
-      );
-      window.location.href = `mailto:${site.email}?subject=${subject}&body=${encodeURIComponent(message)}`;
-    }
-    setReady(true);
-  }
-
-  const title = payload?.mode === "quote" ? e.quoteTitle : e.title;
-
-  return (
-    <AnimatePresence>
-      {open ? (
-        <motion.div
-          className="fixed inset-0 z-[80] flex items-end justify-center p-0 sm:items-center sm:p-6"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.2 }}
-        >
-          <div
-            className="absolute inset-0 bg-charcoal/50 backdrop-blur-sm"
-            onClick={onClose}
-            aria-hidden
-          />
-          <motion.div
-            ref={dialogRef}
-            role="dialog"
-            aria-modal="true"
-            aria-labelledby={titleId}
-            initial={{ opacity: 0, y: 24, scale: 0.99 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: 24, scale: 0.99 }}
-            transition={{ duration: 0.28, ease: [0.22, 1, 0.36, 1] }}
-            className="relative z-10 flex max-h-[92dvh] w-full max-w-lg flex-col overflow-hidden rounded-t-3xl border border-border bg-card shadow-lift sm:rounded-2xl"
-          >
-            <div className="flex items-start justify-between gap-4 border-b border-border px-6 py-5">
-              <div>
-                <h2 id={titleId} className="font-serif text-xl text-foreground">{title}</h2>
-                <p className="mt-1 text-sm text-muted-foreground">{e.subtitle}</p>
-              </div>
-              <button
-                type="button"
-                onClick={onClose}
-                aria-label={e.close}
-                className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-border text-foreground transition-colors hover:bg-secondary"
-              >
-                <X className="h-4 w-4" />
-              </button>
-            </div>
-
-            <div className="no-scrollbar overflow-y-auto px-6 py-5">
-              {/* Selection summary */}
-              {payload ? (
-                <div className="mb-6 rounded-xl bg-secondary/60 p-4">
-                  <p className="text-xs font-semibold uppercase tracking-widest text-muted-foreground">
-                    {e.summary}
-                  </p>
-                  <div className="mt-2 flex flex-wrap items-baseline gap-x-6 gap-y-1 text-sm">
-                    <span className="text-foreground">{payload.overMax ? "> 250 m²" : `${payload.sizeM2} m²`}</span>
-                    {payload.overMax ? null : <span className="text-foreground">{payload.frequencyLabel}</span>}
-                    {payload.isCustom || payload.monthlyTotal === null ? (
-                      <span className="text-accent">{e.customSelected}</span>
-                    ) : (
-                      <span className="font-medium text-foreground">
-                        {payload.perCleaning ? dict.calculator.result.pricePerWeek : e.monthlyEstimate}: {formatEuro(payload.monthlyTotal)}
-                      </span>
-                    )}
-                  </div>
-                </div>
-              ) : null}
-
-              {ready ? (
-                <div className="flex flex-col items-center py-6 text-center">
-                  <span className="flex h-12 w-12 items-center justify-center rounded-full bg-primary text-primary-foreground">
-                    <Check className="h-6 w-6" />
-                  </span>
-                  <h3 className="mt-4 font-serif text-lg text-foreground">{e.successTitle}</h3>
-                  <p className="mt-1 max-w-xs text-sm text-muted-foreground">{e.successBody}</p>
-                  <div className="mt-6 flex w-full flex-col gap-2 sm:flex-row">
-                    <button
-                      type="button"
-                      onClick={() => onSend("whatsapp")}
-                      className={cn(buttonVariants({ variant: "gold", size: "md" }), "flex-1")}
-                    >
-                      <MessageCircle className="h-4 w-4" />
-                      {e.submitWhatsApp}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onSend("email")}
-                      className={cn(buttonVariants({ variant: "outline", size: "md" }), "flex-1")}
-                    >
-                      <Mail className="h-4 w-4" />
-                      {e.submitEmail}
-                    </button>
-                  </div>
-                </div>
-              ) : (
-                <form
-                  noValidate
-                  onSubmit={(ev) => {
-                    ev.preventDefault();
-                    onSend("whatsapp");
-                  }}
-                  className="grid grid-cols-1 gap-4 sm:grid-cols-2"
-                >
-                  <Field
-                    ref={firstFieldRef}
-                    label={e.fields.name}
-                    required
-                    value={form.name}
-                    error={errors.name}
-                    onChange={(v) => update("name", v)}
-                    autoComplete="name"
-                  />
-                  <Field
-                    label={e.fields.email}
-                    type="email"
-                    required
-                    value={form.email}
-                    error={errors.email}
-                    onChange={(v) => update("email", v)}
-                    autoComplete="email"
-                  />
-                  <Field
-                    label={e.fields.phone}
-                    type="tel"
-                    required
-                    value={form.phone}
-                    error={errors.phone}
-                    onChange={(v) => update("phone", v)}
-                    autoComplete="tel"
-                  />
-                  <Field
-                    label={e.fields.location}
-                    required
-                    value={form.location}
-                    error={errors.location}
-                    onChange={(v) => update("location", v)}
-                    autoComplete="address-level2"
-                  />
-                  <Field
-                    label={e.fields.startDate}
-                    type="date"
-                    value={form.startDate}
-                    onChange={(v) => update("startDate", v)}
-                  />
-                  <Field
-                    label={e.fields.size}
-                    value={payload ? String(payload.sizeM2) : ""}
-                    onChange={() => {}}
-                    readOnly
-                  />
-                  <div className="sm:col-span-2">
-                    <label className="mb-1.5 block text-sm font-medium text-foreground">
-                      {e.fields.message}
-                    </label>
-                    <textarea
-                      value={form.message}
-                      onChange={(ev) => update("message", ev.target.value)}
-                      placeholder={e.fields.messagePlaceholder}
-                      rows={3}
-                      className="w-full rounded-xl border border-border bg-background px-3.5 py-2.5 text-sm outline-none transition focus-visible:ring-2 focus-visible:ring-ring"
-                    />
-                  </div>
-
-                  <div className="mt-2 flex flex-col gap-2 sm:col-span-2 sm:flex-row">
-                    <button
-                      type="submit"
-                      className={cn(buttonVariants({ variant: "primary", size: "lg" }), "flex-1")}
-                    >
-                      <MessageCircle className="h-4 w-4" />
-                      {e.submitWhatsApp}
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => onSend("email")}
-                      className={cn(buttonVariants({ variant: "outline", size: "lg" }), "flex-1")}
-                    >
-                      <Mail className="h-4 w-4" />
-                      {e.submitEmail}
-                    </button>
-                  </div>
-                </form>
-              )}
-            </div>
-          </motion.div>
-        </motion.div>
-      ) : null}
-    </AnimatePresence>
-  );
+  return <AnimatePresence>{open && payload ? (
+    <motion.div className="fixed inset-0 z-[90] flex items-end justify-center sm:items-center sm:p-6" initial={{opacity:0}} animate={{opacity:1}} exit={{opacity:0}}>
+      <button className="absolute inset-0 cursor-default bg-charcoal/65 backdrop-blur-md" onClick={onClose} aria-label={c.close}/>
+      <motion.div ref={dialogRef} tabIndex={-1} role="dialog" aria-modal="true" aria-labelledby={titleId} initial={{opacity:0,y:30,scale:.98}} animate={{opacity:1,y:0,scale:1}} exit={{opacity:0,y:30}} className="relative z-10 flex max-h-[96dvh] w-full max-w-3xl flex-col overflow-hidden rounded-t-[2rem] border border-border bg-card shadow-lift outline-none sm:rounded-[2rem]">
+        <header className="border-b border-border px-5 py-5 sm:px-8">
+          <div className="flex items-start justify-between gap-5"><div><p className="text-xs font-semibold uppercase tracking-[.22em] text-accent">Dar Tahara</p><h2 id={titleId} className="mt-2 font-serif text-2xl text-foreground sm:text-3xl">{c.title}</h2><p className="mt-1 text-sm text-muted-foreground">{subtitle}</p></div><button onClick={onClose} aria-label={c.close} className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border hover:bg-secondary"><X className="h-4 w-4"/></button></div>
+          <ol className="mt-5 grid grid-cols-4 gap-2">{c.steps.map((name,index)=><li key={name} className={cn("border-t-2 pt-2 text-[.65rem] font-semibold uppercase tracking-wider",index<=step?"border-accent text-foreground":"border-border text-muted-foreground")}><span className="hidden sm:inline">{index+1}. </span>{name}</li>)}</ol>
+        </header>
+        <div className="overflow-y-auto px-5 py-6 sm:px-8">
+          {step===0 && <Step title={c.appointment}><div className="grid gap-4 sm:grid-cols-2"><Field label={c.preferredDate} required><input type="date" min={minDate} value={form.preferredDate} onChange={e=>update("preferredDate",e.target.value)} className="input"/></Field><Field label={c.alternateDate}><input type="date" min={minDate} value={form.alternateDate} onChange={e=>update("alternateDate",e.target.value)} className="input"/></Field></div><Choice label={c.time} values={[["morning",c.morning],["afternoon",c.afternoon],["flexible",c.flexible]]} selected={form.timeSlot} onChange={v=>update("timeSlot",v as TimeSlot)}/></Step>}
+          {step===1 && <Step title={c.home}><div className="grid gap-4 sm:grid-cols-2"><Field label={c.address} required wide><input value={form.addressLine1} onChange={e=>update("addressLine1",e.target.value)} autoComplete="street-address" className="input"/></Field><Field label={c.address2} wide><input value={form.addressLine2} onChange={e=>update("addressLine2",e.target.value)} className="input"/></Field><Field label={c.city} required><input value={form.city} onChange={e=>update("city",e.target.value)} autoComplete="address-level2" className="input"/></Field><Field label={c.postcode}><input value={form.postalCode} onChange={e=>update("postalCode",e.target.value)} autoComplete="postal-code" className="input"/></Field><Field label={c.country} required><input maxLength={2} value={form.countryCode} onChange={e=>update("countryCode",e.target.value.toUpperCase())} className="input"/></Field><Field label={c.size} required><input type="number" min="20" max={payload.overMax?5000:250} value={form.sizeM2} onChange={e=>update("sizeM2",e.target.value)} className="input"/></Field><Field label={c.bedrooms} required><input type="number" min="0" max="50" value={form.bedrooms} onChange={e=>update("bedrooms",e.target.value)} className="input"/></Field><Field label={c.bathrooms} required><input type="number" min="0" max="50" value={form.bathrooms} onChange={e=>update("bathrooms",e.target.value)} className="input"/></Field></div><BooleanChoice label={c.pets} value={form.pets} set={v=>update("pets",v)} copy={c}/>{form.pets&&<Field label={c.petDetails} required><input value={form.petDetails} onChange={e=>update("petDetails",e.target.value)} className="input"/></Field>}<BooleanChoice label={c.smoking} value={form.smoking} set={v=>update("smoking",v)} copy={c}/><Choice label={c.condition} values={[["excellent",c.excellent],["standard",c.standard],["needs_attention",c.needsAttention],["heavy",c.heavy]]} selected={form.condition} onChange={v=>update("condition",v as PropertyCondition)}/><Field label={c.notes}><textarea rows={3} value={form.accessNotes} onChange={e=>update("accessNotes",e.target.value)} className="input h-auto py-3"/></Field></Step>}
+          {step===2 && <Step title={c.you}><div className="grid gap-4 sm:grid-cols-2"><Field label={c.name} required><input value={form.fullName} onChange={e=>update("fullName",e.target.value)} autoComplete="name" className="input"/></Field><Field label={c.email} required><input type="email" value={form.email} onChange={e=>update("email",e.target.value)} autoComplete="email" className="input"/></Field><Field label={c.phone} required><input type="tel" value={form.phone} onChange={e=>update("phone",e.target.value)} autoComplete="tel" className="input"/></Field></div><Choice label={c.billing} values={[["monthly",c.monthly],["annual",`${c.annual} · ${c.save}`]]} selected={form.billingInterval} onChange={v=>update("billingInterval",v as BillingInterval)}/></Step>}
+          {step===3 && quote && <Step title={c.review}><div className="rounded-2xl border border-border bg-secondary/40 p-5"><Summary label={c.plan} value={`${payload.frequencyLabel} · ${form.sizeM2} m²`}/>{quote.estimatedMonthlyCents!==null&&<Summary label={c.monthlyEstimate} value={formatMoneyFromCents(quote.estimatedMonthlyCents,locale)}/>} {form.billingInterval==="annual"&&quote.estimatedAnnualCents!==null&&<Summary label={c.annualTotal} value={`${formatMoneyFromCents(quote.estimatedAnnualCents,locale)} · ${c.save}`}/>}<div className="my-4 border-t border-border"/><Summary label={c.assessmentFee} value={formatMoneyFromCents(quote.assessmentPriceCents,locale)}/><Summary strong label={c.dueToday} value={formatMoneyFromCents(quote.assessmentPriceCents,locale)}/></div><CheckField checked={form.propertyAccuracyAccepted} set={v=>update("propertyAccuracyAccepted",v)}>{c.propertyAccuracy}</CheckField><CheckField checked={form.termsAccepted} set={v=>update("termsAccepted",v)}>{c.acceptTerms} <a className="underline" href={`/${locale}/terms`} target="_blank">{c.terms}</a> · <a className="underline" href={`/${locale}/privacy`} target="_blank">{c.privacy}</a></CheckField><p className="flex gap-2 rounded-xl bg-primary/[.06] p-4 text-xs leading-relaxed text-muted-foreground"><LockKeyhole className="h-4 w-4 shrink-0 text-primary"/>{c.secure}</p></Step>}
+          {error&&<p role="alert" className="mt-4 rounded-xl bg-red-500/10 px-4 py-3 text-sm text-red-700 dark:text-red-300">{error}</p>}
+        </div>
+        <footer className="flex items-center justify-between gap-3 border-t border-border bg-card px-5 py-4 sm:px-8"><button type="button" onClick={()=>step===0?onClose():setStep(s=>s-1)} className={buttonVariants({variant:"outline",size:"lg"})}><ArrowLeft className="h-4 w-4"/>{step===0?c.close:c.back}</button>{step<3?<button type="button" onClick={advance} className={buttonVariants({variant:"primary",size:"lg"})}>{c.next}<ArrowRight className="h-4 w-4"/></button>:<button type="button" disabled={loading} onClick={checkout} className={cn(buttonVariants({variant:"gold",size:"lg"}),"min-w-52")}><CreditCard className="h-4 w-4"/>{loading?c.processing:c.pay}</button>}</footer>
+      </motion.div>
+    </motion.div>
+  ):null}</AnimatePresence>;
 }
 
-interface FieldProps {
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  type?: string;
-  required?: boolean;
-  error?: string;
-  autoComplete?: string;
-  readOnly?: boolean;
-}
-
-const Field = React.forwardRef<HTMLInputElement, FieldProps>(function Field(
-  { label, value, onChange, type = "text", required, error, autoComplete, readOnly },
-  ref,
-) {
-  const id = React.useId();
-  return (
-    <div>
-      <label htmlFor={id} className="mb-1.5 block text-sm font-medium text-foreground">
-        {label}
-        {required ? <span className="text-accent" aria-hidden> *</span> : null}
-      </label>
-      <input
-        ref={ref}
-        id={id}
-        type={type}
-        value={value}
-        required={required}
-        readOnly={readOnly}
-        autoComplete={autoComplete}
-        aria-invalid={!!error}
-        aria-describedby={error ? `${id}-error` : undefined}
-        onChange={(ev) => onChange(ev.target.value)}
-        className={cn(
-          "h-11 w-full rounded-xl border bg-background px-3.5 text-sm outline-none transition focus-visible:ring-2 focus-visible:ring-ring",
-          error ? "border-red-500/70" : "border-border",
-          readOnly && "bg-secondary/50 text-muted-foreground",
-        )}
-      />
-      {error ? (
-        <p id={`${id}-error`} className="mt-1 text-xs text-red-600 dark:text-red-400">
-          {error}
-        </p>
-      ) : null}
-    </div>
-  );
-});
+function Step({title,children}:{title:string;children:React.ReactNode}) { return <section className="space-y-5"><h3 className="font-serif text-xl text-foreground">{title}</h3>{children}</section>; }
+function Field({label,required,wide,children}:{label:string;required?:boolean;wide?:boolean;children:React.ReactNode}) { return <label className={cn("block",wide&&"sm:col-span-2")}><span className="mb-1.5 block text-sm font-medium text-foreground">{label}{required&&<span className="text-accent"> *</span>}</span>{children}</label>; }
+function Choice({label,values,selected,onChange}:{label:string;values:string[][];selected:string;onChange:(v:string)=>void}) { return <fieldset><legend className="mb-2 text-sm font-medium text-foreground">{label}</legend><div className="flex flex-wrap gap-2">{values.map(([v,n])=><label key={v} className={cn("cursor-pointer rounded-full border px-4 py-2 text-sm",selected===v?"border-primary bg-primary text-primary-foreground":"border-border hover:bg-secondary")}><input className="sr-only" type="radio" checked={selected===v} onChange={()=>onChange(v)}/>{n}</label>)}</div></fieldset>; }
+function BooleanChoice({label,value,set,copy}:{label:string;value:boolean;set:(v:boolean)=>void;copy:{yes:string;no:string}}) { return <Choice label={label} values={[["yes",copy.yes],["no",copy.no]]} selected={value?"yes":"no"} onChange={v=>set(v==="yes")}/>; }
+function Summary({label,value,strong}:{label:string;value:string;strong?:boolean}) { return <div className={cn("flex justify-between gap-5 py-1 text-sm",strong&&"font-semibold text-foreground")}><span className={strong?"":"text-muted-foreground"}>{label}</span><span className="text-end">{value}</span></div>; }
+function CheckField({checked,set,children}:{checked:boolean;set:(v:boolean)=>void;children:React.ReactNode}) { return <label className="flex cursor-pointer gap-3 text-sm leading-relaxed text-muted-foreground"><span className={cn("mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded border",checked?"border-primary bg-primary text-primary-foreground":"border-border")}><input type="checkbox" className="sr-only" checked={checked} onChange={e=>set(e.target.checked)}/>{checked&&<Check className="h-3 w-3"/>}</span><span>{children}</span></label>; }

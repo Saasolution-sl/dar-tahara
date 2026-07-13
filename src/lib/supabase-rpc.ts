@@ -28,6 +28,16 @@ function requestHeaders(key: string): Record<string, string> {
   };
 }
 
+async function parseResponse<T>(res: Response, operation: string): Promise<T> {
+  if (!res.ok) {
+    const detail = await res.text().catch(() => "");
+    throw new Error(`${operation}_failed_${res.status}:${detail.slice(0, 300)}`);
+  }
+  if (res.status === 204) return undefined as T;
+  const text = await res.text();
+  return (text ? JSON.parse(text) : undefined) as T;
+}
+
 export function isSupabaseConfigured(): boolean {
   return Boolean(URL && PUBLIC_KEY);
 }
@@ -56,11 +66,7 @@ export async function callRpc<T = unknown>(
     cache: "no-store",
   });
 
-  if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error(`rpc_${fn}_failed_${res.status}:${detail.slice(0, 200)}`);
-  }
-  return (await res.json()) as T;
+  return parseResponse<T>(res, `rpc_${fn}`);
 }
 
 /** Service-role REST GET against a table/view (admin only). */
@@ -70,9 +76,68 @@ export async function serviceSelect<T = unknown>(query: string): Promise<T> {
     headers: requestHeaders(SECRET_KEY),
     cache: "no-store",
   });
-  if (!res.ok) {
-    const detail = await res.text().catch(() => "");
-    throw new Error(`select_failed_${res.status}:${detail.slice(0, 200)}`);
-  }
-  return (await res.json()) as T;
+  return parseResponse<T>(res, "select");
+}
+
+
+/** Insert rows with the server-only elevated key and return the inserted rows. */
+export async function serviceInsert<T = unknown>(
+  table: string,
+  body: Record<string, unknown> | Array<Record<string, unknown>>,
+): Promise<T> {
+  if (!URL || !SECRET_KEY) throw new Error("service_role_not_configured");
+  const res = await fetch(`${URL}/rest/v1/${table}?select=*`, {
+    method: "POST",
+    headers: {
+      ...requestHeaders(SECRET_KEY),
+      "Content-Type": "application/json",
+      Prefer: "return=representation",
+    },
+    body: JSON.stringify(body),
+    cache: "no-store",
+  });
+  return parseResponse<T>(res, `insert_${table}`);
+}
+
+/** Upsert rows by a named unique column and return the resulting rows. */
+export async function serviceUpsert<T = unknown>(
+  table: string,
+  body: Record<string, unknown>,
+  onConflict: string,
+): Promise<T> {
+  if (!URL || !SECRET_KEY) throw new Error("service_role_not_configured");
+  const res = await fetch(
+    `${URL}/rest/v1/${table}?on_conflict=${encodeURIComponent(onConflict)}&select=*`,
+    {
+      method: "POST",
+      headers: {
+        ...requestHeaders(SECRET_KEY),
+        "Content-Type": "application/json",
+        Prefer: "resolution=merge-duplicates,return=representation",
+      },
+      body: JSON.stringify(body),
+      cache: "no-store",
+    },
+  );
+  return parseResponse<T>(res, `upsert_${table}`);
+}
+
+/** Patch rows selected with a trusted, server-built PostgREST filter. */
+export async function serviceUpdate<T = unknown>(
+  table: string,
+  filter: string,
+  body: Record<string, unknown>,
+): Promise<T> {
+  if (!URL || !SECRET_KEY) throw new Error("service_role_not_configured");
+  const res = await fetch(`${URL}/rest/v1/${table}?${filter}&select=*`, {
+    method: "PATCH",
+    headers: {
+      ...requestHeaders(SECRET_KEY),
+      "Content-Type": "application/json",
+      Prefer: "return=representation",
+    },
+    body: JSON.stringify(body),
+    cache: "no-store",
+  });
+  return parseResponse<T>(res, `update_${table}`);
 }

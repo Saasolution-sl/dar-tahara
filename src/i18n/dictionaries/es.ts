@@ -22,7 +22,7 @@ const es: DeepPartial<Dictionary> = {
     how: "Cómo funciona",
     gallery: "Galería",
     faq: "Preguntas frecuentes",
-    book: "Reservar limpieza",
+    book: "Reservar Evaluación Inicial",
     quote: "Solicitar presupuesto",
     menu: "Menú",
     close: "Cerrar",
@@ -34,7 +34,7 @@ const es: DeepPartial<Dictionary> = {
     title: "Tu hogar merece más que limpieza: merece un cuidado excepcional.",
     subtitle:
       "Para propietarios, expatriados y dueños de casas vacacionales en todo Marruecos. Limpiamos, inspeccionamos y mantenemos tu propiedad con precisión discreta, para que regreses al confort y nunca a la preocupación.",
-    ctaPrimary: "Reservar limpieza",
+    ctaPrimary: "Reservar Evaluación Inicial",
     ctaSecondary: "Solicitar presupuesto",
     ctaTertiary: "Saber más",
     stat1Value: "500+",
@@ -215,7 +215,7 @@ const es: DeepPartial<Dictionary> = {
     title: "Llega siempre a un hogar de confort.",
     subtitle:
       "Deja que cuidemos tu hogar, para que nunca tengas que pensar en él. Reserva una primera visita o solicita hoy un presupuesto a medida.",
-    ctaPrimary: "Reservar limpieza",
+    ctaPrimary: "Reservar Evaluación Inicial",
     ctaSecondary: "Solicitar presupuesto",
     whatsapp: "Chatear por WhatsApp",
   },
@@ -266,7 +266,7 @@ const es: DeepPartial<Dictionary> = {
       cta: "Solicitar un presupuesto a medida",
     },
     cta: {
-      book: "Reserva tu limpieza",
+      book: "Reserva la Evaluación Inicial",
       quote: "Solicitar un presupuesto personalizado",
     },
     disclaimer:

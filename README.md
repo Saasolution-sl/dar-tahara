@@ -37,6 +37,42 @@ project: `subscribe_to_mailing_list`, `confirm_mailing_list` and
 only the narrowly scoped signup/confirmation functions should be executable by
 the public role.
 
+## Assessment and subscription workflow
+
+The main CTA opens a four-step, seven-language Initial Home Assessment flow.
+All amounts are recalculated on the server. Assessment pricing is €79 up to
+75 m², €119 up to 125 m², €169 up to 250 m² and €249 for larger homes. The
+customer prepays only the assessment through hosted Stripe Checkout.
+
+The signed Stripe webhook is the sole authority that changes an unpaid booking
+to `assessment`. Operations completes and reviews the visit, then approves,
+revises or rejects the plan. Approval creates a separate subscription Checkout
+link; annual subscription totals receive a 5% discount. A database trigger
+enforces valid workflow transitions.
+
+Apply the schema to the exact project referenced by
+`NEXT_PUBLIC_SUPABASE_URL`:
+
+```bash
+npx supabase link --project-ref YOUR_PROJECT_REF
+npx supabase db push
+```
+
+The migration is
+`supabase/migrations/20260713123305_premium_home_assessment_workflow.sql`. It
+enables RLS, revokes public table access, grants the server role explicitly and
+includes ownership policies for a future authenticated customer dashboard.
+
+Register `/api/stripe/webhook` with Stripe and `/api/whatsapp/webhook` with
+Meta. Both handlers verify provider signatures. Free-form WhatsApp FAQ replies
+are for the active support window; proactive messages must use approved Meta
+templates configured in `.env.local`.
+
+The private `/admin` operations console uses `ADMIN_API_TOKEN` for login and a
+signed, HttpOnly eight-hour session afterward. It exposes payment state,
+appointment and property details, assessment decisions, revised quotes and
+subscription payment-link creation.
+
 ## Design system
 
 The palette is derived from the official logo — **forest green** primary,
@@ -89,9 +125,12 @@ schema.org JSON-LD (`HomeAndConstructionBusiness`, service catalog, `FAQPage`).
 
 1. Add brand assets to `/public` — see [`public/ASSETS.md`](public/ASSETS.md).
 2. Set real values in `src/lib/site.ts` (domain, email, phone, WhatsApp, socials).
-3. Replace placeholder legal copy in `src/app/[locale]/terms` & `privacy`.
-4. Complete translations in `src/i18n/dictionaries/*`.
-5. Swap the Unsplash hero/gallery imagery for real photography.
+3. Have qualified Moroccan counsel review the operational terms and privacy notice.
+4. Set the correct Supabase, Stripe, Resend and Meta server credentials.
+5. Apply the migration and register the Stripe and Meta webhook endpoints.
+6. Approve localized Meta templates for proactive customer notifications.
+7. Run `npm test`, `npm run check:i18n`, `npm run typecheck` and `npm run build`.
+8. Swap the Unsplash hero/gallery imagery for real photography.
 
 ## Future modules (architected for)
 

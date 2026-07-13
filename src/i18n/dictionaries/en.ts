@@ -18,7 +18,7 @@ const en = {
     how: "How it works",
     gallery: "Gallery",
     faq: "FAQ",
-    book: "Book a cleaning",
+    book: "Book Initial Home Assessment",
     quote: "Request a quote",
     menu: "Menu",
     close: "Close",
@@ -30,7 +30,7 @@ const en = {
     title: "Your home deserves more than cleaning—it deserves exceptional care.",
     subtitle:
       "For homeowners, expats and holiday-home owners across Morocco. We clean, inspect and maintain your property with quiet precision—so you return to comfort, never to worry.",
-    ctaPrimary: "Book a cleaning",
+    ctaPrimary: "Book Initial Home Assessment",
     ctaSecondary: "Request a quote",
     ctaTertiary: "Learn more",
     stat1Value: "500+",
@@ -212,7 +212,7 @@ const en = {
     title: "Always arrive home to comfort.",
     subtitle:
       "Let us take care of your home, so you never have to think about it. Book a first visit or request a tailored quote today.",
-    ctaPrimary: "Book a cleaning",
+    ctaPrimary: "Book Initial Home Assessment",
     ctaSecondary: "Request a quote",
     whatsapp: "Chat on WhatsApp",
   },
@@ -263,7 +263,7 @@ const en = {
       cta: "Request a custom quote",
     },
     cta: {
-      book: "Book your cleaning",
+      book: "Book Initial Home Assessment",
       quote: "Request a personal quotation",
     },
     disclaimer:

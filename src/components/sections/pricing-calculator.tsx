@@ -26,6 +26,7 @@ function clampSize(n: number): number {
 }
 
 export function PricingCalculator({
+  locale,
   dict,
 }: {
   locale: Locale;
@@ -283,6 +284,7 @@ export function PricingCalculator({
         onClose={() => setModalOpen(false)}
         payload={modalPayload}
         dict={dict}
+        locale={locale}
       />
     </Section>
   );
