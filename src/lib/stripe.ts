@@ -85,6 +85,7 @@ export async function createAssessmentCheckoutSession(input: {
   customerEmail: string;
   locale: Locale;
   amountCents: number;
+  doorlockInstallationPriceCents?: number;
   preferredDate: string;
   requestOrigin?: string;
 }): Promise<StripeCheckoutSession> {
@@ -113,10 +114,21 @@ export async function createAssessmentCheckoutSession(input: {
     `Premium onboarding visit ${input.reference}: professional home assessment and initial deep clean where required.`,
   );
   p.set("line_items[0][quantity]", "1");
+  if (input.doorlockInstallationPriceCents && input.doorlockInstallationPriceCents > 0) {
+    p.set("line_items[1][price_data][currency]", defaultCurrency());
+    p.set("line_items[1][price_data][unit_amount]", String(input.doorlockInstallationPriceCents));
+    p.set("line_items[1][price_data][product_data][name]", "Dar Tahara smart door-lock installation");
+    p.set(
+      "line_items[1][price_data][product_data][description]",
+      "Optional installation service for a TTLock-compatible Wi-Fi enabled door lock. Requires an active internet connection at the property.",
+    );
+    p.set("line_items[1][quantity]", "1");
+  }
   p.set("metadata[kind]", "home_assessment");
   p.set("metadata[assessment_id]", input.assessmentId);
   p.set("metadata[reference]", input.reference);
   p.set("metadata[preferred_date]", input.preferredDate);
+  p.set("metadata[doorlock_installation_requested]", input.doorlockInstallationPriceCents && input.doorlockInstallationPriceCents > 0 ? "true" : "false");
   p.set("success_url", `${root}/${input.locale}/assessment/confirmation?session_id={CHECKOUT_SESSION_ID}`);
   p.set("cancel_url", `${root}/${input.locale}?assessment=cancelled#calculator`);
   p.set(

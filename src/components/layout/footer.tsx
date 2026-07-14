@@ -4,6 +4,7 @@ import { Mail, Phone, MessageCircle, Instagram, Facebook, Linkedin } from "lucid
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import { site, whatsappLink, sections } from "@/lib/site";
+import { servicePageSlugs } from "@/lib/service-pages";
 import { Logo } from "@/components/brand/logo";
 import { SubscribeForm } from "@/components/mailing-list/subscribe-form";
 import { cn } from "@/lib/utils";
@@ -19,7 +20,10 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
     { href: `${base}#${sections.faq}`, label: dict.nav.faq },
   ];
 
-  const serviceLinks = dict.services.items.slice(0, 6);
+  const serviceLinks = dict.services.items.slice(0, servicePageSlugs.length).map((service, index) => ({
+    ...service,
+    href: `${base}/services/${servicePageSlugs[index]}`,
+  }));
 
   const contact = [
     { icon: Mail, label: f.email, href: `mailto:${site.email}`, value: site.email },
@@ -61,8 +65,8 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             </FooterCol>
 
             <FooterCol title={f.services}>
-              {serviceLinks.map((s, i) => (
-                <FooterLink key={i} href={`${base}#${sections.services}`}>{s.title}</FooterLink>
+              {serviceLinks.map((s) => (
+                <FooterLink key={s.href} href={s.href}>{s.title}</FooterLink>
               ))}
             </FooterCol>
 

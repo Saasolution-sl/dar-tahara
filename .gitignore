@@ -13,5 +13,6 @@ yarn-error.log*
 next-env.d.ts
 *.tsbuildinfo
 .swarm/
+ruvector.db
 
 .vercel

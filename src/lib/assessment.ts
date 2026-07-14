@@ -2,6 +2,7 @@ import { isLocale, type Locale } from "@/i18n/config";
 import { calculatePrice, frequencies, type FrequencyKey } from "./pricing";
 
 export const ANNUAL_DISCOUNT_PERCENT = 5;
+export const DOORLOCK_INSTALLATION_PRICE_CENTS = 20_000;
 export const TERMS_VERSION = "2026-07-13";
 
 export type BillingInterval = "monthly" | "annual";
@@ -32,6 +33,8 @@ export type AssessmentBookingInput = {
   preferredDate: string;
   alternateDate: string | null;
   timeSlot: TimeSlot;
+  doorlockInstallationRequested: boolean;
+  doorlockInternetConfirmed: boolean;
   propertyAccuracyAccepted: true;
   termsAccepted: true;
 };
@@ -40,6 +43,8 @@ export type AssessmentQuote = {
   estimatedMonthlyCents: number | null;
   estimatedAnnualCents: number | null;
   assessmentPriceCents: number;
+  doorlockInstallationPriceCents: number;
+  dueTodayCents: number;
   annualSavingsCents: number | null;
 };
 
@@ -76,6 +81,7 @@ export function calculateAssessmentQuote(
   sizeM2: number,
   frequency: FrequencyKey,
   overMax = false,
+  doorlockInstallationRequested = false,
 ): AssessmentQuote {
   const price = overMax ? null : calculatePrice(sizeM2, frequency);
   const monthly = price?.status === "ok" ? Math.round(price.monthlyTotal * 100) : null;
@@ -83,10 +89,14 @@ export function calculateAssessmentQuote(
   const annual = annualBeforeDiscount === null
     ? null
     : Math.round(annualBeforeDiscount * (1 - ANNUAL_DISCOUNT_PERCENT / 100));
+  const assessmentPriceCents = calculateAssessmentPriceCents(sizeM2, overMax);
+  const doorlockInstallationPriceCents = doorlockInstallationRequested ? DOORLOCK_INSTALLATION_PRICE_CENTS : 0;
   return {
     estimatedMonthlyCents: monthly,
     estimatedAnnualCents: annual,
-    assessmentPriceCents: calculateAssessmentPriceCents(sizeM2, overMax),
+    assessmentPriceCents,
+    doorlockInstallationPriceCents,
+    dueTodayCents: assessmentPriceCents + doorlockInstallationPriceCents,
     annualSavingsCents: annualBeforeDiscount === null || annual === null ? null : annualBeforeDiscount - annual,
   };
 }
@@ -126,6 +136,8 @@ export function validateAssessmentBooking(body: unknown, today = new Date()): Bo
   const minDate = today.toISOString().slice(0, 10);
   const preferredDate = validDate(b.preferredDate, minDate);
   const alternateDate = b.alternateDate ? validDate(b.alternateDate, minDate) : null;
+  const doorlockInstallationRequested = b.doorlockInstallationRequested === true;
+  const doorlockInternetConfirmed = b.doorlockInternetConfirmed === true;
 
   if (!locale || !fullName || !email || !EMAIL_RE.test(email) || !phone) {
     return { ok: false, error: "invalid_customer" };
@@ -138,6 +150,9 @@ export function validateAssessmentBooking(body: unknown, today = new Date()): Bo
   }
   if (b.pets === true && !cleanText(b.petDetails, 500)) {
     return { ok: false, error: "pet_details_required" };
+  }
+  if (doorlockInstallationRequested && !doorlockInternetConfirmed) {
+    return { ok: false, error: "doorlock_internet_required" };
   }
   if (b.propertyAccuracyAccepted !== true || b.termsAccepted !== true) {
     return { ok: false, error: "legal_acceptance_required" };
@@ -167,10 +182,12 @@ export function validateAssessmentBooking(body: unknown, today = new Date()): Bo
     preferredDate,
     alternateDate,
     timeSlot,
+    doorlockInstallationRequested,
+    doorlockInternetConfirmed,
     propertyAccuracyAccepted: true,
     termsAccepted: true,
   };
-  return { ok: true, value, quote: calculateAssessmentQuote(sizeM2, frequency, overMax) };
+  return { ok: true, value, quote: calculateAssessmentQuote(sizeM2, frequency, overMax, doorlockInstallationRequested) };
 }
 
 export function formatMoneyFromCents(cents: number, locale: Locale = "en"): string {

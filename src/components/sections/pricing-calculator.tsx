@@ -19,7 +19,7 @@ import { cn } from "@/lib/utils";
 import { Section, Container, SectionHeading } from "@/components/ui/section";
 import { Reveal } from "@/components/motion/reveal";
 import { buttonVariants } from "@/components/ui/button";
-import { EnquiryModal, type EnquiryPayload } from "./enquiry-modal";
+import { AssessmentBookingModal } from "@/components/assessment/booking-modal";
 
 function clampSize(n: number): number {
   return Math.min(Math.max(n, SIZE_LIMITS.min), SIZE_LIMITS.max);
@@ -38,7 +38,6 @@ export function PricingCalculator({
   const [sizeInput, setSizeInput] = React.useState("68");
   const [frequency, setFrequency] = React.useState<FrequencyKey>("biweekly");
   const [overMax, setOverMax] = React.useState(false);
-  const [modalPayload, setModalPayload] = React.useState<EnquiryPayload | null>(null);
   const [modalOpen, setModalOpen] = React.useState(false);
 
   const result = React.useMemo(
@@ -78,43 +77,17 @@ export function PricingCalculator({
     return c.freq[key].name;
   }
 
-  function openEnquiry(mode: "book" | "quote") {
-    const freqCfg = frequencies[frequency];
-    const payload: EnquiryPayload =
-      result.status === "ok" && !isCustom
-        ? {
-            mode,
-            sizeM2: size,
-            frequencyKey: frequency,
-            frequencyLabel: frequencyLabel(frequency),
-            visitsPerMonth: result.visitsPerMonth,
-            pricePerVisit: result.pricePerVisit,
-            discountPercentage: result.discountPercentage,
-            monthlyTotal: result.monthlyTotal,
-            effectivePricePerVisit: result.effectivePricePerVisit,
-            isCustom: false,
-            perCleaning: result.irregular,
-            materialsIncluded: result.materialsIncluded,
-            overMax: false,
-          }
-        : {
-            mode,
-            sizeM2: size,
-            frequencyKey: frequency,
-            frequencyLabel: frequencyLabel(frequency),
-            visitsPerMonth: freqCfg.visitsPerMonth,
-            pricePerVisit: null,
-            discountPercentage: freqCfg.discountPercentage,
-            monthlyTotal: null,
-            effectivePricePerVisit: null,
-            isCustom: true,
-            perCleaning: freqCfg.irregular ?? false,
-            materialsIncluded: freqCfg.materialsIncluded,
-            overMax,
-          };
-    setModalPayload(payload);
+  function openBooking() {
     setModalOpen(true);
   }
+
+  React.useEffect(() => {
+    function handleAssistantBooking() {
+      setModalOpen(true);
+    }
+    window.addEventListener("dar-tahara:open-booking", handleAssistantBooking);
+    return () => window.removeEventListener("dar-tahara:open-booking", handleAssistantBooking);
+  }, []);
 
   return (
     <Section id={sections.calculator} className="bg-secondary/30">
@@ -258,8 +231,8 @@ export function PricingCalculator({
                 result={result}
                 isCustom={isCustom}
                 frequencyLabel={frequencyLabel(frequency)}
-                onBook={() => openEnquiry("book")}
-                onQuote={() => openEnquiry("quote")}
+                onBook={openBooking}
+                onQuote={openBooking}
               />
             </div>
           </div>
@@ -279,12 +252,14 @@ export function PricingCalculator({
         </Reveal>
       </Container>
 
-      <EnquiryModal
+      <AssessmentBookingModal
         open={modalOpen}
         onClose={() => setModalOpen(false)}
-        payload={modalPayload}
-        dict={dict}
         locale={locale}
+        dict={dict}
+        sizeM2={size}
+        frequency={frequency}
+        overMax={isCustom}
       />
     </Section>
   );

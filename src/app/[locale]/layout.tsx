@@ -10,6 +10,7 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { DetectionTracker } from "@/components/layout/detection-tracker";
 import { LaunchPopup } from "@/components/mailing-list/launch-popup";
+import { WebsiteChat } from "@/components/assistant/website-chat";
 import { cn } from "@/lib/utils";
 
 export function generateStaticParams() {
@@ -115,6 +116,7 @@ export default async function LocaleLayout({
           <main id="main">{children}</main>
           <Footer locale={typedLocale} dict={dict} />
           <LaunchPopup locale={typedLocale} dict={dict.mailing} />
+          <WebsiteChat locale={typedLocale} copy={dict.assistant.chat} />
         </ThemeProvider>
       </body>
     </html>

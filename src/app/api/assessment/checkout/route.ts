@@ -68,6 +68,9 @@ export async function createAssessmentCheckout(
       estimated_monthly_cents: quote.estimatedMonthlyCents,
       estimated_annual_cents: quote.estimatedAnnualCents,
       assessment_price_cents: quote.assessmentPriceCents,
+      doorlock_installation_requested: value.doorlockInstallationRequested,
+      doorlock_internet_confirmed: value.doorlockInternetConfirmed,
+      doorlock_installation_price_cents: quote.doorlockInstallationPriceCents,
       preferred_date: value.preferredDate,
       alternate_date: value.alternateDate,
       preferred_time_slot: value.timeSlot,
@@ -75,6 +78,7 @@ export async function createAssessmentCheckout(
       legal_acceptance: {
         propertyAccuracy: true,
         terms: true,
+        doorlockInternetConfirmed: value.doorlockInternetConfirmed,
         acceptedAt: new Date().toISOString(),
         ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null,
         userAgent: req.headers.get("user-agent")?.slice(0, 500) || null,
@@ -86,6 +90,7 @@ export async function createAssessmentCheckout(
       customerEmail: value.email,
       locale: value.locale,
       amountCents: quote.assessmentPriceCents,
+      doorlockInstallationPriceCents: quote.doorlockInstallationPriceCents,
       preferredDate: value.preferredDate,
       requestOrigin: req.nextUrl.origin,
     });

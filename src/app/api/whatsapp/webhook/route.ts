@@ -1,6 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { answerWhatsAppQuestion, sendWhatsAppText, verifyWhatsAppSignature } from "@/lib/whatsapp";
-import { isServiceRoleConfigured, serviceInsert, serviceSelect } from "@/lib/supabase-rpc";
+import { isLocale } from "@/i18n/config";
+import { answerAssistant } from "@/lib/assistant/service";
+import { detectWhatsAppLocale, sendWhatsAppText, verifyWhatsAppSignature } from "@/lib/whatsapp";
+import { isServiceRoleConfigured, serviceSelect, serviceUpsert } from "@/lib/supabase-rpc";
 
 export const runtime = "nodejs";
 
@@ -16,31 +18,90 @@ export function GET(req: NextRequest) {
 }
 
 type Message = { from?: string; id?: string; type?: string; text?: { body?: string } };
+type Status = { id?: string; status?: string; recipient_id?: string; timestamp?: string };
+type Change = {
+  value?: {
+    messages?: Message[];
+    statuses?: Status[];
+    metadata?: { phone_number_id?: string; display_phone_number?: string };
+    contacts?: Array<{ wa_id?: string; profile?: { name?: string } }>;
+  };
+};
+
+function eq(value: string) {
+  return encodeURIComponent(value);
+}
 
 export async function POST(req: NextRequest) {
   const raw = await req.text();
   if (!verifyWhatsAppSignature(raw, req.headers.get("x-hub-signature-256"))) {
     return NextResponse.json({ error: "invalid_signature" }, { status: 401 });
   }
-  const payload = JSON.parse(raw) as { entry?: Array<{ changes?: Array<{ value?: { messages?: Message[] } }> }> };
-  const messages = payload.entry?.flatMap((e) => e.changes?.flatMap((c) => c.value?.messages || []) || []) || [];
+  const payload = JSON.parse(raw) as { entry?: Array<{ id?: string; changes?: Change[] }> };
+  const changes = payload.entry?.flatMap((entry) => entry.changes || []) || [];
+  const messages = changes.flatMap((c) => c.value?.messages || []);
+  const statuses = changes.flatMap((c) => c.value?.statuses || []);
+
+  if (isServiceRoleConfigured()) {
+    for (const status of statuses) {
+      if (!status.id) continue;
+      await serviceUpsert("whatsapp_events", {
+        provider_event_id: status.id,
+        event_type: `status.${status.status || "unknown"}`,
+        phone_number: status.recipient_id || null,
+        payload,
+        processed_at: new Date().toISOString(),
+      }, "provider_event_id").catch(() => undefined);
+    }
+  }
+
   for (const message of messages) {
     const phone = message.from;
     const text = message.type === "text" ? message.text?.body?.trim() : "";
     if (!phone || !text) continue;
-    let customer: { id: string; preferred_language: string } | undefined;
+    let customer: { id: string; full_name?: string | null; preferred_language: string } | undefined;
+    let conversationId: string | null = null;
     if (isServiceRoleConfigured()) {
       const variants = [phone, `+${phone}`];
-      const rows = await serviceSelect<{ id: string; preferred_language: string }[]>(`customers?phone=in.(${variants.map(encodeURIComponent).join(",")})&select=id,preferred_language&limit=1`).catch(() => []);
+      const rows = await serviceSelect<{ id: string; full_name?: string; preferred_language: string }[]>(`customers?phone=in.(${variants.map(encodeURIComponent).join(",")})&select=id,full_name,preferred_language&limit=1`).catch(() => []);
       customer = rows[0];
+      const conversations = await serviceSelect<Array<{ id: string }>>(
+        `assistant_conversations?channel=eq.whatsapp&contact_handle=eq.${eq(phone)}&status=neq.closed&select=id&order=last_message_at.desc&limit=1`,
+      ).catch(() => []);
+      conversationId = conversations[0]?.id || null;
+      if (message.id) {
+        await serviceUpsert("whatsapp_events", {
+          provider_event_id: message.id,
+          event_type: `message.${message.type || "unknown"}`,
+          phone_number: phone,
+          payload: message,
+          processed_at: new Date().toISOString(),
+        }, "provider_event_id").catch(() => undefined);
+      }
     }
-    const reply = answerWhatsAppQuestion(text, customer?.preferred_language);
+    const locale = customer?.preferred_language && isLocale(customer.preferred_language)
+      ? customer.preferred_language
+      : detectWhatsAppLocale(text);
+    const reply = await answerAssistant({
+      channel: "whatsapp",
+      message: text,
+      locale,
+      conversationId,
+      customerId: customer?.id || null,
+      customerName: customer?.full_name || null,
+      contact: phone,
+    });
     const sent = await sendWhatsAppText(phone, reply.answer);
     if (isServiceRoleConfigured()) {
-      await serviceInsert("customer_messages", [
-        { customer_id: customer?.id || null, channel: "whatsapp", direction: "inbound", recipient: phone, body: text, provider_message_id: message.id || null, status: "received", metadata: { locale: reply.locale, intent: reply.intent } },
-        { customer_id: customer?.id || null, channel: "whatsapp", direction: "outbound", recipient: phone, body: reply.answer, provider_message_id: sent.id, status: sent.id ? "sent" : "failed", metadata: { locale: reply.locale, intent: reply.intent } },
-      ]).catch(() => undefined);
+      if (sent.id) {
+        await serviceUpsert("whatsapp_events", {
+          provider_event_id: sent.id,
+          event_type: "message.sent",
+          phone_number: phone,
+          payload: { assistant_conversation_id: reply.conversationId, intent: reply.intent },
+          processed_at: new Date().toISOString(),
+        }, "provider_event_id").catch(() => undefined);
+      }
     }
   }
   return NextResponse.json({ received: true });
