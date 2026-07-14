@@ -10,6 +10,8 @@ import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { DetectionTracker } from "@/components/layout/detection-tracker";
 import { LaunchPopup } from "@/components/mailing-list/launch-popup";
+import { GoogleAnalytics } from "@/components/analytics/google-analytics";
+import { ConsentBanner } from "@/components/analytics/consent-banner";
 import { WebsiteChat } from "@/components/assistant/website-chat";
 import { cn } from "@/lib/utils";
 
@@ -111,6 +113,8 @@ export default async function LocaleLayout({
           >
             Skip to content
           </a>
+          <GoogleAnalytics />
+          <ConsentBanner locale={typedLocale} dict={dict.consent} />
           <DetectionTracker locale={typedLocale} />
           <Navbar locale={typedLocale} dict={dict.nav} whatsappHref={whatsappLink()} />
           <main id="main">{children}</main>

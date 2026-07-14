@@ -177,6 +177,63 @@ function calculatePriceTool(message: string, locale: Locale): AssistantToolCall 
   };
 }
 
+type DatabaseKnowledgeRow = {
+  id: string;
+  slug: string;
+  category: string;
+  title: string;
+  language: Locale;
+  content: string;
+  version: number;
+  effective_from?: string | null;
+};
+
+const KNOWLEDGE_CATEGORIES = new Set([
+  "company", "services", "assessment", "pricing", "billing", "payments", "policies", "access", "support",
+]);
+
+function knowledgeTokens(value: string): string[] {
+  return value.toLocaleLowerCase().normalize("NFKD").replace(/[\u0300-\u036f]/g, "")
+    .split(/[^\p{L}\p{N}]+/u).filter((item) => item.length > 2);
+}
+
+async function retrievePublishedDatabaseKnowledge(message: string, locale: Locale): Promise<RetrievedKnowledge[]> {
+  if (!isServiceRoleConfigured()) return [];
+  const now = encodeURIComponent(new Date().toISOString());
+  const rows = await serviceSelect<DatabaseKnowledgeRow[]>(
+    `knowledge_entries?status=eq.published&language=in.(${locale},en)&or=(effective_from.is.null,effective_from.lte.${now})&select=id,slug,category,title,language,content,version,effective_from&order=version.desc&limit=100`,
+  ).catch(() => []);
+  const query = new Set(knowledgeTokens(message));
+  const scored = rows.map((row) => {
+    const haystack = knowledgeTokens(`${row.slug} ${row.category} ${row.title} ${row.content}`);
+    const matches = haystack.filter((token) => query.has(token));
+    const languageBoost = row.language === locale ? 3 : 0;
+    return { row, score: matches.length + languageBoost, matches };
+  }).filter((item) => item.score > 0)
+    .sort((a, b) => b.score - a.score || b.row.version - a.row.version);
+  const exact = scored.filter((item) => item.row.language === locale);
+  return (exact.length ? exact : scored).slice(0, Number(process.env.ASSISTANT_RETRIEVAL_LIMIT || 4)).map(({ row, score, matches }) => ({
+    article: {
+      id: row.id,
+      title: row.title,
+      category: (KNOWLEDGE_CATEGORIES.has(row.category) ? row.category : "support") as RetrievedKnowledge["article"]["category"],
+      language: row.language,
+      status: "approved",
+      version: row.version,
+      effectiveDate: row.effective_from || new Date().toISOString(),
+      lastReviewedDate: row.effective_from || new Date().toISOString(),
+      source: `Supabase knowledge_entries:${row.slug}`,
+      visibility: "public",
+      keywords: matches,
+      relatedQuestions: [],
+      summary: row.content.slice(0, 240),
+      content: row.content,
+    },
+    score,
+    matchedKeywords: matches,
+  }));
+}
+
 async function persistAssistantTurn(input: AssistantInput, reply: AssistantReply, retrieved: RetrievedKnowledge[]) {
   if (!isServiceRoleConfigured()) return;
   const nowMetadata = {
@@ -241,7 +298,10 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
   const conversationId = input.conversationId || randomUUID();
   const normalizedInput = { ...input, locale, message, conversationId };
   const intent = classifyIntent(message);
-  const retrieved = intent === "unknown" ? fallbackSources(locale) : retrieveKnowledge(message, locale);
+  const databaseKnowledge = await retrievePublishedDatabaseKnowledge(message, locale);
+  const retrieved = databaseKnowledge.length
+    ? databaseKnowledge
+    : intent === "unknown" ? fallbackSources(locale) : retrieveKnowledge(message, locale);
   const priceTool = intent === "pricing" ? calculatePriceTool(message, locale) : null;
   const toolCalls = priceTool ? [priceTool] : [];
   const handoffReason = needsHandoff(intent, message, retrieved);
@@ -261,6 +321,8 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
     intent,
     answer,
     confidence,
+    modelName: providerAnswer?.modelName,
+    tokenUsage: providerAnswer?.tokenUsage,
     handoffRequired: Boolean(handoffReason),
     handoffReason: handoffReason || undefined,
     sources,
@@ -273,10 +335,42 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
 
 export async function loadAssistantAdminRows() {
   if (!isServiceRoleConfigured()) throw new Error("service_role_not_configured");
-  const conversations = await serviceSelect<Array<Record<string, unknown>>>(
-    "assistant_conversations?select=*,assistant_messages(*)&order=last_message_at.desc&limit=50",
-  );
-  return conversations;
+  const [assistantConversations, whatsappConversations] = await Promise.all([
+    serviceSelect<Array<Record<string, unknown>>>(
+      "assistant_conversations?select=*,assistant_messages(*)&order=last_message_at.desc&limit=50",
+    ),
+    serviceSelect<Array<Record<string, unknown>>>(
+      "whatsapp_conversations?select=*,whatsapp_contacts(id,display_name,email,blocked_until),support_escalations(id,status,reason,severity,freescout_ticket_number,last_error),whatsapp_messages(id,direction,message_body_redacted,created_at)&order=last_customer_message_at.desc&limit=50",
+    ).catch(() => []),
+  ]);
+  const dedicated = whatsappConversations.map((row) => {
+    const contact = row.whatsapp_contacts as Record<string, unknown> | null;
+    const escalations = row.support_escalations as Array<Record<string, unknown>> | null;
+    const messages = row.whatsapp_messages as Array<Record<string, unknown>> | null;
+    const escalation = escalations?.[escalations.length - 1];
+    return {
+      ...row,
+      source: "whatsapp_support",
+      channel: "whatsapp",
+      language: row.detected_language,
+      customer_name: contact?.display_name || "WhatsApp contact",
+      contact_id: contact?.id,
+      contact_blocked: Boolean(contact?.blocked_until),
+      last_intent: row.current_intent,
+      handoff_reason: escalation?.reason || row.escalation_status,
+      last_message_at: row.last_customer_message_at,
+      escalation,
+      assistant_messages: (messages || []).map((message) => ({
+        id: message.id,
+        role: message.direction === "inbound" ? "customer" : "assistant",
+        body: message.message_body_redacted || "[encrypted content]",
+        created_at: message.created_at,
+      })),
+    };
+  });
+  return [...dedicated, ...assistantConversations].sort((a, b) =>
+    String(b.last_message_at || "").localeCompare(String(a.last_message_at || "")),
+  ).slice(0, 100);
 }
 
 export async function updateAssistantConversation(id: string, action: string, note?: string) {
@@ -294,4 +388,41 @@ export async function updateAssistantConversation(id: string, action: string, no
       metadata: { admin_note: true, action },
     });
   }
+}
+
+export async function updateWhatsAppSupportConversation(
+  id: string,
+  action: "close" | "block" | "unblock" | "retry",
+  contactId?: string,
+  escalationId?: string,
+) {
+  if (!isServiceRoleConfigured()) throw new Error("service_role_not_configured");
+  if (!/^[0-9a-f-]{36}$/i.test(id)) throw new Error("invalid_conversation_id");
+  if (action === "close") {
+    await serviceUpdate("whatsapp_conversations", `id=eq.${id}`, {
+      status: "closed",
+      escalation_status: "closed",
+      closed_at: new Date().toISOString(),
+    });
+    return;
+  }
+  if ((action === "block" || action === "unblock") && contactId && /^[0-9a-f-]{36}$/i.test(contactId)) {
+    await serviceUpdate("whatsapp_contacts", `id=eq.${contactId}`, {
+      blocked_until: action === "block" ? new Date(Date.now() + 24 * 60 * 60_000).toISOString() : null,
+      abuse_count: action === "unblock" ? 0 : undefined,
+    });
+    await serviceUpdate("whatsapp_conversations", `id=eq.${id}`, {
+      status: action === "block" ? "blocked" : "active",
+    });
+    return;
+  }
+  if (action === "retry" && escalationId && /^[0-9a-f-]{36}$/i.test(escalationId)) {
+    await serviceUpdate("support_escalations", `id=eq.${escalationId}`, {
+      status: "retry_pending",
+      next_retry_at: new Date().toISOString(),
+      last_error: null,
+    });
+    return;
+  }
+  throw new Error("invalid_whatsapp_admin_action");
 }

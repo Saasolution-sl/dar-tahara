@@ -1,5 +1,7 @@
 # Dar Tahara shared assistant platform
 
+For the production WhatsApp webhook, queue, Supabase, Groq, FreeScout, retention, deployment and rollback runbook, see [`docs/WHATSAPP_SUPPORT.md`](../WHATSAPP_SUPPORT.md).
+
 This implementation creates one shared customer-service assistant for both:
 
 - the Dar Tahara website chat

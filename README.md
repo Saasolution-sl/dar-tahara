@@ -1,5 +1,7 @@
 # Dar Tahara — Website
 
+Production WhatsApp assistant setup and operations: [`docs/WHATSAPP_SUPPORT.md`](docs/WHATSAPP_SUPPORT.md).
+
 > **House of Purity.** Premium home care & property concierge across Morocco.
 > _Always arrive home to comfort._
 

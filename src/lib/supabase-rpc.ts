@@ -10,8 +10,9 @@ import "server-only";
  *   unlocks admin export + double opt-in email token lookup.
  */
 
-const URL = process.env.NEXT_PUBLIC_SUPABASE_URL;
+const URL = process.env.SUPABASE_URL || process.env.NEXT_PUBLIC_SUPABASE_URL;
 const PUBLIC_KEY =
+  process.env.SUPABASE_ANON_KEY ||
   process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY ||
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
 const SECRET_KEY =
@@ -53,8 +54,8 @@ export async function callRpc<T = unknown>(
   args: Record<string, unknown>,
   opts: RpcOptions = {},
 ): Promise<T> {
-  if (!URL || !PUBLIC_KEY) throw new Error("supabase_not_configured");
-  const key = opts.useServiceRole && SECRET_KEY ? SECRET_KEY : PUBLIC_KEY;
+  const key = opts.useServiceRole ? SECRET_KEY : PUBLIC_KEY;
+  if (!URL || !key) throw new Error(opts.useServiceRole ? "service_role_not_configured" : "supabase_not_configured");
 
   const res = await fetch(`${URL}/rest/v1/rpc/${fn}`, {
     method: "POST",
@@ -67,6 +68,14 @@ export async function callRpc<T = unknown>(
   });
 
   return parseResponse<T>(res, `rpc_${fn}`);
+}
+
+/** Service-role RPC used only by trusted webhook and maintenance routes. */
+export async function serviceRpc<T = unknown>(
+  fn: string,
+  args: Record<string, unknown> = {},
+): Promise<T> {
+  return callRpc<T>(fn, args, { useServiceRole: true });
 }
 
 /** Service-role REST GET against a table/view (admin only). */
@@ -96,6 +105,29 @@ export async function serviceInsert<T = unknown>(
     body: JSON.stringify(body),
     cache: "no-store",
   });
+  return parseResponse<T>(res, `insert_${table}`);
+}
+
+/** Atomically insert-or-ignore by a unique constraint and return inserted rows. */
+export async function serviceInsertIgnoreDuplicates<T = unknown>(
+  table: string,
+  body: Record<string, unknown> | Array<Record<string, unknown>>,
+  onConflict: string,
+): Promise<T> {
+  if (!URL || !SECRET_KEY) throw new Error("service_role_not_configured");
+  const res = await fetch(
+    `${URL}/rest/v1/${table}?on_conflict=${encodeURIComponent(onConflict)}&select=*`,
+    {
+      method: "POST",
+      headers: {
+        ...requestHeaders(SECRET_KEY),
+        "Content-Type": "application/json",
+        Prefer: "resolution=ignore-duplicates,return=representation",
+      },
+      body: JSON.stringify(body),
+      cache: "no-store",
+    },
+  );
   return parseResponse<T>(res, `insert_${table}`);
 }
 

@@ -1,5 +1,9 @@
 # Dar Tahara VPS Supabase
 
+The WhatsApp support service uses the external managed project configured by
+`SUPABASE_URL`. Its production setup, cron worker, retention and rollback
+procedure are documented in [`docs/WHATSAPP_SUPPORT.md`](../../docs/WHATSAPP_SUPPORT.md).
+
 The VPS deployment uses the official self-hosted Supabase Docker bundle at
 `/srv/dartahara/supabase`. Secrets and persistent volumes live only on the VPS;
 they are not copied into this repository.

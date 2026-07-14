@@ -19,8 +19,12 @@ export function track(event: AnalyticsEvent, props: Props = {}): void {
   const w = window as unknown as {
     plausible?: (e: string, o?: { props: Props }) => void;
     dataLayer?: unknown[];
+    gtag?: (...args: unknown[]) => void;
   };
   try {
+    // GA4 — `gtag` only exists once analytics consent has been granted, so
+    // events fired before consent are simply never sent.
+    if (typeof w.gtag === "function") w.gtag("event", event, props);
     if (typeof w.plausible === "function") w.plausible(event, { props });
     if (Array.isArray(w.dataLayer)) w.dataLayer.push({ event, ...props });
     if (process.env.NODE_ENV !== "production") {

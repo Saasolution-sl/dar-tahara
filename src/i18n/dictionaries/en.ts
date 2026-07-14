@@ -215,6 +215,8 @@ const en = {
     ctaPrimary: "Book Initial Home Assessment",
     ctaSecondary: "Request a quote",
     whatsapp: "Chat on WhatsApp",
+    whatsappInfo: "Chat with the Dar Tahara assistant on WhatsApp about services, prices, subscriptions, property access and bookings. Complex cases can be transferred to our email support desk.",
+    whatsappPrivacy: "This is an automated assistant. Do not send payment details, passwords or full access codes.",
   },
   calculator: {
     eyebrow: "Transparent pricing",
@@ -390,6 +392,14 @@ const en = {
       checkout_failed: "We couldn't start secure checkout. Please try again.",
       network: "Network error. Please check your connection and try again.",
     },
+  },
+  consent: {
+    message:
+      "We use analytics cookies to understand how our site is used. Decline and nothing changes — the site works exactly the same.",
+    accept: "Accept",
+    decline: "Decline",
+    privacy: "Privacy Policy",
+    aria: "Cookie consent",
   },
   mailing: {
     popupHeadline: "Be the first to know when we launch",

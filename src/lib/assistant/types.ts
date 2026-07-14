@@ -67,6 +67,8 @@ export type AssistantInput = {
   customerName?: string | null;
   contact?: string | null;
   websitePath?: string | null;
+  /** Compact, server-built context. Customer text inside remains untrusted. */
+  contextSummary?: string | null;
 };
 
 export type AssistantToolCall = {
@@ -82,6 +84,8 @@ export type AssistantReply = {
   intent: AssistantIntent;
   answer: string;
   confidence: number;
+  modelName?: string;
+  tokenUsage?: { promptTokens?: number; completionTokens?: number; totalTokens?: number };
   handoffRequired: boolean;
   handoffReason?: string;
   sources: Array<{

@@ -1,0 +1,4 @@
+# Install as /etc/cron.d/dar-tahara-whatsapp (root:root, mode 0644).
+# WHATSAPP_JOB_SECRET is read inside the container; it is never written here.
+* * * * * root docker exec dar-tahara-web sh -c 'wget -qO- --header="Authorization: Bearer $WHATSAPP_JOB_SECRET" --header="Content-Type: application/json" --post-data="{}" http://127.0.0.1:3000/api/jobs/whatsapp >/dev/null'
+17 3 * * * root docker exec dar-tahara-web sh -c 'wget -qO- --header="Authorization: Bearer $WHATSAPP_JOB_SECRET" --header="Content-Type: application/json" --post-data="{\"action\":\"retention\"}" http://127.0.0.1:3000/api/jobs/whatsapp >/dev/null'

@@ -218,6 +218,8 @@ const nl: DeepPartial<Dictionary> = {
     ctaPrimary: "Eerste woningbeoordeling boeken",
     ctaSecondary: "Offerte aanvragen",
     whatsapp: "Chat via WhatsApp",
+    whatsappInfo: "Chat met de Dar Tahara-assistent op WhatsApp over diensten, prijzen, abonnementen, toegang tot de woning en boekingen. Complexe vragen kunnen worden overgedragen aan onze supportdesk per e-mail.",
+    whatsappPrivacy: "Dit is een geautomatiseerde assistent. Stuur geen betaalgegevens, wachtwoorden of volledige toegangscodes.",
   },
   calculator: {
     eyebrow: "Transparante tarieven",
@@ -393,6 +395,14 @@ const nl: DeepPartial<Dictionary> = {
       checkout_failed: "We konden de beveiligde betaling niet starten. Probeer het opnieuw.",
       network: "Netwerkfout. Controleer uw verbinding en probeer het opnieuw.",
     },
+  },
+  consent: {
+    message:
+      "We gebruiken analytische cookies om te begrijpen hoe onze site wordt gebruikt. Weigert u? Dan verandert er niets — de site werkt precies hetzelfde.",
+    accept: "Accepteren",
+    decline: "Weigeren",
+    privacy: "Privacybeleid",
+    aria: "Cookietoestemming",
   },
   mailing: {
     popupHeadline: "Wees de eerste die het weet bij onze lancering",

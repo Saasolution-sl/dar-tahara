@@ -149,6 +149,9 @@ const ANSWERS: Record<Locale, Record<Intent | "fallback", string>> = {
 export function detectWhatsAppLocale(text: string): Locale {
   if (/[\u0600-\u06ff]/.test(text)) return "ar";
   const normalized = text.toLocaleLowerCase();
+  // Moroccan Darija written in Latin script / Arabizi shares the Arabic locale
+  // so replies preserve the existing RTL-capable Arabic translation path.
+  if (/\b(salam|bghit| بغيت|chhal|wach|3afak|afak|kifach|fin|nqiya|n9iya|darija)\b/i.test(normalized)) return "ar";
   let best: { locale: Locale; score: number } = { locale: "en", score: 0 };
   for (const [locale, intents] of Object.entries(KEYWORDS) as Array<[Locale, typeof KEYWORDS[Locale]]>) {
     const score = Object.values(intents).flat().reduce((total, keyword) => total + (normalized.includes(keyword) ? keyword.length : 0), 0);
@@ -169,7 +172,7 @@ export function answerWhatsAppQuestion(text: string, preferredLocale?: string | 
 }
 
 export function verifyWhatsAppSignature(rawBody: string, signatureHeader: string | null): boolean {
-  const appSecret = process.env.WHATSAPP_APP_SECRET;
+  const appSecret = process.env.META_APP_SECRET || process.env.WHATSAPP_APP_SECRET;
   if (!appSecret || !signatureHeader?.startsWith("sha256=")) return false;
   const expected = createHmac("sha256", appSecret).update(rawBody, "utf8").digest("hex");
   const actual = signatureHeader.slice(7);
@@ -186,7 +189,7 @@ export async function sendWhatsAppText(to: string, body: string): Promise<{ id: 
   const token = process.env.WHATSAPP_ACCESS_TOKEN;
   const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
   if (!token || !phoneId) throw new Error("whatsapp_not_configured");
-  const version = process.env.WHATSAPP_GRAPH_VERSION || "v25.0";
+  const version = process.env.WHATSAPP_API_VERSION || process.env.WHATSAPP_GRAPH_VERSION || "v25.0";
   const res = await fetch(`https://graph.facebook.com/${version}/${phoneId}/messages`, {
     method: "POST",
     headers: { Authorization: `Bearer ${token}`, "Content-Type": "application/json" },
@@ -202,7 +205,7 @@ export async function sendWhatsAppTemplate(input: { to: string; templateName: st
   const token = process.env.WHATSAPP_ACCESS_TOKEN;
   const phoneId = process.env.WHATSAPP_PHONE_NUMBER_ID;
   if (!token || !phoneId) throw new Error("whatsapp_not_configured");
-  const version = process.env.WHATSAPP_GRAPH_VERSION || "v25.0";
+  const version = process.env.WHATSAPP_API_VERSION || process.env.WHATSAPP_GRAPH_VERSION || "v25.0";
   const components = input.parameters?.length
     ? [{ type: "body", parameters: input.parameters.map((text) => ({ type: "text", text })) }]
     : undefined;

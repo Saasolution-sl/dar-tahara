@@ -218,6 +218,8 @@ const es: DeepPartial<Dictionary> = {
     ctaPrimary: "Reservar Evaluación Inicial",
     ctaSecondary: "Solicitar presupuesto",
     whatsapp: "Chatear por WhatsApp",
+    whatsappInfo: "Habla con el asistente de Dar Tahara por WhatsApp sobre servicios, precios, suscripciones, acceso a la propiedad y reservas. Los casos complejos pueden transferirse a soporte por correo electrónico.",
+    whatsappPrivacy: "Es un asistente automatizado. No envíes datos de pago, contraseñas ni códigos de acceso completos.",
   },
   calculator: {
     eyebrow: "Precios transparentes",
@@ -393,6 +395,14 @@ const es: DeepPartial<Dictionary> = {
       checkout_failed: "No pudimos iniciar el pago seguro. Inténtalo de nuevo.",
       network: "Error de red. Comprueba tu conexión e inténtalo de nuevo.",
     },
+  },
+  consent: {
+    message:
+      "Utilizamos cookies analíticas para entender cómo se usa nuestro sitio. Si rechazas, no cambia nada: el sitio funciona exactamente igual.",
+    accept: "Aceptar",
+    decline: "Rechazar",
+    privacy: "Política de privacidad",
+    aria: "Consentimiento de cookies",
   },
   mailing: {
     popupHeadline: "Sé el primero en saber cuándo lanzamos",

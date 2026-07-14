@@ -218,6 +218,8 @@ const pt: DeepPartial<Dictionary> = {
     ctaPrimary: "Reservar Avaliação Inicial",
     ctaSecondary: "Pedir orçamento",
     whatsapp: "Falar no WhatsApp",
+    whatsappInfo: "Fale com o assistente Dar Tahara no WhatsApp sobre serviços, preços, subscrições, acesso à propriedade e reservas. Os casos complexos podem ser transferidos para o suporte por e-mail.",
+    whatsappPrivacy: "Este é um assistente automatizado. Não envie dados de pagamento, palavras-passe ou códigos de acesso completos.",
   },
   calculator: {
     eyebrow: "Preços transparentes",
@@ -393,6 +395,14 @@ const pt: DeepPartial<Dictionary> = {
       checkout_failed: "Não foi possível iniciar o pagamento seguro. Tente novamente.",
       network: "Erro de rede. Verifique a sua ligação e tente novamente.",
     },
+  },
+  consent: {
+    message:
+      "Utilizamos cookies analíticos para compreender como o nosso site é usado. Se recusar, nada muda — o site funciona exatamente da mesma forma.",
+    accept: "Aceitar",
+    decline: "Recusar",
+    privacy: "Política de Privacidade",
+    aria: "Consentimento de cookies",
   },
   mailing: {
     popupHeadline: "Seja o primeiro a saber quando lançarmos",

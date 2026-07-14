@@ -16,12 +16,18 @@ type Conversation = {
   handoff_reason?: string | null;
   last_message_at?: string | null;
   assistant_messages?: AssistantMessage[];
+  source?: string;
+  contact_id?: string;
+  contact_blocked?: boolean;
+  escalation?: { id?: string; status?: string; severity?: string; freescout_ticket_number?: string | null; last_error?: string | null };
 };
 
 export function AssistantAdminClient() {
   const [rows, setRows] = React.useState<Conversation[]>([]);
   const [error, setError] = React.useState("");
   const [busy, setBusy] = React.useState(false);
+  const [query, setQuery] = React.useState("");
+  const [status, setStatus] = React.useState("all");
 
   async function load() {
     setBusy(true);
@@ -36,16 +42,28 @@ export function AssistantAdminClient() {
     load();
   }, []);
 
-  async function action(id: string, name: string) {
+  async function action(row: Conversation, name: string) {
     const note = name === "note" ? window.prompt("Internal note") || "" : "";
     const res = await fetch("/api/admin/assistant", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ id, action: name, note }),
+      body: JSON.stringify({
+        id: row.id,
+        action: name,
+        note,
+        source: row.source,
+        contactId: row.contact_id,
+        escalationId: row.escalation?.id,
+      }),
     });
     if (!res.ok) setError((await res.json()).error || "Action failed");
     await load();
   }
+
+  const filtered = rows.filter((row) => {
+    const haystack = `${row.customer_name || ""} ${row.contact_handle || ""} ${row.last_intent || ""} ${row.handoff_reason || ""}`.toLowerCase();
+    return haystack.includes(query.toLowerCase()) && (status === "all" || row.status === status || row.escalation?.status === status);
+  });
 
   return (
     <main className="min-h-screen bg-secondary/30 p-4 sm:p-8">
@@ -63,8 +81,20 @@ export function AssistantAdminClient() {
           </button>
         </header>
         {error ? <p className="mt-5 rounded-xl bg-red-500/10 p-3 text-sm text-red-700">{error}</p> : null}
+        <div className="mt-5 flex flex-wrap gap-3">
+          <input value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search conversations" className="min-w-64 rounded-lg border border-border bg-background px-3 py-2 text-sm" />
+          <select value={status} onChange={(event) => setStatus(event.target.value)} className="rounded-lg border border-border bg-background px-3 py-2 text-sm">
+            <option value="all">All statuses</option>
+            <option value="active">Active</option>
+            <option value="awaiting_email">Awaiting email</option>
+            <option value="escalated">Escalated</option>
+            <option value="retry_pending">Failed / retry pending</option>
+            <option value="closed">Closed</option>
+            <option value="blocked">Blocked</option>
+          </select>
+        </div>
         <div className="mt-6 space-y-4">
-          {rows.map((row) => (
+          {filtered.map((row) => (
             <article key={row.id} className="rounded-2xl border border-border bg-card p-5 shadow-soft">
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
@@ -73,6 +103,7 @@ export function AssistantAdminClient() {
                   </p>
                   <h2 className="mt-2 font-serif text-2xl">{row.customer_name || row.contact_handle || "Unknown customer"}</h2>
                   <p className="text-sm text-muted-foreground">{row.last_intent || "No intent"} · {row.handoff_reason || row.status}</p>
+                  {row.escalation ? <p className="mt-1 text-xs text-muted-foreground">Ticket {row.escalation.freescout_ticket_number || "pending"} · {row.escalation.status} · {row.escalation.severity}</p> : null}
                 </div>
                 <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">{row.status}</span>
               </div>
@@ -86,10 +117,19 @@ export function AssistantAdminClient() {
                 ))}
               </div>
               <div className="mt-4 flex flex-wrap gap-2">
-                <button onClick={() => action(row.id, "takeover")} className={buttonVariants({ variant: "primary", size: "sm" })}>Take over</button>
-                <button onClick={() => action(row.id, "note")} className={buttonVariants({ variant: "outline", size: "sm" })}>Add note</button>
-                <button onClick={() => action(row.id, "reopen")} className={buttonVariants({ variant: "outline", size: "sm" })}>Return to automation</button>
-                <button onClick={() => action(row.id, "close")} className={buttonVariants({ variant: "ghost", size: "sm" })}>Close</button>
+                {row.source === "whatsapp_support" ? (
+                  <>
+                    {row.escalation?.status === "retry_pending" ? <button onClick={() => action(row, "retry")} className={buttonVariants({ variant: "primary", size: "sm" })}>Retry ticket</button> : null}
+                    <button onClick={() => action(row, row.contact_blocked ? "unblock" : "block")} className={buttonVariants({ variant: "outline", size: "sm" })}>{row.contact_blocked ? "Unblock" : "Block 24h"}</button>
+                  </>
+                ) : (
+                  <>
+                    <button onClick={() => action(row, "takeover")} className={buttonVariants({ variant: "primary", size: "sm" })}>Take over</button>
+                    <button onClick={() => action(row, "note")} className={buttonVariants({ variant: "outline", size: "sm" })}>Add note</button>
+                    <button onClick={() => action(row, "reopen")} className={buttonVariants({ variant: "outline", size: "sm" })}>Return to automation</button>
+                  </>
+                )}
+                <button onClick={() => action(row, "close")} className={buttonVariants({ variant: "ghost", size: "sm" })}>Close</button>
               </div>
             </article>
           ))}

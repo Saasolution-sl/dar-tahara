@@ -10,7 +10,7 @@ services:
     networks:
       - public
     healthcheck:
-      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1:3000/en"]
+      test: ["CMD", "wget", "--spider", "--quiet", "http://127.0.0.1:3000/api/health/whatsapp"]
       interval: 15s
       timeout: 5s
       retries: 5

@@ -10,7 +10,7 @@ import { Reveal } from "@/components/motion/reveal";
 import { buttonVariants } from "@/components/ui/button";
 import { DomeMark } from "@/components/brand/logo";
 
-export function Cta({ dict }: { locale: Locale; dict: Dictionary }) {
+export function Cta({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const c = dict.cta;
   return (
     <section id={sections.contact} className="py-20 sm:py-28 lg:py-32">
@@ -29,6 +29,15 @@ export function Cta({ dict }: { locale: Locale; dict: Dictionary }) {
             </h2>
             <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-muted-foreground sm:text-lg">
               {c.subtitle}
+            </p>
+            <p className="mx-auto mt-4 max-w-2xl text-sm leading-relaxed text-muted-foreground">
+              {c.whatsappInfo}
+            </p>
+            <p className="mx-auto mt-2 max-w-2xl text-xs leading-relaxed text-muted-foreground">
+              {c.whatsappPrivacy}{" "}
+              <Link href={`/${locale}/privacy`} className="underline underline-offset-2 hover:text-foreground">
+                {dict.footer.privacy}
+              </Link>
             </p>
 
             <div className="mt-9 flex flex-col items-center justify-center gap-3 sm:flex-row">
