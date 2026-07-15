@@ -85,7 +85,16 @@ export function PricingCalculator({
     function handleAssistantBooking() {
       setModalOpen(true);
     }
+
     window.addEventListener("dar-tahara:open-booking", handleAssistantBooking);
+
+    const url = new URL(window.location.href);
+    if (url.searchParams.get("assistant") === "book-assessment") {
+      setModalOpen(true);
+      url.searchParams.delete("assistant");
+      window.history.replaceState(window.history.state, "", `${url.pathname}${url.search}${url.hash}`);
+    }
+
     return () => window.removeEventListener("dar-tahara:open-booking", handleAssistantBooking);
   }, []);
 

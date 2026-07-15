@@ -12,11 +12,12 @@ const base: LeadForSync = {
 };
 
 test("maps core identity to Mautic built-in aliases", () => {
-  const f = mapLeadToMauticFields(base);
+  const f = mapLeadToMauticFields({ ...base, residenceCity: "Al Hoceima" });
   assert.equal(f.firstname, "Sam");
   assert.equal(f.lastname, "Tahiri");
   assert.equal(f.email, "sam@example.com"); // normalized preferred over raw
   assert.equal(f.supabase_lead_id, base.id);
+  assert.equal(f.residence_city, "Al Hoceima");
 });
 
 test("omits null/undefined/blank instead of overwriting with empty", () => {

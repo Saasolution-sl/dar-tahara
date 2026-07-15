@@ -10,6 +10,11 @@
 // ── Option vocabularies ────────────────────────────────────────────────────────
 export const CONTACT_METHODS = ["email", "whatsapp", "telephone"] as const;
 export const RECIPIENT_TYPES = ["private", "business"] as const;
+export const MOROCCAN_CITIES = [
+  "Tetouan", "Tangier", "Rabat", "Meknes", "Fes", "Marrakech",
+  "Al Hoceima", "Nador", "Casablanca", "Agadir",
+] as const;
+export const OTHER_CITY_VALUE = "__other__";
 export const PROPERTY_TYPES = [
   "apartment", "house", "villa", "holiday_home", "short_term_rental", "riad", "office", "other",
 ] as const;
@@ -57,7 +62,7 @@ export type EarlyAccessPayload = {
   whatsappNumber?: string;
   preferredContactMethod?: string;
   preferredLanguage?: string;
-  residenceCountry?: string;     // ISO-3166 alpha-2
+  residenceCity?: string;        // Moroccan city name, including a custom "Other" value
 
   // Step 2 — billing
   billingRecipientType?: string;
@@ -183,6 +188,13 @@ export function validateStep(step: StepId, p: EarlyAccessPayload): FieldErrors {
       else if (!isValidEmail(p.email)) e.email = "invalid_email";
       if (p.preferredContactMethod && !oneOf(CONTACT_METHODS, p.preferredContactMethod))
         e.preferredContactMethod = "invalid";
+      if (
+        p.residenceCity !== undefined
+        && p.residenceCity !== ""
+        && (!nonEmpty(p.residenceCity)
+          || p.residenceCity.trim().length > 120
+          || p.residenceCity === OTHER_CITY_VALUE)
+      ) e.residenceCity = "invalid";
       // A WhatsApp/phone number is required unless the sole method is email.
       if (p.preferredContactMethod !== "email" && !nonEmpty(p.mobileNumber) && !nonEmpty(p.whatsappNumber))
         e.mobileNumber = "phone_required";

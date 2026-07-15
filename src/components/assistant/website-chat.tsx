@@ -80,13 +80,25 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
 
   function openCalculator() {
     setOpen(false);
-    document.getElementById("calculator")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const calculator = document.getElementById("calculator");
+    if (calculator) {
+      calculator.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
+    window.location.assign(`/${locale}#calculator`);
   }
 
   function openBooking() {
     setOpen(false);
-    window.dispatchEvent(new CustomEvent("dar-tahara:open-booking"));
-    document.getElementById("calculator")?.scrollIntoView({ behavior: "smooth", block: "start" });
+    const calculator = document.getElementById("calculator");
+    if (calculator) {
+      window.dispatchEvent(new CustomEvent("dar-tahara:open-booking"));
+      calculator.scrollIntoView({ behavior: "smooth", block: "start" });
+      return;
+    }
+
+    window.location.assign(`/${locale}?assistant=book-assessment#calculator`);
   }
 
   return (

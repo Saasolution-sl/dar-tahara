@@ -89,7 +89,7 @@ Deploy/runbook: [`../deploy/mautic/README.md`](../deploy/mautic/README.md).
   the first-touch vs last-touch requirement).
 - **31 tags** — controlled vocabulary (`dar-tahara`, `early-access`, `source-*`,
   `property-*`, `frequency-*`, `access-*`, verification states).
-- **35 dynamic segments** — early-access lifecycle, residence country, cleaning
+- **37 dynamic segments** — early-access lifecycle, Moroccan residence city, cleaning
   city, language, service frequency, access method, high-intent, referred.
 - **6 roles + the `dt-api` user.**
 

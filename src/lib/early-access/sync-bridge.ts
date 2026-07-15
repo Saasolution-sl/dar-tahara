@@ -16,7 +16,7 @@ type LeadRow = {
   whatsapp_phone: string | null;
   preferred_contact_method: string | null;
   preferred_language: string | null;
-  residence_country: string | null;
+  residence_city: string | null;
   status: string;
   referral_code: string | null;
   referred_by_code: string | null;

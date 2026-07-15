@@ -37,7 +37,7 @@ export async function syncVerifiedLead(leadId: string): Promise<void> {
     whatsappPhone: (row.whatsapp_phone as string) ?? null,
     preferredContactMethod: (row.preferred_contact_method as string) ?? null,
     preferredLanguage: (row.preferred_language as string) ?? null,
-    residenceCountry: (row.residence_country as string) ?? null,
+    residenceCity: (row.residence_city as string) ?? null,
     status: "verified",
     emailVerified: true,
     referralCode: (row.referral_code as string) ?? null,

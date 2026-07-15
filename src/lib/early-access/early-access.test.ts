@@ -11,6 +11,7 @@ function full(): EarlyAccessPayload {
   return {
     firstName: "Sam", lastName: "Tahiri", email: "sam@example.com",
     preferredContactMethod: "whatsapp", mobileNumber: "0612345678", countryCallingCode: "+212",
+    residenceCity: "Tangier",
     billingRecipientType: "private", billingAddressLine1: "1 Rue X", billingCity: "Brussels", billingCountry: "BE",
     propertyAddressLine1: "5 Rue Y", propertyCity: "Tangier", authorizedBySubmitter: true,
     serviceTypes: ["deep_cleaning"], accessMethod: "digital_lock",
@@ -28,6 +29,13 @@ test("contact step requires a phone unless method is email", () => {
   const noPhone = { ...full(), mobileNumber: "", whatsappNumber: "" };
   assert.equal(validateStep("contact", noPhone).mobileNumber, "phone_required");
   assert.deepEqual(validateStep("contact", { ...noPhone, preferredContactMethod: "email" }), {});
+});
+
+test("contact step accepts listed and custom Moroccan cities but rejects the Other placeholder", () => {
+  assert.deepEqual(validateStep("contact", { ...full(), residenceCity: "Tetouan" }), {});
+  assert.deepEqual(validateStep("contact", { ...full(), residenceCity: "Chefchaouen" }), {});
+  assert.equal(validateStep("contact", { ...full(), residenceCity: "__other__" }).residenceCity, "invalid");
+  assert.equal(validateStep("contact", { ...full(), residenceCity: "x".repeat(121) }).residenceCity, "invalid");
 });
 
 test("property step requires authorization confirmation", () => {
@@ -138,6 +146,7 @@ test("buildLeadRow normalises email + phones + status pending", () => {
   assert.equal(row.mobile_phone, "+212612345678");
   assert.equal(row.whatsapp_phone, "+212612345678"); // same-as-mobile default path
   assert.equal(row.status, "pending");
+  assert.equal(row.residence_city, "Tangier");
   assert.equal(row.first_utm_source, "whatsapp");
 });
 test("buildPropertyRow copies billing only when Morocco + flag set", () => {

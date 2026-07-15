@@ -14,7 +14,7 @@ export type LeadForSync = {
   whatsappPhone?: string | null;
   preferredContactMethod?: string | null;
   preferredLanguage?: string | null;
-  residenceCountry?: string | null;
+  residenceCity?: string | null;
 
   status?: string | null;
   emailVerified?: boolean;

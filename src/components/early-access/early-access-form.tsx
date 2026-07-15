@@ -5,7 +5,8 @@ import { Check, Loader2, ArrowRight, ArrowLeft, ShieldCheck, KeyRound, Info } fr
 import type { Locale } from "@/i18n/config";
 import type { EarlyAccessCopy } from "@/i18n/early-access-copy";
 import {
-  STEPS, validateStep, type StepId, type EarlyAccessPayload, type FieldErrors,
+  MOROCCAN_CITIES, OTHER_CITY_VALUE, STEPS, validateStep,
+  type StepId, type EarlyAccessPayload, type FieldErrors,
 } from "@/lib/early-access/schema";
 import type { Attribution } from "@/lib/early-access/attribution";
 import { track } from "@/lib/analytics";
@@ -304,10 +305,125 @@ function ContactStep({ p, set, errors, copy }: StepProps) {
         <FieldShell id="lang" label={f.preferredLanguage}>
           <Select options={LANGUAGES} value={p.preferredLanguage} onChange={(e) => set("preferredLanguage", e.target.value)} />
         </FieldShell>
-        <FieldShell id="res" label={f.residenceCountry}>
-          <Select options={COUNTRIES} placeholder="—" value={p.residenceCountry ?? ""} onChange={(e) => set("residenceCountry", e.target.value)} />
-        </FieldShell>
+        <ResidenceCityField
+          value={p.residenceCity ?? ""}
+          onChange={(value) => set("residenceCity", value)}
+          error={err(copy, errors.residenceCity)}
+          copy={copy}
+        />
       </div>
+    </>
+  );
+}
+
+const CUSTOM_CITY_VALUE = "__custom_city__";
+
+function ResidenceCityField({
+  value, onChange, error, copy,
+}: {
+  value: string;
+  onChange: (value: string) => void;
+  error?: string;
+  copy: EarlyAccessCopy;
+}) {
+  const [dialogOpen, setDialogOpen] = React.useState(false);
+  const [draftCity, setDraftCity] = React.useState("");
+  const dialogRef = React.useRef<HTMLDialogElement>(null);
+  const inputRef = React.useRef<HTMLInputElement>(null);
+  const isKnownCity = MOROCCAN_CITIES.some((city) => city === value);
+  const isCustomCity = Boolean(value) && !isKnownCity;
+
+  const options: Record<string, string> = Object.fromEntries(
+    MOROCCAN_CITIES.map((city) => [city, city]),
+  );
+  if (isCustomCity) options[CUSTOM_CITY_VALUE] = value;
+  options[OTHER_CITY_VALUE] = copy.options.propertyType.other;
+
+  React.useEffect(() => {
+    if (!dialogOpen) return;
+    const dialog = dialogRef.current;
+    if (dialog && !dialog.open) dialog.showModal();
+    window.requestAnimationFrame(() => inputRef.current?.focus());
+  }, [dialogOpen]);
+
+  function closeDialog() {
+    setDialogOpen(false);
+  }
+
+  function openDialog() {
+    setDraftCity(isCustomCity ? value : "");
+    setDialogOpen(true);
+  }
+
+  function confirmCustomCity() {
+    const city = draftCity.trim();
+    if (!city) return;
+    onChange(city);
+    closeDialog();
+  }
+
+  return (
+    <>
+      <FieldShell id="residenceCity" label={copy.fields.residenceCity} error={error}>
+        <Select
+          options={options}
+          placeholder="—"
+          value={isKnownCity ? value : isCustomCity ? CUSTOM_CITY_VALUE : ""}
+          onChange={(event) => {
+            if (event.target.value === OTHER_CITY_VALUE) openDialog();
+            else if (event.target.value !== CUSTOM_CITY_VALUE) onChange(event.target.value);
+          }}
+        />
+      </FieldShell>
+
+      {dialogOpen ? (
+        <dialog
+          ref={dialogRef}
+          aria-labelledby="other-city-title"
+          onCancel={(event) => {
+            event.preventDefault();
+            closeDialog();
+          }}
+          className="w-[calc(100%-2rem)] max-w-md rounded-[1.5rem] border border-border bg-card p-0 text-foreground shadow-lift backdrop:bg-foreground/40 backdrop:backdrop-blur-sm"
+        >
+          <div className="p-6 sm:p-7">
+            <h3 id="other-city-title" className="text-lg font-semibold text-foreground">
+              {copy.fields.residenceCity}
+            </h3>
+            <div className="mt-5">
+              <FieldShell id="otherResidenceCity" label={copy.fields.residenceCity} required>
+                <TextInput
+                  ref={inputRef}
+                  value={draftCity}
+                  maxLength={120}
+                  autoComplete="address-level2"
+                  onChange={(event) => setDraftCity(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" && draftCity.trim()) confirmCustomCity();
+                  }}
+                />
+              </FieldShell>
+            </div>
+            <div className="mt-6 flex flex-col-reverse gap-3 sm:flex-row sm:justify-end">
+              <button
+                type="button"
+                onClick={closeDialog}
+                className="rounded-full px-5 py-3 text-sm font-medium text-foreground transition hover:bg-secondary"
+              >
+                {copy.nav.back}
+              </button>
+              <button
+                type="button"
+                disabled={!draftCity.trim()}
+                onClick={confirmCustomCity}
+                className="rounded-full bg-primary px-6 py-3 text-sm font-medium text-primary-foreground shadow-soft transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {copy.nav.next}
+              </button>
+            </div>
+          </div>
+        </dialog>
+      ) : null}
     </>
   );
 }
@@ -594,6 +710,7 @@ function ReviewStep({ p, set, errors, copy }: StepProps) {
         <Row label={copy.fields.firstName} value={`${p.firstName} ${p.lastName}`.trim()} />
         <Row label={copy.fields.email} value={p.email} />
         <Row label={copy.fields.mobileNumber} value={p.mobileNumber ? `${p.countryCallingCode} ${p.mobileNumber}` : undefined} />
+        <Row label={copy.fields.residenceCity} value={p.residenceCity} />
         <Row label={copy.steps.billing.title} value={[p.billingCity, p.billingCountry].filter(Boolean).join(", ")} />
         <Row label={copy.steps.property_address.title} value={[p.useBillingAsProperty ? p.billingCity : p.propertyCity, "Morocco"].filter(Boolean).join(", ")} />
         <Row label={copy.fields.propertyType} value={p.propertyType ? o.propertyType[p.propertyType] : undefined} />

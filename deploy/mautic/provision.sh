@@ -74,7 +74,7 @@ FIELDS=(
   "whatsapp_phone|WhatsApp Phone|tel|core"
   "preferred_language|Preferred Language|select|core|en,fr,ar,nl,es,de,pt"
   "preferred_contact_method|Preferred Contact Method|select|core|email,whatsapp,telephone"
-  "country_of_residence|Country of Residence|text|core"
+  "residence_city|City in Morocco|text|core"
 
   # Billing summary (the full address stays in Supabase)
   "billing_recipient_type|Billing Recipient Type|select|professional|private,business"
@@ -303,15 +303,17 @@ SEGMENTS=(
   "dt-ea-qualified|Dar Tahara Early Access — Qualified|[$(f_tag early-access),$(f_eq early_access_status qualified select)]"
   "dt-ea-waitlisted|Dar Tahara Early Access — Waitlisted|[$(f_tag early-access),$(f_eq early_access_status waitlisted select)]"
 
-  # Residence
-  "dt-res-nl|Residents — Netherlands|[$(f_eq country_of_residence NL)]"
-  "dt-res-be|Residents — Belgium|[$(f_eq country_of_residence BE)]"
-  "dt-res-fr|Residents — France|[$(f_eq country_of_residence FR)]"
-  "dt-res-de|Residents — Germany|[$(f_eq country_of_residence DE)]"
-  "dt-res-es|Residents — Spain|[$(f_eq country_of_residence ES)]"
-  "dt-res-gb|Residents — United Kingdom|[$(f_eq country_of_residence GB)]"
-  "dt-res-ae|Residents — UAE|[$(f_eq country_of_residence AE)]"
-  "dt-res-ma|Residents — Morocco|[$(f_eq country_of_residence MA)]"
+  # Residence city in Morocco
+  "dt-res-tetouan|Residence City — Tetouan|[$(f_eq residence_city Tetouan)]"
+  "dt-res-tangier|Residence City — Tangier|[$(f_eq residence_city Tangier)]"
+  "dt-res-rabat|Residence City — Rabat|[$(f_eq residence_city Rabat)]"
+  "dt-res-meknes|Residence City — Meknes|[$(f_eq residence_city Meknes)]"
+  "dt-res-fes|Residence City — Fes|[$(f_eq residence_city Fes)]"
+  "dt-res-marrakech|Residence City — Marrakech|[$(f_eq residence_city Marrakech)]"
+  "dt-res-al-hoceima|Residence City — Al Hoceima|[$(f_eq residence_city 'Al Hoceima')]"
+  "dt-res-nador|Residence City — Nador|[$(f_eq residence_city Nador)]"
+  "dt-res-casablanca|Residence City — Casablanca|[$(f_eq residence_city Casablanca)]"
+  "dt-res-agadir|Residence City — Agadir|[$(f_eq residence_city Agadir)]"
 
   # Cleaning city
   "dt-city-tangier|Property — Tangier|[$(f_eq cleaning_city Tangier)]"
