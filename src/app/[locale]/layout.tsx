@@ -11,6 +11,7 @@ import { Footer } from "@/components/layout/footer";
 import { DetectionTracker } from "@/components/layout/detection-tracker";
 import { LaunchPopup } from "@/components/mailing-list/launch-popup";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
+import { MauticTracking } from "@/components/analytics/mautic-tracking";
 import { ConsentBanner } from "@/components/analytics/consent-banner";
 import { WebsiteChat } from "@/components/assistant/website-chat";
 import { cn } from "@/lib/utils";
@@ -114,6 +115,7 @@ export default async function LocaleLayout({
             Skip to content
           </a>
           <GoogleAnalytics />
+          <MauticTracking />
           <ConsentBanner locale={typedLocale} dict={dict.consent} />
           <DetectionTracker locale={typedLocale} />
           <Navbar locale={typedLocale} dict={dict.nav} whatsappHref={whatsappLink()} />

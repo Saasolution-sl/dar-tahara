@@ -1,0 +1,48 @@
+# Mautic crontab — bind-mounted into the mautic-cron container at
+# /opt/mautic/cron/mautic and registered for the www-data user on boot.
+#
+# The image ships a template with broadcasts and webhook processing commented
+# out, which is why this file exists: without `mautic:broadcasts:send` a segment
+# email sits in "pending" forever, and without `mautic:webhooks:process` the
+# queued webhooks Dar Tahara relies on for referral/verification callbacks are
+# never delivered.
+#
+# Jobs are deliberately staggered across the quarter-hour so a segment rebuild
+# is never competing with a campaign trigger for the same DB rows.
+#
+# All output is piped to /tmp/stdout, a FIFO the entrypoint tails, so cron output
+# lands in `docker logs mautic-cron`.
+
+SHELL=/bin/bash
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+BASH_ENV=/tmp/cron.env
+
+# Segment membership — recomputes which contacts belong to each dynamic segment.
+# Everything downstream (campaign entry, reports) depends on this running.
+0,15,30,45 * * * * php /var/www/html/bin/console mautic:segments:update 2>&1 | tee /tmp/stdout
+
+# Campaign membership — recomputes who qualifies for each campaign.
+5,20,35,50 * * * * php /var/www/html/bin/console mautic:campaigns:update 2>&1 | tee /tmp/stdout
+
+# Campaign execution — fires the scheduled actions (send email, add tag, wait).
+10,25,40,55 * * * * php /var/www/html/bin/console mautic:campaigns:trigger 2>&1 | tee /tmp/stdout
+
+# Broadcast/segment email sending — required for one-off sends such as a city
+# launch announcement. Not in the image's default crontab.
+2,12,22,32,42,52 * * * * php /var/www/html/bin/console mautic:broadcasts:send 2>&1 | tee /tmp/stdout
+
+# Outbound webhook queue → Dar Tahara (unsubscribes, email engagement).
+* * * * * php /var/www/html/bin/console mautic:webhooks:process --quiet 2>&1 | tee /tmp/stdout
+
+# Retry transient email failures parked in the "failed" Messenger queue.
+*/30 * * * * php /var/www/html/bin/console messenger:consume failed --limit=50 --time-limit=110 --quiet 2>&1 | tee /tmp/stdout
+
+# GeoLite2 IP database refresh (powers country/city reporting on tracked hits).
+# No-op unless a MaxMind licence key is configured in Mautic's settings.
+17 4 * * 1 php /var/www/html/bin/console mautic:iplookup:download 2>&1 | tee /tmp/stdout
+
+# Housekeeping: purge audit-log rows, page hits and *anonymous* (never
+# identified) visitors older than a year. Identified contacts are NOT touched by
+# this command. Retention here must stay in step with the published privacy
+# policy — if the policy period changes, change --days-old to match.
+41 3 * * * php /var/www/html/bin/console mautic:maintenance:cleanup --days-old=365 --no-interaction 2>&1 | tee /tmp/stdout

@@ -9,8 +9,18 @@ export type AnalyticsEvent =
   | "mailing_list_signup_started"
   | "mailing_list_signup_completed"
   | "mailing_list_confirmation_completed"
+  | "campaign_share_clicked"
+  | "campaign_link_copied"
   | "language_detected"
-  | "language_changed";
+  | "language_changed"
+  // Early-access funnel (coarse, non-identifying — never pass PII as props).
+  | "early_access_page_view"
+  | "early_access_cta_clicked"
+  | "early_access_form_started"
+  | "early_access_form_submitted"
+  | "email_verified"
+  | "referral_link_copied"
+  | "whatsapp_share_clicked";
 
 type Props = Record<string, string | number | boolean>;
 

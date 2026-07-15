@@ -20,12 +20,16 @@ export function SubscribeForm({
   source,
   variant = "inline",
   onSuccess,
+  labels,
 }: {
   locale: Locale;
   dict: Dictionary["mailing"];
   source: SignupSource;
   variant?: "inline" | "popup";
   onSuccess?: () => void;
+  // Widened to plain strings: callers pass copy from other sources (e.g. the
+  // campaign copy), not only literal dictionary values.
+  labels?: Partial<Record<"emailPlaceholder" | "button" | "success" | "consent", string>>;
 }) {
   const [email, setEmail] = React.useState("");
   const [status, setStatus] = React.useState<Status>("idle");
@@ -99,7 +103,7 @@ export function SubscribeForm({
         <span className="mt-0.5 flex h-6 w-6 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground">
           <Check className="h-3.5 w-3.5" />
         </span>
-        <p className="leading-relaxed text-foreground">{dict.success}</p>
+        <p className="leading-relaxed text-foreground">{labels?.success ?? dict.success}</p>
       </div>
     );
   }
@@ -108,7 +112,7 @@ export function SubscribeForm({
     <form onSubmit={onSubmit} noValidate className="w-full">
       <div className="flex flex-col gap-2 sm:flex-row">
         <label htmlFor={emailId} className="sr-only">
-          {dict.emailPlaceholder}
+          {labels?.emailPlaceholder ?? dict.emailPlaceholder}
         </label>
         <input
           id={emailId}
@@ -118,7 +122,7 @@ export function SubscribeForm({
           value={email}
           onChange={(e) => setEmail(e.target.value)}
           onFocus={onFocus}
-          placeholder={dict.emailPlaceholder}
+          placeholder={labels?.emailPlaceholder ?? dict.emailPlaceholder}
           aria-invalid={status === "error"}
           aria-describedby={errorKey ? errId : undefined}
           disabled={status === "submitting"}
@@ -133,7 +137,7 @@ export function SubscribeForm({
             <Loader2 className="h-4 w-4 animate-spin" />
           ) : (
             <>
-              {dict.button}
+              {labels?.button ?? dict.button}
               <ArrowRight className="h-4 w-4" />
             </>
           )}
@@ -148,7 +152,7 @@ export function SubscribeForm({
         </p>
       ) : null}
 
-      <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{dict.consent}</p>
+      <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{labels?.consent ?? dict.consent}</p>
     </form>
   );
 }

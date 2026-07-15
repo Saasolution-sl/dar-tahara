@@ -1,0 +1,186 @@
+# Mautic — private marketing backend for Dar Tahara.
+# Public URL: https://marketing.saasolution.es (fronted by the shared Caddy proxy).
+#
+# Deployed to /opt/projects/mautic on the SaaSolution VPS. Secrets live in the
+# root-owned .env beside this file and are NEVER committed. See README.md.
+#
+# Topology:
+#   mautic-web    → public-net  (Caddy reverse-proxies to it by container name)
+#                 → mautic-net  (talks to the database)
+#   mautic-cron   → mautic-net  (Mautic's scheduled jobs; no HTTP surface)
+#   mautic-worker → mautic-net  (Messenger consumer: async email + hit tracking)
+#   mautic-db     → mautic-net  ONLY — no published ports, unreachable from the
+#                               internet and from the host network.
+#
+# Env-var contract verified against the mautic/mautic:7.1.3-apache image itself
+# (/entrypoint.sh + /templates/local.php), not from memory. Note the DB name var
+# is MAUTIC_DB_DATABASE — MAUTIC_DB_NAME is silently ignored.
+
+name: mautic
+
+x-logging: &logging
+  driver: json-file
+  options:
+    max-size: "10m"
+    max-file: "5"
+
+# Shared by web, cron and worker: they are the same image and the same config,
+# differing only in DOCKER_MAUTIC_ROLE.
+x-mautic-env: &mautic-env
+  MAUTIC_DB_HOST: mautic-db
+  MAUTIC_DB_PORT: "3306"
+  MAUTIC_DB_DATABASE: ${MAUTIC_DB_DATABASE}
+  MAUTIC_DB_USER: ${MAUTIC_DB_USER}
+  MAUTIC_DB_PASSWORD: ${MAUTIC_DB_PASSWORD}
+
+  MAUTIC_SITE_URL: ${MAUTIC_SITE_URL}
+  MAUTIC_SECRET_KEY: ${MAUTIC_SECRET_KEY}
+
+  # IMPORTANT: contrary to common belief, the 7.1.3 image does NOT read every
+  # MAUTIC_<PARAM> from the environment. `trusted_proxies`, `mailer_dsn` and
+  # `mailer_from_*` are read ONLY from config/local.php (trusted_proxies via
+  # app/middlewares/TrustMiddleware). The var below is kept for documentation,
+  # but the value that actually takes effect is written to local.php by
+  # ./configure-local.sh, which MUST be run once after mautic:install — without
+  # trusted_proxies in local.php, Mautic 301-loops the login page behind Caddy.
+  MAUTIC_TRUSTED_PROXIES: '["10.0.0.0/8","172.16.0.0/12","192.168.0.0/16"]'
+
+  # Async delivery via the Doctrine transport: a campaign blast is queued in the
+  # DB and drained by mautic-worker instead of blocking the web request. Uses the
+  # existing MariaDB, so no extra broker to run and back up.
+  MAUTIC_MESSENGER_DSN_EMAIL: doctrine://default?queue_name=email
+  MAUTIC_MESSENGER_DSN_HIT: doctrine://default?queue_name=hit
+  MAUTIC_MESSENGER_DSN_FAILED: doctrine://default?queue_name=failed
+
+  MAUTIC_MAILER_DSN: ${MAUTIC_MAILER_DSN}
+  MAUTIC_MAILER_FROM_NAME: ${MAUTIC_MAILER_FROM_NAME}
+  MAUTIC_MAILER_FROM_EMAIL: ${MAUTIC_MAILER_FROM_EMAIL}
+
+  # ── API ──────────────────────────────────────────────────────────────────────
+  # The Dar Tahara website syncs contacts through the REST API. Basic auth is
+  # enabled and used with a dedicated, least-privilege API user over HTTPS only;
+  # credentials live server-side in the Next.js env, never in browser code.
+  MAUTIC_API_ENABLED: "true"
+  MAUTIC_API_ENABLE_BASIC_AUTH: "true"
+
+  # ── Session/cookie hardening ────────────────────────────────────────────────
+  # Everything is behind TLS at the proxy, so cookies must never travel in clear.
+  # Lax (not Strict) because Mautic's own OAuth redirect back into /s/ would drop
+  # the session cookie under Strict and produce a silent login loop.
+  MAUTIC_COOKIE_SECURE: "true"
+  MAUTIC_COOKIE_HTTPONLY: "true"
+  MAUTIC_COOKIE_SAMESITE: lax
+
+  PHP_INI_VALUE_DATE_TIMEZONE: Europe/Madrid
+  PHP_INI_VALUE_MEMORY_LIMIT: 512M
+  PHP_INI_VALUE_UPLOAD_MAX_FILESIZE: 32M
+  PHP_INI_VALUE_MAX_EXECUTION_TIME: 300
+
+x-mautic-common: &mautic-common
+  image: mautic/mautic:${MAUTIC_IMAGE_TAG}
+  restart: unless-stopped
+  volumes:
+    - mautic-config:/var/www/html/config
+    - mautic-logs:/var/www/html/var/logs
+    - mautic-media:/var/www/html/docroot/media
+    - mautic-plugins:/var/www/html/docroot/plugins
+    - mautic-themes:/var/www/html/docroot/themes
+    # Patch for a 7.1.3+PHP8.3 Twig TypeError that 500s the login page — see
+    # patches/OverrideIncludeExtension.php. Read-only; drop when upstream fixes it.
+    - ./patches/OverrideIncludeExtension.php:/var/www/html/docroot/app/bundles/CoreBundle/Twig/Extension/OverrideIncludeExtension.php:ro
+  depends_on:
+    mautic-db:
+      condition: service_healthy
+  logging: *logging
+
+services:
+  mautic-db:
+    image: mariadb:11.4
+    container_name: mautic-db
+    restart: unless-stopped
+    command:
+      # Mautic bulk-inserts large contact batches; the default 16M packet is
+      # not enough for segment rebuilds on big lists.
+      - --max_allowed_packet=64M
+      - --innodb-file-per-table=1
+    environment:
+      MARIADB_ROOT_PASSWORD: ${MAUTIC_DB_ROOT_PASSWORD}
+      MARIADB_DATABASE: ${MAUTIC_DB_DATABASE}
+      MARIADB_USER: ${MAUTIC_DB_USER}
+      MARIADB_PASSWORD: ${MAUTIC_DB_PASSWORD}
+    volumes:
+      - mautic-db-data:/var/lib/mysql
+    networks:
+      - mautic-net
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 30s
+    logging: *logging
+
+  mautic-web:
+    <<: *mautic-common
+    container_name: mautic-web
+    environment:
+      <<: *mautic-env
+      DOCKER_MAUTIC_ROLE: mautic_web
+    networks:
+      - mautic-net
+      - public-net
+    healthcheck:
+      test: ["CMD-SHELL", "php -r 'exit(0);' && curl -fsS -o /dev/null -H 'Host: localhost' http://127.0.0.1/ || exit 1"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 180s
+
+  # Runs Mautic's scheduled jobs. Campaigns, segment membership and broadcast
+  # emails ONLY advance because this container exists — without it, automation
+  # appears to "work" in the UI but nothing is ever executed. The crontab is
+  # bind-mounted (see cron/mautic) because the image's default template leaves
+  # broadcasts and webhook processing commented out.
+  mautic-cron:
+    <<: *mautic-common
+    container_name: mautic-cron
+    environment:
+      <<: *mautic-env
+      DOCKER_MAUTIC_ROLE: mautic_cron
+    volumes:
+      - mautic-config:/var/www/html/config
+      - mautic-logs:/var/www/html/var/logs
+      - mautic-media:/var/www/html/docroot/media
+      - mautic-plugins:/var/www/html/docroot/plugins
+      - mautic-themes:/var/www/html/docroot/themes
+      - ./patches/OverrideIncludeExtension.php:/var/www/html/docroot/app/bundles/CoreBundle/Twig/Extension/OverrideIncludeExtension.php:ro
+      - ./cron/mautic:/opt/mautic/cron/mautic:ro
+    networks:
+      - mautic-net
+
+  mautic-worker:
+    <<: *mautic-common
+    container_name: mautic-worker
+    environment:
+      <<: *mautic-env
+      DOCKER_MAUTIC_ROLE: mautic_worker
+      DOCKER_MAUTIC_WORKERS_CONSUME_EMAIL: "2"
+      DOCKER_MAUTIC_WORKERS_CONSUME_HIT: "2"
+      DOCKER_MAUTIC_WORKERS_CONSUME_FAILED: "1"
+    networks:
+      - mautic-net
+
+volumes:
+  mautic-db-data:
+  mautic-config:
+  mautic-logs:
+  mautic-media:
+  mautic-plugins:
+  mautic-themes:
+
+networks:
+  mautic-net:
+    driver: bridge
+  # Shared bridge that the Caddy proxy sits on; created outside this stack.
+  public-net:
+    external: true

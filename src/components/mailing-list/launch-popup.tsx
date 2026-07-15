@@ -1,6 +1,7 @@
 "use client";
 
 import * as React from "react";
+import { usePathname } from "next/navigation";
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { X } from "lucide-react";
 import type { Dictionary } from "@/i18n/dictionaries/en";
@@ -32,11 +33,14 @@ function safeSet(storage: Storage | undefined, key: string, value: string) {
 }
 
 export function LaunchPopup({ locale, dict }: { locale: Locale; dict: Dictionary["mailing"] }) {
+  const pathname = usePathname();
+  const isCampaignPage = pathname.split("/").filter(Boolean)[1] === "invite";
   const reduce = useReducedMotion();
   const [open, setOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
 
   React.useEffect(() => {
+    if (isCampaignPage) return;
     setMounted(true);
     const ls = typeof window !== "undefined" ? window.localStorage : undefined;
     const ss = typeof window !== "undefined" ? window.sessionStorage : undefined;
@@ -69,7 +73,7 @@ export function LaunchPopup({ locale, dict }: { locale: Locale; dict: Dictionary
       window.removeEventListener("scroll", onScroll);
     }
     return cleanup;
-  }, [locale]);
+  }, [isCampaignPage, locale]);
 
   function dismiss() {
     setOpen(false);
@@ -77,7 +81,7 @@ export function LaunchPopup({ locale, dict }: { locale: Locale; dict: Dictionary
     track("popup_dismissed", { source: "homepage_popup" });
   }
 
-  if (!mounted) return null;
+  if (!mounted || isCampaignPage) return null;
 
   return (
     <AnimatePresence>

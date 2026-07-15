@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isLocale } from "@/i18n/config";
-import { createAssessmentCheckout } from "../checkout/route";
+import { createAssessmentCheckout } from "@/lib/assessment-checkout";
 
 export const runtime = "nodejs";
 

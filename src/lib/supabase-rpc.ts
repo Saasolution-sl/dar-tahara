@@ -154,6 +154,17 @@ export async function serviceUpsert<T = unknown>(
   return parseResponse<T>(res, `upsert_${table}`);
 }
 
+/** Delete rows selected with a trusted, server-built PostgREST filter. */
+export async function serviceDelete(table: string, filter: string): Promise<void> {
+  if (!URL || !SECRET_KEY) throw new Error("service_role_not_configured");
+  const res = await fetch(`${URL}/rest/v1/${table}?${filter}`, {
+    method: "DELETE",
+    headers: requestHeaders(SECRET_KEY),
+    cache: "no-store",
+  });
+  await parseResponse<void>(res, `delete_${table}`);
+}
+
 /** Patch rows selected with a trusted, server-built PostgREST filter. */
 export async function serviceUpdate<T = unknown>(
   table: string,
