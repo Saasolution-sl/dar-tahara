@@ -5,6 +5,7 @@
  * Mautic (deploy/mautic/provision.sh §1); a typo here silently drops a value.
  */
 import type { LeadForSync, MauticContactFields } from "./types";
+import { computeLeadScore, deriveStage } from "./scoring";
 
 /** Drop null/undefined/empty so we never overwrite a Mautic value with blank. */
 function put(
@@ -90,6 +91,13 @@ export function mapLeadToMauticFields(lead: LeadForSync): MauticContactFields {
 
   // Link back to the system of record.
   put(f, "supabase_lead_id", lead.id);
+
+  // Data-driven lead score + lifecycle stage. Kept in dedicated fields rather
+  // than Mautic's native `points`, so behavioural points added inside Mautic are
+  // not overwritten on every sync. Total intent = lead_score + points.
+  const { score } = computeLeadScore(lead);
+  f["lead_score"] = score;
+  f["lead_stage"] = deriveStage(lead, score);
 
   return f;
 }
