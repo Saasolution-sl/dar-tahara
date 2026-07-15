@@ -1,11 +1,18 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { Sparkles, ShieldCheck, Clock } from "lucide-react";
-import { isLocale, locales, localeMeta, getDir, type Locale } from "@/i18n/config";
+import { isLocale, getDir, type Locale } from "@/i18n/config";
 import { getEarlyAccessCopy } from "@/i18n/early-access-copy";
 import { EarlyAccessForm } from "@/components/early-access/early-access-form";
 import { Container } from "@/components/ui/section";
 import { site } from "@/lib/site";
+import {
+  EARLY_ACCESS_ENGLISH_SOCIAL_COPY,
+  EARLY_ACCESS_SOCIAL_IMAGE,
+  earlyAccessCanonicalUrl,
+  earlyAccessLanguageAlternates,
+  earlyAccessOpenGraphLocales,
+} from "@/lib/early-access/social-metadata";
 
 export const dynamic = "force-dynamic";
 
@@ -17,27 +24,40 @@ export async function generateMetadata({
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const copy = getEarlyAccessCopy(locale);
+  const canonicalUrl = earlyAccessCanonicalUrl(locale);
+  const socialTitle = locale === "en" ? EARLY_ACCESS_ENGLISH_SOCIAL_COPY.title : copy.meta.title;
+  const socialDescription = locale === "en"
+    ? EARLY_ACCESS_ENGLISH_SOCIAL_COPY.description
+    : copy.meta.description;
+  const openGraphLocales = earlyAccessOpenGraphLocales(locale);
   // Canonical points at the clean URL (no campaign/referral params), so tagged
   // links never create duplicate indexed pages (brief §37).
   return {
-    title: copy.meta.title,
+    title: { absolute: copy.meta.title },
     description: copy.meta.description,
     alternates: {
-      canonical: `/${locale}/early-access`,
-      languages: {
-        ...Object.fromEntries(locales.map((l) => [localeMeta[l].hreflang, `/${l}/early-access`])),
-        "x-default": "/en/early-access",
-      },
+      canonical: canonicalUrl,
+      languages: earlyAccessLanguageAlternates(),
     },
     openGraph: {
       type: "website",
-      locale: localeMeta[locale].hreflang,
-      url: `${site.url}/${locale}/early-access`,
+      ...openGraphLocales,
+      url: canonicalUrl,
       siteName: site.name,
-      title: copy.meta.title,
-      description: copy.meta.description,
+      title: socialTitle,
+      description: socialDescription,
+      images: [EARLY_ACCESS_SOCIAL_IMAGE],
     },
-    twitter: { card: "summary_large_image", title: copy.meta.title, description: copy.meta.description },
+    twitter: {
+      card: "summary_large_image",
+      title: socialTitle,
+      description: socialDescription,
+      images: [{
+        url: EARLY_ACCESS_SOCIAL_IMAGE.url,
+        secureUrl: EARLY_ACCESS_SOCIAL_IMAGE.secureUrl,
+        alt: EARLY_ACCESS_SOCIAL_IMAGE.alt,
+      }],
+    },
   };
 }
 

@@ -81,9 +81,9 @@ export type EarlyAccessCopy = {
 
 const en: EarlyAccessCopy = {
   meta: {
-    title: "Request early access — Dar Tahara home care in Morocco",
+    title: "Dar Tahara Early Access | Premium Home Cleaning in Morocco",
     description:
-      "Register your property for Dar Tahara early access: premium home cleaning and property care in Morocco. Get launch updates and invite friends and family.",
+      "Join Dar Tahara Early Access and be among the first to experience reliable premium home cleaning and property care in Morocco.",
   },
   hero: {
     eyebrow: "Early access · Morocco",
