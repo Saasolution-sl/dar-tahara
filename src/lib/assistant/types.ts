@@ -70,6 +70,8 @@ export type AssistantInput = {
   websitePath?: string | null;
   /** Confirmed language for this conversation, independent of the channel UI locale. */
   sessionLanguage?: Locale | null;
+  /** Language actively chosen in a channel UI; this overrides persisted session state. */
+  selectedLanguage?: Locale | null;
   /** True when the previous turn asked the customer to select a language. */
   languageSelectionPending?: boolean;
   /** Original messages in chronological order. Never translate or rewrite these. */

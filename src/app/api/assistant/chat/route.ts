@@ -11,6 +11,7 @@ export async function POST(req: NextRequest) {
     conversationId?: unknown;
     sessionId?: unknown;
     sessionLanguage?: unknown;
+    selectedLanguage?: unknown;
     languageSelectionPending?: unknown;
     websitePath?: unknown;
   } | null;
@@ -28,6 +29,7 @@ export async function POST(req: NextRequest) {
     conversationId: typeof body?.conversationId === "string" ? body.conversationId : null,
     sessionId: typeof body?.sessionId === "string" ? body.sessionId : null,
     sessionLanguage: typeof body?.sessionLanguage === "string" && isLocale(body.sessionLanguage) ? body.sessionLanguage : null,
+    selectedLanguage: typeof body?.selectedLanguage === "string" && isLocale(body.selectedLanguage) ? body.selectedLanguage : null,
     languageSelectionPending: body?.languageSelectionPending === true,
     websitePath: typeof body?.websitePath === "string" ? body.websitePath : null,
   });

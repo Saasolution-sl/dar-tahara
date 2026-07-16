@@ -172,8 +172,20 @@ function explicitLanguageTarget(message: string, selectionPending: boolean): Loc
 export function resolveConversationLanguage(input: {
   message: string;
   currentLanguage?: Locale | null;
+  selectedLanguage?: Locale | null;
   selectionPending?: boolean;
 }): ConversationLanguageDecision {
+  if (input.selectedLanguage) {
+    return {
+      locale: input.selectedLanguage,
+      detectedLocale: input.selectedLanguage,
+      confidence: 1,
+      languageChanged: Boolean(input.currentLanguage && input.currentLanguage !== input.selectedLanguage),
+      explicitChange: true,
+      needsClarification: false,
+    };
+  }
+
   const explicitTarget = explicitLanguageTarget(input.message, Boolean(input.selectionPending));
   if (explicitTarget) {
     return {

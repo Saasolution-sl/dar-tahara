@@ -16,6 +16,8 @@ The first customer text is detected with the pinned `franc` language detector, s
 
 The confirmed language is stored on the existing conversation record (`assistant_conversations.language` for website chat and `whatsapp_conversations.detected_language` for WhatsApp). It remains fixed for the session. Ordinary foreign or mixed-language messages do not change it; only an explicit request such as “Can we continue in English?” updates it.
 
+On the website, choosing a locale from the site language switcher is also an explicit language change. The selected locale overrides older browser and database conversation state, and the next assistant response uses and persists that language.
+
 The provider receives a separate system directive naming the current conversation language. Original history is sent as chronological user/assistant messages without translation or rewriting. Customer names, addresses, IDs, URLs, emails and phone numbers are preserved verbatim.
 
 ## Architecture

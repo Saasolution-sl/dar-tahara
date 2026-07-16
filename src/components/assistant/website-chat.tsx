@@ -4,6 +4,10 @@ import * as React from "react";
 import { Bot, CalendarCheck, Calculator, MessageCircle, Send, UserRound, X } from "lucide-react";
 import { isLocale, type Locale } from "@/i18n/config";
 import { buttonVariants } from "@/components/ui/button";
+import {
+  clearSelectedAssistantLanguage,
+  readSelectedAssistantLanguage,
+} from "@/lib/assistant/client-language";
 import { cn } from "@/lib/utils";
 
 type ChatCopy = {
@@ -34,6 +38,7 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
   const [open, setOpen] = React.useState(false);
   const [conversationId, setConversationId] = React.useState<string | null>(null);
   const [sessionLanguage, setSessionLanguage] = React.useState<Locale | null>(null);
+  const [selectedLanguage, setSelectedLanguage] = React.useState<Locale | null>(null);
   const [languageSelectionPending, setLanguageSelectionPending] = React.useState(false);
   const [input, setInput] = React.useState("");
   const [busy, setBusy] = React.useState(false);
@@ -50,10 +55,13 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
   React.useEffect(() => {
     const storedConversationId = window.localStorage.getItem("dar-tahara-assistant-conversation");
     const storedLanguage = window.localStorage.getItem("dar-tahara-assistant-language");
+    const explicitlySelectedLanguage = readSelectedAssistantLanguage();
     setConversationId(storedConversationId);
-    if (storedLanguage && isLocale(storedLanguage)) setSessionLanguage(storedLanguage);
+    setSelectedLanguage(explicitlySelectedLanguage);
+    if (explicitlySelectedLanguage) setSessionLanguage(explicitlySelectedLanguage);
+    else if (storedLanguage && isLocale(storedLanguage)) setSessionLanguage(storedLanguage);
     setLanguageSelectionPending(window.localStorage.getItem("dar-tahara-assistant-language-pending") === "true");
-  }, []);
+  }, [locale]);
 
   async function ask(text: string) {
     const message = text.trim();
@@ -71,6 +79,7 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
           conversationId,
           sessionId: getSessionId(),
           sessionLanguage,
+          selectedLanguage,
           languageSelectionPending,
           websitePath: window.location.pathname,
         }),
@@ -86,7 +95,9 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
       window.localStorage.setItem("dar-tahara-assistant-conversation", data.conversationId);
       if (data.languageConfirmed && isLocale(data.locale)) {
         setSessionLanguage(data.locale);
+        setSelectedLanguage(null);
         setLanguageSelectionPending(false);
+        clearSelectedAssistantLanguage();
         window.localStorage.setItem("dar-tahara-assistant-language", data.locale);
         window.localStorage.removeItem("dar-tahara-assistant-language-pending");
       } else {

@@ -399,6 +399,7 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
   const languageDecision = input.languageDecision || resolveConversationLanguage({
     message,
     currentLanguage: previousLanguage,
+    selectedLanguage: input.selectedLanguage,
     selectionPending: storedState.languageSelectionPending || input.languageSelectionPending,
   });
   const fallbackLocale = isLocale(input.locale) ? input.locale : "en";

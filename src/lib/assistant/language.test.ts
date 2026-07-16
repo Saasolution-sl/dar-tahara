@@ -63,6 +63,17 @@ test("changes language only after an explicit customer request", () => {
   assert.equal(spanish.languageChanged, true);
 });
 
+test("an actively selected UI language overrides the persisted conversation language", () => {
+  const result = resolveConversationLanguage({
+    message: "Hello",
+    currentLanguage: "nl",
+    selectedLanguage: "es",
+  });
+  assert.equal(result.locale, "es");
+  assert.equal(result.explicitChange, true);
+  assert.equal(result.languageChanged, true);
+});
+
 test("asks for language selection when confidence is low", () => {
   const result = resolveConversationLanguage({ message: "DTH-2607-10001 12345" });
   assert.equal(result.locale, null);

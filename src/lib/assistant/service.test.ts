@@ -91,6 +91,19 @@ test("assistant keeps and explicitly changes the conversation language", async (
   assert.match(changed.answer, /continue in English/);
 });
 
+test("assistant answers in the language actively selected in the website UI", async () => {
+  const reply = await answerAssistant({
+    channel: "website",
+    locale: "es",
+    sessionLanguage: "nl",
+    selectedLanguage: "es",
+    message: "Hello",
+  });
+  assert.equal(reply.locale, "es");
+  assert.equal(reply.languageChanged, true);
+  assert.match(reply.answer, /Hola|ayudarte/);
+});
+
 test("assistant asks for language selection instead of defaulting to English", async () => {
   const reply = await answerAssistant({ channel: "website", locale: "en", message: "DTH-2607-10001 12345" });
   assert.equal(reply.languageConfirmed, false);
