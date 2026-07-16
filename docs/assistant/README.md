@@ -10,12 +10,21 @@ This implementation creates one shared customer-service assistant for both:
 Both channels call the same server-side assistant engine in `src/lib/assistant/*`.
 The website and WhatsApp must not drift into separate bots.
 
+## Conversation language
+
+The first customer text is detected with the pinned `franc` language detector, supplemented by deterministic short-greeting, Arabic-script and Moroccan Darija signals. A result must exceed 80% confidence; otherwise the assistant asks the customer to select a language instead of guessing.
+
+The confirmed language is stored on the existing conversation record (`assistant_conversations.language` for website chat and `whatsapp_conversations.detected_language` for WhatsApp). It remains fixed for the session. Ordinary foreign or mixed-language messages do not change it; only an explicit request such as “Can we continue in English?” updates it.
+
+The provider receives a separate system directive naming the current conversation language. Original history is sent as chronological user/assistant messages without translation or rewriting. Customer names, addresses, IDs, URLs, emails and phone numbers are preserved verbatim.
+
 ## Architecture
 
 Main pieces:
 
 - `src/lib/assistant/knowledge.ts` — version-controlled approved knowledge.
 - `src/lib/assistant/retrieval.ts` — language-aware keyword/semantic-style retrieval and intent classification.
+- `src/lib/assistant/language.ts` — shared detection, confidence, session retention and explicit language switching for every channel.
 - `src/lib/assistant/service.ts` — shared assistant orchestration, pricing tool use, handoff rules and Supabase persistence.
 - `src/lib/assistant/provider.ts` — provider-neutral OpenAI-compatible model abstraction.
 - `src/app/api/assistant/chat/route.ts` — website chat API.

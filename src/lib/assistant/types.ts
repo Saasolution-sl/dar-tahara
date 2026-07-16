@@ -1,4 +1,5 @@
 import type { Locale } from "@/i18n/config";
+import type { ConversationLanguageDecision } from "./language";
 
 export type AssistantChannel = "website" | "whatsapp";
 export type AssistantRole = "customer" | "assistant" | "human" | "system";
@@ -67,6 +68,14 @@ export type AssistantInput = {
   customerName?: string | null;
   contact?: string | null;
   websitePath?: string | null;
+  /** Confirmed language for this conversation, independent of the channel UI locale. */
+  sessionLanguage?: Locale | null;
+  /** True when the previous turn asked the customer to select a language. */
+  languageSelectionPending?: boolean;
+  /** Original messages in chronological order. Never translate or rewrite these. */
+  conversationHistory?: Array<{ role: "user" | "assistant"; content: string }>;
+  /** A channel may pre-resolve language when it needs localized safety responses before AI orchestration. */
+  languageDecision?: ConversationLanguageDecision;
   /** Compact, server-built context. Customer text inside remains untrusted. */
   contextSummary?: string | null;
 };
@@ -81,6 +90,9 @@ export type AssistantToolCall = {
 export type AssistantReply = {
   conversationId: string;
   locale: Locale;
+  languageConfidence: number;
+  languageChanged: boolean;
+  languageConfirmed: boolean;
   intent: AssistantIntent;
   answer: string;
   confidence: number;

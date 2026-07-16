@@ -5,6 +5,13 @@ import { ANNUAL_DISCOUNT_PERCENT, formatMoneyFromCents } from "@/lib/assessment"
 import { calculatePrice, frequencyOrder, type FrequencyKey } from "@/lib/pricing";
 import { isServiceRoleConfigured, serviceInsert, serviceSelect, serviceUpdate, serviceUpsert } from "@/lib/supabase-rpc";
 import { generateWithConfiguredProvider } from "./provider";
+import {
+  LANGUAGE_CLARIFICATION,
+  LANGUAGE_NAMES,
+  languageLogMetadata,
+  resolveConversationLanguage,
+  responseMatchesConversationLanguage,
+} from "./language";
 import { classifyIntent, fallbackSources, retrieveKnowledge } from "./retrieval";
 import type { AssistantInput, AssistantIntent, AssistantReply, AssistantToolCall, RetrievedKnowledge } from "./types";
 
@@ -88,6 +95,45 @@ const RESPONSE_BY_LOCALE: Record<Locale, {
   },
 };
 
+const GREETING_BY_LOCALE: Record<Locale, string> = {
+  en: "Hello! How can I help you?",
+  nl: "Goedendag! Waarmee kan ik u helpen?",
+  fr: "Bonjour ! Comment puis-je vous aider ?",
+  es: "¡Hola! ¿Cómo puedo ayudarte?",
+  de: "Guten Tag! Wie kann ich Ihnen helfen?",
+  pt: "Olá! Como posso ajudar?",
+  ar: "مرحباً! كيف يمكنني مساعدتك؟",
+};
+
+const LANGUAGE_CHANGE_BY_LOCALE: Record<Locale, string> = {
+  en: "Of course. We can continue in English.",
+  nl: "Natuurlijk. We kunnen in het Nederlands verdergaan.",
+  fr: "Bien sûr. Nous pouvons continuer en français.",
+  es: "Por supuesto. Podemos continuar en español.",
+  de: "Natürlich. Wir können auf Deutsch fortfahren.",
+  pt: "Claro. Podemos continuar em português.",
+  ar: "بالطبع. يمكننا المتابعة باللغة العربية.",
+};
+
+const PRICE_LINES_BY_LOCALE: Record<Locale, {
+  monthly: string;
+  annual: (discount: number) => string;
+  assessment: string;
+  final: string;
+}> = {
+  en: { monthly: "estimated monthly subscription", annual: (discount) => `estimated annual total with ${discount}% annual discount`, assessment: "one-time Initial Home Assessment", final: "The final ongoing subscription may be adjusted after the home is professionally assessed." },
+  nl: { monthly: "geschat maandelijks abonnement", annual: (discount) => `geschat jaartotaal met ${discount}% jaarkorting`, assessment: "eenmalige Initiële Woningbeoordeling", final: "Het definitieve abonnement kan na de professionele woningbeoordeling worden aangepast." },
+  fr: { monthly: "abonnement mensuel estimé", annual: (discount) => `total annuel estimé avec ${discount} % de remise annuelle`, assessment: "Évaluation Initiale du Domicile unique", final: "L’abonnement définitif peut être ajusté après l’évaluation professionnelle du domicile." },
+  es: { monthly: "suscripción mensual estimada", annual: (discount) => `total anual estimado con un ${discount} % de descuento anual`, assessment: "Evaluación Inicial de la Vivienda, pago único", final: "La suscripción definitiva puede ajustarse tras la evaluación profesional de la vivienda." },
+  de: { monthly: "geschätztes Monatsabonnement", annual: (discount) => `geschätzte Jahressumme mit ${discount} % Jahresrabatt`, assessment: "einmalige Ersteinschätzung des Hauses", final: "Das endgültige Abonnement kann nach der professionellen Bewertung des Hauses angepasst werden." },
+  pt: { monthly: "subscrição mensal estimada", annual: (discount) => `total anual estimado com ${discount}% de desconto anual`, assessment: "Avaliação Inicial da Casa, pagamento único", final: "A subscrição definitiva pode ser ajustada após a avaliação profissional da casa." },
+  ar: { monthly: "اشتراك شهري تقديري", annual: (discount) => `إجمالي سنوي تقديري مع خصم سنوي بنسبة ${discount}%`, assessment: "التقييم الأولي للمنزل لمرة واحدة", final: "قد يتم تعديل الاشتراك النهائي بعد التقييم المهني للمنزل." },
+};
+
+function isShortGreeting(message: string): boolean {
+  return /^(hello|hi|hey|good morning|good afternoon|hoi|goedemorgen|goedemiddag|goedenavond|bonjour|salut|bonsoir|hola|buenos d[ií]as|buenas|hallo|guten tag|gutenmorgen|ol[áa]|oi|bom dia|السلام عليكم|مرحبا|أهلا|سلام)[!.?،\s]*$/iu.test(message.trim());
+}
+
 function cleanMessage(value: string): string {
   return value.trim().replace(/\s+/g, " ").slice(0, 2000);
 }
@@ -128,24 +174,28 @@ function needsHandoff(intent: AssistantIntent, message: string, retrieved: Retri
 
 function composeGroundedAnswer(input: AssistantInput, intent: AssistantIntent, retrieved: RetrievedKnowledge[], toolCalls: AssistantToolCall[]): string {
   const copy = RESPONSE_BY_LOCALE[input.locale];
+  if (isShortGreeting(input.message)) return GREETING_BY_LOCALE[input.locale];
+  if (intent === "language_change") return LANGUAGE_CHANGE_BY_LOCALE[input.locale];
   const priceTool = toolCalls.find((call) => call.name === "calculate_price" && call.status === "success");
   if (priceTool) {
     const monthlyCents = priceTool.result.monthlyCents as number | null;
     const annualCents = priceTool.result.annualCents as number | null;
     const assessmentCents = priceTool.result.assessmentCents as number;
+    const priceLines = PRICE_LINES_BY_LOCALE[input.locale];
     if (monthlyCents === null) return copy.priceCustom;
     return [
       copy.priceIntro,
-      `• ${formatMoneyFromCents(monthlyCents, input.locale)} estimated monthly subscription`,
-      annualCents ? `• ${formatMoneyFromCents(annualCents, input.locale)} estimated annual total with ${ANNUAL_DISCOUNT_PERCENT}% annual discount` : null,
-      `• ${formatMoneyFromCents(assessmentCents, input.locale)} one-time Initial Home Assessment`,
-      "The final ongoing subscription may be adjusted after the home is professionally assessed.",
+      `• ${formatMoneyFromCents(monthlyCents, input.locale)} ${priceLines.monthly}`,
+      annualCents ? `• ${formatMoneyFromCents(annualCents, input.locale)} ${priceLines.annual(ANNUAL_DISCOUNT_PERCENT)}` : null,
+      `• ${formatMoneyFromCents(assessmentCents, input.locale)} ${priceLines.assessment}`,
+      priceLines.final,
     ].filter(Boolean).join("\n");
   }
   if (intent === "pricing" && !priceTool) return copy.priceNeedSize;
   if (intent === "booking_status") return copy.bookingPrivate;
   if (["human_handoff", "complaint", "cancellation", "reschedule", "privacy", "opt_out"].includes(intent)) return copy.handoff;
   if (!retrieved.length) return copy.fallback;
+  if (input.locale !== "en" && !retrieved.some((item) => item.article.language === input.locale)) return copy.fallback;
   return retrieved.slice(0, 2).map((item) => item.article.content).join("\n\n");
 }
 
@@ -234,6 +284,38 @@ async function retrievePublishedDatabaseKnowledge(message: string, locale: Local
   }));
 }
 
+type StoredConversationState = {
+  authorized: boolean;
+  language: Locale | null;
+  languageSelectionPending: boolean;
+  history: Array<{ role: "user" | "assistant"; content: string }>;
+};
+
+async function loadWebsiteConversationState(input: AssistantInput): Promise<StoredConversationState> {
+  const empty: StoredConversationState = { authorized: true, language: null, languageSelectionPending: false, history: [] };
+  if (!isServiceRoleConfigured() || input.channel !== "website" || !input.conversationId || !input.sessionId) return empty;
+  const rows = await serviceSelect<Array<{ language: string; metadata: Record<string, unknown> | null }>>(
+    `assistant_conversations?id=eq.${encodeURIComponent(input.conversationId)}&select=language,metadata&limit=1`,
+  ).catch(() => []);
+  const row = rows[0];
+  if (!row) return empty;
+  if (row.metadata?.session_id !== input.sessionId) return { ...empty, authorized: false };
+
+  const languageConfirmed = row.metadata?.language_confirmed !== false;
+  const messageRows = await serviceSelect<Array<{ role: string; body: string }>>(
+    `assistant_messages?conversation_id=eq.${encodeURIComponent(input.conversationId)}&role=in.(customer,assistant)&select=role,body,created_at&order=created_at.desc&limit=12`,
+  ).catch(() => []);
+  return {
+    authorized: true,
+    language: languageConfirmed && isLocale(row.language) ? row.language : null,
+    languageSelectionPending: !languageConfirmed,
+    history: messageRows.reverse().map((message) => ({
+      role: message.role === "assistant" ? "assistant" : "user",
+      content: message.body,
+    })),
+  };
+}
+
 async function persistAssistantTurn(input: AssistantInput, reply: AssistantReply, retrieved: RetrievedKnowledge[]) {
   if (!isServiceRoleConfigured()) return;
   const nowMetadata = {
@@ -242,6 +324,9 @@ async function persistAssistantTurn(input: AssistantInput, reply: AssistantReply
     contact: input.contact || null,
     sources: retrieved.map((item) => ({ id: item.article.id, score: item.score })),
     tool_calls: reply.toolCalls,
+    language_confidence: reply.languageConfidence,
+    language_confirmed: reply.languageConfirmed,
+    language_changed: reply.languageChanged,
   };
   await serviceUpsert("assistant_conversations", {
     id: reply.conversationId,
@@ -276,6 +361,20 @@ async function persistAssistantTurn(input: AssistantInput, reply: AssistantReply
       metadata: nowMetadata,
     },
   ]).catch(() => undefined);
+  await serviceInsert("assistant_audit_logs", {
+    actor_type: "system",
+    actor_reference: input.channel,
+    action: reply.languageChanged ? "assistant_language_changed" : "assistant_language_resolved",
+    subject_table: "assistant_conversations",
+    subject_id: reply.conversationId,
+    metadata: {
+      detected_language: reply.locale,
+      confidence: reply.languageConfidence,
+      current_session_language: reply.languageConfirmed ? reply.locale : null,
+      language_changed: reply.languageChanged,
+      language_change_detected: reply.languageChanged,
+    },
+  }).catch(() => undefined);
   if (reply.handoffRequired) {
     await serviceInsert("support_cases", {
       customer_id: input.customerId || null,
@@ -293,10 +392,46 @@ async function persistAssistantTurn(input: AssistantInput, reply: AssistantReply
 }
 
 export async function answerAssistant(input: AssistantInput): Promise<AssistantReply> {
-  const locale = isLocale(input.locale) ? input.locale : "en";
   const message = cleanMessage(input.message);
-  const conversationId = input.conversationId || randomUUID();
-  const normalizedInput = { ...input, locale, message, conversationId };
+  const storedState = await loadWebsiteConversationState(input);
+  const conversationId = input.conversationId && storedState.authorized ? input.conversationId : randomUUID();
+  const previousLanguage = storedState.language || input.sessionLanguage || null;
+  const languageDecision = input.languageDecision || resolveConversationLanguage({
+    message,
+    currentLanguage: previousLanguage,
+    selectionPending: storedState.languageSelectionPending || input.languageSelectionPending,
+  });
+  const fallbackLocale = isLocale(input.locale) ? input.locale : "en";
+  const locale = languageDecision.locale || fallbackLocale;
+  const normalizedInput = {
+    ...input,
+    locale,
+    message,
+    conversationId,
+    sessionLanguage: languageDecision.locale,
+    conversationHistory: input.conversationHistory || storedState.history,
+  };
+  console.info(JSON.stringify({ scope: "assistant_language", ...languageLogMetadata(languageDecision, previousLanguage) }));
+
+  if (languageDecision.needsClarification) {
+    const reply: AssistantReply = {
+      conversationId,
+      locale,
+      languageConfidence: languageDecision.confidence,
+      languageChanged: false,
+      languageConfirmed: false,
+      intent: "language_change",
+      answer: LANGUAGE_CLARIFICATION,
+      confidence: 1,
+      handoffRequired: false,
+      sources: [],
+      suggestedActions: [],
+      toolCalls: [],
+    };
+    await persistAssistantTurn(normalizedInput, reply, []);
+    return reply;
+  }
+
   const intent = classifyIntent(message);
   const databaseKnowledge = await retrievePublishedDatabaseKnowledge(message, locale);
   const retrieved = databaseKnowledge.length
@@ -305,7 +440,17 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
   const priceTool = intent === "pricing" ? calculatePriceTool(message, locale) : null;
   const toolCalls = priceTool ? [priceTool] : [];
   const handoffReason = needsHandoff(intent, message, retrieved);
-  const providerAnswer = handoffReason ? null : await generateWithConfiguredProvider(normalizedInput, retrieved);
+  const generatedProviderAnswer = handoffReason ? null : await generateWithConfiguredProvider(normalizedInput, retrieved);
+  const providerAnswer = generatedProviderAnswer && responseMatchesConversationLanguage(generatedProviderAnswer.answer, locale)
+    ? generatedProviderAnswer
+    : null;
+  if (generatedProviderAnswer && !providerAnswer) {
+    console.warn(JSON.stringify({
+      scope: "assistant_language",
+      event: "provider_language_mismatch",
+      currentSessionLanguage: LANGUAGE_NAMES[locale],
+    }));
+  }
   const answer = providerAnswer?.answer || composeGroundedAnswer(normalizedInput, intent, retrieved, toolCalls);
   const confidence = handoffReason ? 0.48 : providerAnswer?.confidence ?? Math.min(0.9, 0.55 + retrieved.length * 0.1 + toolCalls.length * 0.15);
   const sources = retrieved.map((item) => ({
@@ -318,6 +463,9 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
   const reply: AssistantReply = {
     conversationId,
     locale,
+    languageConfidence: languageDecision.confidence,
+    languageChanged: languageDecision.languageChanged,
+    languageConfirmed: true,
     intent,
     answer,
     confidence,

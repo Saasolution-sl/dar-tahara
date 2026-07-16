@@ -3,6 +3,11 @@ import { randomUUID } from "node:crypto";
 import { isLocale, type Locale } from "@/i18n/config";
 import { answerAssistant } from "@/lib/assistant/service";
 import {
+  LANGUAGE_CLARIFICATION,
+  languageLogMetadata,
+  resolveConversationLanguage,
+} from "@/lib/assistant/language";
+import {
   isServiceRoleConfigured,
   serviceInsert,
   serviceInsertIgnoreDuplicates,
@@ -11,7 +16,6 @@ import {
   serviceUpdate,
   serviceUpsert,
 } from "@/lib/supabase-rpc";
-import { detectWhatsAppLocale } from "@/lib/whatsapp";
 import { whatsappCopy } from "./copy";
 import { normalizeSupportEmail } from "./email";
 import { classifyEscalation, looksLikePromptInjection, looksLikeSpam, type EscalationDecision } from "./escalation";
@@ -57,6 +61,7 @@ type ConversationRow = {
   failed_resolution_attempts: number;
   conversation_summary: string | null;
   customer_profile: Record<string, unknown>;
+  last_customer_message_at: string | null;
 };
 
 type EscalationRow = {
@@ -252,16 +257,29 @@ async function findOrCreateConversation(contact: ContactRow, locale: Locale): Pr
   return inserted[0];
 }
 
-async function recentContext(conversationId: string): Promise<{ summary: string; transcript: string; count: number }> {
-  const rows = await serviceSelect<Array<{ direction: string; message_body_encrypted: string | null; message_body_redacted: string | null; created_at: string }>>(
-    `whatsapp_messages?conversation_id=eq.${conversationId}&select=direction,message_body_encrypted,message_body_redacted,created_at&order=created_at.desc&limit=12`,
+async function recentContext(conversationId: string, excludeExternalMessageId?: string): Promise<{
+  summary: string;
+  transcript: string;
+  count: number;
+  history: Array<{ role: "user" | "assistant"; content: string }>;
+}> {
+  const rows = await serviceSelect<Array<{ external_message_id: string; direction: string; message_body_encrypted: string | null; message_body_redacted: string | null; created_at: string }>>(
+    `whatsapp_messages?conversation_id=eq.${conversationId}&select=external_message_id,direction,message_body_encrypted,message_body_redacted,created_at&order=created_at.desc&limit=12`,
   ).catch(() => []);
-  const lines = rows.reverse().map((item) => {
+  const chronological = rows.reverse();
+  const exactBodies = chronological.map((item) => item.message_body_encrypted
+    ? decryptSensitive(item.message_body_encrypted)
+    : item.message_body_redacted || "[content unavailable]");
+  const lines = chronological.map((item, index) => {
     let body = item.message_body_redacted || "[content unavailable]";
     if (item.message_body_encrypted) body = redactSensitiveText(decryptSensitive(item.message_body_encrypted), 800);
     return `${item.direction === "inbound" ? "Customer" : "Assistant"}: ${body}`;
   });
-  return { summary: lines.slice(-6).join("\n").slice(0, 3500), transcript: lines.join("\n").slice(0, 12_000), count: rows.length };
+  const history = chronological.flatMap((item, index) => item.external_message_id === excludeExternalMessageId ? [] : [{
+    role: item.direction === "inbound" ? "user" as const : "assistant" as const,
+    content: exactBodies[index],
+  }]);
+  return { summary: lines.slice(-6).join("\n").slice(0, 3500), transcript: lines.join("\n").slice(0, 12_000), count: rows.length, history };
 }
 
 async function startEscalation(
@@ -393,9 +411,23 @@ async function processMessage(row: WebhookRow) {
   const message = payload.textEncrypted ? decryptSensitive(String(payload.textEncrypted)) : "";
   const messageType = String(payload.messageType || "unknown");
   const contact = await findOrCreateContact(payload);
-  const detected = message ? detectWhatsAppLocale(message) : contact.preferred_language;
-  const locale = detected;
-  const conversation = await findOrCreateConversation(contact, locale);
+  const conversation = await findOrCreateConversation(contact, contact.preferred_language);
+  const previousLanguage = conversation.last_customer_message_at && conversation.customer_profile?.language_confirmed !== false
+    ? conversation.detected_language
+    : null;
+  const languageDecision = message ? resolveConversationLanguage({
+    message,
+    currentLanguage: previousLanguage,
+    selectionPending: conversation.customer_profile?.language_confirmed === false,
+  }) : {
+    locale: previousLanguage,
+    detectedLocale: null,
+    confidence: 0,
+    languageChanged: false,
+    explicitChange: false,
+    needsClarification: false,
+  };
+  const locale = languageDecision.locale || previousLanguage || contact.preferred_language;
   const copy = whatsappCopy(locale);
 
   if (contact.blocked_until && new Date(contact.blocked_until).getTime() > Date.now()) {
@@ -420,15 +452,23 @@ async function processMessage(row: WebhookRow) {
   }
 
   await serviceUpdate("whatsapp_contacts", `id=eq.${contact.id}`, {
-    preferred_language: detected,
+    ...(languageDecision.locale ? { preferred_language: languageDecision.locale } : {}),
     last_contact_at: new Date().toISOString(),
   });
   await serviceUpdate("whatsapp_conversations", `id=eq.${conversation.id}`, {
-    detected_language: detected,
+    ...(languageDecision.locale ? { detected_language: languageDecision.locale } : {}),
+    customer_profile: {
+      ...(conversation.customer_profile || {}),
+      language_confirmed: message ? !languageDecision.needsClarification : Boolean(previousLanguage),
+      language_confidence: languageDecision.confidence,
+    },
     last_customer_message_at: new Date().toISOString(),
     service_window_expires_at: new Date(Date.now() + 24 * 60 * 60_000).toISOString(),
   });
-  await audit(conversation.id, row.correlation_id, "message_parsed", { messageType, locale: detected });
+  await audit(conversation.id, row.correlation_id, languageDecision.languageChanged ? "language_changed" : "language_detected", {
+    messageType,
+    ...languageLogMetadata(languageDecision, previousLanguage),
+  });
 
   if (conversation.escalation_status === "escalated") {
     await storeOutbound(conversation, sender, copy.ticketCreated, locale, row.correlation_id);
@@ -480,6 +520,11 @@ async function processMessage(row: WebhookRow) {
     await audit(conversation.id, row.correlation_id, "prompt_injection_detected", {});
   }
 
+  if (languageDecision.needsClarification) {
+    await storeOutbound(conversation, sender, LANGUAGE_CLARIFICATION, locale, row.correlation_id);
+    return;
+  }
+
   if (conversation.escalation_status === "awaiting_email") {
     const email = normalizeSupportEmail(message);
     if (!email) {
@@ -509,15 +554,18 @@ async function processMessage(row: WebhookRow) {
     return;
   }
 
-  const context = await recentContext(conversation.id);
+  const context = await recentContext(conversation.id, row.external_event_id);
   const reply = await answerAssistant({
     channel: "whatsapp",
     message,
     locale,
+    sessionLanguage: locale,
+    languageDecision,
     conversationId: conversation.id,
     customerName: contact.display_name,
     contact: String(payload.senderHash || ""),
     contextSummary: conversation.conversation_summary || context.summary,
+    conversationHistory: context.history,
   });
   await audit(conversation.id, row.correlation_id, "intent_classified", { intent: reply.intent, confidence: reply.confidence });
   const threshold = Number(process.env.ASSISTANT_CONFIDENCE_THRESHOLD || 0.62);
@@ -530,7 +578,7 @@ async function processMessage(row: WebhookRow) {
     }, message, sender, locale, row.correlation_id);
     return;
   }
-  await storeOutbound(conversation, sender, reply.answer, locale, row.correlation_id, {
+  await storeOutbound(conversation, sender, reply.answer, reply.locale, row.correlation_id, {
     aiGenerated: Boolean(reply.modelName),
     modelName: reply.modelName,
     tokenUsage: reply.tokenUsage,

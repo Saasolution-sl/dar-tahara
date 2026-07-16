@@ -1,6 +1,7 @@
 import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { isLocale, type Locale } from "@/i18n/config";
+import { detectLanguage } from "@/lib/assistant/language";
 
 type Intent =
   | "included" | "price" | "subscriptions" | "frequency" | "cancel"
@@ -147,17 +148,7 @@ const ANSWERS: Record<Locale, Record<Intent | "fallback", string>> = {
 };
 
 export function detectWhatsAppLocale(text: string): Locale {
-  if (/[\u0600-\u06ff]/.test(text)) return "ar";
-  const normalized = text.toLocaleLowerCase();
-  // Moroccan Darija written in Latin script / Arabizi shares the Arabic locale
-  // so replies preserve the existing RTL-capable Arabic translation path.
-  if (/\b(salam|bghit| بغيت|chhal|wach|3afak|afak|kifach|fin|nqiya|n9iya|darija)\b/i.test(normalized)) return "ar";
-  let best: { locale: Locale; score: number } = { locale: "en", score: 0 };
-  for (const [locale, intents] of Object.entries(KEYWORDS) as Array<[Locale, typeof KEYWORDS[Locale]]>) {
-    const score = Object.values(intents).flat().reduce((total, keyword) => total + (normalized.includes(keyword) ? keyword.length : 0), 0);
-    if (score > best.score) best = { locale, score };
-  }
-  return best.locale;
+  return detectLanguage(text).locale || "en";
 }
 
 export function answerWhatsAppQuestion(text: string, preferredLocale?: string | null): { locale: Locale; intent: Intent | "fallback"; answer: string } {

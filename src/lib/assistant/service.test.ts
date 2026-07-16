@@ -51,3 +51,48 @@ test("assistant does not expose personal booking details without verification", 
   assert.equal(reply.handoffRequired, true);
   assert.match(reply.answer, /specialist|verified|verification/i);
 });
+
+test("assistant responds to short greetings in the detected language", async () => {
+  const cases = [
+    ["nl", "Goedemorgen", /Goedendag|Waarmee/],
+    ["fr", "Bonjour", /Bonjour|aider/],
+    ["es", "Hola", /Hola|ayudarte/],
+    ["de", "Hallo", /Guten Tag|helfen/],
+    ["pt", "Oi", /Olá|ajudar/],
+    ["ar", "السلام عليكم", /مرحب|مساعد/],
+    ["en", "Hello", /Hello|help/],
+  ] as const;
+  for (const [locale, message, expected] of cases) {
+    const reply = await answerAssistant({ channel: "website", locale: "en", message });
+    assert.equal(reply.locale, locale);
+    assert.equal(reply.languageConfirmed, true);
+    assert.match(reply.answer, expected);
+  }
+});
+
+test("assistant keeps and explicitly changes the conversation language", async () => {
+  const retained = await answerAssistant({
+    channel: "website",
+    locale: "en",
+    sessionLanguage: "nl",
+    message: "Thanks, I have another question.",
+  });
+  assert.equal(retained.locale, "nl");
+  assert.equal(retained.languageChanged, false);
+
+  const changed = await answerAssistant({
+    channel: "website",
+    locale: "fr",
+    sessionLanguage: "fr",
+    message: "Can we continue in English?",
+  });
+  assert.equal(changed.locale, "en");
+  assert.equal(changed.languageChanged, true);
+  assert.match(changed.answer, /continue in English/);
+});
+
+test("assistant asks for language selection instead of defaulting to English", async () => {
+  const reply = await answerAssistant({ channel: "website", locale: "en", message: "DTH-2607-10001 12345" });
+  assert.equal(reply.languageConfirmed, false);
+  assert.match(reply.answer, /Which language|In welke taal|بأي لغة/);
+});
