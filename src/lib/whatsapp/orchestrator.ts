@@ -568,12 +568,11 @@ async function processMessage(row: WebhookRow) {
     conversationHistory: context.history,
   });
   await audit(conversation.id, row.correlation_id, "intent_classified", { intent: reply.intent, confidence: reply.confidence });
-  const threshold = Number(process.env.ASSISTANT_CONFIDENCE_THRESHOLD || 0.62);
-  if (reply.handoffRequired || reply.confidence < threshold) {
+  if (reply.handoffRequired) {
     await startEscalation(contact, conversation, {
       required: true,
-      category: reply.handoffReason || "low_confidence",
-      reason: reply.handoffReason || "low_confidence_classification",
+      category: reply.handoffReason || "manual_review",
+      reason: reply.handoffReason || "manual_review_required",
       severity: "normal",
     }, message, sender, locale, row.correlation_id);
     return;
@@ -586,7 +585,9 @@ async function processMessage(row: WebhookRow) {
   await serviceUpdate("whatsapp_conversations", `id=eq.${conversation.id}`, {
     current_intent: reply.intent,
     conversation_summary: context.count >= 10 ? context.summary : conversation.conversation_summary,
-    failed_resolution_attempts: reply.intent === "unknown" ? conversation.failed_resolution_attempts + 1 : 0,
+    failed_resolution_attempts: ["ask_clarifying_question", "guided_self_service"].includes(reply.escalation.nextAction)
+      ? conversation.failed_resolution_attempts + 1
+      : 0,
   });
 }
 

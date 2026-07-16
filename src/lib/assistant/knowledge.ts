@@ -78,7 +78,7 @@ const canonicalArticles = [
     relatedQuestions: ["Do I need to be home?", "Can you hold my keys?"],
     summary: "Secure access must be confirmed; first-visit availability is recommended for special requirements.",
     content:
-      "Customers do not always need to be home for regular visits, but Dar Tahara needs confirmed, secure access. Access notes may include parking, gate codes, key instructions or building entry details. For the first visit, being available is recommended if the property has special requirements. Key handling must be logged, discreet and secure.",
+      "Customers do not always need to be home for regular visits, but Dar Tahara needs confirmed, secure access. Access notes may include parking, gate codes, key instructions or building entry details. For the first visit, being available is recommended if the property has special requirements. Physical keys are stored with a logged chain of custody; an additional physical-key management fee and separate conditions may apply for administration, secure storage and insurance requirements. Where suitable, Dar Tahara recommends a TTLock-compatible Wi-Fi smart lock and can arrange installation for around €200 during or after the assessment; the home needs an active internet connection.",
     source: "FAQ and booking form",
   },
   {

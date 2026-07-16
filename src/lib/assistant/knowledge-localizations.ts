@@ -32,7 +32,7 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
     },
     "access-presence-keys": {
       title: "Toegang tot de woning en sleutelbeheer",
-      content: "U hoeft bij gewone bezoeken niet altijd thuis te zijn, maar Dar Tahara heeft wel bevestigde, veilige toegang nodig. Toegangsinstructies kunnen parkeerinformatie, poortcodes, sleutelinstructies of informatie over de ingang bevatten. Bij het eerste bezoek is uw aanwezigheid aanbevolen als de woning bijzondere vereisten heeft. Sleutelbeheer wordt discreet en veilig geregistreerd.",
+      content: "U hoeft bij gewone bezoeken niet altijd thuis te zijn, maar Dar Tahara heeft wel bevestigde, veilige toegang nodig. Toegangsinstructies kunnen parkeerinformatie, poortcodes, sleutelinstructies of informatie over de ingang bevatten. Bij het eerste bezoek is uw aanwezigheid aanbevolen als de woning bijzondere vereisten heeft. Fysieke sleutels worden met een geregistreerde bewaarketen opgeslagen; voor administratie, veilige opslag en verzekeringseisen kunnen extra beheerkosten en aparte voorwaarden gelden. Waar geschikt adviseert Dar Tahara een TTLock-compatibel slim Wi-Fi-slot; installatie kan tijdens of na de beoordeling voor ongeveer €200 worden geregeld en vereist internet in de woning.",
     },
     "reschedule-cancel-pause": {
       title: "Verzetten, annuleren en pauzeren",
@@ -74,7 +74,7 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
     },
     "access-presence-keys": {
       title: "Accès au logement et gestion des clés",
-      content: "Vous ne devez pas toujours être présent lors des visites régulières, mais Dar Tahara doit disposer d’un accès confirmé et sécurisé. Les consignes peuvent inclure le stationnement, les codes d’entrée, les clés ou l’accès à l’immeuble. Votre présence est recommandée lors de la première visite si le logement a des besoins particuliers. La gestion des clés est enregistrée de façon discrète et sécurisée.",
+      content: "Vous ne devez pas toujours être présent lors des visites régulières, mais Dar Tahara doit disposer d’un accès confirmé et sécurisé. Les consignes peuvent inclure le stationnement, les codes d’entrée, les clés ou l’accès à l’immeuble. Votre présence est recommandée lors de la première visite si le logement a des besoins particuliers. Les clés physiques sont conservées avec une chaîne de garde enregistrée ; des frais de gestion et des conditions séparées peuvent s’appliquer pour l’administration, le stockage sécurisé et l’assurance. Lorsque cela convient, Dar Tahara recommande une serrure Wi-Fi compatible TTLock et peut organiser son installation pour environ 200 € pendant ou après l’évaluation ; une connexion internet active est nécessaire.",
     },
     "reschedule-cancel-pause": {
       title: "Reporter, annuler ou suspendre",
@@ -116,7 +116,7 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
     },
     "access-presence-keys": {
       title: "Acceso a la vivienda y gestión de llaves",
-      content: "No siempre es necesario que esté en casa durante las visitas periódicas, pero Dar Tahara necesita un acceso confirmado y seguro. Las instrucciones pueden incluir aparcamiento, códigos de entrada, llaves o acceso al edificio. Se recomienda estar disponible durante la primera visita si la vivienda tiene requisitos especiales. La gestión de llaves se registra de forma discreta y segura.",
+      content: "No siempre es necesario que esté en casa durante las visitas periódicas, pero Dar Tahara necesita un acceso confirmado y seguro. Las instrucciones pueden incluir aparcamiento, códigos de entrada, llaves o acceso al edificio. Se recomienda estar disponible durante la primera visita si la vivienda tiene requisitos especiales. Las llaves físicas se guardan con una cadena de custodia registrada; pueden aplicarse una tarifa adicional de gestión y condiciones separadas por administración, almacenamiento seguro y requisitos del seguro. Cuando sea adecuado, Dar Tahara recomienda una cerradura Wi-Fi compatible con TTLock y puede organizar la instalación por unos 200 € durante o después de la evaluación; la vivienda necesita conexión a internet.",
     },
     "reschedule-cancel-pause": {
       title: "Reprogramación, cancelación y pausa",
@@ -158,7 +158,7 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
     },
     "access-presence-keys": {
       title: "Zugang zur Immobilie und Schlüsselverwaltung",
-      content: "Bei regelmäßigen Besuchen müssen Sie nicht immer zu Hause sein, Dar Tahara benötigt jedoch einen bestätigten und sicheren Zugang. Hinweise können Parkmöglichkeiten, Torcodes, Schlüssel oder den Gebäudeeingang betreffen. Beim ersten Besuch wird Ihre Anwesenheit empfohlen, wenn besondere Anforderungen bestehen. Die Schlüsselverwaltung wird diskret und sicher dokumentiert.",
+      content: "Bei regelmäßigen Besuchen müssen Sie nicht immer zu Hause sein, Dar Tahara benötigt jedoch einen bestätigten und sicheren Zugang. Hinweise können Parkmöglichkeiten, Torcodes, Schlüssel oder den Gebäudeeingang betreffen. Beim ersten Besuch wird Ihre Anwesenheit empfohlen, wenn besondere Anforderungen bestehen. Physische Schlüssel werden mit dokumentierter Verwahrungskette gelagert; für Verwaltung, sichere Aufbewahrung und Versicherungsanforderungen können zusätzliche Gebühren und separate Bedingungen gelten. Wo geeignet, empfiehlt Dar Tahara ein TTLock-kompatibles WLAN-Smart-Lock und kann die Installation während oder nach der Bewertung für etwa 200 € organisieren; im Haus ist eine aktive Internetverbindung erforderlich.",
     },
     "reschedule-cancel-pause": {
       title: "Verschieben, kündigen und pausieren",
@@ -200,7 +200,7 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
     },
     "access-presence-keys": {
       title: "Acesso à casa e gestão de chaves",
-      content: "Nem sempre precisa de estar em casa nas visitas regulares, mas a Dar Tahara necessita de acesso confirmado e seguro. As instruções podem incluir estacionamento, códigos de portão, chaves ou entrada do edifício. Recomenda-se a sua presença na primeira visita se a casa tiver requisitos especiais. A gestão de chaves é registada de forma discreta e segura.",
+      content: "Nem sempre precisa de estar em casa nas visitas regulares, mas a Dar Tahara necessita de acesso confirmado e seguro. As instruções podem incluir estacionamento, códigos de portão, chaves ou entrada do edifício. Recomenda-se a sua presença na primeira visita se a casa tiver requisitos especiais. As chaves físicas são guardadas com cadeia de custódia registada; podem aplicar-se uma taxa adicional de gestão e condições separadas para administração, armazenamento seguro e requisitos de seguro. Quando adequado, a Dar Tahara recomenda uma fechadura Wi-Fi compatível com TTLock e pode organizar a instalação por cerca de 200 € durante ou após a avaliação; a casa necessita de internet ativa.",
     },
     "reschedule-cancel-pause": {
       title: "Reagendar, cancelar e pausar",
@@ -242,7 +242,7 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
     },
     "access-presence-keys": {
       title: "الدخول إلى المنزل وإدارة المفاتيح",
-      content: "لا يلزم أن تكون في المنزل دائماً أثناء الزيارات الدورية، لكن دار طهارة تحتاج إلى طريقة دخول مؤكدة وآمنة. قد تشمل التعليمات موقف السيارة أو رمز البوابة أو المفاتيح أو مدخل المبنى. يُستحسن حضورك في الزيارة الأولى إذا كانت للمنزل متطلبات خاصة. يتم تسجيل إدارة المفاتيح بسرية وأمان.",
+      content: "لا يلزم أن تكون في المنزل دائماً أثناء الزيارات الدورية، لكن دار طهارة تحتاج إلى طريقة دخول مؤكدة وآمنة. قد تشمل التعليمات موقف السيارة أو رمز البوابة أو المفاتيح أو مدخل المبنى. يُستحسن حضورك في الزيارة الأولى إذا كانت للمنزل متطلبات خاصة. تُحفظ المفاتيح الفعلية بسجل عهدة موثق، وقد تُطبق رسوم إدارة إضافية وشروط منفصلة للإدارة والتخزين الآمن ومتطلبات التأمين. عند ملاءمة المنزل، توصي دار طهارة بقفل ذكي يعمل بالـ Wi-Fi ومتوافق مع TTLock، ويمكن ترتيب تركيبه بحوالي 200 يورو أثناء التقييم أو بعده، مع ضرورة توفر اتصال إنترنت فعال في المنزل.",
     },
     "reschedule-cancel-pause": {
       title: "تغيير الموعد والإلغاء والتوقيف المؤقت",

@@ -72,7 +72,7 @@ const SHORT_LANGUAGE_SIGNALS: Record<string, Locale> = {
 };
 
 const LANGUAGE_HINTS: Record<Locale, string[]> = {
-  en: ["the", "and", "hello", "would", "like", "quote", "home", "please", "can", "i", "my", "your", "booking", "price", "change", "frequency", "what", "how", "cost", "services", "included", "first", "visit", "payment"],
+  en: ["the", "and", "hello", "would", "like", "quote", "home", "please", "can", "i", "my", "your", "booking", "price", "change", "frequency", "what", "how", "cost", "services", "included", "first", "visit", "payment", "want", "speak", "person", "someone", "support", "manager", "cleaning", "give", "physical", "key", "for"],
   nl: ["de", "het", "een", "en", "ik", "graag", "offerte", "mijn", "uw", "goedemiddag", "waarmee", "woning", "prijs", "wat", "hoe", "diensten", "inbegrepen", "schoonmaak", "eerste", "bezoek", "betaling"],
   fr: ["le", "la", "les", "et", "je", "voudrais", "devis", "mon", "votre", "bonjour", "pouvez", "maison", "prix", "comment", "quels", "services", "inclus", "nettoyage", "premiere", "visite", "paiement"],
   es: ["el", "la", "los", "una", "y", "quisiera", "presupuesto", "mi", "su", "hola", "puede", "casa", "precio", "que", "como", "servicios", "estan", "incluidos", "limpieza", "primera", "visita", "pago"],

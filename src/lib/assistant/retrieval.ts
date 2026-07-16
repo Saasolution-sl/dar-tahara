@@ -137,6 +137,9 @@ export function classifyIntent(message: string): AssistantIntent {
   if (/\bdth\b|booking reference|reservation reference/.test(n) || (n.includes("booking") && n.includes("status"))) {
     return "booking_status";
   }
+  if (/\b(how much|what (?:does|is) .*(?:cost|price)|combien|quel est le prix|cuanto|cuesta|wie viel|was kostet|quanto custa|qual e o preco)\b|كم (?:سعر|تكلفة)|شحال/iu.test(n)) {
+    return "pricing";
+  }
   let best: { intent: AssistantIntent; score: number } = { intent: "unknown", score: 0 };
   for (const [intent, keywords] of Object.entries(INTENT_KEYWORDS) as Array<[AssistantIntent, string[]]>) {
     const score = keywords.reduce((total, keyword) => total + (n.includes(normalize(keyword)) ? keyword.length : 0), 0);
@@ -153,6 +156,7 @@ export function retrieveKnowledge(
 ): RetrievedKnowledge[] {
   const words = tokens(message);
   const normalizedMessage = normalize(message);
+  const isAccessQuestion = /\b(key|keys|access|lock|sleutel|sleutels|toegang|cle|cles|acces|llave|llaves|acceso|schlussel|zugang|chave|chaves|acesso|مفتاح|مفاتيح|الدخول|قفل)\b/iu.test(normalizedMessage);
 
   const scored = knowledgeArticles
     .filter((article) => article.status === "approved" && article.visibility === "public")
@@ -171,7 +175,8 @@ export function retrieveKnowledge(
       const tokenScore = words.reduce((score, word) => score + (haystackTokens.has(word) ? 1 : 0), 0);
       const keywordScore = matchedKeywords.reduce((score, keyword) => score + keyword.length / 4, 0);
       const languageBoost = article.language === locale ? 2 : article.language === "all" ? 1 : 0;
-      return { article, score: tokenScore + keywordScore + languageBoost, matchedKeywords };
+      const topicBoost = isAccessQuestion && article.id === "access-presence-keys" ? 8 : 0;
+      return { article, score: tokenScore + keywordScore + languageBoost + topicBoost, matchedKeywords };
     })
     .filter((result) => result.score > 1)
     .sort((a, b) => b.score - a.score || b.article.version - a.article.version)

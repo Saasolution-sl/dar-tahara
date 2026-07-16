@@ -14,7 +14,23 @@ import {
 } from "./language";
 import { localizeRetrievedKnowledge } from "./knowledge-localizations";
 import { classifyIntent, knowledgeCategoriesForIntent, retrieveKnowledge } from "./retrieval";
-import type { AssistantInput, AssistantIntent, AssistantReply, AssistantToolCall, RetrievedKnowledge } from "./types";
+import { buildHandoffSummary, evaluateHumanHandoff, guidedResponse, type HandoffEvaluation } from "./handoff";
+import {
+  advanceSuggestionState,
+  deriveMissingInformation,
+  EMPTY_SUGGESTION_STATE,
+  generateConversationSuggestions,
+  suggestionStateFromMetadata,
+} from "./suggestions";
+import type {
+  AssistantInput,
+  AssistantIntent,
+  AssistantReply,
+  AssistantSuggestion,
+  AssistantSuggestionState,
+  AssistantToolCall,
+  RetrievedKnowledge,
+} from "./types";
 
 const RESPONSE_BY_LOCALE: Record<Locale, {
   fallback: string;
@@ -155,28 +171,23 @@ function extractFrequency(message: string): FrequencyKey {
   return "biweekly";
 }
 
-function buildActions(locale: Locale, intent: AssistantIntent) {
-  const labels = RESPONSE_BY_LOCALE[locale].actions;
-  return [
-    { label: labels.firstVisit, action: "ask" as const, value: labels.firstVisit },
-    { label: labels.calculate, action: "open_calculator" as const, value: "#calculator" },
-    { label: labels.book, action: "open_booking" as const, value: "book_assessment" },
-    ...(intent === "human_handoff" ? [] : [{ label: labels.specialist, action: "handoff" as const, value: labels.specialist }]),
-  ];
+function buildActions(suggestions: AssistantSuggestion[]) {
+  return suggestions.map((item) => ({ label: item.label, action: "ask" as const, value: item.value }));
 }
 
-function needsHandoff(intent: AssistantIntent, message: string, retrieved: RetrievedKnowledge[]): string | null {
-  if (/refund|chargeback|dispute|damage|unsafe|lawyer|legal|misconduct/i.test(message)) return "sensitive_or_disputed_issue";
-  if (intent === "human_handoff") return "customer_requested_human";
-  if (["complaint", "cancellation", "reschedule", "booking_status", "privacy", "opt_out"].includes(intent)) return intent;
-  if (retrieved.length === 0 && message.length > 20) return "knowledge_gap";
-  return null;
-}
-
-function composeGroundedAnswer(input: AssistantInput, intent: AssistantIntent, retrieved: RetrievedKnowledge[], toolCalls: AssistantToolCall[]): string {
+function composeGroundedAnswer(
+  input: AssistantInput,
+  intent: AssistantIntent,
+  retrieved: RetrievedKnowledge[],
+  toolCalls: AssistantToolCall[],
+  evaluation: HandoffEvaluation,
+): string {
   const copy = RESPONSE_BY_LOCALE[input.locale];
   if (isShortGreeting(input.message)) return GREETING_BY_LOCALE[input.locale];
   if (intent === "language_change") return LANGUAGE_CHANGE_BY_LOCALE[input.locale];
+  if (evaluation.required || evaluation.nextAction === "ask_clarifying_question" || evaluation.nextAction === "guided_self_service") {
+    return guidedResponse(input.locale, evaluation);
+  }
   const priceTool = toolCalls.find((call) => call.name === "calculate_price" && call.status === "success");
   if (priceTool) {
     const monthlyCents = priceTool.result.monthlyCents as number | null;
@@ -194,7 +205,6 @@ function composeGroundedAnswer(input: AssistantInput, intent: AssistantIntent, r
   }
   if (intent === "pricing" && !priceTool) return copy.priceNeedSize;
   if (intent === "booking_status") return copy.bookingPrivate;
-  if (["human_handoff", "complaint", "cancellation", "reschedule", "privacy", "opt_out"].includes(intent)) return copy.handoff;
   if (!retrieved.length) return copy.fallback;
   return retrieved.slice(0, 2).map((item) => item.article.content).join("\n\n");
 }
@@ -295,10 +305,17 @@ type StoredConversationState = {
   language: Locale | null;
   languageSelectionPending: boolean;
   history: Array<{ role: "user" | "assistant"; content: string }>;
+  suggestionState: AssistantSuggestionState;
 };
 
 async function loadWebsiteConversationState(input: AssistantInput): Promise<StoredConversationState> {
-  const empty: StoredConversationState = { authorized: true, language: null, languageSelectionPending: false, history: [] };
+  const empty: StoredConversationState = {
+    authorized: true,
+    language: null,
+    languageSelectionPending: false,
+    history: [],
+    suggestionState: input.suggestionState || EMPTY_SUGGESTION_STATE,
+  };
   if (!isServiceRoleConfigured() || input.channel !== "website" || !input.conversationId || !input.sessionId) return empty;
   const rows = await serviceSelect<Array<{ language: string; metadata: Record<string, unknown> | null }>>(
     `assistant_conversations?id=eq.${encodeURIComponent(input.conversationId)}&select=language,metadata&limit=1`,
@@ -315,6 +332,7 @@ async function loadWebsiteConversationState(input: AssistantInput): Promise<Stor
     authorized: true,
     language: languageConfirmed && isLocale(row.language) ? row.language : null,
     languageSelectionPending: !languageConfirmed,
+    suggestionState: suggestionStateFromMetadata(row.metadata),
     history: messageRows.reverse().map((message) => ({
       role: message.role === "assistant" ? "assistant" : "user",
       content: message.body,
@@ -333,6 +351,13 @@ async function persistAssistantTurn(input: AssistantInput, reply: AssistantReply
     language_confidence: reply.languageConfidence,
     language_confirmed: reply.languageConfirmed,
     language_changed: reply.languageChanged,
+    shown_suggestion_ids: reply.suggestionState.shownSuggestionIds,
+    selected_suggestion_ids: reply.suggestionState.selectedSuggestionIds,
+    answered_topics: reply.suggestionState.answeredTopics,
+    unresolved_topics: reply.suggestionState.unresolvedTopics,
+    clarification_attempts: reply.suggestionState.clarificationAttempts,
+    suggestions: reply.suggestions.map((item) => ({ id: item.id, intent: item.intent })),
+    escalation: { required: reply.escalation.required, reason: reply.escalation.reason, next_action: reply.escalation.nextAction },
   };
   await serviceUpsert("assistant_conversations", {
     id: reply.conversationId,
@@ -367,7 +392,7 @@ async function persistAssistantTurn(input: AssistantInput, reply: AssistantReply
       metadata: nowMetadata,
     },
   ]).catch(() => undefined);
-  await serviceInsert("assistant_audit_logs", {
+  const auditEvents: Array<Record<string, unknown>> = [{
     actor_type: "system",
     actor_reference: input.channel,
     action: reply.languageChanged ? "assistant_language_changed" : "assistant_language_resolved",
@@ -380,20 +405,90 @@ async function persistAssistantTurn(input: AssistantInput, reply: AssistantReply
       language_changed: reply.languageChanged,
       language_change_detected: reply.languageChanged,
     },
-  }).catch(() => undefined);
+  }, {
+    actor_type: "assistant",
+    actor_reference: input.channel,
+    action: "intent_detected",
+    subject_table: "assistant_conversations",
+    subject_id: reply.conversationId,
+    metadata: { intent: reply.intent, confidence: reply.confidence, language: reply.locale },
+  }, {
+    actor_type: "assistant",
+    actor_reference: input.channel,
+    action: "suggestions_generated",
+    subject_table: "assistant_conversations",
+    subject_id: reply.conversationId,
+    metadata: { suggestion_ids: reply.suggestions.map((item) => item.id), count: reply.suggestions.length, language: reply.locale },
+  }];
+  if (input.selectedSuggestionId) auditEvents.push({
+    actor_type: "customer",
+    actor_reference: input.channel,
+    action: "suggestion_selected",
+    subject_table: "assistant_conversations",
+    subject_id: reply.conversationId,
+    metadata: { suggestion_id: input.selectedSuggestionId },
+  });
+  if (["ask_clarifying_question", "guided_self_service"].includes(reply.escalation.nextAction)) auditEvents.push({
+    actor_type: "assistant",
+    actor_reference: input.channel,
+    action: "clarification_requested",
+    subject_table: "assistant_conversations",
+    subject_id: reply.conversationId,
+    metadata: { intent: reply.intent, unresolved_topics: reply.suggestionState.unresolvedTopics },
+  });
   if (reply.handoffRequired) {
-    await serviceInsert("support_cases", {
-      customer_id: input.customerId || null,
-      conversation_id: reply.conversationId,
-      channel: input.channel,
-      status: "open",
-      priority: reply.handoffReason === "sensitive_or_disputed_issue" ? "high" : "normal",
-      category: reply.handoffReason || reply.intent,
-      language: reply.locale,
-      subject: `Assistant handoff: ${reply.intent}`,
-      summary: cleanMessage(input.message),
-      metadata: nowMetadata,
-    }).catch(() => undefined);
+    auditEvents.push({
+      actor_type: "assistant",
+      actor_reference: input.channel,
+      action: "escalation_offered",
+      subject_table: "assistant_conversations",
+      subject_id: reply.conversationId,
+      metadata: { escalation_reason: reply.handoffReason, intent: reply.intent },
+    });
+    if (reply.handoffReason === "customer_explicitly_requests_human") auditEvents.push({
+      actor_type: "customer",
+      actor_reference: input.channel,
+      action: "escalation_accepted",
+      subject_table: "assistant_conversations",
+      subject_id: reply.conversationId,
+      metadata: { escalation_reason: reply.handoffReason },
+    });
+  } else if (reply.escalation.nextAction === "answer") {
+    auditEvents.push({
+      actor_type: "assistant",
+      actor_reference: input.channel,
+      action: "self_service_completed",
+      subject_table: "assistant_conversations",
+      subject_id: reply.conversationId,
+      metadata: { intent: reply.intent },
+    }, {
+      actor_type: "assistant",
+      actor_reference: input.channel,
+      action: "assistant_resolution_count",
+      subject_table: "assistant_conversations",
+      subject_id: reply.conversationId,
+      metadata: { resolved: true, intent: reply.intent },
+    });
+  }
+  await serviceInsert("assistant_audit_logs", auditEvents).catch(() => undefined);
+  if (reply.handoffRequired) {
+    const openCases = await serviceSelect<Array<{ id: string }>>(
+      `support_cases?conversation_id=eq.${reply.conversationId}&status=in.(open,assigned,waiting_customer)&select=id&limit=1`,
+    ).catch(() => []);
+    if (!openCases.length) {
+      await serviceInsert("support_cases", {
+        customer_id: input.customerId || null,
+        conversation_id: reply.conversationId,
+        channel: input.channel,
+        status: "open",
+        priority: ["security_issue", "damage_claim", "missing_item_claim"].includes(reply.handoffReason || "") ? "high" : "normal",
+        category: reply.handoffReason || reply.intent,
+        language: reply.locale,
+        subject: `Assistant handoff: ${reply.intent}`,
+        summary: reply.escalation.summary?.conversationSummary || cleanMessage(input.message),
+        metadata: { ...nowMetadata, handoff_summary: reply.escalation.summary || null },
+      }).catch(() => undefined);
+    }
   }
 }
 
@@ -421,6 +516,7 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
   console.info(JSON.stringify({ scope: "assistant_language", ...languageLogMetadata(languageDecision, previousLanguage) }));
 
   if (languageDecision.needsClarification) {
+    const suggestionState = storedState.suggestionState;
     const reply: AssistantReply = {
       conversationId,
       locale,
@@ -431,6 +527,9 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
       answer: LANGUAGE_CLARIFICATION,
       confidence: 1,
       handoffRequired: false,
+      escalation: { required: false, reason: null, confidence: 1, nextAction: "ask_clarifying_question" },
+      suggestions: [],
+      suggestionState,
       sources: [],
       suggestedActions: [],
       toolCalls: [],
@@ -447,8 +546,22 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
   );
   const priceTool = intent === "pricing" ? calculatePriceTool(message, locale) : null;
   const toolCalls = priceTool ? [priceTool] : [];
-  const handoffReason = needsHandoff(intent, message, retrieved);
-  const generatedProviderAnswer = handoffReason || isShortGreeting(message) || intent === "language_change"
+  const turnSuggestionState: AssistantSuggestionState = input.selectedSuggestionId
+    ? {
+      ...storedState.suggestionState,
+      selectedSuggestionIds: [...new Set([...storedState.suggestionState.selectedSuggestionIds, input.selectedSuggestionId])],
+    }
+    : storedState.suggestionState;
+  const evaluation = evaluateHumanHandoff({
+    message,
+    intent,
+    retrieved,
+    state: turnSuggestionState,
+  });
+  const generatedProviderAnswer = evaluation.required
+    || evaluation.nextAction !== "answer"
+    || isShortGreeting(message)
+    || intent === "language_change"
     ? null
     : await generateWithConfiguredProvider(normalizedInput, retrieved);
   const providerAnswer = generatedProviderAnswer && responseMatchesConversationLanguage(generatedProviderAnswer.answer, locale)
@@ -461,8 +574,42 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
       currentSessionLanguage: LANGUAGE_NAMES[locale],
     }));
   }
-  const answer = providerAnswer?.answer || composeGroundedAnswer(normalizedInput, intent, retrieved, toolCalls);
-  const confidence = handoffReason ? 0.48 : providerAnswer?.confidence ?? Math.min(0.9, 0.55 + retrieved.length * 0.1 + toolCalls.length * 0.15);
+  const answer = providerAnswer?.answer || composeGroundedAnswer(normalizedInput, intent, retrieved, toolCalls, evaluation);
+  const missingInformation = deriveMissingInformation({
+    conversationHistory: normalizedInput.conversationHistory || [],
+    latestUserMessage: message,
+    detectedIntent: intent,
+    evaluation,
+  });
+  const suggestions = generateConversationSuggestions({
+    conversationHistory: normalizedInput.conversationHistory || [],
+    latestUserMessage: message,
+    latestAssistantResponse: answer,
+    detectedIntent: intent,
+    missingInformation,
+    conversationLanguage: locale,
+    availableActions: ["ask", "open_calculator", "open_booking"],
+    state: turnSuggestionState,
+    evaluation,
+  });
+  const suggestionState = advanceSuggestionState({
+    state: turnSuggestionState,
+    selectedSuggestionId: input.selectedSuggestionId,
+    suggestions,
+    evaluation,
+    latestUserMessage: message,
+  });
+  const handoffSummary = evaluation.required && evaluation.reason ? buildHandoffSummary({
+    locale,
+    intent,
+    reason: evaluation.reason,
+    message,
+    history: normalizedInput.conversationHistory || [],
+  }) : undefined;
+  const escalation = { ...evaluation, summary: handoffSummary };
+  const confidence = evaluation.required
+    ? evaluation.confidence
+    : providerAnswer?.confidence ?? Math.min(0.9, 0.55 + retrieved.length * 0.1 + toolCalls.length * 0.15);
   const sources = retrieved.map((item) => ({
     id: item.article.id,
     title: item.article.title,
@@ -481,10 +628,13 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
     confidence,
     modelName: providerAnswer?.modelName,
     tokenUsage: providerAnswer?.tokenUsage,
-    handoffRequired: Boolean(handoffReason),
-    handoffReason: handoffReason || undefined,
+    handoffRequired: evaluation.required,
+    handoffReason: evaluation.reason || undefined,
+    escalation,
+    suggestions,
+    suggestionState,
     sources,
-    suggestedActions: buildActions(locale, intent),
+    suggestedActions: buildActions(suggestions),
     toolCalls,
   };
   await persistAssistantTurn(normalizedInput, reply, retrieved);

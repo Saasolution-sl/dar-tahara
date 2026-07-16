@@ -38,7 +38,7 @@ test("assistant escalates refund disputes to a specialist", async () => {
     message: "I dispute this charge and want a refund immediately",
   });
   assert.equal(reply.handoffRequired, true);
-  assert.equal(reply.handoffReason, "sensitive_or_disputed_issue");
+  assert.equal(reply.handoffReason, "payment_investigation");
   assert.match(reply.answer, /specialist/i);
 });
 
@@ -148,6 +148,93 @@ test("multilingual retrieval selects the factual article instead of human handof
     assert.equal(results[0]?.article.id, source, message);
     assert.notEqual(results[0]?.article.id, "human-handoff", message);
   }
+});
+
+test("weekly pricing asks for property size with relevant replacement suggestions", async () => {
+  const reply = await answerAssistant({
+    channel: "website",
+    locale: "en",
+    message: "How much does weekly cleaning cost?",
+  });
+  assert.equal(reply.intent, "pricing");
+  assert.equal(reply.handoffRequired, false);
+  assert.match(reply.answer, /property size|size in m²/i);
+  assert.deepEqual(reply.suggestions.map((item) => item.id), ["size-0-50", "size-51-75", "size-76-100", "size-over-100"]);
+});
+
+test("vague cleaning complaints ask one useful clarification without escalating", async () => {
+  const reply = await answerAssistant({
+    channel: "website",
+    locale: "en",
+    message: "The cleaning was not good.",
+  });
+  assert.equal(reply.handoffRequired, false);
+  assert.equal(reply.escalation.nextAction, "ask_clarifying_question");
+  assert.match(reply.answer, /area not cleaned|damaged|missing|team did not arrive/i);
+  assert.ok(reply.suggestions.some((item) => item.id === "issue-not-cleaned"));
+});
+
+test("duplicate payments produce a structured payment handoff", async () => {
+  const reply = await answerAssistant({
+    channel: "website",
+    locale: "en",
+    message: "My card was charged twice for booking DTH-2607-10001.",
+  });
+  assert.equal(reply.handoffRequired, true);
+  assert.equal(reply.escalation.reason, "payment_investigation");
+  assert.equal(reply.escalation.summary?.bookingReference, "DTH-2607-10001");
+  assert.ok(reply.escalation.summary?.conversationSummary.includes("charged twice"));
+  assert.ok(reply.suggestions.some((item) => item.id.startsWith("payment-")));
+});
+
+test("a first technical bug report starts guided troubleshooting instead of escalation", async () => {
+  const reply = await answerAssistant({
+    channel: "website",
+    locale: "en",
+    message: "The booking page crashes after payment.",
+  });
+  assert.equal(reply.handoffRequired, false);
+  assert.equal(reply.escalation.nextAction, "ask_clarifying_question");
+  assert.match(reply.answer, /device|browser/i);
+  assert.ok(reply.suggestions.some((item) => item.id.startsWith("tech-")));
+});
+
+test("physical key questions explain available access options without handoff", async () => {
+  const reply = await answerAssistant({
+    channel: "website",
+    locale: "en",
+    message: "Can I give Dar Tahara a physical key for cleaning?",
+  });
+  assert.equal(reply.handoffRequired, false);
+  assert.ok(reply.sources.some((source) => source.id === "access-presence-keys"));
+  assert.match(reply.answer, /management fee|€200|smart lock/i);
+  assert.ok(reply.suggestions.some((item) => item.id.startsWith("access-")));
+});
+
+test("French pricing replies and suggestions remain French", async () => {
+  const reply = await answerAssistant({
+    channel: "website",
+    locale: "en",
+    message: "Combien coûte un nettoyage hebdomadaire ?",
+  });
+  assert.equal(reply.locale, "fr");
+  assert.equal(reply.intent, "pricing");
+  assert.equal(reply.handoffRequired, false);
+  assert.match(reply.answer, /surface|m²|fréquence/i);
+  assert.ok(reply.suggestions.every((item) => /m²/.test(item.label)));
+});
+
+test("an explicit human request is recognized as English and includes a handoff summary", async () => {
+  const reply = await answerAssistant({
+    channel: "website",
+    locale: "en",
+    message: "I want to speak to a person about my cleaning.",
+  });
+  assert.equal(reply.locale, "en");
+  assert.equal(reply.handoffRequired, true);
+  assert.equal(reply.escalation.reason, "customer_explicitly_requests_human");
+  assert.equal(reply.escalation.summary?.customerLanguage, "en");
+  assert.ok(reply.suggestions.some((item) => item.id.startsWith("human-")));
 });
 
 test("assistant asks for language selection instead of defaulting to English", async () => {

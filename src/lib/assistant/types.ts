@@ -80,6 +80,10 @@ export type AssistantInput = {
   languageDecision?: ConversationLanguageDecision;
   /** Compact, server-built context. Customer text inside remains untrusted. */
   contextSummary?: string | null;
+  /** Quick reply selected by the customer on the preceding assistant turn. */
+  selectedSuggestionId?: string | null;
+  /** Optional channel-supplied state; website sessions normally load this from persisted metadata. */
+  suggestionState?: AssistantSuggestionState;
 };
 
 export type AssistantToolCall = {
@@ -87,6 +91,59 @@ export type AssistantToolCall = {
   input: Record<string, unknown>;
   result: Record<string, unknown>;
   status: "success" | "failed" | "skipped";
+};
+
+export type AssistantSuggestion = {
+  id: string;
+  label: string;
+  value: string;
+  intent: string;
+};
+
+export type AssistantSuggestionState = {
+  shownSuggestionIds: string[];
+  selectedSuggestionIds: string[];
+  answeredTopics: string[];
+  unresolvedTopics: string[];
+  clarificationAttempts: Record<string, number>;
+};
+
+export type AssistantEscalationReason =
+  | "technical_bug"
+  | "payment_investigation"
+  | "account_access_required"
+  | "complaint_investigation"
+  | "damage_claim"
+  | "missing_item_claim"
+  | "security_issue"
+  | "manual_approval_required"
+  | "service_failure"
+  | "assistant_failed_after_multiple_attempts"
+  | "customer_explicitly_requests_human";
+
+export type AssistantNextAction =
+  | "answer"
+  | "ask_clarifying_question"
+  | "guided_self_service"
+  | "offer_handoff";
+
+export type AssistantHandoffSummary = {
+  customerLanguage: Locale;
+  customerIntent: AssistantIntent;
+  issueCategory: string;
+  propertyAddress: string | null;
+  bookingReference: string | null;
+  conversationSummary: string;
+  troubleshootingCompleted: string[];
+  customerRequestedOutcome: string | null;
+};
+
+export type AssistantEscalation = {
+  required: boolean;
+  reason: AssistantEscalationReason | null;
+  confidence: number;
+  nextAction: AssistantNextAction;
+  summary?: AssistantHandoffSummary;
 };
 
 export type AssistantReply = {
@@ -102,6 +159,9 @@ export type AssistantReply = {
   tokenUsage?: { promptTokens?: number; completionTokens?: number; totalTokens?: number };
   handoffRequired: boolean;
   handoffReason?: string;
+  escalation: AssistantEscalation;
+  suggestions: AssistantSuggestion[];
+  suggestionState: AssistantSuggestionState;
   sources: Array<{
     id: string;
     title: string;

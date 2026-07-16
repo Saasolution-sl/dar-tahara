@@ -12,6 +12,7 @@ export async function POST(req: NextRequest) {
     sessionId?: unknown;
     sessionLanguage?: unknown;
     selectedLanguage?: unknown;
+    selectedSuggestionId?: unknown;
     languageSelectionPending?: unknown;
     websitePath?: unknown;
   } | null;
@@ -30,9 +31,15 @@ export async function POST(req: NextRequest) {
     sessionId: typeof body?.sessionId === "string" ? body.sessionId : null,
     sessionLanguage: typeof body?.sessionLanguage === "string" && isLocale(body.sessionLanguage) ? body.sessionLanguage : null,
     selectedLanguage: typeof body?.selectedLanguage === "string" && isLocale(body.selectedLanguage) ? body.selectedLanguage : null,
+    selectedSuggestionId: typeof body?.selectedSuggestionId === "string" ? body.selectedSuggestionId.slice(0, 120) : null,
     languageSelectionPending: body?.languageSelectionPending === true,
     websitePath: typeof body?.websitePath === "string" ? body.websitePath : null,
   });
 
-  return NextResponse.json(reply);
+  return NextResponse.json({
+    ...reply,
+    message: reply.answer,
+    language: reply.locale,
+    escalation: { ...reply.escalation, next_action: reply.escalation.nextAction },
+  });
 }

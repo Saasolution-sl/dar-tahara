@@ -27,6 +27,8 @@ Main pieces:
 - `src/lib/assistant/knowledge.ts` — version-controlled approved knowledge.
 - `src/lib/assistant/retrieval.ts` — language-aware keyword/semantic-style retrieval and intent classification.
 - `src/lib/assistant/language.ts` — shared detection, confidence, session retention and explicit language switching for every channel.
+- `src/lib/assistant/suggestions.ts` — shared, localized next-step suggestion generation and per-conversation suggestion state.
+- `src/lib/assistant/handoff.ts` — explicit escalation evaluation, guided self-service and structured handoff summaries.
 - `src/lib/assistant/service.ts` — shared assistant orchestration, pricing tool use, handoff rules and Supabase persistence.
 - `src/lib/assistant/provider.ts` — provider-neutral OpenAI-compatible model abstraction.
 - `src/app/api/assistant/chat/route.ts` — website chat API.
@@ -77,8 +79,11 @@ Features implemented:
 - conversation persistence via server `conversationId`
 - local browser `sessionId`
 - translated UI copy
-- quick actions
-- calculator scroll action
+- 3–4 contextual, localized reply suggestions that are replaced after every turn
+- suggestion selection and answered-topic tracking in conversation metadata
+- guided clarification and troubleshooting before human escalation
+- structured escalation state and handoff summaries
+- right-to-left rendering for Arabic conversations
 - automated-response labelling
 - server-side persistence when Supabase service role is configured
 
@@ -152,6 +157,8 @@ If these are unset, the deterministic grounded-answer path is used.
 
 The shared assistant language layer detects the first customer language, honors an explicit language switch or the website language selector, and keeps that choice for the conversation. Approved English knowledge is valid factual source material for every supported language; the provider translates its meaning into the selected language. The deterministic fallback also includes localized core knowledge for Dutch, French, Spanish, German, Portuguese and Arabic, so a provider outage does not turn a normal FAQ into a false specialist handoff.
 
+Every chat API response includes `message`, `suggestions`, and an `escalation` object with `required`, `reason`, `confidence`, and `next_action`. Suggestions are sent back as ordinary customer messages when selected. Previously shown and selected suggestion IDs, answered topics, unresolved topics, and clarification counts are stored in conversation metadata.
+
 ## Tool layer
 
 Implemented tool behavior:
@@ -213,6 +220,12 @@ Assistant tests cover:
 - pricing tool use
 - refund/dispute escalation
 - booking privacy boundary
+- contextual suggestion generation and replacement
+- vague complaint clarification without escalation
+- duplicate-payment and explicit-human handoff
+- guided technical troubleshooting before escalation
+- physical-key and digital-lock guidance
+- localized French suggestions and non-repetition
 
 Run:
 

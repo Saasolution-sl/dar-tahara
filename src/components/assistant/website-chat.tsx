@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Bot, CalendarCheck, Calculator, MessageCircle, Send, UserRound, X } from "lucide-react";
+import { Bot, MessageCircle, Send, UserRound, X } from "lucide-react";
 import { isLocale, type Locale } from "@/i18n/config";
 import { buttonVariants } from "@/components/ui/button";
 import {
@@ -20,10 +20,11 @@ type ChatCopy = {
   automated: string;
   human: string;
   error: string;
-  quickActions: readonly string[];
 };
 
 type Message = { id: string; role: "assistant" | "customer"; body: string; automated?: boolean };
+type Suggestion = { id: string; label: string; value: string; intent: string };
+type Escalation = { required: boolean; reason: string | null; nextAction: string };
 
 function getSessionId() {
   const key = "dar-tahara-assistant-session";
@@ -42,6 +43,8 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
   const [languageSelectionPending, setLanguageSelectionPending] = React.useState(false);
   const [input, setInput] = React.useState("");
   const [busy, setBusy] = React.useState(false);
+  const [suggestions, setSuggestions] = React.useState<Suggestion[]>([]);
+  const [escalation, setEscalation] = React.useState<Escalation | null>(null);
   const [unread, setUnread] = React.useState(false);
   const [messages, setMessages] = React.useState<Message[]>(() => [
     { id: "welcome", role: "assistant", automated: true, body: copy.subtitle },
@@ -50,7 +53,7 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
 
   React.useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
-  }, [messages, open]);
+  }, [messages, suggestions, busy, open]);
 
   React.useEffect(() => {
     const storedConversationId = window.localStorage.getItem("dar-tahara-assistant-conversation");
@@ -63,11 +66,13 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
     setLanguageSelectionPending(window.localStorage.getItem("dar-tahara-assistant-language-pending") === "true");
   }, [locale]);
 
-  async function ask(text: string) {
+  async function ask(text: string, selectedSuggestionId?: string) {
     const message = text.trim();
     if (!message || busy) return;
     setInput("");
     setBusy(true);
+    setSuggestions([]);
+    setEscalation(null);
     setMessages((items) => [...items, { id: crypto.randomUUID(), role: "customer", body: message }]);
     try {
       const res = await fetch("/api/assistant/chat", {
@@ -80,6 +85,7 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
           sessionId: getSessionId(),
           sessionLanguage,
           selectedLanguage,
+          selectedSuggestionId,
           languageSelectionPending,
           websitePath: window.location.pathname,
         }),
@@ -90,6 +96,8 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
         answer: string;
         locale: Locale;
         languageConfirmed: boolean;
+        suggestions: Suggestion[];
+        escalation: Escalation;
       };
       setConversationId(data.conversationId);
       window.localStorage.setItem("dar-tahara-assistant-conversation", data.conversationId);
@@ -110,42 +118,27 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
         ...items,
         { id: crypto.randomUUID(), role: "assistant", automated: true, body: data.answer },
       ]);
+      setSuggestions(Array.isArray(data.suggestions) ? data.suggestions.slice(0, 4) : []);
+      setEscalation(data.escalation || null);
       if (!open) setUnread(true);
     } catch {
+      setSuggestions([]);
+      setEscalation(null);
       setMessages((items) => [...items, { id: crypto.randomUUID(), role: "assistant", automated: true, body: copy.error }]);
     } finally {
       setBusy(false);
     }
   }
 
-  function openCalculator() {
-    setOpen(false);
-    const calculator = document.getElementById("calculator");
-    if (calculator) {
-      calculator.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-
-    window.location.assign(`/${locale}#calculator`);
-  }
-
-  function openBooking() {
-    setOpen(false);
-    const calculator = document.getElementById("calculator");
-    if (calculator) {
-      window.dispatchEvent(new CustomEvent("dar-tahara:open-booking"));
-      calculator.scrollIntoView({ behavior: "smooth", block: "start" });
-      return;
-    }
-
-    window.location.assign(`/${locale}?assistant=book-assessment#calculator`);
-  }
+  const activeLanguage = sessionLanguage || selectedLanguage || locale;
+  const direction = activeLanguage === "ar" ? "rtl" : "ltr";
 
   return (
     <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
       {open ? (
         <section
           aria-label={copy.title}
+          dir={direction}
           className="flex h-[min(680px,calc(100dvh-2rem))] w-[min(420px,calc(100vw-2rem))] flex-col overflow-hidden rounded-[2rem] border border-border bg-card shadow-lift"
         >
           <header className="flex items-center justify-between border-b border-border px-5 py-4">
@@ -164,7 +157,7 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
               <X className="h-5 w-5" />
             </button>
           </header>
-          <div className="flex-1 space-y-4 overflow-y-auto bg-secondary/30 p-4">
+          <div className="flex-1 space-y-4 overflow-y-auto bg-secondary/30 p-4" aria-live="polite">
             {messages.map((message) => (
               <article
                 key={message.id}
@@ -183,23 +176,37 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
                 {message.role === "customer" ? <UserRound className="mt-1 h-5 w-5 shrink-0 text-muted-foreground" /> : null}
               </article>
             ))}
+            {busy ? (
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <Bot className="h-5 w-5 text-primary" />
+                <span className="inline-flex gap-1" aria-label={copy.automated}>
+                  <span className="animate-pulse">●</span><span className="animate-pulse [animation-delay:150ms]">●</span><span className="animate-pulse [animation-delay:300ms]">●</span>
+                </span>
+              </div>
+            ) : null}
+            {!busy && suggestions.length ? (
+              <div className="ms-7 flex flex-wrap gap-2" aria-label={copy.automated}>
+                {suggestions.map((item) => (
+                  <button
+                    key={item.id}
+                    type="button"
+                    disabled={busy}
+                    onClick={() => ask(item.value, item.id)}
+                    className="max-w-full whitespace-normal rounded-2xl border border-primary/30 bg-card px-3 py-2 text-start text-xs leading-snug text-foreground transition hover:border-primary hover:bg-primary/5 disabled:cursor-not-allowed disabled:opacity-50"
+                  >
+                    {item.label}
+                  </button>
+                ))}
+              </div>
+            ) : null}
+            {!busy && escalation?.required ? (
+              <p className="ms-7 rounded-xl border border-amber-300/50 bg-amber-50 px-3 py-2 text-xs text-amber-950 dark:bg-amber-950/20 dark:text-amber-100">
+                {copy.human}
+              </p>
+            ) : null}
             <div ref={endRef} />
           </div>
           <div className="border-t border-border bg-card p-4">
-            <div className="mb-3 flex flex-wrap gap-2">
-              {copy.quickActions.slice(0, 4).map((action, index) => (
-                <button
-                  key={action}
-                  type="button"
-                  onClick={() => (index === 1 ? openCalculator() : index === 3 ? openBooking() : ask(action))}
-                  className="rounded-full border border-border px-3 py-1.5 text-xs text-muted-foreground hover:border-primary hover:text-foreground"
-                >
-                  {index === 1 ? <Calculator className="mr-1 inline h-3.5 w-3.5" /> : null}
-                  {index === 3 ? <CalendarCheck className="mr-1 inline h-3.5 w-3.5" /> : null}
-                  {action}
-                </button>
-              ))}
-            </div>
             <form
               onSubmit={(event) => {
                 event.preventDefault();
@@ -211,6 +218,7 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
                 value={input}
                 onChange={(event) => setInput(event.target.value)}
                 placeholder={copy.placeholder}
+                dir={direction}
                 className="input min-w-0 flex-1"
                 aria-label={copy.placeholder}
               />

@@ -97,6 +97,12 @@ test("accepts a bare language name after asking for clarification", () => {
   assert.equal(result.needsClarification, false);
 });
 
+test("recognizes an English human-support request without misclassifying it as Spanish", () => {
+  const result = detectLanguage("I want to speak to a person about my cleaning.");
+  assert.equal(result.locale, "en");
+  assert.ok(result.confidence > LANGUAGE_CONFIDENCE_THRESHOLD);
+});
+
 test("rejects a confident provider response in the wrong language", () => {
   assert.equal(responseMatchesConversationLanguage("Sure! Can you provide your address?", "fr"), false);
   assert.equal(responseMatchesConversationLanguage("Bien sûr ! Pouvez-vous me donner votre adresse ?", "fr"), true);
