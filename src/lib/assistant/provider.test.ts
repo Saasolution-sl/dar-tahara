@@ -16,6 +16,9 @@ test("provider prompt forces the confirmed language and preserves history exactl
 
   assert.match(messages[1].content, /Current conversation language:\nFrench/);
   assert.match(messages[1].content, /Always answer in French/);
+  assert.match(messages[0].content, /Approved knowledge may be written in English/);
+  assert.match(messages[0].content, /not a knowledge gap/);
+  assert.match(messages[0].content, /never merely because the knowledge source is in a different language/);
   assert.deepEqual(messages.slice(3, 5), history);
   assert.equal(messages.at(-1)?.content, "Mon adresse est 12 Rue Atlas, noor@example.com.");
 });

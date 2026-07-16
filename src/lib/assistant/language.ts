@@ -72,12 +72,12 @@ const SHORT_LANGUAGE_SIGNALS: Record<string, Locale> = {
 };
 
 const LANGUAGE_HINTS: Record<Locale, string[]> = {
-  en: ["the", "and", "hello", "would", "like", "quote", "home", "please", "can", "i", "my", "your", "booking", "price", "change", "frequency", "what", "how", "cost"],
-  nl: ["de", "het", "een", "en", "ik", "graag", "offerte", "mijn", "uw", "goedemiddag", "waarmee", "woning", "prijs"],
-  fr: ["le", "la", "les", "et", "je", "voudrais", "devis", "mon", "votre", "bonjour", "pouvez", "maison", "prix"],
-  es: ["el", "la", "los", "una", "y", "quisiera", "presupuesto", "mi", "su", "hola", "puede", "casa", "precio"],
-  de: ["der", "die", "das", "und", "ich", "gerne", "angebot", "mein", "ihre", "guten", "konnen", "haus", "preis"],
-  pt: ["o", "a", "os", "uma", "e", "gostaria", "orcamento", "meu", "sua", "ola", "pode", "casa", "preco"],
+  en: ["the", "and", "hello", "would", "like", "quote", "home", "please", "can", "i", "my", "your", "booking", "price", "change", "frequency", "what", "how", "cost", "services", "included", "first", "visit", "payment"],
+  nl: ["de", "het", "een", "en", "ik", "graag", "offerte", "mijn", "uw", "goedemiddag", "waarmee", "woning", "prijs", "wat", "hoe", "diensten", "inbegrepen", "schoonmaak", "eerste", "bezoek", "betaling"],
+  fr: ["le", "la", "les", "et", "je", "voudrais", "devis", "mon", "votre", "bonjour", "pouvez", "maison", "prix", "comment", "quels", "services", "inclus", "nettoyage", "premiere", "visite", "paiement"],
+  es: ["el", "la", "los", "una", "y", "quisiera", "presupuesto", "mi", "su", "hola", "puede", "casa", "precio", "que", "como", "servicios", "estan", "incluidos", "limpieza", "primera", "visita", "pago"],
+  de: ["der", "die", "das", "und", "ich", "gerne", "angebot", "mein", "ihre", "guten", "konnen", "haus", "preis", "wie", "welche", "dienste", "enthalten", "reinigung", "erste", "besuch", "zahlung"],
+  pt: ["o", "a", "os", "uma", "e", "gostaria", "orcamento", "meu", "sua", "ola", "pode", "casa", "preco", "como", "quais", "servicos", "estao", "incluidos", "limpeza", "primeira", "visita", "pagamento"],
   ar: ["السلام", "عليكم", "مرحبا", "أريد", "اريد", "عرض", "سعر", "منزل", "بيتي", "من", "في", "هل"],
 };
 

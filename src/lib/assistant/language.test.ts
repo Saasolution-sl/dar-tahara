@@ -26,6 +26,15 @@ test("detects every supported language above the confidence threshold", () => {
   }
 });
 
+test("distinguishes common Spanish and Portuguese service questions", () => {
+  const spanish = detectLanguage("¿Qué servicios están incluidos en la limpieza?");
+  const portuguese = detectLanguage("Quais serviços estão incluídos na limpeza?");
+  assert.equal(spanish.locale, "es");
+  assert.ok(spanish.confidence > LANGUAGE_CONFIDENCE_THRESHOLD);
+  assert.equal(portuguese.locale, "pt");
+  assert.ok(portuguese.confidence > LANGUAGE_CONFIDENCE_THRESHOLD);
+});
+
 test("detects very short greetings without guessing through the statistical model", () => {
   const greetings: Array<[Locale, string]> = [
     ["en", "Hello"],

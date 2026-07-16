@@ -12,7 +12,8 @@ import {
   resolveConversationLanguage,
   responseMatchesConversationLanguage,
 } from "./language";
-import { classifyIntent, fallbackSources, retrieveKnowledge } from "./retrieval";
+import { localizeRetrievedKnowledge } from "./knowledge-localizations";
+import { classifyIntent, knowledgeCategoriesForIntent, retrieveKnowledge } from "./retrieval";
 import type { AssistantInput, AssistantIntent, AssistantReply, AssistantToolCall, RetrievedKnowledge } from "./types";
 
 const RESPONSE_BY_LOCALE: Record<Locale, {
@@ -195,7 +196,6 @@ function composeGroundedAnswer(input: AssistantInput, intent: AssistantIntent, r
   if (intent === "booking_status") return copy.bookingPrivate;
   if (["human_handoff", "complaint", "cancellation", "reschedule", "privacy", "opt_out"].includes(intent)) return copy.handoff;
   if (!retrieved.length) return copy.fallback;
-  if (input.locale !== "en" && !retrieved.some((item) => item.article.language === input.locale)) return copy.fallback;
   return retrieved.slice(0, 2).map((item) => item.article.content).join("\n\n");
 }
 
@@ -247,19 +247,25 @@ function knowledgeTokens(value: string): string[] {
     .split(/[^\p{L}\p{N}]+/u).filter((item) => item.length > 2);
 }
 
-async function retrievePublishedDatabaseKnowledge(message: string, locale: Locale): Promise<RetrievedKnowledge[]> {
+async function retrievePublishedDatabaseKnowledge(
+  message: string,
+  locale: Locale,
+  intent: AssistantIntent,
+): Promise<RetrievedKnowledge[]> {
   if (!isServiceRoleConfigured()) return [];
   const now = encodeURIComponent(new Date().toISOString());
   const rows = await serviceSelect<DatabaseKnowledgeRow[]>(
     `knowledge_entries?status=eq.published&language=in.(${locale},en)&or=(effective_from.is.null,effective_from.lte.${now})&select=id,slug,category,title,language,content,version,effective_from&order=version.desc&limit=100`,
   ).catch(() => []);
   const query = new Set(knowledgeTokens(message));
+  const preferredCategories = new Set(knowledgeCategoriesForIntent(intent));
   const scored = rows.map((row) => {
     const haystack = knowledgeTokens(`${row.slug} ${row.category} ${row.title} ${row.content}`);
     const matches = haystack.filter((token) => query.has(token));
     const languageBoost = row.language === locale ? 3 : 0;
-    return { row, score: matches.length + languageBoost, matches };
-  }).filter((item) => item.score > 0)
+    const intentBoost = preferredCategories.has(row.category as RetrievedKnowledge["article"]["category"]) ? 4 : 0;
+    return { row, score: matches.length + languageBoost + intentBoost, relevance: matches.length + intentBoost, matches };
+  }).filter((item) => item.relevance > 0)
     .sort((a, b) => b.score - a.score || b.row.version - a.row.version);
   const exact = scored.filter((item) => item.row.language === locale);
   return (exact.length ? exact : scored).slice(0, Number(process.env.ASSISTANT_RETRIEVAL_LIMIT || 4)).map(({ row, score, matches }) => ({
@@ -434,14 +440,17 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
   }
 
   const intent = classifyIntent(message);
-  const databaseKnowledge = await retrievePublishedDatabaseKnowledge(message, locale);
-  const retrieved = databaseKnowledge.length
-    ? databaseKnowledge
-    : intent === "unknown" ? fallbackSources(locale) : retrieveKnowledge(message, locale);
+  const databaseKnowledge = await retrievePublishedDatabaseKnowledge(message, locale, intent);
+  const retrieved = localizeRetrievedKnowledge(
+    databaseKnowledge.length ? databaseKnowledge : retrieveKnowledge(message, locale, 4, intent),
+    locale,
+  );
   const priceTool = intent === "pricing" ? calculatePriceTool(message, locale) : null;
   const toolCalls = priceTool ? [priceTool] : [];
   const handoffReason = needsHandoff(intent, message, retrieved);
-  const generatedProviderAnswer = handoffReason ? null : await generateWithConfiguredProvider(normalizedInput, retrieved);
+  const generatedProviderAnswer = handoffReason || isShortGreeting(message) || intent === "language_change"
+    ? null
+    : await generateWithConfiguredProvider(normalizedInput, retrieved);
   const providerAnswer = generatedProviderAnswer && responseMatchesConversationLanguage(generatedProviderAnswer.answer, locale)
     ? generatedProviderAnswer
     : null;

@@ -150,6 +150,8 @@ ASSISTANT_CONFIDENCE_THRESHOLD=0.62
 
 If these are unset, the deterministic grounded-answer path is used.
 
+The shared assistant language layer detects the first customer language, honors an explicit language switch or the website language selector, and keeps that choice for the conversation. Approved English knowledge is valid factual source material for every supported language; the provider translates its meaning into the selected language. The deterministic fallback also includes localized core knowledge for Dutch, French, Spanish, German, Portuguese and Arabic, so a provider outage does not turn a normal FAQ into a false specialist handoff.
+
 ## Tool layer
 
 Implemented tool behavior:
