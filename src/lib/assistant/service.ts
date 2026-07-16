@@ -591,13 +591,14 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
   const storedState = await loadWebsiteConversationState(input);
   const conversationId = input.conversationId && storedState.authorized ? input.conversationId : randomUUID();
   const previousLanguage = storedState.language || input.sessionLanguage || null;
+  const fallbackLocale = isLocale(input.locale) ? input.locale : "en";
   const languageDecision = input.languageDecision || resolveConversationLanguage({
     message,
     currentLanguage: previousLanguage,
+    fallbackLanguage: fallbackLocale,
     selectedLanguage: input.selectedLanguage,
     selectionPending: storedState.languageSelectionPending || input.languageSelectionPending,
   });
-  const fallbackLocale = isLocale(input.locale) ? input.locale : "en";
   const locale = languageDecision.locale || fallbackLocale;
   const normalizedInput = {
     ...input,

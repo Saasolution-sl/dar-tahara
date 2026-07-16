@@ -72,14 +72,22 @@ const SHORT_LANGUAGE_SIGNALS: Record<string, Locale> = {
 };
 
 const LANGUAGE_HINTS: Record<Locale, string[]> = {
-  en: ["the", "and", "hello", "would", "like", "quote", "home", "please", "can", "i", "my", "your", "booking", "price", "change", "frequency", "what", "how", "cost", "services", "included", "first", "visit", "payment", "want", "speak", "person", "someone", "support", "manager", "cleaning", "give", "physical", "key", "for"],
-  nl: ["de", "het", "een", "en", "ik", "graag", "offerte", "mijn", "uw", "goedemiddag", "waarmee", "woning", "prijs", "wat", "hoe", "diensten", "inbegrepen", "schoonmaak", "eerste", "bezoek", "betaling"],
-  fr: ["le", "la", "les", "et", "je", "voudrais", "devis", "mon", "votre", "bonjour", "pouvez", "maison", "prix", "comment", "quels", "services", "inclus", "nettoyage", "premiere", "visite", "paiement"],
-  es: ["el", "la", "los", "una", "y", "quisiera", "presupuesto", "mi", "su", "hola", "puede", "casa", "precio", "que", "como", "servicios", "estan", "incluidos", "limpieza", "primera", "visita", "pago"],
-  de: ["der", "die", "das", "und", "ich", "gerne", "angebot", "mein", "ihre", "guten", "konnen", "haus", "preis", "wie", "welche", "dienste", "enthalten", "reinigung", "erste", "besuch", "zahlung"],
-  pt: ["o", "a", "os", "uma", "e", "gostaria", "orcamento", "meu", "sua", "ola", "pode", "casa", "preco", "como", "quais", "servicos", "estao", "incluidos", "limpeza", "primeira", "visita", "pagamento"],
+  en: ["the", "and", "hello", "would", "like", "quote", "home", "please", "can", "i", "my", "your", "booking", "price", "change", "frequency", "what", "how", "cost", "services", "included", "first", "visit", "payment", "want", "speak", "person", "someone", "support", "manager", "cleaning", "give", "physical", "key", "for", "often", "much", "many", "clean", "cleaner", "arrive", "time", "you", "apartment", "apartments"],
+  nl: ["de", "het", "een", "en", "ik", "graag", "offerte", "mijn", "uw", "goedemiddag", "waarmee", "woning", "prijs", "wat", "hoe", "diensten", "inbegrepen", "schoonmaak", "eerste", "bezoek", "betaling", "hoeveel", "vaak", "komen", "jullie", "schoonmaken", "kost", "kosten"],
+  fr: ["le", "la", "les", "et", "je", "voudrais", "devis", "mon", "votre", "bonjour", "pouvez", "maison", "prix", "comment", "quels", "services", "inclus", "nettoyage", "premiere", "visite", "paiement", "combien", "frequence", "souvent", "menage", "quelle", "faites"],
+  es: ["el", "la", "los", "una", "y", "quisiera", "presupuesto", "mi", "su", "hola", "puede", "casa", "precio", "que", "como", "servicios", "estan", "incluidos", "limpieza", "primera", "visita", "pago", "cuanto", "frecuencia", "limpian", "limpiar", "con"],
+  de: ["der", "die", "das", "und", "ich", "gerne", "angebot", "mein", "ihre", "guten", "konnen", "haus", "preis", "wie", "welche", "dienste", "enthalten", "reinigung", "erste", "besuch", "zahlung", "oft", "reinigen", "wieviel", "sie"],
+  pt: ["o", "a", "os", "uma", "e", "gostaria", "orcamento", "meu", "sua", "ola", "pode", "casa", "preco", "como", "quais", "servicos", "estao", "incluidos", "limpeza", "primeira", "visita", "pagamento", "quanto", "frequencia", "voces", "limpam", "limpar", "com", "que"],
   ar: ["السلام", "عليكم", "مرحبا", "أريد", "اريد", "عرض", "سعر", "منزل", "بيتي", "من", "في", "هل"],
 };
+
+/**
+ * franc is a statistical model and is unreliable below roughly this many words: it returns a
+ * confident but wrong language for ordinary short questions ("How often do you clean?" scores as
+ * Dutch). Shorter messages are decided by the curated lexicon instead, and fall back to the
+ * caller's language when the lexicon has no clear winner.
+ */
+const FRANC_MIN_WORDS = 8;
 
 const LANGUAGE_ALIASES: Record<Locale, string[]> = {
   en: ["english", "anglais", "ingles", "engels", "englisch", "الانجليزية", "الإنجليزية"],
@@ -96,7 +104,7 @@ const EXPLICIT_CHANGE_MARKERS = /\b(can we|could we|could you|would you|please|c
 export type LanguageDetection = {
   locale: Locale | null;
   confidence: number;
-  source: "short-signal" | "script" | "darija" | "franc" | "undetermined";
+  source: "short-signal" | "script" | "darija" | "lexicon" | "franc" | "undetermined";
 };
 
 export type ConversationLanguageDecision = {
@@ -122,6 +130,36 @@ function countHints(text: string, locale: Locale): number {
   return LANGUAGE_HINTS[locale].reduce((total, hint) => total + (words.has(normalize(hint)) ? 1 : 0), 0);
 }
 
+/**
+ * True when the customer actually wrote words rather than only a reference or digits. A bare
+ * "DTH-2607-10001 12345" carries no language signal at all and is worth a language question; a real
+ * sentence is not, even when the lexicon cannot place it.
+ */
+function hasLinguisticContent(text: string): boolean {
+  const words = normalize(text).split(" ").filter((token) => token.length > 1 && /^\p{L}+$/u.test(token));
+  return words.length >= 3;
+}
+
+function rankHints(text: string): Array<{ locale: Locale; count: number }> {
+  return (Object.keys(LANGUAGE_HINTS) as Locale[])
+    .map((locale) => ({ locale, count: countHints(text, locale) }))
+    .sort((a, b) => b.count - a.count);
+}
+
+/**
+ * Decides a short message from the curated lexicon. A tie or a message with no known words stays
+ * undetermined so the caller keeps the language the customer already chose rather than guessing.
+ */
+function detectFromLexicon(text: string): LanguageDetection {
+  const [best, runnerUp] = rankHints(text);
+  const runnerUpCount = runnerUp?.count || 0;
+  if (!best || best.count === 0 || best.count === runnerUpCount) {
+    return { locale: null, confidence: 0, source: "undetermined" };
+  }
+  const confidence = Math.min(0.97, 0.78 + best.count * 0.06 + (best.count - runnerUpCount) * 0.04);
+  return { locale: best.locale, confidence: Number(confidence.toFixed(3)), source: "lexicon" };
+}
+
 export function detectLanguage(text: string): LanguageDetection {
   const normalized = normalize(text);
   const shortSignal = SHORT_LANGUAGE_SIGNALS[normalized];
@@ -135,15 +173,14 @@ export function detectLanguage(text: string): LanguageDetection {
   }
 
   if (normalized.length < 3) return { locale: null, confidence: 0, source: "undetermined" };
+  if (normalized.split(" ").filter(Boolean).length < FRANC_MIN_WORDS) return detectFromLexicon(text);
+
   const ranked = francAll(text, { only: FRANC_LANGUAGES, minLength: 3 });
   const [bestCode, bestScore] = ranked[0] || ["und", 0];
   let locale = FRANC_TO_LOCALE[bestCode];
   if (!locale) return { locale: null, confidence: 0, source: "undetermined" };
 
-  const hintRanking = (Object.keys(LANGUAGE_HINTS) as Locale[])
-    .map((candidate) => ({ locale: candidate, count: countHints(text, candidate) }))
-    .sort((a, b) => b.count - a.count);
-  const strongestHints = hintRanking[0];
+  const strongestHints = rankHints(text)[0];
   const originalHintCount = countHints(text, locale);
   const lexiconOverride = strongestHints.count >= 2 && strongestHints.count > originalHintCount + 1;
   if (lexiconOverride) locale = strongestHints.locale;
@@ -172,6 +209,8 @@ function explicitLanguageTarget(message: string, selectionPending: boolean): Loc
 export function resolveConversationLanguage(input: {
   message: string;
   currentLanguage?: Locale | null;
+  /** Language the customer is already browsing in. Used when detection is inconclusive. */
+  fallbackLanguage?: Locale | null;
   selectedLanguage?: Locale | null;
   selectionPending?: boolean;
 }): ConversationLanguageDecision {
@@ -214,6 +253,19 @@ export function resolveConversationLanguage(input: {
   }
 
   const confident = Boolean(detection.locale && detection.confidence > LANGUAGE_CONFIDENCE_THRESHOLD);
+  // A written but unrecognised opening message is answered in the language the customer is already
+  // reading, which is a far better signal than a statistical guess on a few words. A message with
+  // no words at all still gets a language question.
+  if (!confident && input.fallbackLanguage && hasLinguisticContent(input.message)) {
+    return {
+      locale: input.fallbackLanguage,
+      detectedLocale: detection.locale,
+      confidence: detection.confidence,
+      languageChanged: false,
+      explicitChange: false,
+      needsClarification: false,
+    };
+  }
   return {
     locale: confident ? detection.locale : null,
     detectedLocale: detection.locale,

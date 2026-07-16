@@ -50,6 +50,38 @@ test("detects very short greetings without guessing through the statistical mode
   }
 });
 
+test("ordinary short questions are answered in the language they were asked in", () => {
+  const questions: Array<[Locale, string]> = [
+    ["en", "How often do you clean?"],
+    ["nl", "Hoe vaak komen jullie schoonmaken?"],
+    ["fr", "À quelle fréquence faites-vous le ménage ?"],
+    ["es", "¿Con qué frecuencia limpian?"],
+    ["de", "Wie oft reinigen Sie?"],
+    ["pt", "Com que frequência vocês limpam?"],
+    ["ar", "كم مرة تقومون بالتنظيف؟"],
+    ["en", "What time does the cleaner arrive?"],
+    ["en", "Do you clean apartments in Rabat?"],
+  ];
+  for (const [locale, message] of questions) {
+    const decision = resolveConversationLanguage({ message, fallbackLanguage: locale });
+    assert.equal(decision.locale, locale, message);
+    assert.equal(decision.needsClarification, false, message);
+  }
+});
+
+test("a written message the lexicon cannot place keeps the language the customer is reading", () => {
+  const decision = resolveConversationLanguage({ message: "Agdal, Rabat, third floor.", fallbackLanguage: "nl" });
+  assert.equal(decision.locale, "nl");
+  assert.equal(decision.needsClarification, false);
+  assert.equal(decision.languageChanged, false);
+});
+
+test("a message with no words still asks which language to use", () => {
+  const decision = resolveConversationLanguage({ message: "DTH-2607-10001 12345", fallbackLanguage: "en" });
+  assert.equal(decision.locale, null);
+  assert.equal(decision.needsClarification, true);
+});
+
 test("uses the latest confidently detected customer language and keeps mixed messages stable", () => {
   const ordinary = resolveConversationLanguage({ message: "Thanks, my booking is DTH-2607-10001.", currentLanguage: "nl" });
   assert.equal(ordinary.locale, "en");
