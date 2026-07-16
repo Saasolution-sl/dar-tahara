@@ -691,13 +691,23 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
   const shouldCaptureGap = answerCategory === "missing_business_knowledge"
     || (intent === "unknown" && (turnSuggestionState.clarificationAttempts.unclear_request || 0) > 0)
     || evaluation.reason === "assistant_failed_after_multiple_attempts";
-  const knowledgeGapId = shouldCaptureGap ? await captureKnowledgeGap({
-    message,
-    locale,
-    intent,
-    conversationId,
-    retrieved,
-  }).catch(() => null) : null;
+  let knowledgeGapId: string | null = null;
+  if (shouldCaptureGap) {
+    try {
+      knowledgeGapId = await captureKnowledgeGap({ message, locale, intent, retrieved });
+    } catch (error) {
+      const failureCode = error instanceof Error ? error.message.split(":", 1)[0].slice(0, 160) : "unknown_error";
+      console.error(JSON.stringify({
+        scope: "assistant_knowledge_builder",
+        event: "knowledge_gap_capture_failed",
+        failureCode,
+        conversationId,
+        locale,
+        intent,
+        contentLogged: false,
+      }));
+    }
+  }
   const missingInformation = deriveMissingInformation({
     conversationHistory: normalizedInput.conversationHistory || [],
     latestUserMessage: message,
@@ -766,6 +776,21 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
     toolCalls,
   };
   await persistAssistantTurn(normalizedInput, reply, retrieved);
+  if (knowledgeGapId && isServiceRoleConfigured()) {
+    await serviceUpdate("assistant_knowledge_gaps", `id=eq.${knowledgeGapId}`, {
+      last_conversation_id: conversationId,
+    }).catch((error) => {
+      const failureCode = error instanceof Error ? error.message.split(":", 1)[0].slice(0, 160) : "unknown_error";
+      console.error(JSON.stringify({
+        scope: "assistant_knowledge_builder",
+        event: "knowledge_gap_conversation_link_failed",
+        failureCode,
+        conversationId,
+        knowledgeGapId,
+        contentLogged: false,
+      }));
+    });
+  }
   return reply;
 }
 

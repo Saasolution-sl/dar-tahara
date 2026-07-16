@@ -72,7 +72,6 @@ export async function captureKnowledgeGap(input: {
   message: string;
   locale: Locale;
   intent: AssistantIntent;
-  conversationId: string;
   retrieved: RetrievedKnowledge[];
 }): Promise<string | null> {
   if (!isServiceRoleConfigured()) return null;
@@ -80,7 +79,7 @@ export async function captureKnowledgeGap(input: {
   const sanitized = redactForReasoning(input.message).replace(/\s+/g, " ").trim().slice(0, 500);
   const existing = await serviceSelect<Array<{ id: string; occurrence_count: number; sample_questions: unknown }>>(
     `assistant_knowledge_gaps?fingerprint=eq.${fingerprint}&select=id,occurrence_count,sample_questions&limit=1`,
-  ).catch(() => []);
+  );
   let gapId = existing[0]?.id || null;
   if (existing[0]) {
     const samples = Array.isArray(existing[0].sample_questions) ? existing[0].sample_questions.filter((item): item is string => typeof item === "string") : [];
@@ -88,9 +87,8 @@ export async function captureKnowledgeGap(input: {
       occurrence_count: existing[0].occurrence_count + 1,
       sample_questions: [...new Set([...samples, sanitized])].slice(-5),
       last_seen_at: new Date().toISOString(),
-      last_conversation_id: input.conversationId,
       metadata: { source_ids: input.retrieved.map((item) => item.article.id), content_redacted: true },
-    }).catch(() => undefined);
+    });
   } else {
     const inserted = await serviceInsert<Array<{ id: string }>>("assistant_knowledge_gaps", {
       fingerprint,
@@ -99,10 +97,10 @@ export async function captureKnowledgeGap(input: {
       language: input.locale,
       intent: input.intent,
       category: categoryForIntent(input.intent),
-      last_conversation_id: input.conversationId,
       metadata: { source_ids: input.retrieved.map((item) => item.article.id), content_redacted: true },
-    }).catch(() => []);
+    });
     gapId = inserted[0]?.id || null;
+    if (!gapId) throw new Error("knowledge_gap_insert_returned_no_id");
   }
 
   const questionKey = `gap-${fingerprint.slice(0, 20)}`;
