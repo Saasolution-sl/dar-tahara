@@ -6,6 +6,11 @@
 *.pem
 .env
 .env*.local
+# Backups/copies of env files — `.env*.local` does NOT match `.env.local.bak`,
+# so without this a saved copy of real credentials is committable.
+.env*.bak*
+.env.*.backup
+!.env.example
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
