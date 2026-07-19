@@ -1,18 +1,53 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createServerClient } from "@supabase/ssr";
-import { locales } from "./i18n/config";
-import { resolveLocale, countryFromHeaders } from "./lib/geo-language";
+import { localeCookieName, locales } from "./i18n/config";
+import { resolveLocale } from "./lib/geo-language";
 import { site } from "./lib/site";
 
 const PUBLIC_FILE = /\.(.*)$/;
 
-function copyCookies(from: NextResponse, to: NextResponse) {
-  from.cookies.getAll().forEach((cookie) => to.cookies.set(cookie));
-  return to;
+function skipsLocaleRedirect(pathname: string) {
+  return (
+    pathname.startsWith("/_next") ||
+    pathname.startsWith("/api") ||
+    pathname.startsWith("/auth/") ||
+    pathname === "/login" ||
+    pathname === "/forgot-password" ||
+    pathname === "/reset-password" ||
+    pathname === "/account" ||
+    pathname.startsWith("/account/") ||
+    pathname === "/admin" ||
+    pathname.startsWith("/admin/") ||
+    PUBLIC_FILE.test(pathname)
+  );
+}
+
+/** Build the automatic locale redirect, or return null for exempt/localized URLs. */
+export function localeRedirectResponse(request: NextRequest): NextResponse | null {
+  const { pathname } = request.nextUrl;
+  if (skipsLocaleRedirect(pathname)) return null;
+
+  // A locale in the URL is authoritative and must never be redirected.
+  const hasLocale = locales.some(
+    (locale) => pathname === `/${locale}` || pathname.startsWith(`/${locale}/`),
+  );
+  if (hasLocale) return null;
+
+  const { locale, source } = resolveLocale({
+    savedLocale: request.cookies.get(localeCookieName)?.value,
+    acceptLanguage: request.headers.get("accept-language"),
+  });
+
+  const url = request.nextUrl.clone();
+  url.pathname = `/${locale}${pathname === "/" ? "" : pathname}`;
+  const response = NextResponse.redirect(url, 302);
+  response.headers.set("cache-control", "private, no-store");
+  response.headers.set("vary", "Accept-Language, Cookie");
+  response.headers.set("x-locale-source", source);
+  return response;
 }
 
 export async function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
   const host = request.headers.get("host")?.split(":")[0] || "";
 
   if (host && host !== site.domain && host !== "localhost" && host !== "127.0.0.1") {
@@ -21,6 +56,11 @@ export async function middleware(request: NextRequest) {
     url.host = site.domain;
     return NextResponse.redirect(url, 308);
   }
+
+  // Locale detection is entirely request-local. Return before Supabase auth
+  // refresh so automatic redirects never add a network request.
+  const localeRedirect = localeRedirectResponse(request);
+  if (localeRedirect) return localeRedirect;
 
   let authResponse = NextResponse.next({ request });
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -39,43 +79,7 @@ export async function middleware(request: NextRequest) {
     await supabase.auth.getUser();
   }
 
-  // Skip internal paths, API routes and static files.
-  if (
-    pathname.startsWith("/_next") ||
-    pathname.startsWith("/api") ||
-    pathname.startsWith("/auth/") ||
-    pathname === "/login" ||
-    pathname === "/forgot-password" ||
-    pathname === "/reset-password" ||
-    pathname === "/account" ||
-    pathname.startsWith("/account/") ||
-    pathname === "/admin" ||
-    pathname.startsWith("/admin/") ||
-    PUBLIC_FILE.test(pathname)
-  ) {
-    return authResponse;
-  }
-
-  // Already locale-prefixed → never redirect (lets users & crawlers open any
-  // language directly; no forced redirect away from a chosen locale).
-  const hasLocale = locales.some(
-    (l) => pathname === `/${l}` || pathname.startsWith(`/${l}/`),
-  );
-  if (hasLocale) return authResponse;
-
-  // Resolve: saved cookie → browser language → IP country → English.
-  const { locale, source } = resolveLocale({
-    savedLocale: request.cookies.get("NEXT_LOCALE")?.value,
-    acceptLanguage: request.headers.get("accept-language"),
-    countryCode: countryFromHeaders(request.headers),
-  });
-
-  const url = request.nextUrl.clone();
-  url.pathname = `/${locale}${pathname === "/" ? "" : pathname}`;
-  const res = copyCookies(authResponse, NextResponse.redirect(url));
-  // Surface the detection outcome for privacy-conscious client analytics.
-  res.headers.set("x-locale-source", source);
-  return res;
+  return authResponse;
 }
 
 export const config = {
