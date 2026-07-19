@@ -4,6 +4,9 @@ export type Locale = (typeof locales)[number];
 
 export const defaultLocale: Locale = "en";
 
+/** Shared name for the visitor's explicit, long-lived language preference. */
+export const localeCookieName = "NEXT_LOCALE";
+
 export const rtlLocales: Locale[] = ["ar"];
 
 export const localeMeta: Record<

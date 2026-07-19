@@ -4,7 +4,7 @@ import * as React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Globe, Check, ChevronDown } from "lucide-react";
-import { locales, localeMeta, type Locale } from "@/i18n/config";
+import { localeCookieName, locales, localeMeta, type Locale } from "@/i18n/config";
 import { track } from "@/lib/analytics";
 import { saveSelectedAssistantLanguage } from "@/lib/assistant/client-language";
 import { cn } from "@/lib/utils";
@@ -12,10 +12,10 @@ import { cn } from "@/lib/utils";
 /** Persist a manual language choice for one year (priority 1 on future visits). */
 function saveLocalePreference(target: Locale) {
   try {
-    document.cookie = `NEXT_LOCALE=${target};path=/;max-age=31536000;samesite=lax`;
+    document.cookie = `${localeCookieName}=${target};path=/;max-age=31536000;samesite=lax`;
     saveSelectedAssistantLanguage(target);
   } catch {
-    /* cookies may be blocked — detection still falls back to browser/geo */
+    /* Cookies may be blocked; detection still falls back to the browser language. */
   }
 }
 
