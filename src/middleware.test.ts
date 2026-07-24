@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { NextRequest } from "next/server";
 import { localeCookieName } from "./i18n/config";
-import { localeRedirectResponse } from "./middleware";
+import { localeForRequest, localeRedirectResponse } from "./middleware";
 
 type RequestOptions = {
   acceptLanguage?: string;
@@ -107,4 +107,21 @@ test("never redirects localized URLs, exempt application routes, or public files
   ]) {
     assert.equal(localeRedirectResponse(request(path)), null);
   }
+});
+
+test("provides the document locale for localized and standalone auth routes", () => {
+  assert.equal(localeForRequest(request("/ar/reset-password")), "ar");
+  assert.equal(
+    localeForRequest(
+      request("/reset-password", {
+        cookie: `${localeCookieName}=fr`,
+        acceptLanguage: "de-DE,de;q=0.9",
+      }),
+    ),
+    "fr",
+  );
+  assert.equal(
+    localeForRequest(request("/forgot-password", { acceptLanguage: "nl-NL,nl;q=0.9" })),
+    "nl",
+  );
 });

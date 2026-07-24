@@ -41,7 +41,7 @@ export function ResetRequestForm({ copy }: { copy: PortalCopy["auth"] }) {
 export function NewPasswordForm({ copy }: { copy: PortalCopy["auth"] }) {
   const [saved,setSaved]=React.useState(false);
   const [busy,setBusy]=React.useState(false);
-  const [error,setError]=React.useState<"short"|"session"|"update"|null>(null);
+  const [error,setError]=React.useState<"short"|"session"|"weak"|"same"|"update"|null>(null);
   async function submit(event:React.FormEvent<HTMLFormElement>){
     event.preventDefault();setError(null);
     const data=new FormData(event.currentTarget);const password=data.get("password");
@@ -57,8 +57,19 @@ export function NewPasswordForm({ copy }: { copy: PortalCopy["auth"] }) {
         window.history.replaceState(window.history.state,"",`${window.location.pathname}${window.location.search}`);
       }
       if(!session.ok){setError("session");return}
-      const {error:updateError}=await supabase.auth.updateUser({password});
-      if(updateError){setError("update");return}
+      const response=await fetch("/api/auth/reset-password",{
+        method:"POST",
+        headers:{"Content-Type":"application/json"},
+        body:JSON.stringify({password}),
+      });
+      const result=await response.json().catch(()=>({})) as {error?:string};
+      if(!response.ok){
+        if(result.error==="invalid_password"){setError("short");return}
+        if(result.error==="invalid_session"){setError("session");return}
+        if(result.error==="weak_password"){setError("weak");return}
+        if(result.error==="same_password"){setError("same");return}
+        setError("update");return
+      }
       setSaved(true);
     } catch {
       setError("update");
@@ -67,6 +78,6 @@ export function NewPasswordForm({ copy }: { copy: PortalCopy["auth"] }) {
     }
   }
   if(saved)return <p className="mt-6 rounded-xl bg-primary/10 p-4 text-sm text-primary">{copy.passwordSaved} <Link href="/login" className="underline">{copy.login}</Link></p>;
-  const errorMessage=error==="short"?copy.passwordTooShort:error==="session"?copy.resetLinkInvalid:error==="update"?copy.passwordUpdateFailed:null;
+  const errorMessage=error==="short"?copy.passwordTooShort:error==="session"?copy.resetLinkInvalid:error==="weak"?(copy.passwordWeak||copy.passwordUpdateFailed):error==="same"?(copy.passwordSame||copy.passwordUpdateFailed):error==="update"?copy.passwordUpdateFailed:null;
   return <form onSubmit={submit} className="mt-7 space-y-4"><label className="block text-sm font-medium">{copy.newPassword}<input name="password" type="password" autoComplete="new-password" minLength={12} required className="input mt-2" /></label>{errorMessage?<p role="alert" className="text-sm text-red-600">{errorMessage}</p>:null}<button disabled={busy} className={cn(buttonVariants({variant:"primary",size:"lg"}),"w-full")}>{copy.savePassword}</button></form>;
 }

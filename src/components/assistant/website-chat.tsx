@@ -36,6 +36,16 @@ const FEEDBACK_LABELS: Record<Locale, { helpful: string; unhelpful: string; than
   ar: { helpful: "مفيد", unhelpful: "غير مفيد", thanks: "شكراً لملاحظاتك" },
 };
 
+const SUPPORT_LABELS: Record<Locale, { whatsapp: string; phone: string; error: string }> = {
+  en: { whatsapp: "Continue on WhatsApp", phone: "Call Dar Tahara", error: "We could not prepare the handover. Please try again." },
+  nl: { whatsapp: "Ga verder op WhatsApp", phone: "Bel Dar Tahara", error: "We konden de overdracht niet voorbereiden. Probeer het opnieuw." },
+  fr: { whatsapp: "Continuer sur WhatsApp", phone: "Appeler Dar Tahara", error: "Nous n’avons pas pu préparer le transfert. Veuillez réessayer." },
+  es: { whatsapp: "Continuar por WhatsApp", phone: "Llamar a Dar Tahara", error: "No pudimos preparar la transferencia. Inténtalo de nuevo." },
+  de: { whatsapp: "Auf WhatsApp fortfahren", phone: "Dar Tahara anrufen", error: "Die Übergabe konnte nicht vorbereitet werden. Bitte versuchen Sie es erneut." },
+  pt: { whatsapp: "Continuar no WhatsApp", phone: "Ligar para a Dar Tahara", error: "Não foi possível preparar a transferência. Tente novamente." },
+  ar: { whatsapp: "المتابعة عبر واتساب", phone: "الاتصال بدار طهارة", error: "تعذر تجهيز التحويل. يرجى المحاولة مرة أخرى." },
+};
+
 function getSessionId() {
   const key = "dar-tahara-assistant-session";
   const existing = window.localStorage.getItem(key);
@@ -55,6 +65,8 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
   const [busy, setBusy] = React.useState(false);
   const [suggestions, setSuggestions] = React.useState<Suggestion[]>([]);
   const [escalation, setEscalation] = React.useState<Escalation | null>(null);
+  const [handoffAvailable, setHandoffAvailable] = React.useState(false);
+  const [handoffBusy, setHandoffBusy] = React.useState(false);
   const [unread, setUnread] = React.useState(false);
   const [feedbackByMessage, setFeedbackByMessage] = React.useState<Record<string, "helpful" | "unhelpful">>({});
   const [messages, setMessages] = React.useState<Message[]>(() => [
@@ -71,6 +83,27 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
     const storedLanguage = window.localStorage.getItem("dar-tahara-assistant-language");
     const explicitlySelectedLanguage = readSelectedAssistantLanguage();
     setConversationId(storedConversationId);
+    if (storedConversationId) {
+      void fetch(`/api/chat/session/${encodeURIComponent(storedConversationId)}`, {
+        headers: { "x-assistant-session-id": getSessionId() },
+        cache: "no-store",
+      }).then(async (response) => {
+        if (!response.ok) return;
+        const payload = await response.json() as {
+          messages?: Array<{ role: string; body: string; created_at: string }>;
+        };
+        const history = (payload.messages || []).flatMap((message) => {
+          if (!["customer", "assistant"].includes(message.role) || !message.body) return [];
+          return [{
+            id: `${message.created_at}-${message.role}`,
+            role: message.role as "customer" | "assistant",
+            body: message.body,
+            automated: message.role === "assistant",
+          }];
+        });
+        if (history.length) setMessages(history);
+      }).catch(() => undefined);
+    }
     setSelectedLanguage(explicitlySelectedLanguage);
     if (explicitlySelectedLanguage) setSessionLanguage(explicitlySelectedLanguage);
     else if (storedLanguage && isLocale(storedLanguage)) setSessionLanguage(storedLanguage);
@@ -84,6 +117,7 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
     setBusy(true);
     setSuggestions([]);
     setEscalation(null);
+    setHandoffAvailable(false);
     setMessages((items) => [...items, { id: crypto.randomUUID(), role: "customer", body: message }]);
     try {
       const res = await fetch("/api/assistant/chat", {
@@ -109,6 +143,7 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
         languageConfirmed: boolean;
         suggestions: Suggestion[];
         escalation: Escalation;
+        handoffAvailable: boolean;
       };
       setConversationId(data.conversationId);
       window.localStorage.setItem("dar-tahara-assistant-conversation", data.conversationId);
@@ -131,13 +166,43 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
       ]);
       setSuggestions(Array.isArray(data.suggestions) ? data.suggestions.slice(0, 4) : []);
       setEscalation(data.escalation || null);
+      setHandoffAvailable(data.handoffAvailable === true || data.escalation?.required === true);
       if (!open) setUnread(true);
     } catch {
       setSuggestions([]);
       setEscalation(null);
+      setHandoffAvailable(false);
       setMessages((items) => [...items, { id: crypto.randomUUID(), role: "assistant", automated: true, body: copy.error }]);
     } finally {
       setBusy(false);
+    }
+  }
+
+  async function startHandoff(channel: "whatsapp" | "phone") {
+    if (!conversationId || handoffBusy) return;
+    setHandoffBusy(true);
+    try {
+      const response = await fetch("/api/chat/handover", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          conversationId,
+          sessionId: getSessionId(),
+          channel,
+        }),
+      });
+      if (!response.ok) throw new Error("handover_failed");
+      const payload = await response.json() as { whatsappUrl: string; phoneUrl: string };
+      window.location.assign(channel === "phone" ? payload.phoneUrl : payload.whatsappUrl);
+    } catch {
+      setMessages((items) => [...items, {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        automated: true,
+        body: SUPPORT_LABELS[activeLanguage].error,
+      }]);
+    } finally {
+      setHandoffBusy(false);
     }
   }
 
@@ -233,10 +298,18 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
                 ))}
               </div>
             ) : null}
-            {!busy && escalation?.required ? (
-              <p className="ms-7 rounded-xl border border-amber-300/50 bg-amber-50 px-3 py-2 text-xs text-amber-950 dark:bg-amber-950/20 dark:text-amber-100">
-                {copy.human}
-              </p>
+            {!busy && handoffAvailable ? (
+              <div className="ms-7 rounded-xl border border-amber-300/50 bg-amber-50 p-3 text-amber-950 dark:bg-amber-950/20 dark:text-amber-100">
+                {escalation?.required ? <p className="text-xs">{copy.human}</p> : null}
+                <div className="mt-2 flex flex-wrap gap-2">
+                  <button type="button" disabled={handoffBusy} onClick={() => startHandoff("whatsapp")} className={buttonVariants({ variant: "primary", size: "sm" })}>
+                    <MessageCircle className="h-4 w-4" /> {SUPPORT_LABELS[activeLanguage].whatsapp}
+                  </button>
+                  <button type="button" disabled={handoffBusy} onClick={() => startHandoff("phone")} className={buttonVariants({ variant: "outline", size: "sm" })}>
+                    {SUPPORT_LABELS[activeLanguage].phone}
+                  </button>
+                </div>
+              </div>
             ) : null}
             <div ref={endRef} />
           </div>

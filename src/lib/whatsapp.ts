@@ -2,6 +2,7 @@ import "server-only";
 import { createHmac, timingSafeEqual } from "node:crypto";
 import { isLocale, type Locale } from "@/i18n/config";
 import { detectLanguage } from "@/lib/assistant/language";
+import { SERVICE_POLICY_COPY } from "@/lib/service-policy";
 
 type Intent =
   | "included" | "price" | "subscriptions" | "frequency" | "cancel"
@@ -24,13 +25,13 @@ const ANSWERS: Record<Locale, Record<Intent | "fallback", string>> = {
     price: "Your calculator estimate is based on size and frequency. The one-time Initial Home Assessment is prepaid; the final subscription price is confirmed after we verify the home.",
     subscriptions: "Choose monthly or annual billing. Visits follow your selected frequency, and annual billing saves 5%. The subscription starts only after the Initial Home Assessment is approved.",
     frequency: "Yes. Frequency changes are supported and will eventually be self-service in the customer dashboard. Our team can arrange the change now.",
-    cancel: "You can cancel in line with the Terms. Contact us before the next renewal and our team will confirm the effective date.",
+    cancel: SERVICE_POLICY_COPY.en.whatsappCancellation,
     assessment: "The Initial Home Assessment is a premium onboarding visit: we verify the property details, assess its condition, deep-clean where required and create your personalised cleaning profile.",
     presence: "You do not always need to be home, but we need confirmed, secure access. For the first visit, being available is recommended if the property has special requirements.",
-    reschedule: "Yes. Please request a new date as early as possible. Rescheduling conditions are set out in the Terms.",
+    reschedule: SERVICE_POLICY_COPY.en.whatsappReschedule,
     payment: "Stripe Checkout securely offers cards, debit cards, Apple Pay, Google Pay and eligible local methods such as SEPA depending on your device, bank and location.",
     products: "Yes. Basic professional cleaning materials, supplies and toilet paper are included. Surface-specific or specialist products are priced separately in the approved proposal.",
-    cities: "We currently focus on Tangier, Casablanca, Rabat and Marrakech and are expanding across Morocco. Send your city and we will confirm coverage.",
+    cities: "We currently focus on Tetouan, Tangier, Meknes, and Casablanca and are expanding across Morocco. Send your city and we will confirm coverage.",
     duration: "The time depends on size and condition. The Initial Home Assessment determines the reliable duration for future visits.",
     annual: "Yes. Annual billing is paid once per year, renews automatically unless cancelled, and includes a 5% discount.",
     address: "Yes. Our team can update your service address and will confirm whether a new Home Assessment or price adjustment is needed.",
@@ -42,13 +43,13 @@ const ANSWERS: Record<Locale, Record<Intent | "fallback", string>> = {
     price: "De schatting is gebaseerd op grootte en frequentie. De eenmalige Initiële Woningbeoordeling wordt vooraf betaald; de definitieve abonnementsprijs volgt na verificatie.",
     subscriptions: "Kies maandelijkse of jaarlijkse betaling. Jaarbetaling bespaart 5%. Het abonnement start pas na goedkeuring van de Initiële Woningbeoordeling.",
     frequency: "Ja. U kunt de frequentie wijzigen; ons team regelt dit nu en later kan dit via het klantdashboard.",
-    cancel: "U kunt opzeggen volgens de Voorwaarden. Neem vóór de volgende verlenging contact op voor bevestiging van de einddatum.",
+    cancel: SERVICE_POLICY_COPY.nl.whatsappCancellation,
     assessment: "De Initiële Woningbeoordeling is premium onboarding: wij controleren de woninggegevens, beoordelen de staat, reinigen diep waar nodig en maken uw schoonmaakprofiel.",
     presence: "U hoeft niet altijd thuis te zijn, maar veilige toegang moet bevestigd zijn. Bij het eerste bezoek raden wij aanwezigheid aan bij bijzondere wensen.",
-    reschedule: "Ja. Vraag zo vroeg mogelijk een nieuwe datum aan; de voorwaarden staan in onze Algemene Voorwaarden.",
+    reschedule: SERVICE_POLICY_COPY.nl.whatsappReschedule,
     payment: "Stripe Checkout ondersteunt veilig kaarten, Apple Pay, Google Pay en waar beschikbaar SEPA, afhankelijk van apparaat, bank en locatie.",
     products: "Ja. Basismaterialen, professionele middelen en toiletpapier zijn inbegrepen. Specialistische producten kunnen apart worden geoffreerd.",
-    cities: "Wij richten ons op Tanger, Casablanca, Rabat en Marrakech en breiden uit. Stuur uw stad voor een dekkingbevestiging.",
+    cities: "Wij richten ons op Tetouan, Tanger, Meknes en Casablanca en breiden uit. Stuur uw stad voor een dekkingbevestiging.",
     duration: "De duur hangt af van grootte en staat. De Initiële Woningbeoordeling bepaalt de betrouwbare duur van toekomstige bezoeken.",
     annual: "Ja. Jaarbetaling gebeurt eenmaal per jaar, verlengt automatisch tenzij opgezegd en geeft 5% korting.",
     address: "Ja. Wij kunnen uw adres wijzigen en bevestigen of een nieuwe beoordeling of prijsaanpassing nodig is.",
@@ -60,13 +61,13 @@ const ANSWERS: Record<Locale, Record<Intent | "fallback", string>> = {
     price: "L’estimation dépend de la surface et de la fréquence. L’Évaluation Initiale du Domicile est prépayée ; le prix définitif est confirmé après vérification.",
     subscriptions: "Choisissez un paiement mensuel ou annuel. L’annuel économise 5 %. L’abonnement commence uniquement après validation de l’Évaluation Initiale.",
     frequency: "Oui. La fréquence peut être modifiée ; notre équipe s’en charge aujourd’hui et le tableau de bord le permettra ensuite.",
-    cancel: "Vous pouvez résilier conformément aux Conditions. Contactez-nous avant le prochain renouvellement pour confirmer la date d’effet.",
+    cancel: SERVICE_POLICY_COPY.fr.whatsappCancellation,
     assessment: "L’Évaluation Initiale du Domicile est un accueil premium : vérification des informations, état général, nettoyage approfondi si nécessaire et création du profil d’entretien.",
     presence: "Votre présence n’est pas toujours nécessaire, mais l’accès sécurisé doit être confirmé. Elle est recommandée lors de la première visite en cas de besoins particuliers.",
-    reschedule: "Oui. Demandez une nouvelle date dès que possible ; les conditions figurent dans nos Conditions Générales.",
+    reschedule: SERVICE_POLICY_COPY.fr.whatsappReschedule,
     payment: "Stripe Checkout propose de façon sécurisée cartes, Apple Pay, Google Pay et SEPA lorsqu’ils sont disponibles selon l’appareil, la banque et le pays.",
     products: "Oui. Les produits professionnels de base, le matériel et le papier toilette sont inclus. Les produits spécialisés peuvent faire l’objet d’un devis.",
-    cities: "Nous intervenons principalement à Tanger, Casablanca, Rabat et Marrakech et nous étendons notre couverture. Envoyez votre ville pour confirmation.",
+    cities: "Nous intervenons principalement à Tétouan, Tanger, Meknès et Casablanca et nous étendons notre couverture. Envoyez votre ville pour confirmation.",
     duration: "La durée dépend de la surface et de l’état. L’Évaluation Initiale fixe une durée fiable pour les visites suivantes.",
     annual: "Oui. Le paiement annuel est prélevé une fois par an, renouvelé automatiquement sauf résiliation, avec 5 % de remise.",
     address: "Oui. Nous pouvons mettre à jour l’adresse et confirmer si une nouvelle évaluation ou un ajustement est nécessaire.",
@@ -78,13 +79,13 @@ const ANSWERS: Record<Locale, Record<Intent | "fallback", string>> = {
     price: "يعتمد التقدير على المساحة وتكرار الزيارات. يُدفع التقييم الأولي للمنزل مسبقاً، ويُؤكد سعر الاشتراك النهائي بعد التحقق من المنزل.",
     subscriptions: "اختر الدفع الشهري أو السنوي. يوفر السنوي 5٪. لا يبدأ الاشتراك إلا بعد اعتماد التقييم الأولي.",
     frequency: "نعم. يمكن تغيير تكرار الزيارات عبر فريقنا، وسيتوفر ذلك لاحقاً في حساب العميل.",
-    cancel: "يمكن الإلغاء وفق الشروط. تواصل معنا قبل التجديد التالي لتأكيد تاريخ سريان الإلغاء.",
+    cancel: SERVICE_POLICY_COPY.ar.whatsappCancellation,
     assessment: "التقييم الأولي للمنزل خدمة استقبال راقية: نتحقق من المعلومات ونقيّم الحالة وننظف بعمق عند الحاجة وننشئ ملف التنظيف المخصص.",
     presence: "لا يلزم وجودك دائماً، لكن يجب تأكيد دخول آمن. يُفضّل الحضور في الزيارة الأولى عند وجود متطلبات خاصة.",
-    reschedule: "نعم. اطلب موعداً جديداً في أقرب وقت؛ وتوضح الشروط سياسة إعادة الجدولة.",
+    reschedule: SERVICE_POLICY_COPY.ar.whatsappReschedule,
     payment: "يوفر Stripe Checkout بطاقات الدفع وApple Pay وGoogle Pay وSEPA عند توفرها حسب الجهاز والبنك والموقع.",
     products: "نعم. تشمل الخدمة المواد المهنية الأساسية والمستلزمات وورق الحمام. قد تُسعّر المنتجات المتخصصة بصورة منفصلة.",
-    cities: "نركز حالياً على طنجة والدار البيضاء والرباط ومراكش ونتوسع في المغرب. أرسل مدينتك لتأكيد التغطية.",
+    cities: "نركز حالياً على تطوان وطنجة ومكناس والدار البيضاء ونتوسع في المغرب. أرسل مدينتك لتأكيد التغطية.",
     duration: "تعتمد المدة على المساحة والحالة. يحدد التقييم الأولي المدة الموثوقة للزيارات اللاحقة.",
     annual: "نعم. يُدفع الاشتراك السنوي مرة واحدة ويتجدد تلقائياً ما لم يُلغَ، مع خصم 5٪.",
     address: "نعم. يمكننا تحديث عنوان الخدمة وتحديد ما إذا كان يلزم تقييم جديد أو تعديل السعر.",
@@ -96,13 +97,13 @@ const ANSWERS: Record<Locale, Record<Intent | "fallback", string>> = {
     price: "La estimación depende del tamaño y la frecuencia. La Evaluación Inicial se paga por adelantado; el precio final se confirma tras verificar la vivienda.",
     subscriptions: "Elige pago mensual o anual. El anual ahorra un 5 %. La suscripción empieza solo tras aprobar la Evaluación Inicial.",
     frequency: "Sí. Puedes cambiar la frecuencia con nuestro equipo y más adelante desde el panel de cliente.",
-    cancel: "Puedes cancelar conforme a las Condiciones. Contacta antes de la próxima renovación para confirmar la fecha efectiva.",
+    cancel: SERVICE_POLICY_COPY.es.whatsappCancellation,
     assessment: "La Evaluación Inicial es una incorporación premium: verificamos los datos, evaluamos el estado, hacemos limpieza profunda cuando procede y creamos tu perfil.",
     presence: "No siempre necesitas estar en casa, pero debemos tener acceso seguro confirmado. En la primera visita es recomendable si hay requisitos especiales.",
-    reschedule: "Sí. Solicita otra fecha lo antes posible; las condiciones están en nuestros Términos.",
+    reschedule: SERVICE_POLICY_COPY.es.whatsappReschedule,
     payment: "Stripe Checkout admite de forma segura tarjetas, Apple Pay, Google Pay y SEPA cuando estén disponibles según dispositivo, banco y ubicación.",
     products: "Sí. Incluimos materiales profesionales básicos, productos y papel higiénico. Los productos especializados pueden presupuestarse aparte.",
-    cities: "Nos centramos en Tánger, Casablanca, Rabat y Marrakech y ampliamos cobertura. Envíanos tu ciudad para confirmarla.",
+    cities: "Nos centramos en Tetuán, Tánger, Mequinez y Casablanca y ampliamos cobertura. Envíanos tu ciudad para confirmarla.",
     duration: "La duración depende del tamaño y el estado. La Evaluación Inicial determina el tiempo fiable de futuras visitas.",
     annual: "Sí. El pago anual se cobra una vez al año, se renueva automáticamente salvo cancelación y tiene 5 % de descuento.",
     address: "Sí. Podemos actualizar la dirección y confirmar si hace falta una nueva evaluación o ajuste de precio.",
@@ -114,13 +115,13 @@ const ANSWERS: Record<Locale, Record<Intent | "fallback", string>> = {
     price: "Die Schätzung basiert auf Größe und Häufigkeit. Die Ersteinschätzung wird vorausbezahlt; der endgültige Preis folgt nach der Prüfung des Hauses.",
     subscriptions: "Wählen Sie monatliche oder jährliche Zahlung. Jährlich sparen Sie 5 %. Das Abonnement startet erst nach Freigabe der Ersteinschätzung.",
     frequency: "Ja. Die Häufigkeit kann durch unser Team und später im Kundenportal geändert werden.",
-    cancel: "Sie können gemäß den Bedingungen kündigen. Kontaktieren Sie uns vor der nächsten Verlängerung zur Bestätigung des Enddatums.",
+    cancel: SERVICE_POLICY_COPY.de.whatsappCancellation,
     assessment: "Die Ersteinschätzung ist ein Premium-Onboarding: Wir prüfen Angaben und Zustand, reinigen bei Bedarf gründlich und erstellen Ihr persönliches Reinigungsprofil.",
     presence: "Sie müssen nicht immer zu Hause sein, aber sicherer Zugang muss bestätigt sein. Beim ersten Besuch ist Anwesenheit bei besonderen Anforderungen empfohlen.",
-    reschedule: "Ja. Fordern Sie möglichst früh einen neuen Termin an; Einzelheiten stehen in den Bedingungen.",
+    reschedule: SERVICE_POLICY_COPY.de.whatsappReschedule,
     payment: "Stripe Checkout bietet sicher Karten, Apple Pay, Google Pay und verfügbares SEPA je nach Gerät, Bank und Standort.",
     products: "Ja. Professionelle Grundmaterialien, Mittel und Toilettenpapier sind enthalten. Spezialprodukte können separat berechnet werden.",
-    cities: "Wir konzentrieren uns auf Tanger, Casablanca, Rabat und Marrakesch und erweitern. Senden Sie Ihre Stadt zur Bestätigung.",
+    cities: "Wir konzentrieren uns auf Tétouan, Tanger, Meknès und Casablanca und erweitern. Senden Sie Ihre Stadt zur Bestätigung.",
     duration: "Die Dauer hängt von Größe und Zustand ab. Die Ersteinschätzung legt eine verlässliche Dauer für künftige Besuche fest.",
     annual: "Ja. Jährliche Zahlung erfolgt einmal pro Jahr, verlängert sich automatisch sofern nicht gekündigt und spart 5 %.",
     address: "Ja. Wir aktualisieren Ihre Adresse und klären, ob eine neue Einschätzung oder Preisanpassung nötig ist.",
@@ -132,13 +133,13 @@ const ANSWERS: Record<Locale, Record<Intent | "fallback", string>> = {
     price: "A estimativa depende da área e frequência. A Avaliação Inicial é pré-paga; o preço final é confirmado após verificarmos a casa.",
     subscriptions: "Escolha pagamento mensal ou anual. O anual poupa 5 %. A subscrição começa apenas após aprovação da Avaliação Inicial.",
     frequency: "Sim. Pode alterar a frequência com a nossa equipa e futuramente no painel do cliente.",
-    cancel: "Pode cancelar segundo as Condições. Contacte-nos antes da próxima renovação para confirmar a data efetiva.",
+    cancel: SERVICE_POLICY_COPY.pt.whatsappCancellation,
     assessment: "A Avaliação Inicial é um onboarding premium: verificamos dados e estado, fazemos limpeza profunda quando necessária e criamos o perfil personalizado.",
     presence: "Nem sempre precisa de estar em casa, mas o acesso seguro deve ser confirmado. Na primeira visita recomendamos presença se houver requisitos especiais.",
-    reschedule: "Sim. Peça uma nova data o mais cedo possível; as condições constam dos Termos.",
+    reschedule: SERVICE_POLICY_COPY.pt.whatsappReschedule,
     payment: "O Stripe Checkout aceita com segurança cartões, Apple Pay, Google Pay e SEPA quando disponíveis conforme dispositivo, banco e localização.",
     products: "Sim. Materiais profissionais básicos, produtos e papel higiénico estão incluídos. Produtos especializados podem ser orçamentados à parte.",
-    cities: "Focamo-nos em Tânger, Casablanca, Rabat e Marraquexe e estamos a expandir. Envie a sua cidade para confirmação.",
+    cities: "Focamo-nos em Tetuão, Tânger, Meknès e Casablanca e estamos a expandir. Envie a sua cidade para confirmação.",
     duration: "A duração depende da área e do estado. A Avaliação Inicial determina o tempo fiável das visitas futuras.",
     annual: "Sim. O pagamento anual é feito uma vez por ano, renova automaticamente salvo cancelamento e inclui 5 % de desconto.",
     address: "Sim. Podemos atualizar a morada e confirmar se é necessária nova avaliação ou ajuste de preço.",
@@ -159,7 +160,17 @@ export function answerWhatsAppQuestion(text: string, preferredLocale?: string | 
     const score = keywords.reduce((total, keyword) => total + (normalized.includes(keyword) ? keyword.length : 0), 0);
     if (score > best.score) best = { intent, score };
   }
-  return { locale, intent: best.intent, answer: ANSWERS[locale][best.intent] };
+  if (KEYWORDS[locale].reschedule?.some((keyword) => normalized.includes(keyword))) {
+    best = { intent: "reschedule", score: Number.MAX_SAFE_INTEGER };
+  } else if (KEYWORDS[locale].cancel?.some((keyword) => normalized.includes(keyword))) {
+    best = { intent: "cancel", score: Number.MAX_SAFE_INTEGER };
+  }
+  const answer = best.intent === "cancel"
+    ? SERVICE_POLICY_COPY[locale].whatsappCancellation
+    : best.intent === "reschedule"
+      ? SERVICE_POLICY_COPY[locale].whatsappReschedule
+      : ANSWERS[locale][best.intent];
+  return { locale, intent: best.intent, answer };
 }
 
 export function verifyWhatsAppSignature(rawBody: string, signatureHeader: string | null): boolean {

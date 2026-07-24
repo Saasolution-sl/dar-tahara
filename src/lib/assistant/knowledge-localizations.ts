@@ -1,4 +1,6 @@
 import type { Locale } from "@/i18n/config";
+import { SERVICE_POLICY_COPY } from "@/lib/service-policy";
+import { APPROVED_FAQ_COPY } from "./approved-faq";
 import type { RetrievedKnowledge } from "./types";
 
 type LocalizedArticle = { title: string; content: string };
@@ -8,7 +10,7 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
   nl: {
     "company-overview": {
       title: "Over Dar Tahara",
-      content: "Dar Tahara biedt premium woningonderhoud en property-conciergediensten in Marokko voor huiseigenaren, expats, gezinnen, short-stayhosts en eigenaren van vakantiewoningen. De diensten omvatten professionele schoonmaak, woninginspecties, voorbereiding van woningen, linnen- en wasservice, sleutelbeheer en doorlopend onderhoud via een abonnement. Dar Tahara richt zich momenteel op Tanger, Casablanca, Rabat en Marrakesh. Deel uw stad, zodat het team de beschikbaarheid kan bevestigen.",
+      content: "Dar Tahara biedt premium woningonderhoud en property-conciergediensten in Marokko voor huiseigenaren, expats, gezinnen, short-stayhosts en eigenaren van vakantiewoningen. De diensten omvatten professionele schoonmaak, woninginspecties, voorbereiding van woningen, linnen- en wasservice, sleutelbeheer en doorlopend onderhoud via een abonnement. Dar Tahara richt zich momenteel op Tetouan, Tanger, Meknes en Casablanca. Deel uw stad, zodat het team de beschikbaarheid kan bevestigen.",
     },
     "initial-home-assessment": {
       title: "Initiële Woningbeoordeling",
@@ -34,14 +36,6 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
       title: "Toegang tot de woning en sleutelbeheer",
       content: "U hoeft bij gewone bezoeken niet altijd thuis te zijn, maar Dar Tahara heeft wel bevestigde, veilige toegang nodig. Toegangsinstructies kunnen parkeerinformatie, poortcodes, sleutelinstructies of informatie over de ingang bevatten. Bij het eerste bezoek is uw aanwezigheid aanbevolen als de woning bijzondere vereisten heeft. Fysieke sleutels worden met een geregistreerde bewaarketen opgeslagen; voor administratie, veilige opslag en verzekeringseisen kunnen extra beheerkosten en aparte voorwaarden gelden. Waar geschikt adviseert Dar Tahara een TTLock-compatibel slim Wi-Fi-slot; installatie kan tijdens of na de beoordeling voor ongeveer €200 worden geregeld en vereist internet in de woning.",
     },
-    "reschedule-cancel-pause": {
-      title: "Verzetten, annuleren en pauzeren",
-      content: "U kunt vragen om een afspraak te verzetten of een abonnement te annuleren of te pauzeren. Wijzigingen met gevolgen moeten via een gevalideerde functie of een Dar Tahara-specialist worden uitgevoerd. De assistent kan het proces uitleggen, maar kan niet zelfstandig een terugbetaling goedkeuren, een betaalde dienst annuleren of een afspraak wijzigen.",
-    },
-    "human-handoff": {
-      title: "Wanneer een specialist helpt",
-      content: "Een Dar Tahara-specialist neemt het over wanneer u om een medewerker vraagt, wanneer goedgekeurde informatie ontbreekt, bij lage zekerheid, betwiste kosten, terugbetalingsbeslissingen, schade- of veiligheidsklachten, juridische kwesties, herhaalde fouten of handmatige boekingshulp.",
-    },
     "privacy-boundaries": {
       title: "Privacy en identiteitscontrole",
       content: "Algemene vragen kunnen zonder inloggen worden beantwoord. Persoonlijke boekings-, betalings- of abonnementsgegevens mogen pas worden gedeeld nadat uw identiteit veilig is gecontroleerd. De assistent deelt nooit gegevens van een andere klant.",
@@ -50,7 +44,7 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
   fr: {
     "company-overview": {
       title: "Présentation de Dar Tahara",
-      content: "Dar Tahara propose au Maroc des services haut de gamme d’entretien du domicile et de conciergerie immobilière aux propriétaires, expatriés, familles, hôtes de courte durée et propriétaires de résidences secondaires. Les services comprennent le nettoyage professionnel, les inspections, la préparation du logement, le linge, la blanchisserie, la gestion des clés et l’entretien régulier par abonnement. Dar Tahara intervient principalement à Tanger, Casablanca, Rabat et Marrakech. Indiquez votre ville afin que l’équipe confirme la disponibilité.",
+      content: "Dar Tahara propose au Maroc des services haut de gamme d’entretien du domicile et de conciergerie immobilière aux propriétaires, expatriés, familles, hôtes de courte durée et propriétaires de résidences secondaires. Les services comprennent le nettoyage professionnel, les inspections, la préparation du logement, le linge, la blanchisserie, la gestion des clés et l’entretien régulier par abonnement. Dar Tahara intervient principalement à Tétouan, Tanger, Meknès et Casablanca. Indiquez votre ville afin que l’équipe confirme la disponibilité.",
     },
     "initial-home-assessment": {
       title: "Évaluation Initiale du Domicile",
@@ -76,14 +70,6 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
       title: "Accès au logement et gestion des clés",
       content: "Vous ne devez pas toujours être présent lors des visites régulières, mais Dar Tahara doit disposer d’un accès confirmé et sécurisé. Les consignes peuvent inclure le stationnement, les codes d’entrée, les clés ou l’accès à l’immeuble. Votre présence est recommandée lors de la première visite si le logement a des besoins particuliers. Les clés physiques sont conservées avec une chaîne de garde enregistrée ; des frais de gestion et des conditions séparées peuvent s’appliquer pour l’administration, le stockage sécurisé et l’assurance. Lorsque cela convient, Dar Tahara recommande une serrure Wi-Fi compatible TTLock et peut organiser son installation pour environ 200 € pendant ou après l’évaluation ; une connexion internet active est nécessaire.",
     },
-    "reschedule-cancel-pause": {
-      title: "Reporter, annuler ou suspendre",
-      content: "Vous pouvez demander le report d’une visite, l’annulation ou la suspension d’un abonnement. Les changements ayant des conséquences doivent passer par une fonction validée ou un spécialiste Dar Tahara. L’assistant peut expliquer la procédure, mais ne peut pas approuver seul un remboursement, annuler une prestation payée ou modifier un rendez-vous.",
-    },
-    "human-handoff": {
-      title: "Quand faire appel à un spécialiste",
-      content: "Un spécialiste Dar Tahara intervient lorsque vous demandez une personne, lorsque les informations approuvées sont insuffisantes, en cas de faible certitude, de paiement contesté, de décision de remboursement, de plainte liée à un dommage ou à la sécurité, de question juridique, d’échecs répétés ou d’intervention manuelle sur une réservation.",
-    },
     "privacy-boundaries": {
       title: "Confidentialité et vérification d’identité",
       content: "Les questions générales peuvent être traitées sans authentification. Les informations personnelles de réservation, paiement ou abonnement ne peuvent être communiquées qu’après une vérification sécurisée de votre identité. L’assistant ne divulgue jamais les données d’un autre client.",
@@ -92,7 +78,7 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
   es: {
     "company-overview": {
       title: "Información sobre Dar Tahara",
-      content: "Dar Tahara ofrece en Marruecos servicios prémium de cuidado del hogar y conserjería de propiedades para propietarios, expatriados, familias, anfitriones de corta estancia y dueños de viviendas vacacionales. Los servicios incluyen limpieza profesional, inspecciones, preparación de la vivienda, ropa de cama, lavandería, gestión de llaves y cuidado periódico mediante suscripción. Dar Tahara se centra actualmente en Tánger, Casablanca, Rabat y Marrakech. Indique su ciudad para que el equipo confirme la disponibilidad.",
+      content: "Dar Tahara ofrece en Marruecos servicios prémium de cuidado del hogar y conserjería de propiedades para propietarios, expatriados, familias, anfitriones de corta estancia y dueños de viviendas vacacionales. Los servicios incluyen limpieza profesional, inspecciones, preparación de la vivienda, ropa de cama, lavandería, gestión de llaves y cuidado periódico mediante suscripción. Dar Tahara se centra actualmente en Tetuán, Tánger, Mequinez y Casablanca. Indique su ciudad para que el equipo confirme la disponibilidad.",
     },
     "initial-home-assessment": {
       title: "Evaluación Inicial de la Vivienda",
@@ -118,14 +104,6 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
       title: "Acceso a la vivienda y gestión de llaves",
       content: "No siempre es necesario que esté en casa durante las visitas periódicas, pero Dar Tahara necesita un acceso confirmado y seguro. Las instrucciones pueden incluir aparcamiento, códigos de entrada, llaves o acceso al edificio. Se recomienda estar disponible durante la primera visita si la vivienda tiene requisitos especiales. Las llaves físicas se guardan con una cadena de custodia registrada; pueden aplicarse una tarifa adicional de gestión y condiciones separadas por administración, almacenamiento seguro y requisitos del seguro. Cuando sea adecuado, Dar Tahara recomienda una cerradura Wi-Fi compatible con TTLock y puede organizar la instalación por unos 200 € durante o después de la evaluación; la vivienda necesita conexión a internet.",
     },
-    "reschedule-cancel-pause": {
-      title: "Reprogramación, cancelación y pausa",
-      content: "Puede solicitar reprogramar una visita, cancelar o pausar una suscripción. Los cambios con consecuencias deben realizarse mediante una función validada o un especialista de Dar Tahara. El asistente puede explicar el proceso, pero no puede aprobar por sí solo un reembolso, cancelar un servicio pagado ni modificar una cita.",
-    },
-    "human-handoff": {
-      title: "Cuándo interviene un especialista",
-      content: "Un especialista de Dar Tahara interviene cuando solicita hablar con una persona, cuando falta información aprobada, existe poca certeza, se disputa un cargo, hace falta decidir un reembolso, hay una queja por daños o seguridad, una cuestión legal, fallos repetidos o una reserva requiere intervención manual.",
-    },
     "privacy-boundaries": {
       title: "Privacidad y verificación de identidad",
       content: "Las preguntas generales pueden responderse sin autenticación. Los datos personales de reservas, pagos o suscripciones solo pueden compartirse después de verificar su identidad de forma segura. El asistente nunca revela información de otro cliente.",
@@ -134,7 +112,7 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
   de: {
     "company-overview": {
       title: "Über Dar Tahara",
-      content: "Dar Tahara bietet in Marokko hochwertige Hauspflege und Immobilien-Concierge-Dienste für Eigentümer, Expats, Familien, Kurzzeitvermieter und Besitzer von Ferienhäusern. Dazu gehören professionelle Reinigung, Hausinspektionen, Vorbereitung der Immobilie, Wäsche- und Bettwäsche-Service, Schlüsselverwaltung und laufende Betreuung im Abonnement. Dar Tahara konzentriert sich derzeit auf Tanger, Casablanca, Rabat und Marrakesch. Teilen Sie uns Ihre Stadt mit, damit das Team die Verfügbarkeit bestätigen kann.",
+      content: "Dar Tahara bietet in Marokko hochwertige Hauspflege und Immobilien-Concierge-Dienste für Eigentümer, Expats, Familien, Kurzzeitvermieter und Besitzer von Ferienhäusern. Dazu gehören professionelle Reinigung, Hausinspektionen, Vorbereitung der Immobilie, Wäsche- und Bettwäsche-Service, Schlüsselverwaltung und laufende Betreuung im Abonnement. Dar Tahara konzentriert sich derzeit auf Tétouan, Tanger, Meknès und Casablanca. Teilen Sie uns Ihre Stadt mit, damit das Team die Verfügbarkeit bestätigen kann.",
     },
     "initial-home-assessment": {
       title: "Ersteinschätzung des Hauses",
@@ -160,14 +138,6 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
       title: "Zugang zur Immobilie und Schlüsselverwaltung",
       content: "Bei regelmäßigen Besuchen müssen Sie nicht immer zu Hause sein, Dar Tahara benötigt jedoch einen bestätigten und sicheren Zugang. Hinweise können Parkmöglichkeiten, Torcodes, Schlüssel oder den Gebäudeeingang betreffen. Beim ersten Besuch wird Ihre Anwesenheit empfohlen, wenn besondere Anforderungen bestehen. Physische Schlüssel werden mit dokumentierter Verwahrungskette gelagert; für Verwaltung, sichere Aufbewahrung und Versicherungsanforderungen können zusätzliche Gebühren und separate Bedingungen gelten. Wo geeignet, empfiehlt Dar Tahara ein TTLock-kompatibles WLAN-Smart-Lock und kann die Installation während oder nach der Bewertung für etwa 200 € organisieren; im Haus ist eine aktive Internetverbindung erforderlich.",
     },
-    "reschedule-cancel-pause": {
-      title: "Verschieben, kündigen und pausieren",
-      content: "Sie können um die Verschiebung eines Termins sowie um Kündigung oder Pausierung eines Abonnements bitten. Änderungen mit Folgen müssen über eine geprüfte Funktion oder einen Dar Tahara-Spezialisten erfolgen. Der Assistent kann den Ablauf erklären, aber nicht eigenständig Erstattungen genehmigen, bezahlte Leistungen kündigen oder Termine ändern.",
-    },
-    "human-handoff": {
-      title: "Wann ein Spezialist übernimmt",
-      content: "Ein Dar Tahara-Spezialist übernimmt, wenn Sie einen Menschen wünschen, genehmigtes Wissen fehlt, die Sicherheit der Antwort niedrig ist, eine Zahlung bestritten wird, eine Erstattung entschieden werden muss, eine Schadens- oder Sicherheitsbeschwerde vorliegt, es um rechtliche Fragen, wiederholte Fehler oder manuelle Buchungshilfe geht.",
-    },
     "privacy-boundaries": {
       title: "Datenschutz und Identitätsprüfung",
       content: "Allgemeine Fragen können ohne Anmeldung beantwortet werden. Persönliche Buchungs-, Zahlungs- oder Abonnementdaten dürfen erst nach sicherer Prüfung Ihrer Identität mitgeteilt werden. Der Assistent gibt niemals Daten anderer Kunden weiter.",
@@ -176,7 +146,7 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
   pt: {
     "company-overview": {
       title: "Sobre a Dar Tahara",
-      content: "A Dar Tahara presta em Marrocos serviços premium de cuidado da casa e concierge de propriedades para proprietários, expatriados, famílias, anfitriões de curta duração e donos de casas de férias. Os serviços incluem limpeza profissional, inspeções, preparação da casa, roupa de cama, lavandaria, gestão de chaves e cuidado contínuo por subscrição. Atualmente, a Dar Tahara concentra-se em Tânger, Casablanca, Rabat e Marraquexe. Indique a sua cidade para a equipa confirmar a disponibilidade.",
+      content: "A Dar Tahara presta em Marrocos serviços premium de cuidado da casa e concierge de propriedades para proprietários, expatriados, famílias, anfitriões de curta duração e donos de casas de férias. Os serviços incluem limpeza profissional, inspeções, preparação da casa, roupa de cama, lavandaria, gestão de chaves e cuidado contínuo por subscrição. Atualmente, a Dar Tahara concentra-se em Tetuão, Tânger, Meknès e Casablanca. Indique a sua cidade para a equipa confirmar a disponibilidade.",
     },
     "initial-home-assessment": {
       title: "Avaliação Inicial da Casa",
@@ -202,14 +172,6 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
       title: "Acesso à casa e gestão de chaves",
       content: "Nem sempre precisa de estar em casa nas visitas regulares, mas a Dar Tahara necessita de acesso confirmado e seguro. As instruções podem incluir estacionamento, códigos de portão, chaves ou entrada do edifício. Recomenda-se a sua presença na primeira visita se a casa tiver requisitos especiais. As chaves físicas são guardadas com cadeia de custódia registada; podem aplicar-se uma taxa adicional de gestão e condições separadas para administração, armazenamento seguro e requisitos de seguro. Quando adequado, a Dar Tahara recomenda uma fechadura Wi-Fi compatível com TTLock e pode organizar a instalação por cerca de 200 € durante ou após a avaliação; a casa necessita de internet ativa.",
     },
-    "reschedule-cancel-pause": {
-      title: "Reagendar, cancelar e pausar",
-      content: "Pode pedir para reagendar uma visita, cancelar ou pausar uma subscrição. Alterações com consequências têm de ser efetuadas por uma função validada ou por um especialista da Dar Tahara. O assistente pode explicar o processo, mas não pode aprovar sozinho um reembolso, cancelar um serviço pago ou alterar uma marcação.",
-    },
-    "human-handoff": {
-      title: "Quando intervém um especialista",
-      content: "Um especialista da Dar Tahara intervém quando pede uma pessoa, quando falta informação aprovada, a certeza é baixa, uma cobrança é contestada, é necessária uma decisão de reembolso, existe uma reclamação de dano ou segurança, uma questão jurídica, falhas repetidas ou uma reserva exige intervenção manual.",
-    },
     "privacy-boundaries": {
       title: "Privacidade e verificação de identidade",
       content: "As perguntas gerais podem ser respondidas sem autenticação. Os dados pessoais de reservas, pagamentos ou subscrições só podem ser partilhados depois de a sua identidade ser verificada com segurança. O assistente nunca divulga dados de outro cliente.",
@@ -218,7 +180,7 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
   ar: {
     "company-overview": {
       title: "نبذة عن دار طهارة",
-      content: "تقدم دار طهارة في المغرب خدمات راقية للعناية بالمنازل وإدارة العقارات للمالكين والمغتربين والعائلات ومضيفي الإقامات القصيرة وأصحاب بيوت العطلات. تشمل الخدمات التنظيف المهني وفحص المنزل وتجهيزه والعناية بالمفروشات والغسيل وإدارة المفاتيح والعناية المستمرة عبر الاشتراك. تركز دار طهارة حالياً على طنجة والدار البيضاء والرباط ومراكش. أخبرنا بمدينتك لكي يؤكد الفريق توفر الخدمة.",
+      content: "تقدم دار طهارة في المغرب خدمات راقية للعناية بالمنازل وإدارة العقارات للمالكين والمغتربين والعائلات ومضيفي الإقامات القصيرة وأصحاب بيوت العطلات. تشمل الخدمات التنظيف المهني وفحص المنزل وتجهيزه والعناية بالمفروشات والغسيل وإدارة المفاتيح والعناية المستمرة عبر الاشتراك. تركز دار طهارة حالياً على تطوان وطنجة ومكناس والدار البيضاء. أخبرنا بمدينتك لكي يؤكد الفريق توفر الخدمة.",
     },
     "initial-home-assessment": {
       title: "التقييم الأولي للمنزل",
@@ -244,14 +206,6 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
       title: "الدخول إلى المنزل وإدارة المفاتيح",
       content: "لا يلزم أن تكون في المنزل دائماً أثناء الزيارات الدورية، لكن دار طهارة تحتاج إلى طريقة دخول مؤكدة وآمنة. قد تشمل التعليمات موقف السيارة أو رمز البوابة أو المفاتيح أو مدخل المبنى. يُستحسن حضورك في الزيارة الأولى إذا كانت للمنزل متطلبات خاصة. تُحفظ المفاتيح الفعلية بسجل عهدة موثق، وقد تُطبق رسوم إدارة إضافية وشروط منفصلة للإدارة والتخزين الآمن ومتطلبات التأمين. عند ملاءمة المنزل، توصي دار طهارة بقفل ذكي يعمل بالـ Wi-Fi ومتوافق مع TTLock، ويمكن ترتيب تركيبه بحوالي 200 يورو أثناء التقييم أو بعده، مع ضرورة توفر اتصال إنترنت فعال في المنزل.",
     },
-    "reschedule-cancel-pause": {
-      title: "تغيير الموعد والإلغاء والتوقيف المؤقت",
-      content: "يمكنك طلب تغيير موعد أو إلغاء اشتراك أو توقيفه مؤقتاً. يجب تنفيذ التغييرات التي تترتب عليها آثار عبر وظيفة موثقة أو مختص من دار طهارة. يستطيع المساعد شرح الإجراءات، لكنه لا يستطيع وحده الموافقة على استرداد مبلغ أو إلغاء خدمة مدفوعة أو تغيير موعد.",
-    },
-    "human-handoff": {
-      title: "متى يتدخل المختص",
-      content: "يتدخل مختص من دار طهارة عندما تطلب التحدث إلى شخص، أو لا تتوفر معلومات معتمدة كافية، أو تكون الثقة منخفضة، أو يوجد اعتراض على رسوم، أو يلزم قرار بشأن استرداد مبلغ، أو توجد شكوى عن ضرر أو سلامة، أو مسألة قانونية، أو أخطاء متكررة، أو حجز يحتاج إلى تدخل يدوي.",
-    },
     "privacy-boundaries": {
       title: "الخصوصية والتحقق من الهوية",
       content: "يمكن الإجابة عن الأسئلة العامة دون تسجيل الدخول. لا تُشارك بيانات الحجز أو الدفع أو الاشتراك الشخصية إلا بعد التحقق الآمن من هويتك. لا يكشف المساعد أبداً بيانات عميل آخر.",
@@ -262,32 +216,42 @@ const LOCALIZED_ARTICLES: Partial<Record<Locale, LocalizedArticles>> = {
 const CURRENT_HANDOFF_POLICY: Record<Locale, LocalizedArticle> = {
   en: {
     title: "Human handoff rules",
-    content: "Human handoff is reserved for an explicit request or an issue that genuinely requires staff action or protected records, such as changing a confirmed booking, investigating a payment or refund, theft, damage, injury, unsafe conditions, an active access failure, a lost physical key, an active digital-lock failure, a staff no-show, contract termination, authenticated account information, or repeated unresolved technical failures. Missing knowledge, low confidence, spelling mistakes, another language, and general policy questions do not by themselves require handoff.",
+    content: "The assistant hands off when it cannot understand the customer’s question, when the customer explicitly requests Dar Tahara Support, or when staff action or protected records are required. Visit changes and subscription cancellation remain self-service through the customer portal when the question is understood.",
   },
   nl: {
     title: "Regels voor menselijke ondersteuning",
-    content: "Menselijke ondersteuning is voor een uitdrukkelijk verzoek of een probleem waarvoor echt personeelsactie of beveiligde gegevens nodig zijn, zoals een bevestigde boeking wijzigen, een betaling of terugbetaling onderzoeken, diefstal, schade, letsel, een onveilige situatie, een actief toegangsprobleem, een verloren fysieke sleutel, een defect digitaal slot tijdens de dienst, een niet-verschenen medewerker, contractbeëindiging, geverifieerde accountgegevens of herhaalde onopgeloste technische fouten. Ontbrekende kennis, lage zekerheid, spelfouten, een andere taal en algemene beleidsvragen zijn op zichzelf geen reden voor overdracht.",
+    content: "De assistent draagt het gesprek over wanneer de vraag niet wordt begrepen, wanneer de klant uitdrukkelijk om Dar Tahara Support vraagt of wanneer personeelsactie of beveiligde gegevens nodig zijn. Bezoekwijzigingen en abonnementsopzegging blijven zelfservice via het klantenportaal wanneer de vraag wordt begrepen.",
   },
   fr: {
     title: "Règles de transfert à une personne",
-    content: "Le transfert à une personne est réservé à une demande explicite ou à un problème nécessitant réellement une action du personnel ou l'accès à des données protégées : modification d'une réservation confirmée, examen d'un paiement ou remboursement, vol, dommage, blessure, situation dangereuse, échec d'accès en cours, clé physique perdue, serrure numérique défaillante pendant le service, absence d'un intervenant, résiliation de contrat, données de compte authentifiées ou pannes techniques répétées. Une connaissance manquante, une faible confiance, des fautes, une autre langue ou une question générale ne suffisent pas à déclencher un transfert.",
+    content: "L’assistant transfère la conversation lorsqu’il ne comprend pas la question, lorsque le client demande explicitement Dar Tahara Support ou lorsqu’une action du personnel ou des données protégées sont nécessaires. Les changements de visite et la résiliation restent en libre-service dans le portail lorsque la question est comprise.",
   },
   es: {
     title: "Reglas de atención humana",
-    content: "La atención humana se reserva para una solicitud explícita o un problema que realmente requiera una acción del personal o acceso a datos protegidos: cambiar una reserva confirmada, revisar un pago o reembolso, robo, daños, lesiones, condiciones inseguras, un fallo de acceso activo, una llave física perdida, una cerradura digital averiada durante el servicio, una ausencia del personal, terminar un contrato, consultar datos autenticados o resolver fallos técnicos repetidos. La falta de conocimiento, una confianza baja, errores ortográficos, otro idioma o una pregunta general no justifican por sí solos la derivación.",
+    content: "El asistente transfiere la conversación cuando no entiende la pregunta, cuando el cliente solicita expresamente Dar Tahara Support o cuando se requiere una acción del personal o acceso a datos protegidos. Los cambios de visita y la cancelación siguen siendo autoservicio en el portal cuando se entiende la pregunta.",
   },
   de: {
     title: "Regeln für menschliche Unterstützung",
-    content: "Menschliche Unterstützung ist einer ausdrücklichen Bitte oder einem Problem vorbehalten, das tatsächlich Mitarbeitereingriff oder geschützte Daten erfordert: Änderung einer bestätigten Buchung, Prüfung einer Zahlung oder Erstattung, Diebstahl, Schaden, Verletzung, unsichere Bedingungen, ein akutes Zugangsproblem, ein verlorener physischer Schlüssel, ein defektes digitales Schloss während des Dienstes, Nichterscheinen, Vertragsbeendigung, authentifizierte Kontodaten oder wiederholt ungelöste technische Fehler. Fehlendes Wissen, geringe Sicherheit, Schreibfehler, eine andere Sprache oder allgemeine Richtlinienfragen führen allein nicht zur Übergabe.",
+    content: "Der Assistent übergibt das Gespräch, wenn er die Frage nicht versteht, wenn der Kunde ausdrücklich Dar Tahara Support verlangt oder wenn Mitarbeitereingriff beziehungsweise geschützte Daten erforderlich sind. Terminänderungen und Abonnementkündigungen bleiben Selbstbedienung im Kundenportal, wenn die Frage verstanden wurde.",
   },
   pt: {
     title: "Regras de apoio humano",
-    content: "O apoio humano fica reservado para um pedido explícito ou um problema que realmente exija ação da equipa ou acesso a dados protegidos: alterar uma reserva confirmada, analisar um pagamento ou reembolso, roubo, danos, ferimentos, condições inseguras, falha de acesso ativa, perda de uma chave física, avaria da fechadura digital durante o serviço, falta da equipa, cessação do contrato, dados de conta autenticados ou falhas técnicas repetidas. Conhecimento em falta, baixa confiança, erros ortográficos, outro idioma ou perguntas gerais não justificam por si só a transferência.",
+    content: "O assistente encaminha a conversa quando não compreende a pergunta, quando o cliente pede expressamente a Dar Tahara Support ou quando é necessária ação da equipa ou acesso a dados protegidos. Alterações de visitas e cancelamento da subscrição continuam em autosserviço no portal quando a pergunta é compreendida.",
   },
   ar: {
     title: "قواعد التحويل إلى الدعم البشري",
-    content: "يقتصر التحويل إلى الدعم البشري على طلب العميل الصريح أو على مشكلة تتطلب فعلاً إجراءً من الموظفين أو الوصول إلى سجلات محمية، مثل تغيير حجز مؤكد، أو مراجعة دفعة أو استرداد، أو السرقة أو الضرر أو الإصابة أو الظروف غير الآمنة، أو تعذر الدخول أثناء خدمة جارية، أو فقدان مفتاح فعلي، أو تعطل قفل رقمي أثناء الخدمة، أو عدم حضور الموظف، أو إنهاء عقد، أو معلومات حساب تتطلب التحقق، أو أعطال تقنية متكررة. نقص المعرفة أو انخفاض الثقة أو الأخطاء الإملائية أو استخدام لغة أخرى أو طرح سؤال عام لا يبرر التحويل وحده.",
+    content: "يحوّل المساعد المحادثة عندما لا يفهم سؤال العميل، أو عندما يطلب العميل Dar Tahara Support صراحةً، أو عندما يلزم تدخل الموظفين أو الوصول إلى بيانات محمية. تظل تغييرات الزيارات وإلغاء الاشتراك خدمة ذاتية عبر بوابة العميل عندما يكون السؤال مفهوماً.",
   },
+};
+
+const FAQ_ARTICLE_TITLES: Record<Locale, { cleaningProducts: string; visitScheduling: string }> = {
+  en: { cleaningProducts: "Cleaning products", visitScheduling: "How visits are scheduled" },
+  nl: { cleaningProducts: "Schoonmaakproducten", visitScheduling: "Hoe bezoeken worden ingepland" },
+  fr: { cleaningProducts: "Produits de nettoyage", visitScheduling: "Planification des visites" },
+  es: { cleaningProducts: "Productos de limpieza", visitScheduling: "Programación de las visitas" },
+  de: { cleaningProducts: "Reinigungsprodukte", visitScheduling: "Planung der Besuche" },
+  pt: { cleaningProducts: "Produtos de limpeza", visitScheduling: "Agendamento das visitas" },
+  ar: { cleaningProducts: "منتجات التنظيف", visitScheduling: "كيفية جدولة الزيارات" },
 };
 
 function articleSlug(item: RetrievedKnowledge): string {
@@ -301,11 +265,40 @@ export function localizeRetrievedKnowledge(
   retrieved: RetrievedKnowledge[],
   locale: Locale,
 ): RetrievedKnowledge[] {
-  if (locale === "en") return retrieved;
   return retrieved.map((item) => {
     if (item.article.language === locale) return item;
     const slug = articleSlug(item);
-    const localized = slug === "human-handoff" ? CURRENT_HANDOFF_POLICY[locale] : LOCALIZED_ARTICLES[locale]?.[slug];
+    const localized = slug === "initial-home-assessment"
+      ? {
+          title: LOCALIZED_ARTICLES[locale]?.[slug]?.title || item.article.title,
+          content: `${APPROVED_FAQ_COPY[locale].first_visit} ${APPROVED_FAQ_COPY[locale].first_cleaning_prepaid}`,
+        }
+      : slug === "access-presence-keys"
+        ? {
+            title: LOCALIZED_ARTICLES[locale]?.[slug]?.title || item.article.title,
+            content: `${APPROVED_FAQ_COPY[locale].presence} ${APPROVED_FAQ_COPY[locale].digital_locks} ${APPROVED_FAQ_COPY[locale].physical_key}`,
+          }
+      : slug === "cleaning-products"
+        ? {
+            title: FAQ_ARTICLE_TITLES[locale].cleaningProducts,
+            content: APPROVED_FAQ_COPY[locale].cleaning_products,
+          }
+      : slug === "visit-scheduling"
+        ? {
+            title: FAQ_ARTICLE_TITLES[locale].visitScheduling,
+            content: APPROVED_FAQ_COPY[locale].visit_scheduling,
+          }
+      : slug === "reschedule-cancel-pause"
+      ? {
+          title: SERVICE_POLICY_COPY[locale].articleTitle,
+          content: SERVICE_POLICY_COPY[locale].articleContent,
+        }
+      : slug === "human-handoff"
+        ? {
+            title: CURRENT_HANDOFF_POLICY[locale].title,
+            content: `${CURRENT_HANDOFF_POLICY[locale].content} ${SERVICE_POLICY_COPY[locale].termsSupport}`,
+          }
+        : LOCALIZED_ARTICLES[locale]?.[slug];
     if (!localized) return item;
     return {
       ...item,

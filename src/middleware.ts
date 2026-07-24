@@ -5,6 +5,7 @@ import { resolveLocale } from "./lib/geo-language";
 import { site } from "./lib/site";
 
 const PUBLIC_FILE = /\.(.*)$/;
+export const requestLocaleHeader = "x-dar-tahara-locale";
 
 function skipsLocaleRedirect(pathname: string) {
   return (
@@ -47,6 +48,20 @@ export function localeRedirectResponse(request: NextRequest): NextResponse | nul
   return response;
 }
 
+export function localeForRequest(request: NextRequest) {
+  const pathLocale = locales.find(
+    (locale) =>
+      request.nextUrl.pathname === `/${locale}` ||
+      request.nextUrl.pathname.startsWith(`/${locale}/`),
+  );
+  if (pathLocale) return pathLocale;
+
+  return resolveLocale({
+    savedLocale: request.cookies.get(localeCookieName)?.value,
+    acceptLanguage: request.headers.get("accept-language"),
+  }).locale;
+}
+
 export async function middleware(request: NextRequest) {
   const host = request.headers.get("host")?.split(":")[0] || "";
 
@@ -62,7 +77,9 @@ export async function middleware(request: NextRequest) {
   const localeRedirect = localeRedirectResponse(request);
   if (localeRedirect) return localeRedirect;
 
-  let authResponse = NextResponse.next({ request });
+  const requestHeaders = new Headers(request.headers);
+  requestHeaders.set(requestLocaleHeader, localeForRequest(request));
+  let authResponse = NextResponse.next({ request: { headers: requestHeaders } });
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
   if (supabaseUrl && supabaseKey) {
@@ -71,7 +88,8 @@ export async function middleware(request: NextRequest) {
         getAll: () => request.cookies.getAll(),
         setAll(values) {
           values.forEach(({ name, value }) => request.cookies.set(name, value));
-          authResponse = NextResponse.next({ request });
+          requestHeaders.set("cookie", request.headers.get("cookie") || "");
+          authResponse = NextResponse.next({ request: { headers: requestHeaders } });
           values.forEach(({ name, value, options }) => authResponse.cookies.set(name, value, options));
         },
       },

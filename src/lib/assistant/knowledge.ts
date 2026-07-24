@@ -1,7 +1,9 @@
 import { locales, type Locale } from "@/i18n/config";
+import { SERVICE_POLICY_COPY } from "@/lib/service-policy";
+import { APPROVED_FAQ_COPY } from "./approved-faq";
 import type { KnowledgeArticle } from "./types";
 
-const TODAY = "2026-07-14";
+const TODAY = "2026-07-24";
 
 const canonicalArticles = [
   {
@@ -9,10 +11,10 @@ const canonicalArticles = [
     title: "Dar Tahara overview",
     category: "company",
     keywords: ["dar tahara", "company", "home care", "concierge", "morocco", "premium"],
-    relatedQuestions: ["What does Dar Tahara do?", "Which cities do you serve?"],
+    relatedQuestions: ["What does Dar Tahara do?", "Which cities do you serve?", "Where are you located?"],
     summary: "Dar Tahara provides premium home care and property concierge services in Morocco.",
     content:
-      "Dar Tahara is a premium home care and property concierge for homeowners, expats, families, short-stay hosts and holiday-home owners in Morocco. The service focuses on professional cleaning, home inspections, property preparation, linen and laundry support, key handling and ongoing subscription care. Dar Tahara currently focuses on Tangier, Casablanca, Rabat and Marrakech, with coverage expanding over time. Customers should share their city so the team can confirm availability before relying on service coverage.",
+      "Dar Tahara is a premium home care and property concierge for homeowners, expats, families, short-stay hosts and holiday-home owners in Morocco. The service focuses on professional cleaning, home inspections, property preparation, linen and laundry support, key handling and ongoing subscription care. Dar Tahara currently focuses on Tetouan, Tangier, Meknes, and Casablanca, with coverage expanding over time. Customers should share their city so the team can confirm availability before relying on service coverage.",
     source: "Website services, FAQ and company copy",
   },
   {
@@ -20,10 +22,10 @@ const canonicalArticles = [
     title: "Initial Home Assessment",
     category: "assessment",
     keywords: ["assessment", "first visit", "initial", "deep clean", "personalised plan", "updated proposal"],
-    relatedQuestions: ["How does the first visit work?", "Is the first visit prepaid?"],
-    summary: "The first visit is prepaid and verifies the home before an ongoing subscription starts.",
+    relatedQuestions: ["How does the first visit work?", "Is the first cleaning prepaid?"],
+    summary: "The prepaid Initial Home Assessment takes 30–90 minutes and requires the customer or an authorized representative to be present.",
     content:
-      "The Initial Home Assessment is a controlled onboarding visit. Dar Tahara reviews the property details, assesses the home's condition and prepares a personalised cleaning plan. No subscription is activated until staff approval, explicit customer acceptance and successful payment. If the home materially differs from the supplied details, Dar Tahara may issue an updated service proposal. Dar Tahara may decline an ongoing subscription if the property is unsafe, unsuitable or outside the service scope.",
+      `${APPROVED_FAQ_COPY.en.first_visit} ${APPROVED_FAQ_COPY.en.first_cleaning_prepaid} No subscription is activated until the assessment is completed and approved, the customer accepts the proposal and payment succeeds. If the home materially differs from the supplied details, Dar Tahara may issue an updated proposal or decline an ongoing subscription.`,
     source: "Home assessment booking flow and terms copy",
   },
   {
@@ -45,7 +47,7 @@ const canonicalArticles = [
     relatedQuestions: ["How does annual billing work?", "Do I save with annual payment?"],
     summary: "Monthly billing renews monthly; annual billing is paid in advance and includes a 5% discount.",
     content:
-      "Monthly billing is charged monthly and renews automatically according to the subscription terms. Annual billing is charged in advance for one year, renews according to the subscription terms, and includes a 5% discount. The assistant should compare both options clearly and must not pressure customers into annual billing. Cancellation, refund and renewal answers must follow the approved Terms and Conditions.",
+      "Monthly billing is charged monthly and renews automatically according to the subscription terms. Annual billing is charged in advance for one year, renews according to the subscription terms, and includes a 5% discount. A subscription may be cancelled only through the customer portal with at least one month's notice. Monthly cancellation takes effect at the end of the paid billing period; annual cancellation takes effect at the end of the twelve-month term. Unused periods are not refundable, subscriptions cannot be paused, and outstanding invoices or charges must be paid before cancellation can take effect. The assistant should compare both options clearly and must not pressure customers into annual billing.",
     source: "Pricing calculator and subscription terms",
   },
   {
@@ -71,26 +73,45 @@ const canonicalArticles = [
     source: "Website services and calculator notes",
   },
   {
+    id: "cleaning-products",
+    title: "Cleaning products",
+    category: "services",
+    keywords: ["cleaning products", "products", "organic", "chemical", "deep cleaning", "materials"],
+    relatedQuestions: ["What cleaning products do you use?", "Do you use organic products?"],
+    summary: "Dar Tahara prefers organic cleaning products and uses chemical products only where the work requires them.",
+    content: APPROVED_FAQ_COPY.en.cleaning_products,
+    source: "Owner-approved cleaning-product policy, 24 July 2026",
+  },
+  {
+    id: "visit-scheduling",
+    title: "How visits are scheduled",
+    category: "assessment",
+    keywords: ["visit scheduling", "appointments", "schedule", "availability", "invitation", "email", "portal", "routes", "staff"],
+    relatedQuestions: ["How are visits scheduled?", "How do I confirm the first visit?"],
+    summary: "The first visit is confirmed from an invitation; later visits are scheduled automatically according to availability, routes and local staffing.",
+    content: APPROVED_FAQ_COPY.en.visit_scheduling,
+    source: "Owner-approved visit-scheduling policy, 24 July 2026",
+  },
+  {
     id: "access-presence-keys",
     title: "Property access and whether the customer must be home",
     category: "access",
     keywords: ["home", "present", "keys", "access", "key", "gate", "parking", "entry"],
     relatedQuestions: ["Do I need to be home?", "Can you hold my keys?"],
-    summary: "Secure access must be confirmed; first-visit availability is recommended for special requirements.",
+    summary: "The Initial Home Assessment requires attendance; later visits can use time-limited smart-lock access or paid physical-key custody.",
     content:
-      "Customers do not always need to be home for regular visits, but Dar Tahara needs confirmed, secure access. Access notes may include parking, gate codes, key instructions or building entry details. For the first visit, being available is recommended if the property has special requirements. Physical keys are stored with a logged chain of custody; an additional physical-key management fee and separate conditions may apply for administration, secure storage and insurance requirements. Where suitable, Dar Tahara recommends a TTLock-compatible Wi-Fi smart lock and can arrange installation for around €200 during or after the assessment; the home needs an active internet connection.",
+      `${APPROVED_FAQ_COPY.en.presence} ${APPROVED_FAQ_COPY.en.digital_locks} ${APPROVED_FAQ_COPY.en.physical_key}`,
     source: "FAQ and booking form",
   },
   {
     id: "reschedule-cancel-pause",
-    title: "Rescheduling, cancellation and pausing",
+    title: SERVICE_POLICY_COPY.en.articleTitle,
     category: "policies",
     keywords: ["reschedule", "cancel", "pause", "stop", "change date", "refund", "renewal"],
     relatedQuestions: ["Can I reschedule?", "Can I cancel my subscription?"],
-    summary: "Requests can be guided by the assistant but decisions and changes require validated backend or human handling.",
-    content:
-      "Customers may request rescheduling, cancellation or subscription pauses, but consequential changes must go through validated backend functions or a Dar Tahara specialist. The assistant may collect the request and explain the process. It must not approve refunds, promise eligibility, cancel a paid service, pause a subscription or change an appointment from free-form model output alone.",
-    source: "Operational policy",
+    summary: SERVICE_POLICY_COPY.en.articleSummary,
+    content: SERVICE_POLICY_COPY.en.articleContent,
+    source: "Owner-approved service and subscription policy, 24 July 2026",
   },
   {
     id: "human-handoff",
@@ -98,9 +119,9 @@ const canonicalArticles = [
     category: "support",
     keywords: ["human", "specialist", "agent", "complaint", "damage", "refund", "dispute", "legal", "unsafe"],
     relatedQuestions: ["Can I speak to someone?", "I have a complaint"],
-    summary: "Human handoff is reserved for explicit requests and issues that genuinely require staff action or protected records.",
+    summary: "The assistant hands off explicit requests, issues requiring staff action, and questions it cannot understand.",
     content:
-      "The assistant must escalate when a customer explicitly asks for a human or when the request genuinely requires staff action or protected records: changing or cancelling a confirmed booking, a possibly charged failed payment, a refund or invoice dispute, theft, damage, injury, unsafe conditions, an active property-access failure, a lost physical key, a malfunctioning digital lock during service, a staff no-show, contract termination, authenticated account information, repeated unresolved technical failures, or another manual operational action. Missing knowledge, low retrieval confidence, informal wording, spelling errors, another language, or a general policy question do not by themselves require escalation. The assistant should clarify, answer confirmed parts, and create an internal knowledge gap instead.",
+      "Dar Tahara Support is available by WhatsApp, telephone and email from 09:00 to 21:00 GMT+01:00 and responds to support requests within 24 working hours. The assistant must escalate when it cannot understand the customer's question, when the customer explicitly asks for Dar Tahara Support, or when the request genuinely requires staff action or protected records: a possibly charged failed payment, a refund or invoice dispute, theft, damage, injury, unsafe conditions, an active property-access failure, a lost physical key, a malfunctioning digital lock during service, a staff no-show, authenticated account information, repeated unresolved technical failures, or another manual operational action. Cleaning-visit changes and subscription cancellations are self-service through the customer portal and do not require a handoff when the question is understood.",
     source: "Assistant escalation policy",
   },
   {

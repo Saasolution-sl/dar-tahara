@@ -30,7 +30,7 @@ const COPY: Record<Locale, LocaleCopy> = {
       subscription_declined: { subject: "Update following your Home Assessment", heading: "Assessment outcome", body: "After careful review, we are unable to offer an ongoing subscription for this property at present. Your assessment record remains available and our team can answer any questions.", cta: "Contact our team" },
       invoice: { subject: "Dar Tahara invoice {reference}", heading: "Your invoice is ready", body: "Your invoice for {amount} is available. Stripe securely provides the hosted invoice and downloadable PDF.", cta: "View invoice" },
       annual_renewal_reminder: { subject: "Your annual subscription renews soon", heading: "Annual renewal reminder", body: "Your annual Dar Tahara subscription will renew on {date} for {amount}, unless cancelled beforehand in accordance with the Terms.", cta: "Manage subscription" },
-      monthly_renewal_reminder: { subject: "Your monthly subscription renews soon", heading: "Monthly renewal reminder", body: "Your monthly Dar Tahara subscription will renew on {date} for {amount}, unless paused or cancelled beforehand in accordance with the Terms.", cta: "Manage subscription" },
+      monthly_renewal_reminder: { subject: "Your monthly subscription renews soon", heading: "Monthly renewal reminder", body: "Your monthly Dar Tahara subscription will renew on {date} for {amount}, unless cancellation has already been scheduled through the customer portal in accordance with the Terms.", cta: "Manage subscription" },
     },
   },
   nl: {
@@ -46,7 +46,7 @@ const COPY: Record<Locale, LocaleCopy> = {
       subscription_declined: { subject: "Update na uw Woningbeoordeling", heading: "Uitkomst van de beoordeling", body: "Na zorgvuldige beoordeling kunnen wij momenteel geen doorlopend abonnement voor deze woning aanbieden. Ons team beantwoordt graag uw vragen.", cta: "Contact opnemen" },
       invoice: { subject: "Dar Tahara-factuur {reference}", heading: "Uw factuur staat klaar", body: "Uw factuur van {amount} is beschikbaar via de beveiligde Stripe-factuurpagina.", cta: "Factuur bekijken" },
       annual_renewal_reminder: { subject: "Uw jaarabonnement wordt binnenkort verlengd", heading: "Herinnering jaarlijkse verlenging", body: "Uw jaarabonnement wordt op {date} verlengd voor {amount}, tenzij u vooraf opzegt volgens de Voorwaarden.", cta: "Abonnement beheren" },
-      monthly_renewal_reminder: { subject: "Uw maandabonnement wordt binnenkort verlengd", heading: "Herinnering maandelijkse verlenging", body: "Uw maandabonnement wordt op {date} verlengd voor {amount}, tenzij u vooraf pauzeert of opzegt.", cta: "Abonnement beheren" },
+      monthly_renewal_reminder: { subject: "Uw maandabonnement wordt binnenkort verlengd", heading: "Herinnering maandelijkse verlenging", body: "Uw maandabonnement wordt op {date} verlengd voor {amount}, tenzij de opzegging volgens de Voorwaarden al via het klantenportaal is gepland.", cta: "Abonnement beheren" },
     },
   },
   fr: {
@@ -62,7 +62,7 @@ const COPY: Record<Locale, LocaleCopy> = {
       subscription_declined: { subject: "Suite à votre Évaluation du Domicile", heading: "Résultat de l’évaluation", body: "Après examen attentif, nous ne pouvons pas proposer d’abonnement continu pour ce bien actuellement. Notre équipe reste disponible pour répondre à vos questions.", cta: "Contacter l’équipe" },
       invoice: { subject: "Facture Dar Tahara {reference}", heading: "Votre facture est disponible", body: "Votre facture de {amount} est disponible sur la page sécurisée Stripe.", cta: "Voir la facture" },
       annual_renewal_reminder: { subject: "Votre abonnement annuel sera bientôt renouvelé", heading: "Rappel de renouvellement annuel", body: "Votre abonnement annuel sera renouvelé le {date} pour {amount}, sauf résiliation préalable conformément aux Conditions.", cta: "Gérer l’abonnement" },
-      monthly_renewal_reminder: { subject: "Votre abonnement mensuel sera bientôt renouvelé", heading: "Rappel de renouvellement mensuel", body: "Votre abonnement mensuel sera renouvelé le {date} pour {amount}, sauf suspension ou résiliation préalable.", cta: "Gérer l’abonnement" },
+      monthly_renewal_reminder: { subject: "Votre abonnement mensuel sera bientôt renouvelé", heading: "Rappel de renouvellement mensuel", body: "Votre abonnement mensuel sera renouvelé le {date} pour {amount}, sauf si la résiliation a déjà été programmée dans le portail client conformément aux Conditions.", cta: "Gérer l’abonnement" },
     },
   },
   ar: {
@@ -78,7 +78,7 @@ const COPY: Record<Locale, LocaleCopy> = {
       subscription_declined: { subject: "تحديث بعد تقييم المنزل", heading: "نتيجة التقييم", body: "بعد مراجعة دقيقة، لا يمكننا تقديم اشتراك مستمر لهذا العقار حالياً. فريقنا متاح للإجابة عن أسئلتكم.", cta: "التواصل مع الفريق" },
       invoice: { subject: "فاتورة دار طهارة {reference}", heading: "فاتورتك جاهزة", body: "فاتورتك بقيمة {amount} متاحة عبر صفحة Stripe الآمنة.", cta: "عرض الفاتورة" },
       annual_renewal_reminder: { subject: "سيُجدّد اشتراكك السنوي قريباً", heading: "تذكير بالتجديد السنوي", body: "سيُجدّد اشتراكك السنوي بتاريخ {date} مقابل {amount} ما لم يتم الإلغاء مسبقاً وفق الشروط.", cta: "إدارة الاشتراك" },
-      monthly_renewal_reminder: { subject: "سيُجدّد اشتراكك الشهري قريباً", heading: "تذكير بالتجديد الشهري", body: "سيُجدّد اشتراكك الشهري بتاريخ {date} مقابل {amount} ما لم يتم إيقافه أو إلغاؤه مسبقاً.", cta: "إدارة الاشتراك" },
+      monthly_renewal_reminder: { subject: "سيُجدّد اشتراكك الشهري قريباً", heading: "تذكير بالتجديد الشهري", body: "سيُجدّد اشتراكك الشهري بتاريخ {date} مقابل {amount} ما لم يكن الإلغاء قد جُدول مسبقاً عبر بوابة العميل وفق الشروط.", cta: "إدارة الاشتراك" },
     },
   },
   es: {
@@ -94,7 +94,7 @@ const COPY: Record<Locale, LocaleCopy> = {
       subscription_declined: { subject: "Actualización tras tu Evaluación del Hogar", heading: "Resultado de la evaluación", body: "Tras una revisión cuidadosa, actualmente no podemos ofrecer una suscripción continua para esta vivienda. Nuestro equipo responderá tus preguntas.", cta: "Contactar al equipo" },
       invoice: { subject: "Factura Dar Tahara {reference}", heading: "Tu factura está lista", body: "Tu factura de {amount} está disponible en la página segura de Stripe.", cta: "Ver factura" },
       annual_renewal_reminder: { subject: "Tu suscripción anual se renovará pronto", heading: "Recordatorio de renovación anual", body: "Tu suscripción anual se renovará el {date} por {amount}, salvo cancelación previa según las Condiciones.", cta: "Gestionar suscripción" },
-      monthly_renewal_reminder: { subject: "Tu suscripción mensual se renovará pronto", heading: "Recordatorio de renovación mensual", body: "Tu suscripción mensual se renovará el {date} por {amount}, salvo pausa o cancelación previa.", cta: "Gestionar suscripción" },
+      monthly_renewal_reminder: { subject: "Tu suscripción mensual se renovará pronto", heading: "Recordatorio de renovación mensual", body: "Tu suscripción mensual se renovará el {date} por {amount}, salvo que la cancelación ya se haya programado en el portal según las Condiciones.", cta: "Gestionar suscripción" },
     },
   },
   de: {
@@ -110,7 +110,7 @@ const COPY: Record<Locale, LocaleCopy> = {
       subscription_declined: { subject: "Update nach Ihrer Hauseinschätzung", heading: "Ergebnis der Einschätzung", body: "Nach sorgfältiger Prüfung können wir derzeit kein laufendes Abonnement für diese Immobilie anbieten. Unser Team beantwortet Ihre Fragen gern.", cta: "Team kontaktieren" },
       invoice: { subject: "Dar Tahara-Rechnung {reference}", heading: "Ihre Rechnung ist bereit", body: "Ihre Rechnung über {amount} ist auf der sicheren Stripe-Seite verfügbar.", cta: "Rechnung ansehen" },
       annual_renewal_reminder: { subject: "Ihr Jahresabonnement verlängert sich bald", heading: "Erinnerung an die Jahresverlängerung", body: "Ihr Jahresabonnement verlängert sich am {date} für {amount}, sofern es nicht vorher gemäß den Bedingungen gekündigt wird.", cta: "Abonnement verwalten" },
-      monthly_renewal_reminder: { subject: "Ihr Monatsabonnement verlängert sich bald", heading: "Erinnerung an die Monatsverlängerung", body: "Ihr Monatsabonnement verlängert sich am {date} für {amount}, sofern es nicht vorher pausiert oder gekündigt wird.", cta: "Abonnement verwalten" },
+      monthly_renewal_reminder: { subject: "Ihr Monatsabonnement verlängert sich bald", heading: "Erinnerung an die Monatsverlängerung", body: "Ihr Monatsabonnement verlängert sich am {date} für {amount}, sofern die Kündigung nicht bereits gemäß den Bedingungen im Kundenportal geplant wurde.", cta: "Abonnement verwalten" },
     },
   },
   pt: {
@@ -126,7 +126,7 @@ const COPY: Record<Locale, LocaleCopy> = {
       subscription_declined: { subject: "Atualização após a Avaliação da Casa", heading: "Resultado da avaliação", body: "Após análise cuidadosa, não podemos oferecer atualmente uma subscrição contínua para este imóvel. A nossa equipa está disponível para esclarecer dúvidas.", cta: "Contactar a equipa" },
       invoice: { subject: "Fatura Dar Tahara {reference}", heading: "A sua fatura está pronta", body: "A sua fatura de {amount} está disponível na página segura da Stripe.", cta: "Ver fatura" },
       annual_renewal_reminder: { subject: "A sua subscrição anual será renovada em breve", heading: "Lembrete de renovação anual", body: "A sua subscrição anual será renovada em {date} por {amount}, salvo cancelamento prévio nos termos das Condições.", cta: "Gerir subscrição" },
-      monthly_renewal_reminder: { subject: "A sua subscrição mensal será renovada em breve", heading: "Lembrete de renovação mensal", body: "A sua subscrição mensal será renovada em {date} por {amount}, salvo pausa ou cancelamento prévio.", cta: "Gerir subscrição" },
+      monthly_renewal_reminder: { subject: "A sua subscrição mensal será renovada em breve", heading: "Lembrete de renovação mensal", body: "A sua subscrição mensal será renovada em {date} por {amount}, salvo se o cancelamento já tiver sido agendado no portal segundo as Condições.", cta: "Gerir subscrição" },
     },
   },
 };

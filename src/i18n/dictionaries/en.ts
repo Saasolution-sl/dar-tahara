@@ -91,7 +91,7 @@ const en = {
     eyebrow: "Subscription plans",
     title: "Care on a rhythm that suits your life.",
     subtitle:
-      "Simple, transparent plans—pause, adjust or cancel whenever you need. Every plan includes inspection reports and priority support.",
+      "Simple, transparent plans with visit changes and subscription cancellation managed in the customer portal under the Terms. Every plan includes inspection reports and Dar Tahara Support.",
     perMonthNote: "Custom pricing based on property size and needs.",
     mostPopular: "Most popular",
     cta: "Choose plan",
@@ -197,11 +197,11 @@ const en = {
       },
       {
         q: "Which cities do you serve?",
-        a: "We currently serve major cities across Morocco including Tangier, Casablanca, Rabat and Marrakech, with coverage expanding continuously. Contact us to confirm your area.",
+        a: "We currently focus on Tetouan, Tangier, Meknes, and Casablanca, with coverage expanding continuously. Contact us to confirm your area.",
       },
       {
-        q: "Can I pause or change my plan?",
-        a: "Always. Plans are flexible—pause while you travel, increase frequency for the season, or adjust services at any time with a single message.",
+        q: "Can I pause, change or cancel my plan?",
+        a: "Subscriptions cannot be paused. Eligible visit changes and subscription cancellation are managed in the customer portal: visit changes require at least 48 hours’ notice, while subscription cancellation requires at least one month’s notice under the Terms.",
       },
       {
         q: "What products do you use?",
@@ -216,7 +216,7 @@ const en = {
       "Let us take care of your home, so you never have to think about it. Apply for an initial assessment or join early access today.",
     ctaPrimary: "Book Initial Home Assessment",
     whatsapp: "Chat on WhatsApp",
-    whatsappInfo: "Chat with the Dar Tahara assistant on WhatsApp about services, prices, subscriptions, property access and bookings. Complex cases can be transferred to our email support desk.",
+    whatsappInfo: "Chat with the Dar Tahara assistant on WhatsApp about services, prices, subscriptions, property access and bookings. Complex support requests can be transferred to Dar Tahara Support by email.",
     whatsappPrivacy: "This is an automated assistant. Do not send payment details, passwords or full access codes.",
   },
   calculator: {

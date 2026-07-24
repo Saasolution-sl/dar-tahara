@@ -115,7 +115,7 @@ export function AssistantAdminClient() {
                   </p>
                   <h2 className="mt-2 font-serif text-2xl">{row.customer_name || row.contact_handle || "Unknown customer"}</h2>
                   <p className="text-sm text-muted-foreground">{row.last_intent || "No intent"} · {row.handoff_reason || row.status}</p>
-                  {row.escalation ? <p className="mt-1 text-xs text-muted-foreground">Ticket {row.escalation.freescout_ticket_number || "pending"} · {row.escalation.status} · {row.escalation.severity}</p> : null}
+                  {row.escalation ? <p className="mt-1 text-xs text-muted-foreground">Support request {row.escalation.freescout_ticket_number || "pending"} · {row.escalation.status} · {row.escalation.severity}</p> : null}
                 </div>
                 <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-semibold text-primary">{row.status}</span>
               </div>
@@ -131,7 +131,7 @@ export function AssistantAdminClient() {
               <div className="mt-4 flex flex-wrap gap-2">
                 {row.source === "whatsapp_support" ? (
                   <>
-                    {row.escalation?.status === "retry_pending" ? <button onClick={() => action(row, "retry")} className={buttonVariants({ variant: "primary", size: "sm" })}>Retry ticket</button> : null}
+                    {row.escalation?.status === "retry_pending" ? <button onClick={() => action(row, "retry")} className={buttonVariants({ variant: "primary", size: "sm" })}>Retry support request</button> : null}
                     <button onClick={() => action(row, row.contact_blocked ? "unblock" : "block")} className={buttonVariants({ variant: "outline", size: "sm" })}>{row.contact_blocked ? "Unblock" : "Block 24h"}</button>
                   </>
                 ) : (

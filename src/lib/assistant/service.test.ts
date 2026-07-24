@@ -17,6 +17,99 @@ test("assistant answers assessment questions from grounded knowledge", async () 
   assert.equal(reply.intent, "assessment_explanation");
   assert.match(reply.answer, /prepaid onboarding visit|Initial Home Assessment/i);
   assert.ok(reply.sources.some((source) => source.id === "initial-home-assessment"));
+  assert.ok(reply.answer.length < 900);
+  assert.doesNotMatch(reply.answer, /Subscriptions cannot be paused|national or Islamic holiday/i);
+});
+
+test("approved FAQ buttons return focused answers instead of full knowledge articles", async () => {
+  const cases = [
+    ["How does the first visit work?", "general-assessment", /30 to 90 minutes/],
+    ["Is the first cleaning prepaid?", "next-first-clean", /All cleaning appointments are prepaid/],
+    ["How do digital locks work?", "access-digital-lock", /four-digit code|scheduled time window/],
+    ["Can you hold a physical key?", "access-physical-key", /safe storage|insurance|transport/],
+    ["Do I need to be home?", "access-home", /authorized representative|later cleaning visits/],
+  ] as const;
+  for (const [message, selectedSuggestionId, expected] of cases) {
+    const reply = await answerAssistant({
+      channel: "website",
+      locale: "en",
+      message,
+      selectedSuggestionId,
+    });
+    assert.equal(reply.answerCategory, "confirmed", message);
+    assert.match(reply.answer, expected, message);
+    assert.ok(reply.answer.length < 900, message);
+    assert.doesNotMatch(reply.answer, /Subscriptions cannot be paused|one month’s notice|national or Islamic holiday/i, message);
+  }
+});
+
+test("location, cleaning-product, and scheduling questions return their approved focused answers", async () => {
+  const cases = [
+    ["Where are you located?", "general_faq", /Tetouan, Tangier, Meknes, and Casablanca/],
+    ["What cleaning products do you use?", "service_explanation", /organic cleaning products/],
+    ["How are visits scheduled?", "booking_guidance", /invitation by email and in the customer portal/],
+  ] as const;
+  for (const [message, expectedIntent, expectedAnswer] of cases) {
+    const reply = await answerAssistant({
+      channel: "website",
+      locale: "en",
+      message,
+    });
+    assert.equal(reply.intent, expectedIntent, message);
+    assert.equal(reply.answerCategory, "confirmed", message);
+    assert.equal(reply.handoffRequired, false, message);
+    assert.match(reply.answer, expectedAnswer, message);
+    assert.ok(reply.answer.length < 600, message);
+    assert.doesNotMatch(reply.answer, /Stripe Checkout|subscription pricing|cannot be paused|physical key for a fee/i, message);
+  }
+});
+
+test("unknown questions are forwarded to a Dar Tahara Support engineer instead of receiving article dumps", async () => {
+  const reply = await answerAssistant({
+    channel: "website",
+    locale: "en",
+    message: "Why is the moon purple on Tuesdays?",
+  });
+  assert.equal(reply.intent, "unknown");
+  assert.equal(reply.answerCategory, "requires_human_action");
+  assert.equal(reply.handoffRequired, true);
+  assert.equal(reply.handoffReason, "assistant_did_not_understand");
+  assert.match(reply.answer, /did not understand|Dar Tahara Support engineer/i);
+  assert.equal(reply.sources.length, 0);
+});
+
+test("assistant overview names the corrected focus cities", async () => {
+  const reply = await answerAssistant({
+    channel: "website",
+    locale: "en",
+    message: "What does Dar Tahara do and which cities do you focus on?",
+  });
+  assert.match(reply.answer, /Tetouan, Tangier, Meknes, and Casablanca/i);
+  assert.doesNotMatch(reply.answer, /Rabat|Marrakech/i);
+});
+
+test("assistant answers visit and subscription cancellation from approved portal policy", async () => {
+  const reply = await answerAssistant({
+    channel: "website",
+    locale: "en",
+    message: "How can I cancel my subscription and can I pause it?",
+  });
+  assert.equal(reply.intent, "cancellation");
+  assert.equal(reply.handoffRequired, false);
+  assert.match(reply.answer, /customer portal/i);
+  assert.match(reply.answer, /one month/i);
+  assert.match(reply.answer, /cannot be paused/i);
+});
+
+test("assistant gives the approved cleaning rescheduling limits", async () => {
+  const reply = await answerAssistant({
+    channel: "website",
+    locale: "en",
+    message: "How many hours before a cleaning can I reschedule it?",
+  });
+  assert.equal(reply.handoffRequired, false);
+  assert.match(reply.answer, /48 hours/i);
+  assert.match(reply.answer, /twice per calendar year/i);
 });
 
 test("assistant pricing uses shared pricing tool instead of prompt-only numbers", async () => {
@@ -67,6 +160,9 @@ test("assistant responds to short greetings in the detected language", async () 
     assert.equal(reply.locale, locale);
     assert.equal(reply.languageConfirmed, true);
     assert.match(reply.answer, expected);
+    assert.equal(reply.confidence, 1);
+    assert.equal(reply.handoffRequired, false);
+    assert.deepEqual(reply.sources, []);
   }
 });
 
@@ -207,7 +303,7 @@ test("physical key questions explain available access options without handoff", 
   });
   assert.equal(reply.handoffRequired, false);
   assert.ok(reply.sources.some((source) => source.id === "access-presence-keys"));
-  assert.match(reply.answer, /management fee|€200|smart lock/i);
+  assert.match(reply.answer, /fee|safe storage|insurance|transport|smart lock/i);
   assert.ok(reply.suggestions.some((item) => item.id.startsWith("access-")));
 });
 

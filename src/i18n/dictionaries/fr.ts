@@ -95,7 +95,7 @@ const fr: DeepPartial<Dictionary> = {
     eyebrow: "Formules d’abonnement",
     title: "Un soin au rythme qui convient à votre vie.",
     subtitle:
-      "Des formules simples et transparentes — suspendez, ajustez ou annulez quand vous le souhaitez. Chaque formule inclut des rapports d’inspection et un support prioritaire.",
+      "Des formules simples et transparentes, avec les changements de visite et la résiliation gérés dans le portail client selon les Conditions. Chaque formule inclut des rapports d’inspection et Dar Tahara Support.",
     perMonthNote: "Tarif personnalisé selon la surface et les besoins du bien.",
     mostPopular: "Le plus populaire",
     cta: "Choisir la formule",
@@ -200,11 +200,11 @@ const fr: DeepPartial<Dictionary> = {
       },
       {
         q: "Quelles villes desservez-vous ?",
-        a: "Nous desservons actuellement les grandes villes du Maroc, dont Tanger, Casablanca, Rabat et Marrakech, avec une couverture en expansion continue. Contactez-nous pour confirmer votre secteur.",
+        a: "Nous intervenons actuellement principalement à Tétouan, Tanger, Meknès et Casablanca, avec une couverture en expansion continue. Contactez-nous pour confirmer votre secteur.",
       },
       {
-        q: "Puis-je suspendre ou modifier ma formule ?",
-        a: "Toujours. Les formules sont flexibles — suspendez pendant vos voyages, augmentez la fréquence pour la saison ou ajustez les services à tout moment d’un simple message.",
+        q: "Puis-je suspendre, modifier ou résilier ma formule ?",
+        a: "Un abonnement ne peut pas être suspendu. Les changements de visite autorisés et la résiliation se gèrent dans le portail client : au moins 48 heures pour une visite et un mois pour la résiliation, selon les Conditions.",
       },
       {
         q: "Quels produits utilisez-vous ?",
@@ -219,7 +219,7 @@ const fr: DeepPartial<Dictionary> = {
       "Laissez-nous prendre soin de votre maison, pour ne plus jamais y penser. Réservez une première visite ou demandez un devis sur mesure dès aujourd’hui.",
     ctaPrimary: "Réserver l’Évaluation Initiale",
     whatsapp: "Discuter sur WhatsApp",
-    whatsappInfo: "Discutez avec l’assistant Dar Tahara sur WhatsApp au sujet des services, tarifs, abonnements, accès au logement et réservations. Les demandes complexes peuvent être transférées à notre support par e-mail.",
+    whatsappInfo: "Discutez avec l’assistant Dar Tahara sur WhatsApp au sujet des services, tarifs, abonnements, accès au logement et réservations. Les demandes d’assistance complexes peuvent être transférées par e-mail à Dar Tahara Support.",
     whatsappPrivacy: "Il s’agit d’un assistant automatisé. N’envoyez pas de données de paiement, mots de passe ou codes d’accès complets.",
   },
   calculator: {
