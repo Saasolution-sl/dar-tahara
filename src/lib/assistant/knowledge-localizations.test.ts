@@ -33,3 +33,24 @@ test("Supabase English rows use their slug to find the deterministic translation
   assert.equal(localized.article.language, "fr");
   assert.match(localized.article.content, /nettoyage/i);
 });
+
+test("company overview uses the corrected focus cities in every language", () => {
+  const canonical = knowledgeArticles.find((article) => article.id === "company-overview");
+  assert.ok(canonical);
+  assert.match(canonical.content, /Tetouan, Tangier, Meknes, and Casablanca/);
+  assert.doesNotMatch(canonical.content, /Rabat|Marrakech/);
+
+  const expectedCities: Record<Locale, RegExp> = {
+    en: /Tetouan.*Tangier.*Meknes.*Casablanca/i,
+    nl: /Tetouan.*Tanger.*Meknes.*Casablanca/i,
+    fr: /Tétouan.*Tanger.*Meknès.*Casablanca/i,
+    es: /Tetuán.*Tánger.*Mequinez.*Casablanca/i,
+    de: /Tétouan.*Tanger.*Meknès.*Casablanca/i,
+    pt: /Tetuão.*Tânger.*Meknès.*Casablanca/i,
+    ar: /تطوان.*طنجة.*مكناس.*الدار البيضاء/u,
+  };
+  for (const locale of translatedLocales) {
+    const [localized] = localizeRetrievedKnowledge([{ article: canonical, score: 1, matchedKeywords: [] }], locale);
+    assert.match(localized.article.content, expectedCities[locale], locale);
+  }
+});

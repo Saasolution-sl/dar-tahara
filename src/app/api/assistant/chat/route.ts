@@ -1,10 +1,13 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isLocale } from "@/i18n/config";
 import { answerAssistant } from "@/lib/assistant/service";
+import { clientIpFromHeaders, rateLimit } from "@/lib/mailing-list";
+import { isSameOrigin } from "@/lib/request-security";
 
 export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
+  if (!isSameOrigin(req)) return NextResponse.json({ error: "forbidden" }, { status: 403 });
   const body = (await req.json().catch(() => null)) as {
     message?: unknown;
     locale?: unknown;
@@ -20,6 +23,13 @@ export async function POST(req: NextRequest) {
   const message = typeof body?.message === "string" ? body.message : "";
   if (!message.trim()) {
     return NextResponse.json({ error: "message_required" }, { status: 400 });
+  }
+  const limit = rateLimit(`assistant-chat:${typeof body?.sessionId === "string" ? body.sessionId.slice(0, 100) : clientIpFromHeaders(req.headers)}`);
+  if (!limit.allowed) {
+    return NextResponse.json({ error: "rate_limited" }, {
+      status: 429,
+      headers: { "Retry-After": String(Math.ceil(limit.retryAfterMs / 1000)) },
+    });
   }
 
   const locale = typeof body?.locale === "string" && isLocale(body.locale) ? body.locale : "en";
@@ -37,9 +47,25 @@ export async function POST(req: NextRequest) {
   });
 
   return NextResponse.json({
-    ...reply,
+    conversationId: reply.conversationId,
+    answer: reply.answer,
     message: reply.answer,
+    locale: reply.locale,
     language: reply.locale,
-    escalation: { ...reply.escalation, next_action: reply.escalation.nextAction },
+    languageConfirmed: reply.languageConfirmed,
+    languageChanged: reply.languageChanged,
+    intent: reply.intent,
+    answerCategory: reply.answerCategory,
+    handoffAvailable: reply.handoffRequired
+      || reply.answerCategory === "missing_business_knowledge"
+      || reply.confidence < Number(process.env.ASSISTANT_CONFIDENCE_THRESHOLD || 0.6),
+    suggestions: reply.suggestions,
+    suggestedActions: reply.suggestedActions,
+    escalation: {
+      required: reply.escalation.required,
+      reason: reply.escalation.reason,
+      nextAction: reply.escalation.nextAction,
+      next_action: reply.escalation.nextAction,
+    },
   });
 }

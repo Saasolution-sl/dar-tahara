@@ -125,6 +125,7 @@ export type AssistantEscalationReason =
   | "security_issue"
   | "manual_approval_required"
   | "service_failure"
+  | "assistant_did_not_understand"
   | "assistant_failed_after_multiple_attempts"
   | "customer_explicitly_requests_human";
 
@@ -182,6 +183,8 @@ export type AssistantReply = {
   }>;
   retrievalQueries: string[];
   knowledgeGapId?: string;
+  knowledgeSuggestionId?: string;
+  websiteSourceIds?: string[];
   suggestedActions: Array<{
     label: string;
     action: "ask" | "open_calculator" | "open_booking" | "handoff";

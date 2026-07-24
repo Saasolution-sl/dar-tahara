@@ -97,6 +97,72 @@ test("Knowledge Builder migration protects drafts and publishes approved version
   ]) assert.ok(sql.includes(`('${key}',`), key);
 });
 
+test("owner-approved support and cancellation policy is published through a corrective migration", () => {
+  const sql = readFileSync(join(root, "supabase/migrations/20260724002029_align_support_and_cancellation_policy.sql"), "utf8");
+  for (const expected of [
+    "Dar Tahara Support",
+    "09:00–21:00",
+    "24 working hours",
+    "at least 48 hours",
+    "twice per calendar year",
+    "cannot be paused",
+    "one month",
+    "100% of the first subscription payment",
+    "service-change-subscription-cancellation",
+    "dar-tahara-support-availability",
+  ]) assert.ok(sql.includes(expected), expected);
+  assert.doesNotMatch(sql, /FreeScout/);
+  assert.match(sql, /where question_key = 'subscription-pause'/);
+  assert.match(sql, /where question_key = 'cancellation-notice'/);
+  assert.match(sql, /where question_key = 'human-escalation-sla'/);
+});
+
+test("focus-city correction updates Knowledge Builder and publishes all languages", () => {
+  const sql = readFileSync(join(root, "supabase/migrations/20260724004344_update_focus_cities.sql"), "utf8");
+  assert.match(sql, /Tetouan, Tangier, Meknes, and Casablanca/);
+  assert.match(sql, /where question_key = 'supported-cities-boundaries'/);
+  assert.match(sql, /'focus-cities'/);
+  assert.doesNotMatch(sql, /currently focuses on Tangier, Casablanca, Rabat and Marrakech/);
+});
+
+test("owner-approved assessment and access FAQs are published without hiding unresolved details", () => {
+  const sql = readFileSync(join(root, "supabase/migrations/20260724012321_publish_initial_assessment_and_access_faq.sql"), "utf8");
+  for (const expected of [
+    "All cleaning appointments are prepaid",
+    "30 to 90 minutes",
+    "installation and configuration add €200",
+    "unique four-digit code",
+    "secure safe storage, insurance, and transport",
+    "initial-assessment-faq",
+    "property-access-faq",
+  ]) assert.ok(sql.includes(expected), expected);
+  for (const questionKey of [
+    "first-cleaning-scope",
+    "digital-lock-policy",
+    "physical-key-fee",
+  ]) assert.ok(sql.includes(`where question_key = '${questionKey}'`), questionKey);
+  assert.match(sql, /The exact fee amount, billing frequency/);
+  assert.match(sql, /Approved lock models, included hardware, warranty terms/);
+  assert.doesNotMatch(sql, /set\s+status\s*=\s*'approved'/i);
+});
+
+test("owner-approved cleaning-product and visit-scheduling answers are published in every language", () => {
+  const sql = readFileSync(join(root, "supabase/migrations/20260724015745_publish_cleaning_products_and_visit_scheduling.sql"), "utf8");
+  for (const expected of [
+    "only organic cleaning products",
+    "chemical deep cleaning",
+    "invitation by email and in the customer portal",
+    "Subsequent visits are scheduled automatically",
+    "efficient routes",
+    "available staff",
+    "cleaning-products",
+    "visit-scheduling",
+  ]) assert.ok(sql.includes(expected), expected);
+  for (const language of ["'en'", "'nl'", "'fr'", "'es'", "'de'", "'pt'", "'ar'"]) {
+    assert.ok(sql.includes(language), language);
+  }
+});
+
 test("Grok configuration stays server-side and disabled by default", () => {
   const env = readFileSync(join(root, ".env.example"), "utf8");
   assert.match(env, /GROK_ENABLED=false/);

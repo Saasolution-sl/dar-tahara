@@ -29,7 +29,6 @@ import {
   Target,
   TrendingUp,
   Users,
-  Wallet,
   X,
 } from "lucide-react";
 import type { Locale } from "@/i18n/config";
@@ -44,7 +43,19 @@ import type { PublicFeatureState } from "@/lib/feature-flags";
 
 const valueIcons = [ShieldCheck, Gem, HeartHandshake, Sparkles, GraduationCap, Leaf];
 const promiseIcons = [GraduationCap, ReceiptText, Lock, CalendarCheck, Cpu, TrendingUp];
-const peopleIcons = [HeartPulse, Wallet, FileCheck2, HardHat];
+// Order matches missionVision.people.items: formal employment, CNSS registration,
+// AMO health coverage, clear conditions, development, safe methods, equal
+// opportunity, respectful treatment.
+const peopleIcons = [
+  FileCheck2,
+  ShieldCheck,
+  HeartPulse,
+  ReceiptText,
+  GraduationCap,
+  HardHat,
+  Scale,
+  HeartHandshake,
+];
 const impactIcons = [Briefcase, GraduationCap, Scale, Store, Award, ShieldCheck, TrendingUp];
 const sustainabilityIcons = [Route, Leaf, FileDigit, Recycle, Sprout];
 

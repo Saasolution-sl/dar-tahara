@@ -95,7 +95,7 @@ const pt: DeepPartial<Dictionary> = {
     eyebrow: "Planos de subscrição",
     title: "Cuidado a um ritmo que se adapta à sua vida.",
     subtitle:
-      "Planos simples e transparentes — pause, ajuste ou cancele quando precisar. Cada plano inclui relatórios de inspeção e apoio prioritário.",
+      "Planos simples e transparentes, com alterações de visitas e cancelamento geridos no portal segundo as Condições. Cada plano inclui relatórios de inspeção e Dar Tahara Support.",
     perMonthNote: "Preço personalizado consoante a área e as necessidades do imóvel.",
     mostPopular: "Mais popular",
     cta: "Escolher plano",
@@ -200,11 +200,11 @@ const pt: DeepPartial<Dictionary> = {
       },
       {
         q: "Que cidades servem?",
-        a: "Servimos atualmente as principais cidades de Marrocos, incluindo Tânger, Casablanca, Rabat e Marraquexe, com uma cobertura em expansão contínua. Contacte-nos para confirmar a sua zona.",
+        a: "Atualmente, concentramo-nos em Tetuão, Tânger, Meknès e Casablanca, com uma cobertura em expansão contínua. Contacte-nos para confirmar a sua zona.",
       },
       {
-        q: "Posso pausar ou alterar o meu plano?",
-        a: "Sempre. Os planos são flexíveis — pause enquanto viaja, aumente a frequência para a estação ou ajuste os serviços a qualquer momento com uma única mensagem.",
+        q: "Posso pausar, alterar ou cancelar o meu plano?",
+        a: "As subscrições não podem ser pausadas. As alterações de visitas permitidas e o cancelamento são geridos no portal: pelo menos 48 horas para uma visita e um mês para cancelar a subscrição, segundo as Condições.",
       },
       {
         q: "Que produtos utilizam?",
@@ -219,7 +219,7 @@ const pt: DeepPartial<Dictionary> = {
       "Deixe-nos cuidar da sua casa, para que nunca tenha de pensar nela. Reserve uma primeira visita ou peça hoje um orçamento à medida.",
     ctaPrimary: "Reservar Avaliação Inicial",
     whatsapp: "Falar no WhatsApp",
-    whatsappInfo: "Fale com o assistente Dar Tahara no WhatsApp sobre serviços, preços, subscrições, acesso à propriedade e reservas. Os casos complexos podem ser transferidos para o suporte por e-mail.",
+    whatsappInfo: "Fale com o assistente Dar Tahara no WhatsApp sobre serviços, preços, subscrições, acesso à propriedade e reservas. Os pedidos de suporte complexos podem ser enviados por e-mail para Dar Tahara Support.",
     whatsappPrivacy: "Este é um assistente automatizado. Não envie dados de pagamento, palavras-passe ou códigos de acesso completos.",
   },
   calculator: {

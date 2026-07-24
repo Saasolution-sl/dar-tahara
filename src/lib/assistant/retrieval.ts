@@ -71,7 +71,7 @@ const INTENT_ARTICLE_IDS: Partial<Record<AssistantIntent, string[]>> = {
   pricing: ["pricing-rules"],
   billing: ["billing-monthly-annual"],
   payment: ["payments-stripe"],
-  booking_guidance: ["initial-home-assessment", "access-presence-keys"],
+  booking_guidance: ["visit-scheduling", "initial-home-assessment", "access-presence-keys"],
   booking_status: ["privacy-boundaries"],
   reschedule: ["reschedule-cancel-pause"],
   cancellation: ["reschedule-cancel-pause"],
@@ -88,6 +88,8 @@ const ARTICLE_QUERY_ALIASES: Partial<Record<string, string[]>> = {
   "billing-monthly-annual": ["maandelijks jaarlijks korting", "mensuel annuel remise", "mensual anual descuento", "monatlich jahrlich rabatt", "mensal anual desconto", "شهري سنوي خصم"],
   "payments-stripe": ["betaling kaart betalen", "paiement carte payer", "pago tarjeta pagar", "zahlung karte bezahlen", "pagamento cartao pagar", "الدفع بطاقة"],
   "included-services": ["diensten inbegrepen schoonmaak", "services inclus nettoyage", "servicios incluidos limpieza", "dienste enthalten reinigung", "servicos incluidos limpeza", "الخدمات المشمولة التنظيف"],
+  "cleaning-products": ["schoonmaakproducten biologisch chemisch", "produits nettoyage biologiques chimiques", "productos limpieza orgánicos químicos", "reinigungsprodukte biologisch chemisch", "produtos limpeza orgânicos químicos", "منتجات التنظيف عضوية كيميائية"],
+  "visit-scheduling": ["bezoeken afspraken ingepland", "visites rendez vous planifies", "visitas citas programadas", "besuche termine geplant", "visitas marcacoes agendadas", "جدولة الزيارات المواعيد"],
   "access-presence-keys": ["moet ik thuis sleutels toegang", "dois je etre present cles acces", "debo estar en casa llaves acceso", "muss ich zu hause zuhause schlussel zugang", "preciso estar em casa chaves acesso", "هل يجب أن أكون في المنزل المفاتيح الدخول"],
   "reschedule-cancel-pause": ["verzetten annuleren pauzeren", "reporter annuler suspendre", "reprogramar cancelar pausar", "verschieben stornieren pausieren", "reagendar cancelar pausar", "تغيير الموعد إلغاء توقيف"],
   "human-handoff": ["medewerker specialist persoon", "humain specialiste personne", "persona especialista agente", "mensch spezialist mitarbeiter", "pessoa especialista agente", "موظف مختص إنسان"],
@@ -134,6 +136,18 @@ function tokens(text: string): string[] {
 
 export function classifyIntent(message: string): AssistantIntent {
   const n = normalize(message);
+  if (/\bwhat does dar tahara do\b|\bwhich cities\b|\bwhat cities\b|\bcities do you (?:focus|serve|cover)\b|\bservice areas?\b/.test(n)) {
+    return "general_faq";
+  }
+  if (/\b(where|waar|ou|donde|wo|onde)\b.{0,35}\b(located|based|operate|gevestigd|actief|situe|interven|ubicad|operan|ansassig|tatig|localizad|atuam)\b|أين.{0,35}(?:تقع|تعمل)/iu.test(n)) {
+    return "general_faq";
+  }
+  if (/\b(what|which|wat|welke|quels?|que|welche|quais)\b.{0,35}\b(cleaning products?|schoonmaakproducten?|produits? de nettoyage|productos? de limpieza|reinigungsprodukte?|produtos? de limpeza)\b|(?:ما|أي).{0,35}منتجات التنظيف/iu.test(n)) {
+    return "service_explanation";
+  }
+  if (/\b(how|hoe|comment|como|wie)\b.{0,35}\b(visits?|appointments?|bezoeken|afspraken|visites?|rendez vous|visitas?|citas?|besuche|termine|marcacoes)\b.{0,35}\b(scheduled|planned|ingepland|gepland|planifi|programad|geplant|agendad)\b|كيف.{0,35}(?:الزيارات|المواعيد).{0,35}(?:تجدول|مجدول)/iu.test(n)) {
+    return "booking_guidance";
+  }
   if (/\bdth\b|booking reference|reservation reference/.test(n) || (n.includes("booking") && n.includes("status"))) {
     return "booking_status";
   }

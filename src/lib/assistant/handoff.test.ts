@@ -42,19 +42,28 @@ test("hypothetical incident and policy questions do not trigger handoff", () => 
   }
 });
 
-test("real operational booking, access, damage, injury and contract cases trigger handoff", () => {
+test("incidents that require staff investigation trigger handoff", () => {
   const cases = [
-    ["Please change my confirmed booking to Friday.", "booking_guidance", "account_access_required"],
     ["I lost the physical key during today's service.", "service_explanation", "service_failure"],
     ["The digital lock is not working and the team cannot enter.", "service_explanation", "service_failure"],
     ["Your team damaged my table.", "complaint", "damage_claim"],
     ["I was injured during the visit.", "complaint", "security_issue"],
-    ["I want to terminate my existing contract.", "cancellation", "account_access_required"],
   ] as const;
   for (const [message, intent, reason] of cases) {
     const result = evaluateHumanHandoff({ ...base, message, intent });
     assert.equal(result.required, true, message);
     assert.equal(result.reason, reason, message);
+  }
+});
+
+test("visit changes and subscription cancellation stay self-service in the customer portal", () => {
+  for (const [message, intent] of [
+    ["Please change my confirmed booking to Friday.", "booking_guidance"],
+    ["I want to terminate my existing subscription.", "cancellation"],
+  ] as const) {
+    const result = evaluateHumanHandoff({ ...base, message, intent });
+    assert.equal(result.required, false, message);
+    assert.equal(result.nextAction, "answer", message);
   }
 });
 
@@ -70,6 +79,17 @@ test("technical bugs get troubleshooting before handoff", () => {
   });
   assert.equal(unresolved.required, true);
   assert.equal(unresolved.reason, "technical_bug");
+});
+
+test("an unknown question is forwarded to Dar Tahara Support immediately", () => {
+  const result = evaluateHumanHandoff({
+    ...base,
+    message: "Why is the moon purple on Tuesdays?",
+    intent: "unknown",
+  });
+  assert.equal(result.required, true);
+  assert.equal(result.reason, "assistant_did_not_understand");
+  assert.equal(result.nextAction, "offer_handoff");
 });
 
 test("handoff summary preserves useful references and completed troubleshooting", () => {

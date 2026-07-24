@@ -17,6 +17,9 @@ import {
 import { localizeRetrievedKnowledge } from "./knowledge-localizations";
 import { classifyIntent, knowledgeCategoriesForIntent, retrieveKnowledge } from "./retrieval";
 import { buildHandoffSummary, evaluateHumanHandoff, guidedResponse, type HandoffEvaluation } from "./handoff";
+import { hasHighConfidenceKnowledge, retrieveOfficialWebsite, type WebsiteRetrievalRecord } from "./website-retrieval";
+import { createWebsiteKnowledgeSuggestion } from "./website-suggestions";
+import { approvedFaqAnswer } from "./approved-faq";
 import {
   advanceSuggestionState,
   deriveMissingInformation,
@@ -181,6 +184,23 @@ function buildActions(suggestions: AssistantSuggestion[]) {
   return suggestions.map((item) => ({ label: item.label, action: "ask" as const, value: item.value }));
 }
 
+const WEBSITE_CONFIRMATION_PREFIX: Record<Locale, string> = {
+  en: "Absolutely — here’s what I can confirm:",
+  nl: "Zeker — dit kan ik bevestigen:",
+  fr: "Bien sûr — voici ce que je peux confirmer :",
+  es: "Por supuesto — esto es lo que puedo confirmar:",
+  de: "Gern — Folgendes kann ich bestätigen:",
+  pt: "Claro — isto é o que posso confirmar:",
+  ar: "بالتأكيد — إليك ما يمكنني تأكيده:",
+};
+
+function conciseWebsiteAnswer(content: string, locale: Locale): string {
+  const sentences = content.replace(/\s+/g, " ").trim()
+    .match(/[^.!?؟]+[.!?؟]?/gu)?.map((item) => item.trim()).filter((item) => item.length > 15) || [];
+  const summary = sentences.slice(0, 2).join(" ").slice(0, 480).trim();
+  return `${WEBSITE_CONFIRMATION_PREFIX[locale]} ${summary}`.trim();
+}
+
 function composeGroundedAnswer(
   input: AssistantInput,
   intent: AssistantIntent,
@@ -214,7 +234,9 @@ function composeGroundedAnswer(
   if (intent === "pricing" && !priceTool) return copy.priceNeedSize;
   if (intent === "booking_status") return copy.bookingPrivate;
   if (!retrieved.length) return copy.fallback;
-  return retrieved.slice(0, 2).map((item) => item.article.content).join("\n\n");
+  const website = retrieved.find((item) => item.article.source.startsWith("Official website:"));
+  if (website) return conciseWebsiteAnswer(website.article.content, input.locale);
+  return retrieved[0].article.content;
 }
 
 const OWNER_POLICY_GAP_PATTERNS = [
@@ -222,7 +244,6 @@ const OWNER_POLICY_GAP_PATTERNS = [
   /\b(?:invent|make up|create|pretend).{0,50}\b(?:discount|price|policy|refund|right)\b/iu,
   /\b(?:legal advice|my legal rights|legally required|liable under the law)\b/iu,
   /\b(?:how much|what (?:is|are) the (?:amount|fee|price|cost)).{0,80}\b(?:physical key|key storage|key management|window cleaning|linen change|laundry)\b/iu,
-  /\b(?:how many hours|notice period|deadline).{0,70}\b(?:cancel|cancellation|reschedule)\b/iu,
   /\b(?:refund policy|eligible for (?:a )?refund|refund eligibility)\b/iu,
   /\b(?:garantie|garantir|garantiza|garantieren|garantia|garanderen)\b.{0,80}\b(?:schade|dommage|daño|schaden|dano|ضرر)\b/iu,
   /\b(?:hoeveel|wat kost).{0,80}\b(?:fysieke sleutel|sleutelbeheer|sleutelopslag)\b/iu,
@@ -267,6 +288,7 @@ function calculatePriceTool(message: string, locale: Locale): AssistantToolCall 
 
 type DatabaseKnowledgeRow = {
   id: string;
+  knowledge_article_id?: string | null;
   slug: string;
   category: string;
   title: string;
@@ -295,7 +317,7 @@ async function retrievePublishedDatabaseKnowledge(
   if (!isServiceRoleConfigured()) return [];
   const now = encodeURIComponent(new Date().toISOString());
   const rows = await serviceSelect<DatabaseKnowledgeRow[]>(
-    `knowledge_entries?status=eq.published&language=in.(${locale},en)&or=(effective_from.is.null,effective_from.lte.${now})&select=id,slug,category,title,language,content,version,effective_from,keywords,synonyms&order=version.desc&limit=200`,
+    `knowledge_entries?status=eq.published&language=in.(${locale},en)&or=(effective_from.is.null,effective_from.lte.${now})&select=id,knowledge_article_id,slug,category,title,language,content,version,effective_from,keywords,synonyms&order=version.desc&limit=200`,
   ).catch(() => []);
   const latestRows = [...rows].sort((a, b) => b.version - a.version).filter((row, index, all) =>
     all.findIndex((candidate) => candidate.slug === row.slug && candidate.language === row.language) === index);
@@ -316,7 +338,7 @@ async function retrievePublishedDatabaseKnowledge(
   const exact = scored.filter((item) => item.row.language === locale);
   return (exact.length ? exact : scored).slice(0, Number(process.env.ASSISTANT_RETRIEVAL_LIMIT || 4)).map(({ row, score, matches }) => ({
     article: {
-      id: row.id,
+      id: row.knowledge_article_id || row.id,
       title: row.title,
       category: (KNOWLEDGE_CATEGORIES.has(row.category) ? row.category : "support") as RetrievedKnowledge["article"]["category"],
       language: row.language,
@@ -342,7 +364,12 @@ async function retrieveApprovedKnowledgeMultiPass(input: {
   intent: AssistantIntent;
   conversationId: string;
   history: Array<{ role: "user" | "assistant"; content: string }>;
-}): Promise<{ entries: RetrievedKnowledge[]; queries: string[]; reasoningProvider: string }> {
+}): Promise<{
+  entries: RetrievedKnowledge[];
+  queries: string[];
+  reasoningProvider: string;
+  websiteRecords: WebsiteRetrievalRecord[];
+}> {
   const reasoning = getReasoningProvider();
   const queries = await reasoning.rewriteSearchQuery(input.message, {
     locale: input.locale,
@@ -366,11 +393,34 @@ async function retrieveApprovedKnowledgeMultiPass(input: {
     const existingIsDatabase = existing?.article.source.startsWith(prefix) || false;
     if (!existing || (entryIsDatabase && !existingIsDatabase) || (entryIsDatabase === existingIsDatabase && entry.score > existing.score)) ranked.set(key, entry);
   }
-  const entries = [...ranked.values()]
+  const approvedEntries = [...ranked.values()]
     .filter((entry) => entry.article.status === "approved" && entry.article.visibility === "public")
     .sort((a, b) => b.score - a.score || b.article.version - a.article.version)
     .slice(0, Number(process.env.ASSISTANT_RETRIEVAL_LIMIT || 5));
-  return { entries: localizeRetrievedKnowledge(entries, input.locale), queries: safeQueries, reasoningProvider: reasoning.name };
+  const localizedApproved = localizeRetrievedKnowledge(approvedEntries, input.locale);
+  if (hasHighConfidenceKnowledge(localizedApproved)) {
+    return {
+      entries: localizedApproved,
+      queries: safeQueries,
+      reasoningProvider: reasoning.name,
+      websiteRecords: [],
+    };
+  }
+  const website = await retrieveOfficialWebsite(
+    safeQueries,
+    input.locale,
+    Number(process.env.ASSISTANT_RETRIEVAL_LIMIT || 5),
+  );
+  const limit = Number(process.env.ASSISTANT_RETRIEVAL_LIMIT || 5);
+  const entries = website.entries.length
+    ? [...website.entries, ...localizedApproved.filter((entry) => entry.score >= 3)].slice(0, limit)
+    : localizedApproved;
+  return {
+    entries,
+    queries: safeQueries,
+    reasoningProvider: website.entries.length ? `${reasoning.name}+official_website` : reasoning.name,
+    websiteRecords: website.records,
+  };
 }
 
 type StoredConversationState = {
@@ -419,7 +469,12 @@ async function persistAssistantTurn(input: AssistantInput, reply: AssistantReply
     session_id: input.sessionId || null,
     website_path: input.websitePath || null,
     contact: input.contact || null,
-    sources: retrieved.map((item) => ({ id: item.article.id, score: item.score })),
+    sources: retrieved.map((item) => ({
+      id: item.article.id,
+      score: item.score,
+      source: item.article.source,
+      version: item.article.version,
+    })),
     tool_calls: reply.toolCalls,
     language_confidence: reply.languageConfidence,
     language_confirmed: reply.languageConfirmed,
@@ -432,6 +487,8 @@ async function persistAssistantTurn(input: AssistantInput, reply: AssistantReply
     answer_category: reply.answerCategory,
     retrieval_queries: reply.retrievalQueries,
     knowledge_gap_id: reply.knowledgeGapId || null,
+    knowledge_suggestion_id: reply.knowledgeSuggestionId || null,
+    website_source_ids: reply.websiteSourceIds || [],
     provider: reply.providerName || "deterministic",
     provider_latency_ms: reply.providerLatencyMs || null,
     suggestions: reply.suggestions.map((item) => ({ id: item.id, intent: item.intent })),
@@ -636,13 +693,15 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
   }
 
   const intent = classifyIntentWithHistory(message, normalizedInput.conversationHistory || []);
-  const retrieval = await retrieveApprovedKnowledgeMultiPass({
-    message,
-    locale,
-    intent,
-    conversationId,
-    history: normalizedInput.conversationHistory || [],
-  });
+  const retrieval = isShortGreeting(message) || intent === "language_change"
+    ? { entries: [], queries: [], reasoningProvider: "deterministic", websiteRecords: [] }
+    : await retrieveApprovedKnowledgeMultiPass({
+      message,
+      locale,
+      intent,
+      conversationId,
+      history: normalizedInput.conversationHistory || [],
+    });
   const retrieved = retrieval.entries;
   const priceTool = intent === "pricing" ? calculatePriceTool(message, locale) : null;
   const toolCalls = priceTool ? [priceTool] : [];
@@ -652,18 +711,25 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
       selectedSuggestionIds: [...new Set([...storedState.suggestionState.selectedSuggestionIds, input.selectedSuggestionId])],
     }
     : storedState.suggestionState;
+  const verifiedKnowledgeGap = isVerifiedBusinessKnowledgeGap(message);
+  const deterministicFaqAnswer = approvedFaqAnswer({
+    message,
+    locale,
+    selectedSuggestionId: input.selectedSuggestionId,
+  });
   const evaluation = evaluateHumanHandoff({
     message,
     intent,
     retrieved,
     state: turnSuggestionState,
+    understood: isShortGreeting(message) || Boolean(deterministicFaqAnswer) || verifiedKnowledgeGap,
   });
-  const verifiedKnowledgeGap = isVerifiedBusinessKnowledgeGap(message);
   const generatedProviderAnswer = evaluation.required
     || evaluation.nextAction !== "answer"
     || isShortGreeting(message)
     || intent === "language_change"
     || verifiedKnowledgeGap
+    || Boolean(deterministicFaqAnswer)
     || (retrieved.length === 0 && toolCalls.length === 0)
     ? null
     : await generateWithConfiguredProvider(normalizedInput, retrieved);
@@ -677,13 +743,17 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
       currentSessionLanguage: LANGUAGE_NAMES[locale],
     }));
   }
-  const answer = providerAnswer?.answer || composeGroundedAnswer(normalizedInput, intent, retrieved, toolCalls, evaluation, verifiedKnowledgeGap);
+  const answer = deterministicFaqAnswer
+    || providerAnswer?.answer
+    || composeGroundedAnswer(normalizedInput, intent, retrieved, toolCalls, evaluation, verifiedKnowledgeGap);
   const answerCategory: AssistantAnswerCategory = evaluation.required
     ? "requires_human_action"
     : evaluation.nextAction !== "answer"
       ? "needs_customer_clarification"
       : verifiedKnowledgeGap
         ? "missing_business_knowledge"
+      : deterministicFaqAnswer
+        ? "confirmed"
       : retrieved.length > 1
         ? "derived"
         : retrieved.length === 1 || toolCalls.some((tool) => tool.status === "success") || isShortGreeting(message) || intent === "language_change"
@@ -741,9 +811,14 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
     history: normalizedInput.conversationHistory || [],
   }) : undefined;
   const escalation = { ...evaluation, summary: handoffSummary };
-  const confidence = evaluation.required
-    ? evaluation.confidence
-    : providerAnswer?.confidence ?? Math.min(0.9, 0.55 + retrieved.length * 0.1 + toolCalls.length * 0.15);
+  const confidence = isShortGreeting(message) || intent === "language_change"
+    ? 1
+    : evaluation.required
+      ? evaluation.confidence
+      : providerAnswer?.confidence
+        ?? (retrieval.websiteRecords[0]
+          ? Math.min(0.92, 0.6 + Number(retrieval.websiteRecords[0].similarity) * 0.35)
+          : Math.min(0.9, 0.55 + retrieved.length * 0.1 + toolCalls.length * 0.15));
   const sources = retrieved.map((item) => ({
     id: item.article.id,
     title: item.article.title,
@@ -751,6 +826,20 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
     source: item.article.source,
     version: item.article.version,
   }));
+  let knowledgeSuggestionId: string | null = null;
+  if (retrieval.websiteRecords[0]
+    && ["confirmed", "derived"].includes(answerCategory)
+    && confidence >= Number(process.env.ASSISTANT_CONFIDENCE_THRESHOLD || 0.6)) {
+    knowledgeSuggestionId = await createWebsiteKnowledgeSuggestion({
+      question: message,
+      answer,
+      locale,
+      intent,
+      confidence,
+      source: retrieval.websiteRecords[0],
+      conversationId,
+    });
+  }
   const reply: AssistantReply = {
     conversationId,
     locale,
@@ -773,6 +862,8 @@ export async function answerAssistant(input: AssistantInput): Promise<AssistantR
     sources,
     retrievalQueries: retrieval.queries,
     knowledgeGapId: knowledgeGapId || undefined,
+    knowledgeSuggestionId: knowledgeSuggestionId || undefined,
+    websiteSourceIds: [...new Set(retrieval.websiteRecords.map((record) => record.source_id))],
     suggestedActions: buildActions(suggestions),
     toolCalls,
   };

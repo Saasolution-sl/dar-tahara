@@ -17,8 +17,6 @@ const MISSING_ITEM = /\b(missing|stolen|theft|lost item|missing item|vermist|ges
 const PAYMENT_INVESTIGATION = /\b(charged twice|double charg|duplicate charg|payment dispute|chargeback|refund|twice charged|dubbel afgeschreven|dubbele betaling|terugbetaling|factur[ée] deux fois|double pr[ée]l[èe]vement|remboursement|cobrado dos veces|cargo duplicado|reembolso|doppelt belastet|doppelte abbuchung|r[üu]ckerstattung|cobrado duas vezes|cobran[çc]a duplicada|reembolso)\b|خصم مرتين|دفع مكرر|استرداد/iu;
 const PAYMENT_OR_INVOICE_RECORDS = /\b(invoice dispute|dispute (?:an? )?invoice|payment failed.{0,30}charged|charged.{0,30}payment failed|factuur betwist|betaling mislukt.{0,30}afgeschreven|conteste? la facture|paiement refus[ée].{0,30}d[ée]bit[ée]|disputo la factura|pago fall[óo].{0,30}cobrado|rechnung bestreiten|zahlung fehlgeschlagen.{0,30}belastet|contestar fatura|pagamento falhou.{0,30}cobrado)\b|اعتراض على الفاتورة|فشل الدفع.{0,30}خصم/iu;
 const TECHNICAL_BUG = /\b(crash|crashes|crashed|bug|error|blank page|not load|not working|broken page|vastlop|foutmelding|laadt niet|plantage|erreur|page blanche|ne charge pas|bloquea|error|no carga|absturz|fehler|l[äa]dt nicht|falha|erro|n[ãa]o carrega)\b|عطل|خطأ|لا تعمل|لا تفتح/iu;
-const OPERATIONAL_BOOKING_CHANGE = /\b(?:change|cancel|reschedule|move|update|wijzig|annuleer|verzet|changer|annuler|reporter|cambiar|cancelar|reprogramar|ändern|stornieren|verschieben|alterar|cancelar|remarcar)(?:\s+\S+){0,6}\s+(?:my|mijn|ma|mon|mi|meine|mein|minha|meu)?\s*(?:confirmed )?(?:booking|reservation|appointment|boeking|reservering|afspraak|réservation|rendez-vous|reserva|cita|buchung|termin|marcação)\b|(?:تغيير|إلغاء).{0,30}(?:حجزي|الحجز|الموعد)/iu;
-const CONTRACT_TERMINATION = /\b(?:terminate|cancel|end|stop|opzeggen|beëindigen|annuler|résilier|terminar|dar de baja|kündigen|beenden|cancelar|terminar)(?:\s+\S+){0,5}\s+(?:my|mijn|mon|ma|mi|meine|mein|minha|meu)?\s*(?:contract|subscription|agreement|abonnement|contrat|suscripción|contrato|vertrag|abo|subscrição)\b|(?:إنهاء|إلغاء).{0,30}(?:العقد|اشتراكي|الاشتراك)/iu;
 const ACTIVE_ACCESS_FAILURE = /\b(?:lost|missing|cannot find|can't find|kwijt|verloren|perdu|perdida|perdido)(?:\s+\S+){0,3}\s+(?:physical )?(?:key|sleutel|clé|llave|schlüssel|chave)\b|\b(?:cannot|can't|unable to|locked out|geen toegang|kan niet binnen|accès impossible|no puedo entrar|kein zugang|não consigo entrar)(?:\s+\S+){0,5}\s+(?:access|enter|open|unlock|property|home|house|door|binnen|toegang|entrer|ouvrir|acceder|entrar|zugang|öffnen|acesso|abrir)\b|\b(?:digital|smart|ttlock).{0,20}(?:lock|slot|serrure|cerradura|schloss|fechadura).{0,30}(?:failed|broken|malfunction|not working|werkt niet|ne fonctionne|no funciona|funktioniert nicht|não funciona)\b|فقدت.{0,20}مفتاح|تعذر.{0,20}دخول|القفل.{0,20}لا يعمل/iu;
 const INJURY = /\b(injury|injured|hurt|accident|gewond|letsel|ongeval|bless[ée]|accident|lesi[óo]n|herido|unfall|verletzt|ferimento|acidente)\b|إصابة|حادث|جرح/iu;
 const SERVICE_FAILURE = /\b(did not arrive|didn'?t arrive|no show|team never came|niet gekomen|kwam niet|pas venu|n'est pas venu|no lleg[óo]|no se present[óo]|nicht gekommen|kam nicht|n[ãa]o apareceu|n[ãa]o chegou)\b|لم يصل|لم يأت/iu;
@@ -50,8 +48,9 @@ export function evaluateHumanHandoff(input: {
   intent: AssistantIntent;
   retrieved: RetrievedKnowledge[];
   state: AssistantSuggestionState;
+  understood?: boolean;
 }): HandoffEvaluation {
-  const { message, intent, retrieved, state } = input;
+  const { message, intent, state, understood = false } = input;
   const informationalIncidentQuestion = isInformationalIncidentQuestion(message);
   if (SECURITY.test(message) && !informationalIncidentQuestion) return decision(true, "security_issue", 0.99, "offer_handoff", "security_issue");
   if (INJURY.test(message) && !informationalIncidentQuestion) return decision(true, "security_issue", 0.99, "offer_handoff", "injury_report");
@@ -59,7 +58,6 @@ export function evaluateHumanHandoff(input: {
   if (MISSING_ITEM.test(message) && !informationalIncidentQuestion) return decision(true, "missing_item_claim", 0.98, "offer_handoff", "missing_item_claim");
   if ((PAYMENT_INVESTIGATION.test(message) || PAYMENT_OR_INVOICE_RECORDS.test(message)) && !informationalIncidentQuestion) return decision(true, "payment_investigation", 0.98, "offer_handoff", "payment_investigation");
   if (ACTIVE_ACCESS_FAILURE.test(message) && !informationalIncidentQuestion) return decision(true, "service_failure", 0.98, "offer_handoff", "property_access_failure");
-  if (OPERATIONAL_BOOKING_CHANGE.test(message) || CONTRACT_TERMINATION.test(message)) return decision(true, "account_access_required", 0.97, "offer_handoff", "account_operation");
   if (SERVICE_FAILURE.test(message)) return decision(true, "service_failure", 0.96, "offer_handoff", "service_failure");
   if (CUSTOM_APPROVAL.test(message)) return decision(true, "manual_approval_required", 0.94, "offer_handoff", "manual_approval_required");
   if (EXPLICIT_HUMAN.test(message) || state.selectedSuggestionIds.some((id) => id.startsWith("human-"))) {
@@ -84,12 +82,8 @@ export function evaluateHumanHandoff(input: {
     return decision(false, null, 0.94, "ask_clarifying_question", "service_issue");
   }
 
-  const unclearAttempts = state.clarificationAttempts.unclear_request || 0;
-  if (intent === "unknown" && retrieved.length === 0) {
-    if (unclearAttempts >= 2) {
-      return decision(true, "assistant_failed_after_multiple_attempts", 0.9, "offer_handoff", "unclear_request");
-    }
-    return decision(false, null, 0.86, "ask_clarifying_question", "unclear_request");
+  if (intent === "unknown" && !understood) {
+    return decision(true, "assistant_did_not_understand", 0.9, "offer_handoff", "unclear_request");
   }
   return decision(false, null, 0.96, "answer", null);
 }
@@ -157,6 +151,7 @@ const HANDOFF_COPY: Record<Locale, Record<AssistantEscalationReason, string>> = 
     security_issue: "This safety or security issue requires immediate human review. I can connect you with a Dar Tahara specialist and include the details already provided.",
     manual_approval_required: "This request needs a custom decision or approval. I can connect you with a Dar Tahara specialist and include the context already provided.",
     service_failure: "This service failure requires access to scheduling and visit records. I can connect you with a specialist and include the details already provided.",
+    assistant_did_not_understand: "I’m sorry, I did not understand your question. I have forwarded the conversation to a Dar Tahara Support engineer so they can help you.",
     assistant_failed_after_multiple_attempts: "We have tried the available self-service steps without resolving this. I can connect you with a Dar Tahara specialist and include the conversation summary.",
     customer_explicitly_requests_human: "Certainly. I can connect you with a person. Is this about a booking, payment, complaint, damage or missing item, or another issue?",
   },
@@ -170,6 +165,7 @@ const HANDOFF_COPY: Record<Locale, Record<AssistantEscalationReason, string>> = 
     security_issue: "Dit veiligheidsprobleem vereist directe menselijke beoordeling. Ik verbind u met een Dar Tahara-specialist en stuur de details mee.",
     manual_approval_required: "Dit verzoek vraagt om een persoonlijke beslissing of goedkeuring. Ik verbind u met een specialist en stuur de context mee.",
     service_failure: "Hiervoor moeten planning en bezoekgegevens worden gecontroleerd. Ik verbind u met een specialist en stuur de details mee.",
+    assistant_did_not_understand: "Het spijt me, ik heb uw vraag niet begrepen. Ik heb het gesprek doorgestuurd naar een support engineer van Dar Tahara Support zodat die u kan helpen.",
     assistant_failed_after_multiple_attempts: "De beschikbare zelfservicestappen hebben het probleem niet opgelost. Ik verbind u met een specialist en stuur de gesprekssamenvatting mee.",
     customer_explicitly_requests_human: "Natuurlijk. Ik kan u met een medewerker verbinden. Gaat het om een boeking, betaling, klacht, schade of vermist item, of iets anders?",
   },
@@ -183,6 +179,7 @@ const HANDOFF_COPY: Record<Locale, Record<AssistantEscalationReason, string>> = 
     security_issue: "Ce problème de sécurité nécessite un examen humain immédiat. Je peux vous mettre en relation avec un spécialiste et transmettre les détails fournis.",
     manual_approval_required: "Cette demande nécessite une décision ou une approbation personnalisée. Je peux vous mettre en relation avec un spécialiste et transmettre le contexte.",
     service_failure: "Ce problème nécessite l’accès aux données de planning et de visite. Je peux vous mettre en relation avec un spécialiste et transmettre les détails.",
+    assistant_did_not_understand: "Je suis désolé, je n’ai pas compris votre question. J’ai transmis la conversation à un ingénieur de Dar Tahara Support afin qu’il puisse vous aider.",
     assistant_failed_after_multiple_attempts: "Les étapes disponibles n’ont pas permis de résoudre le problème. Je peux vous mettre en relation avec un spécialiste et transmettre le résumé de la conversation.",
     customer_explicitly_requests_human: "Bien sûr. Je peux vous mettre en relation avec une personne. S’agit-il d’une réservation, d’un paiement, d’une réclamation, d’un dommage ou objet manquant, ou d’un autre sujet ?",
   },
@@ -196,6 +193,7 @@ const HANDOFF_COPY: Record<Locale, Record<AssistantEscalationReason, string>> = 
     security_issue: "Este problema de seguridad requiere una revisión humana inmediata. Puedo conectarle con un especialista e incluir los detalles facilitados.",
     manual_approval_required: "Esta solicitud necesita una decisión o aprobación personalizada. Puedo conectarle con un especialista e incluir el contexto.",
     service_failure: "Este fallo requiere consultar los registros de planificación y visita. Puedo conectarle con un especialista e incluir los detalles.",
+    assistant_did_not_understand: "Lo siento, no he entendido su pregunta. He enviado la conversación a un ingeniero de Dar Tahara Support para que pueda ayudarle.",
     assistant_failed_after_multiple_attempts: "Los pasos de autoservicio disponibles no resolvieron el problema. Puedo conectarle con un especialista e incluir el resumen de la conversación.",
     customer_explicitly_requests_human: "Por supuesto. Puedo conectarle con una persona. ¿Se trata de una reserva, pago, reclamación, daño u objeto perdido, u otro asunto?",
   },
@@ -209,6 +207,7 @@ const HANDOFF_COPY: Record<Locale, Record<AssistantEscalationReason, string>> = 
     security_issue: "Dieses Sicherheitsproblem erfordert sofortige menschliche Prüfung. Ich verbinde Sie mit einem Spezialisten und gebe die Details weiter.",
     manual_approval_required: "Diese Anfrage benötigt eine individuelle Entscheidung oder Genehmigung. Ich verbinde Sie mit einem Spezialisten und gebe den Kontext weiter.",
     service_failure: "Dafür müssen Planungs- und Besuchsdaten geprüft werden. Ich verbinde Sie mit einem Spezialisten und gebe die Details weiter.",
+    assistant_did_not_understand: "Es tut mir leid, ich habe Ihre Frage nicht verstanden. Ich habe das Gespräch an einen Support Engineer von Dar Tahara Support weitergeleitet, damit er Ihnen helfen kann.",
     assistant_failed_after_multiple_attempts: "Die verfügbaren Selbsthilfeschritte haben das Problem nicht gelöst. Ich verbinde Sie mit einem Spezialisten und gebe die Gesprächszusammenfassung weiter.",
     customer_explicitly_requests_human: "Natürlich. Ich kann Sie mit einem Mitarbeiter verbinden. Geht es um eine Buchung, Zahlung, Beschwerde, einen Schaden oder vermissten Gegenstand oder um etwas anderes?",
   },
@@ -222,6 +221,7 @@ const HANDOFF_COPY: Record<Locale, Record<AssistantEscalationReason, string>> = 
     security_issue: "Este problema de segurança exige análise humana imediata. Posso encaminhar para um especialista com os detalhes fornecidos.",
     manual_approval_required: "Este pedido precisa de uma decisão ou aprovação personalizada. Posso encaminhar para um especialista com o contexto.",
     service_failure: "Esta falha exige acesso aos registos de planeamento e visita. Posso encaminhar para um especialista com os detalhes.",
+    assistant_did_not_understand: "Lamento, não compreendi a sua pergunta. Encaminhei a conversa para um engenheiro da Dar Tahara Support para que possa ajudar.",
     assistant_failed_after_multiple_attempts: "Os passos de autosserviço disponíveis não resolveram o problema. Posso encaminhar para um especialista com o resumo da conversa.",
     customer_explicitly_requests_human: "Claro. Posso encaminhar para uma pessoa. É sobre uma reserva, pagamento, reclamação, dano ou item em falta, ou outro assunto?",
   },
@@ -235,6 +235,7 @@ const HANDOFF_COPY: Record<Locale, Record<AssistantEscalationReason, string>> = 
     security_issue: "تحتاج مشكلة السلامة أو الأمان هذه إلى مراجعة بشرية فورية. يمكنني إحالتك إلى مختص مع التفاصيل التي قدمتها.",
     manual_approval_required: "يحتاج هذا الطلب إلى قرار أو موافقة خاصة. يمكنني إحالتك إلى مختص مع سياق الطلب.",
     service_failure: "تحتاج هذه المشكلة إلى مراجعة سجلات الموعد والزيارة. يمكنني إحالتك إلى مختص مع التفاصيل.",
+    assistant_did_not_understand: "عذراً، لم أفهم سؤالك. أحلت المحادثة إلى مهندس دعم في Dar Tahara Support لكي يساعدك.",
     assistant_failed_after_multiple_attempts: "لم تنجح خطوات الخدمة الذاتية المتاحة في حل المشكلة. يمكنني إحالتك إلى مختص مع ملخص المحادثة.",
     customer_explicitly_requests_human: "بالطبع. يمكنني إحالتك إلى موظف. هل يتعلق الأمر بحجز أو دفع أو شكوى أو ضرر أو شيء مفقود، أم بموضوع آخر؟",
   },

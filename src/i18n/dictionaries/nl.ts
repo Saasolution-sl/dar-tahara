@@ -95,7 +95,7 @@ const nl: DeepPartial<Dictionary> = {
     eyebrow: "Abonnementen",
     title: "Zorg op een ritme dat bij uw leven past.",
     subtitle:
-      "Eenvoudige, transparante abonnementen—pauzeer, pas aan of annuleer wanneer u wilt. Elk abonnement omvat inspectierapporten en voorrangsondersteuning.",
+      "Eenvoudige, transparante abonnementen waarbij u bezoekwijzigingen en opzegging volgens de Voorwaarden in het klantenportaal beheert. Elk abonnement omvat inspectierapporten en Dar Tahara Support.",
     perMonthNote: "Aangepaste prijzen op basis van woninggrootte en behoeften.",
     mostPopular: "Populairst",
     cta: "Kies abonnement",
@@ -200,11 +200,11 @@ const nl: DeepPartial<Dictionary> = {
       },
       {
         q: "Welke steden bedienen jullie?",
-        a: "Wij bedienen momenteel de grote steden in Marokko, waaronder Tanger, Casablanca, Rabat en Marrakech, met een voortdurend uitbreidend bereik. Neem contact op om uw regio te bevestigen.",
+        a: "Wij richten ons momenteel op Tetouan, Tanger, Meknes en Casablanca, met een voortdurend uitbreidend bereik. Neem contact op om uw regio te bevestigen.",
       },
       {
-        q: "Kan ik mijn abonnement pauzeren of wijzigen?",
-        a: "Altijd. Abonnementen zijn flexibel—pauzeer terwijl u reist, verhoog de frequentie voor het seizoen of pas diensten op elk moment aan met één bericht.",
+        q: "Kan ik mijn abonnement pauzeren, wijzigen of opzeggen?",
+        a: "Abonnementen kunnen niet worden gepauzeerd. Toegestane bezoekwijzigingen en opzegging regelt u in het klantenportaal: voor een bezoek geldt minstens 48 uur en voor opzegging minstens één maand volgens de Voorwaarden.",
       },
       {
         q: "Welke producten gebruiken jullie?",
@@ -219,7 +219,7 @@ const nl: DeepPartial<Dictionary> = {
       "Laat ons voor uw huis zorgen, zodat u er nooit aan hoeft te denken. Boek een eerste bezoek of vraag vandaag nog een offerte op maat aan.",
     ctaPrimary: "Eerste woningbeoordeling boeken",
     whatsapp: "Chat via WhatsApp",
-    whatsappInfo: "Chat met de Dar Tahara-assistent op WhatsApp over diensten, prijzen, abonnementen, toegang tot de woning en boekingen. Complexe vragen kunnen worden overgedragen aan onze supportdesk per e-mail.",
+    whatsappInfo: "Chat met de Dar Tahara-assistent op WhatsApp over diensten, prijzen, abonnementen, toegang tot de woning en boekingen. Complexe supportverzoeken kunnen per e-mail naar Dar Tahara Support worden doorgestuurd.",
     whatsappPrivacy: "Dit is een geautomatiseerde assistent. Stuur geen betaalgegevens, wachtwoorden of volledige toegangscodes.",
   },
   calculator: {

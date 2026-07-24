@@ -1,8 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import { fontSans, fontSerif } from "../fonts";
-import { locales, isLocale, getDir, localeMeta, type Locale } from "@/i18n/config";
+import { locales, isLocale, localeMeta, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { site, whatsappLink } from "@/lib/site";
 import { ThemeProvider } from "@/components/providers/theme-provider";
@@ -14,7 +13,6 @@ import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { MauticTracking } from "@/components/analytics/mautic-tracking";
 import { ConsentBanner } from "@/components/analytics/consent-banner";
 import { WebsiteChat } from "@/components/assistant/website-chat";
-import { cn } from "@/lib/utils";
 import { featureEnabled } from "@/lib/feature-flags";
 
 // Feature visibility is database-controlled and must not be frozen into a build.
@@ -97,35 +95,25 @@ export default async function LocaleLayout({
 
   const typedLocale = locale as Locale;
   const dict = await getDictionary(typedLocale);
-  const dir = getDir(typedLocale);
   const newsletterEnabled = await featureEnabled("newsletter_signup_enabled");
 
   return (
-    <html
-      lang={localeMeta[typedLocale].hreflang}
-      dir={dir}
-      suppressHydrationWarning
-      className={cn(fontSerif.variable, fontSans.variable)}
-    >
-      <body className="min-h-dvh bg-background">
-        <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
-          <a
-            href="#main"
-            className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:text-primary-foreground"
-          >
-            Skip to content
-          </a>
-          <GoogleAnalytics />
-          <MauticTracking />
-          <ConsentBanner locale={typedLocale} dict={dict.consent} />
-          <DetectionTracker locale={typedLocale} />
-          <Navbar locale={typedLocale} dict={dict.nav} whatsappHref={whatsappLink()} />
-          <main id="main">{children}</main>
-          <Footer locale={typedLocale} dict={dict} />
-          {newsletterEnabled ? <LaunchPopup locale={typedLocale} dict={dict.mailing} /> : null}
-          <WebsiteChat locale={typedLocale} copy={dict.assistant.chat} />
-        </ThemeProvider>
-      </body>
-    </html>
+    <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+      <a
+        href="#main"
+        className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:text-primary-foreground"
+      >
+        Skip to content
+      </a>
+      <GoogleAnalytics />
+      <MauticTracking />
+      <ConsentBanner locale={typedLocale} dict={dict.consent} />
+      <DetectionTracker locale={typedLocale} />
+      <Navbar locale={typedLocale} dict={dict.nav} whatsappHref={whatsappLink()} />
+      <main id="main">{children}</main>
+      <Footer locale={typedLocale} dict={dict} />
+      {newsletterEnabled ? <LaunchPopup locale={typedLocale} dict={dict.mailing} /> : null}
+      <WebsiteChat locale={typedLocale} copy={dict.assistant.chat} />
+    </ThemeProvider>
   );
 }

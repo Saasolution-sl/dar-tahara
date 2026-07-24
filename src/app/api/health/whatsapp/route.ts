@@ -12,7 +12,7 @@ export async function GET() {
     supabase: isServiceRoleConfigured(),
     whatsapp: isMetaConfigured(),
     groq: assistantProviderConfigured(),
-    freescout: freeScoutMode() !== "unconfigured",
+    support: freeScoutMode() !== "unconfigured",
     encryption: Boolean(process.env.WHATSAPP_DATA_ENCRYPTION_KEY),
   };
   const supabaseReachable = configured.supabase
@@ -27,7 +27,7 @@ export async function GET() {
         })
     : false;
   const ready = configured.whatsapp && configured.encryption && supabaseReachable;
-  const complete = ready && configured.groq && configured.freescout;
+  const complete = ready && configured.groq && configured.support;
   return NextResponse.json({
     status: complete ? "healthy" : ready ? "degraded" : "unhealthy",
     checks: { ...configured, supabaseReachable },

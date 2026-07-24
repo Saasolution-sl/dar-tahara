@@ -95,7 +95,7 @@ const de: DeepPartial<Dictionary> = {
     eyebrow: "Abo-Pakete",
     title: "Pflege in einem Rhythmus, der zu Ihrem Leben passt.",
     subtitle:
-      "Einfache, transparente Pakete — pausieren, anpassen oder kündigen Sie jederzeit. Jedes Paket umfasst Inspektionsberichte und bevorzugten Support.",
+      "Einfache, transparente Pakete, deren Terminänderungen und Kündigung gemäß den Bedingungen im Kundenportal verwaltet werden. Jedes Paket umfasst Inspektionsberichte und Dar Tahara Support.",
     perMonthNote: "Individueller Preis je nach Wohnfläche und Bedarf.",
     mostPopular: "Am beliebtesten",
     cta: "Paket wählen",
@@ -200,11 +200,11 @@ const de: DeepPartial<Dictionary> = {
       },
       {
         q: "Welche Städte bedienen Sie?",
-        a: "Wir bedienen derzeit die großen Städte Marokkos, darunter Tanger, Casablanca, Rabat und Marrakesch, mit stetig wachsender Abdeckung. Kontaktieren Sie uns, um Ihre Region zu bestätigen.",
+        a: "Wir konzentrieren uns derzeit auf Tétouan, Tanger, Meknès und Casablanca, mit stetig wachsender Abdeckung. Kontaktieren Sie uns, um Ihre Region zu bestätigen.",
       },
       {
-        q: "Kann ich mein Paket pausieren oder ändern?",
-        a: "Immer. Die Pakete sind flexibel — pausieren Sie während Ihrer Reisen, erhöhen Sie die Frequenz für die Saison oder passen Sie Leistungen jederzeit mit einer einzigen Nachricht an.",
+        q: "Kann ich mein Paket pausieren, ändern oder kündigen?",
+        a: "Abonnements können nicht pausiert werden. Zulässige Terminänderungen und die Kündigung verwalten Sie im Kundenportal: mindestens 48 Stunden für einen Termin und einen Monat für die Kündigung gemäß den Bedingungen.",
       },
       {
         q: "Welche Produkte verwenden Sie?",
@@ -219,7 +219,7 @@ const de: DeepPartial<Dictionary> = {
       "Überlassen Sie uns die Pflege Ihres Zuhauses, damit Sie nie daran denken müssen. Buchen Sie einen ersten Besuch oder fordern Sie noch heute ein maßgeschneidertes Angebot an.",
     ctaPrimary: "Ersteinschätzung buchen",
     whatsapp: "Auf WhatsApp chatten",
-    whatsappInfo: "Chatten Sie mit dem Dar Tahara-Assistenten auf WhatsApp über Leistungen, Preise, Abonnements, Objektzugang und Buchungen. Komplexe Anliegen können an unseren E-Mail-Support übergeben werden.",
+    whatsappInfo: "Chatten Sie mit dem Dar Tahara-Assistenten auf WhatsApp über Leistungen, Preise, Abonnements, Objektzugang und Buchungen. Komplexe Supportanfragen können per E-Mail an Dar Tahara Support übergeben werden.",
     whatsappPrivacy: "Dies ist ein automatisierter Assistent. Senden Sie keine Zahlungsdaten, Passwörter oder vollständigen Zugangscodes.",
   },
   calculator: {
