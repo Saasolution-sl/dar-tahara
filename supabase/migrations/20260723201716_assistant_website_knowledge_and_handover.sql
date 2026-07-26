@@ -144,15 +144,18 @@ create index if not exists website_versions_source_created_idx
   on public.website_versions (source_id, created_at desc);
 create index if not exists website_embeddings_search_idx
   on public.website_embeddings using gin (search_document);
+-- pgvector is installed into the `extensions` schema (see above), which is not on
+-- the migration search_path — so the operator class must be schema-qualified,
+-- exactly like the `extensions.vector(512)` column types.
 create index if not exists website_embeddings_vector_idx
-  on public.website_embeddings using hnsw (embedding vector_cosine_ops)
+  on public.website_embeddings using hnsw (embedding extensions.vector_cosine_ops)
   where embedding is not null;
 create index if not exists knowledge_suggestions_review_idx
   on public.knowledge_suggestions (status, confidence_score desc, last_found_at desc);
 create index if not exists knowledge_suggestions_hash_idx
   on public.knowledge_suggestions (content_hash, question_fingerprint);
 create index if not exists knowledge_suggestions_vector_idx
-  on public.knowledge_suggestions using hnsw (suggestion_embedding vector_cosine_ops)
+  on public.knowledge_suggestions using hnsw (suggestion_embedding extensions.vector_cosine_ops)
   where suggestion_embedding is not null;
 create index if not exists handover_requests_conversation_idx
   on public.handover_requests (conversation_id, created_at desc);
