@@ -77,6 +77,23 @@ export type EarlyAccessCopy = {
       alreadyHas: string;
     };
   };
+  /** Google-backed address search + property map confirmation. */
+  maps: {
+    searchPlaceholder: string;
+    searching: string;
+    noResults: string;
+    manualLink: string;
+    unavailable: string;
+    pinTitle: string;
+    pinHelp: string;
+    useMyLocation: string;
+    locating: string;
+    locationDenied: string;
+    streetViewNote: string;
+    streetViewUnavailable: string;
+    mapUnavailable: string;
+    adjusted: string;
+  };
   /** Standardized Moroccan city selector. */
   citySelector: {
     searchPlaceholder: string;
@@ -204,6 +221,22 @@ const en: EarlyAccessCopy = {
   },
   thirdPartyNotice: "We can't reliably plan recurring cleaning around someone who must travel to open the property each time. A dependable access arrangement is required.",
   digitalLockNotice: "Reliable digital access is preferred where available — it improves planning and access control.",
+  maps: {
+    searchPlaceholder: "Search for the property address",
+    searching: "Searching…",
+    noResults: "No matches. You can enter the address manually.",
+    manualLink: "Enter the address manually",
+    unavailable: "Address search is unavailable — please type the address",
+    pinTitle: "Place the pin at the correct property entrance",
+    pinHelp: "Move the pin to the entrance our cleaning team should use.",
+    useMyLocation: "Use my current location",
+    locating: "Locating…",
+    locationDenied: "We couldn't get your location. You can still search or move the pin on the map.",
+    streetViewNote: "Street View can help you confirm the correct street or building. Images may be unavailable or outdated.",
+    streetViewUnavailable: "Street View is not available for this location. Please confirm the property using the map pin.",
+    mapUnavailable: "The map is unavailable right now. You can still enter the address manually and continue.",
+    adjusted: "Pin position confirmed by you",
+  },
   citySelector: {
     searchPlaceholder: "Search your city",
     notListed: "My city is not listed",
@@ -370,6 +403,22 @@ const fr: EarlyAccessCopy = {
   },
   thirdPartyNotice: "Nous ne pouvons pas planifier de façon fiable un ménage récurrent autour d'une personne devant se déplacer pour ouvrir le bien à chaque fois. Un accès fiable est requis.",
   digitalLockNotice: "Un accès numérique fiable est préférable lorsqu'il est disponible — il améliore la planification et le contrôle d'accès.",
+  maps: {
+    searchPlaceholder: "Rechercher l'adresse du bien",
+    searching: "Recherche…",
+    noResults: "Aucun résultat. Vous pouvez saisir l'adresse manuellement.",
+    manualLink: "Saisir l'adresse manuellement",
+    unavailable: "La recherche d'adresse est indisponible — veuillez saisir l'adresse",
+    pinTitle: "Placez le repère à l'entrée exacte du bien",
+    pinHelp: "Déplacez le repère vers l'entrée que notre équipe doit utiliser.",
+    useMyLocation: "Utiliser ma position actuelle",
+    locating: "Localisation…",
+    locationDenied: "Nous n'avons pas pu obtenir votre position. Vous pouvez toujours rechercher ou déplacer le repère.",
+    streetViewNote: "Street View peut vous aider à confirmer la rue ou le bâtiment. Les images peuvent être indisponibles ou anciennes.",
+    streetViewUnavailable: "Street View n'est pas disponible ici. Veuillez confirmer le bien à l'aide du repère sur la carte.",
+    mapUnavailable: "La carte est indisponible pour le moment. Vous pouvez saisir l'adresse manuellement et continuer.",
+    adjusted: "Position du repère confirmée par vous",
+  },
   citySelector: {
     searchPlaceholder: "Recherchez votre ville",
     notListed: "Ma ville n'est pas dans la liste",
@@ -536,6 +585,22 @@ const ar: EarlyAccessCopy = {
   },
   thirdPartyNotice: "لا يمكننا التخطيط بشكل موثوق لتنظيف متكرر يعتمد على شخص يجب أن يتنقل لفتح العقار في كل مرة. يلزم ترتيب وصول موثوق.",
   digitalLockNotice: "يُفضّل الوصول الرقمي الموثوق عند توفره — فهو يحسّن التخطيط والتحكم في الدخول.",
+  maps: {
+    searchPlaceholder: "ابحث عن عنوان العقار",
+    searching: "جارٍ البحث…",
+    noResults: "لا توجد نتائج. يمكنك إدخال العنوان يدويًا.",
+    manualLink: "إدخال العنوان يدويًا",
+    unavailable: "البحث عن العناوين غير متاح — يرجى كتابة العنوان",
+    pinTitle: "ضع المؤشر عند مدخل العقار الصحيح",
+    pinHelp: "حرّك المؤشر إلى المدخل الذي ينبغي لفريق التنظيف استخدامه.",
+    useMyLocation: "استخدم موقعي الحالي",
+    locating: "جارٍ تحديد الموقع…",
+    locationDenied: "تعذّر تحديد موقعك. ما زال بإمكانك البحث أو تحريك المؤشر على الخريطة.",
+    streetViewNote: "يساعدك Street View على تأكيد الشارع أو المبنى الصحيح. قد تكون الصور غير متاحة أو قديمة.",
+    streetViewUnavailable: "Street View غير متاح لهذا الموقع. يرجى تأكيد العقار باستخدام مؤشر الخريطة.",
+    mapUnavailable: "الخريطة غير متاحة حاليًا. يمكنك إدخال العنوان يدويًا والمتابعة.",
+    adjusted: "تم تأكيد موضع المؤشر من قِبلك",
+  },
   citySelector: {
     searchPlaceholder: "ابحث عن مدينتك",
     notListed: "مدينتي غير مدرجة",
@@ -702,6 +767,22 @@ const nl: EarlyAccessCopy = {
   },
   thirdPartyNotice: "We kunnen terugkerende schoonmaak niet betrouwbaar plannen rond iemand die telkens moet reizen om de woning te openen. Een betrouwbare toegangsregeling is vereist.",
   digitalLockNotice: "Betrouwbare digitale toegang heeft de voorkeur waar beschikbaar — het verbetert de planning en toegangscontrole.",
+  maps: {
+    searchPlaceholder: "Zoek het adres van het pand",
+    searching: "Zoeken…",
+    noResults: "Geen resultaten. U kunt het adres handmatig invoeren.",
+    manualLink: "Adres handmatig invoeren",
+    unavailable: "Adres zoeken is niet beschikbaar — typ het adres",
+    pinTitle: "Plaats de speld bij de juiste ingang van het pand",
+    pinHelp: "Verplaats de speld naar de ingang die ons schoonmaakteam moet gebruiken.",
+    useMyLocation: "Mijn huidige locatie gebruiken",
+    locating: "Locatie bepalen…",
+    locationDenied: "We konden uw locatie niet bepalen. U kunt nog steeds zoeken of de speld verplaatsen.",
+    streetViewNote: "Street View helpt u de juiste straat of het juiste gebouw te bevestigen. Beelden kunnen ontbreken of verouderd zijn.",
+    streetViewUnavailable: "Street View is niet beschikbaar voor deze locatie. Bevestig het pand met de speld op de kaart.",
+    mapUnavailable: "De kaart is nu niet beschikbaar. U kunt het adres handmatig invoeren en doorgaan.",
+    adjusted: "Speldpositie door u bevestigd",
+  },
   citySelector: {
     searchPlaceholder: "Zoek uw stad",
     notListed: "Mijn stad staat er niet bij",
@@ -868,6 +949,22 @@ const es: EarlyAccessCopy = {
   },
   thirdPartyNotice: "No podemos planificar de forma fiable una limpieza recurrente en torno a alguien que deba desplazarse para abrir la propiedad cada vez. Se requiere un acuerdo de acceso fiable.",
   digitalLockNotice: "Se prefiere un acceso digital fiable cuando está disponible — mejora la planificación y el control de acceso.",
+  maps: {
+    searchPlaceholder: "Busca la dirección de la propiedad",
+    searching: "Buscando…",
+    noResults: "Sin resultados. Puedes introducir la dirección manualmente.",
+    manualLink: "Introducir la dirección manualmente",
+    unavailable: "La búsqueda de direcciones no está disponible: escribe la dirección",
+    pinTitle: "Coloca el marcador en la entrada correcta",
+    pinHelp: "Mueve el marcador a la entrada que debe usar nuestro equipo de limpieza.",
+    useMyLocation: "Usar mi ubicación actual",
+    locating: "Localizando…",
+    locationDenied: "No pudimos obtener tu ubicación. Puedes seguir buscando o mover el marcador en el mapa.",
+    streetViewNote: "Street View puede ayudarte a confirmar la calle o el edificio. Las imágenes pueden no estar disponibles o estar desactualizadas.",
+    streetViewUnavailable: "Street View no está disponible para esta ubicación. Confirma la propiedad con el marcador del mapa.",
+    mapUnavailable: "El mapa no está disponible ahora. Puedes introducir la dirección manualmente y continuar.",
+    adjusted: "Posición del marcador confirmada por ti",
+  },
   citySelector: {
     searchPlaceholder: "Busca tu ciudad",
     notListed: "Mi ciudad no está en la lista",
@@ -1034,6 +1131,22 @@ const de: EarlyAccessCopy = {
   },
   thirdPartyNotice: "Wir können eine wiederkehrende Reinigung nicht zuverlässig um jemanden herum planen, der jedes Mal anreisen muss, um die Immobilie zu öffnen. Eine zuverlässige Zugangsregelung ist erforderlich.",
   digitalLockNotice: "Ein zuverlässiger digitaler Zugang wird bevorzugt, wo verfügbar — er verbessert Planung und Zugangskontrolle.",
+  maps: {
+    searchPlaceholder: "Adresse der Immobilie suchen",
+    searching: "Suche…",
+    noResults: "Keine Treffer. Sie können die Adresse manuell eingeben.",
+    manualLink: "Adresse manuell eingeben",
+    unavailable: "Die Adresssuche ist nicht verfügbar — bitte Adresse eintippen",
+    pinTitle: "Setzen Sie die Markierung an den richtigen Eingang",
+    pinHelp: "Verschieben Sie die Markierung zu dem Eingang, den unser Reinigungsteam nutzen soll.",
+    useMyLocation: "Meinen aktuellen Standort verwenden",
+    locating: "Standort wird ermittelt…",
+    locationDenied: "Wir konnten Ihren Standort nicht ermitteln. Sie können weiterhin suchen oder die Markierung verschieben.",
+    streetViewNote: "Street View hilft Ihnen, die richtige Straße oder das richtige Gebäude zu bestätigen. Bilder können fehlen oder veraltet sein.",
+    streetViewUnavailable: "Street View ist für diesen Ort nicht verfügbar. Bitte bestätigen Sie die Immobilie über die Kartenmarkierung.",
+    mapUnavailable: "Die Karte ist derzeit nicht verfügbar. Sie können die Adresse manuell eingeben und fortfahren.",
+    adjusted: "Markierungsposition von Ihnen bestätigt",
+  },
   citySelector: {
     searchPlaceholder: "Suchen Sie Ihre Stadt",
     notListed: "Meine Stadt ist nicht aufgeführt",
@@ -1200,6 +1313,22 @@ const pt: EarlyAccessCopy = {
   },
   thirdPartyNotice: "Não conseguimos planear de forma fiável uma limpeza recorrente em torno de alguém que tenha de se deslocar para abrir o imóvel de cada vez. É necessário um acordo de acesso fiável.",
   digitalLockNotice: "Um acesso digital fiável é preferível quando disponível — melhora o planeamento e o controlo de acesso.",
+  maps: {
+    searchPlaceholder: "Procurar a morada do imóvel",
+    searching: "A procurar…",
+    noResults: "Sem resultados. Pode introduzir a morada manualmente.",
+    manualLink: "Introduzir a morada manualmente",
+    unavailable: "A pesquisa de moradas não está disponível — escreva a morada",
+    pinTitle: "Coloque o marcador na entrada correta do imóvel",
+    pinHelp: "Mova o marcador para a entrada que a nossa equipa de limpeza deve usar.",
+    useMyLocation: "Usar a minha localização atual",
+    locating: "A localizar…",
+    locationDenied: "Não conseguimos obter a sua localização. Pode continuar a pesquisar ou mover o marcador no mapa.",
+    streetViewNote: "O Street View ajuda a confirmar a rua ou o edifício correto. As imagens podem estar indisponíveis ou desatualizadas.",
+    streetViewUnavailable: "O Street View não está disponível para este local. Confirme o imóvel com o marcador do mapa.",
+    mapUnavailable: "O mapa está indisponível de momento. Pode introduzir a morada manualmente e continuar.",
+    adjusted: "Posição do marcador confirmada por si",
+  },
   citySelector: {
     searchPlaceholder: "Procure a sua cidade",
     notListed: "A minha cidade não está na lista",
