@@ -29,6 +29,7 @@ export type LeadForSync = {
   billingCity?: string | null;
   cleaningCity?: string | null;
   cleaningRegion?: string | null;
+  cleaningServiceAreaStatus?: string | null;
   cleaningCountry?: string | null;
   propertyType?: string | null;
   propertySizeRange?: string | null;
@@ -40,6 +41,12 @@ export type LeadForSync = {
   expectedStartPeriod?: string | null;
   accessMethod?: string | null;
   hasDigitalLock?: boolean | null;
+
+  // Smart-lock upsell segmentation (interest only — never a paid order, and no
+  // price/coordinates sent to Mautic).
+  smartLockInterest?: string | null;
+  smartLockExistingBrand?: string | null;
+  smartLockCompatibilityStatus?: string | null;
 
   // Attribution.
   firstSourceCode?: string | null;

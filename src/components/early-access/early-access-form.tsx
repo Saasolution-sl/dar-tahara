@@ -1,20 +1,25 @@
 "use client";
 
 import * as React from "react";
-import { Check, Loader2, ArrowRight, ArrowLeft, ShieldCheck, KeyRound, Info } from "lucide-react";
+import { Check, Loader2, ArrowRight, ArrowLeft, ShieldCheck, KeyRound, Info, Lock } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import type { EarlyAccessCopy } from "@/i18n/early-access-copy";
 import {
   MOROCCAN_CITIES, OTHER_CITY_VALUE, STEPS, validateStep,
   type StepId, type EarlyAccessPayload, type FieldErrors,
 } from "@/lib/early-access/schema";
+import {
+  formatSmartLockPrice, SMART_LOCK_INTERESTS, type SmartLockInterest,
+} from "@/lib/products/smart-lock";
 import type { Attribution } from "@/lib/early-access/attribution";
-import { track } from "@/lib/analytics";
+import { track, type AnalyticsEvent } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 import { TurnstileWidget } from "@/components/mailing-list/turnstile-widget";
 import {
   FieldShell, TextInput, TextArea, Select, CheckboxRow, RadioCards, CheckboxChips,
 } from "./fields";
+import { MoroccanCitySelector } from "./moroccan-city-selector";
+import { OTHER_CITY_ID } from "@/lib/geo/moroccan-cities";
 
 const FIRST_TOUCH_KEY = "dt_ea_first_touch";
 
@@ -163,6 +168,21 @@ export function EarlyAccessForm({ locale, copy }: { locale: Locale; copy: EarlyA
         {submitted.verificationSent ? (
           <p className="mt-2 text-sm font-medium text-foreground">{copy.submitted.checkInbox}</p>
         ) : null}
+        {(() => {
+          const i = p.smartLockInterest as SmartLockInterest | undefined;
+          const msg =
+            i === "purchase_interested"
+              ? copy.smartLock.confirm.interested.replaceAll("{price}", formatSmartLockPrice())
+              : i === "already_has_lock"
+                ? copy.smartLock.confirm.alreadyHas
+                : null;
+          return msg ? (
+            <p className="mx-auto mt-4 flex max-w-md items-start gap-2 rounded-xl border border-accent/30 bg-accent/[0.04] px-4 py-3 text-start text-xs leading-relaxed text-muted-foreground">
+              <Lock className="mt-0.5 h-3.5 w-3.5 shrink-0 text-accent" />
+              {msg}
+            </p>
+          ) : null;
+        })()}
       </div>
     );
   }
@@ -189,7 +209,7 @@ export function EarlyAccessForm({ locale, copy }: { locale: Locale; copy: EarlyA
       <div className="mt-6 space-y-5">
         {step === "contact" && <ContactStep p={p} set={set} errors={errors} copy={copy} />}
         {step === "billing" && <BillingStep p={p} set={set} errors={errors} copy={copy} />}
-        {step === "property_address" && <PropertyAddressStep p={p} set={set} errors={errors} copy={copy} />}
+        {step === "property_address" && <PropertyAddressStep p={p} set={set} errors={errors} copy={copy} locale={locale} />}
         {step === "property_info" && <PropertyInfoStep p={p} set={set} errors={errors} copy={copy} />}
         {step === "services" && <ServicesStep p={p} set={set} toggleService={toggleService} errors={errors} copy={copy} />}
         {step === "access" && <AccessStep p={p} set={set} errors={errors} copy={copy} />}
@@ -483,7 +503,7 @@ function BillingStep({ p, set, errors, copy }: StepProps) {
   );
 }
 
-function PropertyAddressStep({ p, set, errors, copy }: StepProps) {
+function PropertyAddressStep({ p, set, errors, copy, locale }: StepProps & { locale: Locale }) {
   const f = copy.fields;
   const canCopy = (p.billingCountry ?? "").toUpperCase() === "MA";
   return (
@@ -521,10 +541,25 @@ function PropertyAddressStep({ p, set, errors, copy }: StepProps) {
               <TextInput value={p.propertyPostalCode ?? ""} onChange={(e) => set("propertyPostalCode", e.target.value)} />
             </FieldShell>
           </div>
+          <MoroccanCitySelector
+            id="pcity"
+            label={f.propertyCity}
+            required
+            locale={locale}
+            value={p.propertyCityId}
+            manualName={p.propertyCityManualName}
+            copy={copy.citySelector}
+            error={err(copy, errors.propertyCity) ?? err(copy, errors.propertyCityManualName)}
+            onChange={(sel) => {
+              set("propertyCityId", sel.cityId);
+              set("propertyCityManualName", sel.cityId === OTHER_CITY_ID ? sel.manualName : undefined);
+              set("propertyCity", sel.cityName);
+              // Fill the province/region box from the taxonomy so the customer
+              // doesn't retype it; still editable below.
+              if (sel.regionName) set("propertyRegion", sel.regionName);
+            }}
+          />
           <div className="grid gap-5 sm:grid-cols-2">
-            <FieldShell id="pcity" label={f.propertyCity} required error={err(copy, errors.propertyCity)}>
-              <TextInput value={p.propertyCity ?? ""} onChange={(e) => set("propertyCity", e.target.value)} />
-            </FieldShell>
             <FieldShell id="preg" label={f.propertyRegion}>
               <TextInput value={p.propertyRegion ?? ""} onChange={(e) => set("propertyRegion", e.target.value)} />
             </FieldShell>
@@ -534,9 +569,6 @@ function PropertyAddressStep({ p, set, errors, copy }: StepProps) {
           </FieldShell>
         </>
       ) : null}
-      <FieldShell id="lm" label={f.landmark}>
-        <TextInput value={p.landmark ?? ""} onChange={(e) => set("landmark", e.target.value)} />
-      </FieldShell>
       <FieldShell id="gm" label={f.googleMapsUrl} hint={copy.hints.googleMapsUrl} error={err(copy, errors.googleMapsUrl)}>
         <TextInput type="url" inputMode="url" value={p.googleMapsUrl ?? ""} onChange={(e) => set("googleMapsUrl", e.target.value)} placeholder="https://maps.google.com/…" />
       </FieldShell>
@@ -687,7 +719,118 @@ function AccessStep({ p, set, errors, copy }: StepProps) {
       <FieldShell id="an" label={f.accessNotes}>
         <TextArea value={p.accessNotes ?? ""} onChange={(e) => set("accessNotes", e.target.value)} />
       </FieldShell>
+
+      <SmartLockUpsell p={p} set={set} errors={errors} copy={copy} />
     </>
+  );
+}
+
+const SMART_LOCK_EVENT: Record<SmartLockInterest, AnalyticsEvent> = {
+  purchase_interested: "smart_lock_purchase_interest_selected",
+  already_has_lock: "smart_lock_existing_lock_selected",
+  not_interested: "smart_lock_declined",
+};
+
+/**
+ * Digital smart-lock upsell. Helpful, never aggressive: no paid option is
+ * preselected, declining never blocks signup, and the €200 price + "installation
+ * included" come from the central product config (never hardcoded here).
+ */
+function SmartLockUpsell({ p, set, errors, copy }: StepProps) {
+  const sl = copy.smartLock;
+  const price = formatSmartLockPrice();
+  const withPrice = (s: string) => s.replaceAll("{price}", price);
+  const selected = p.smartLockInterest as SmartLockInterest | undefined;
+
+  // Fire the "offer viewed" funnel event once, when the upsell first renders.
+  const viewedRef = React.useRef(false);
+  React.useEffect(() => {
+    if (viewedRef.current) return;
+    viewedRef.current = true;
+    track("smart_lock_offer_viewed", {});
+  }, []);
+
+  function choose(interest: SmartLockInterest) {
+    set("smartLockInterest", interest);
+    if (interest !== "already_has_lock") {
+      set("existingLockBrand", undefined);
+      set("existingLockModel", undefined);
+    }
+    track(SMART_LOCK_EVENT[interest], {});
+  }
+
+  return (
+    <div className="mt-2 rounded-2xl border border-accent/30 bg-accent/[0.04] p-5">
+      <p className="eyebrow"><Lock className="h-3.5 w-3.5" aria-hidden />{sl.eyebrow}</p>
+      <h3 className="mt-2 font-serif text-lg text-foreground">{sl.heading}</h3>
+      <p className="mt-2 text-sm leading-relaxed text-muted-foreground">{sl.intro}</p>
+      <p className="mt-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1 text-sm font-semibold text-primary">
+        {withPrice(sl.priceTag)}
+      </p>
+
+      <div role="radiogroup" aria-label={sl.heading} className="mt-4 grid gap-2">
+        {SMART_LOCK_INTERESTS.map((interest) => {
+          const opt = sl.options[interest];
+          const active = selected === interest;
+          return (
+            <label
+              key={interest}
+              className={cn(
+                "flex cursor-pointer items-start gap-3 rounded-xl border px-4 py-3 text-sm transition",
+                active ? "border-primary bg-primary/5 ring-1 ring-primary/30" : "border-border bg-background hover:border-foreground/20",
+              )}
+            >
+              <input
+                type="radio"
+                name="smart-lock-interest"
+                className="mt-0.5 h-4 w-4 accent-primary"
+                checked={active}
+                onChange={() => choose(interest)}
+              />
+              <span className="min-w-0">
+                <span className="block font-medium text-foreground">{opt.title}</span>
+                <span className="mt-0.5 block text-xs text-muted-foreground">{withPrice(opt.note)}</span>
+              </span>
+            </label>
+          );
+        })}
+      </div>
+      {errors.smartLockInterest ? (
+        <p role="alert" className="mt-1 text-xs font-medium text-red-600">{err(copy, errors.smartLockInterest)}</p>
+      ) : null}
+
+      {selected === "already_has_lock" ? (
+        <div className="mt-4 grid gap-3 sm:grid-cols-2">
+          <FieldShell id="sl-brand" label={sl.brandLabel} required error={err(copy, errors.existingLockBrand)}>
+            <TextInput
+              value={p.existingLockBrand ?? ""}
+              placeholder={sl.brandPlaceholder}
+              onChange={(e) => set("existingLockBrand", e.target.value)}
+            />
+          </FieldShell>
+          <FieldShell id="sl-model" label={sl.modelLabel}>
+            <TextInput
+              value={p.existingLockModel ?? ""}
+              placeholder={sl.modelPlaceholder}
+              onChange={(e) => set("existingLockModel", e.target.value)}
+            />
+          </FieldShell>
+          <p className="sm:col-span-2 flex items-start gap-2 text-xs leading-relaxed text-muted-foreground">
+            <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+            {sl.ttlockNotice}
+          </p>
+        </div>
+      ) : null}
+
+      {selected === "purchase_interested" ? (
+        <p className="mt-4 flex items-start gap-2 rounded-xl bg-secondary/60 px-4 py-3 text-xs leading-relaxed text-muted-foreground">
+          <Info className="mt-0.5 h-3.5 w-3.5 shrink-0 text-primary" />
+          {sl.reviewSubjectTo}
+        </p>
+      ) : null}
+
+      <p className="mt-3 text-xs leading-relaxed text-muted-foreground">{sl.keyComparison}</p>
+    </div>
   );
 }
 
@@ -717,8 +860,26 @@ function ReviewStep({ p, set, errors, copy }: StepProps) {
         <Row label={copy.fields.serviceTypes} value={(p.serviceTypes ?? []).map((s) => o.service[s]).join(", ") || undefined} />
         <Row label={copy.fields.desiredFrequency} value={p.desiredFrequency ? o.frequency[p.desiredFrequency] : undefined} />
         <Row label={copy.fields.accessMethod} value={p.accessMethod ? o.access[p.accessMethod] : undefined} />
+        {p.smartLockInterest ? (
+          <Row
+            label={copy.smartLock.reviewLabel}
+            value={copy.smartLock.options[p.smartLockInterest as SmartLockInterest]?.title}
+          />
+        ) : null}
         {p.referralCode ? <Row label="Referral" value={p.referralCode} /> : null}
       </div>
+
+      {p.smartLockInterest === "purchase_interested" ? (
+        <div className="rounded-xl border border-accent/30 bg-accent/[0.04] p-4">
+          <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
+            <Lock className="h-4 w-4 text-accent" />
+            {copy.smartLock.reviewLabel} · {formatSmartLockPrice()}
+          </p>
+          <p className="mt-1.5 text-xs leading-relaxed text-muted-foreground">
+            {copy.smartLock.priceTag.replaceAll("{price}", formatSmartLockPrice())} — {copy.smartLock.reviewSubjectTo}
+          </p>
+        </div>
+      ) : null}
 
       <h3 className="pt-2 text-sm font-semibold text-foreground">{c.heading}</h3>
       <div className="space-y-3">

@@ -31,19 +31,30 @@ ADMIN_PW="$(sed -n 's/^password=//p' "$CRED_FILE")"
 
 created=0; existed=0; failed=0
 
-# Call the Mautic API from inside the container. JSON is passed via stdin to a
-# temp file in the container, which sidesteps all shell-quoting problems.
+# Call the Mautic API over the site's public HTTPS URL, from the host.
+#
+# This used to go over the container's loopback (http://127.0.0.1) so it worked
+# before DNS/TLS existed. Mautic now force-redirects every http request to its
+# configured https site_url — and it ignores X-Forwarded-Proto — so loopback
+# calls 301 and POSTs fail with a misleading "No route found". The container
+# does not listen on 443 either (Caddy terminates TLS), so the only working
+# transport is the public hostname through Caddy. Traffic stays on this host.
+#
+# JSON is passed via a temp file, which sidesteps all shell-quoting problems.
+API_BASE="${MAUTIC_API_BASE:-https://marketing.saasolution.es}"
 api() {
   local method="$1" path="$2" body="${3:-}"
   if [[ -n "$body" ]]; then
-    printf '%s' "$body" | docker exec -i "$CONTAINER" tee /tmp/payload.json >/dev/null
-    docker exec "$CONTAINER" curl -sS -u "${ADMIN_USER}:${ADMIN_PW}" \
+    local tmp; tmp="$(mktemp)"
+    printf '%s' "$body" >"$tmp"
+    curl -sS -u "${ADMIN_USER}:${ADMIN_PW}" \
       -H 'Content-Type: application/json' -X "$method" \
-      -d @/tmp/payload.json "http://127.0.0.1${path}"
+      -d @"$tmp" "${API_BASE}${path}"
+    rm -f "$tmp"
   else
-    docker exec "$CONTAINER" curl -sS -u "${ADMIN_USER}:${ADMIN_PW}" \
+    curl -sS -u "${ADMIN_USER}:${ADMIN_PW}" \
       -H 'Content-Type: application/json' -X "$method" \
-      "http://127.0.0.1${path}"
+      "${API_BASE}${path}"
   fi
 }
 
@@ -69,6 +80,7 @@ report() {
 #   select/multiselect fields must ship their option list or Mautic stores free
 #   text and segment filters silently stop matching.
 echo "==> contact fields"
+declare -A WANT_OPTS   # alias → intended option list, used by the reconcile pass
 FIELDS=(
   # Identity & contact
   "whatsapp_phone|WhatsApp Phone|tel|core"
@@ -90,12 +102,29 @@ FIELDS=(
   "occupancy_type|Occupancy Type|select|professional|primary_residence,secondary_residence,holiday_home,short_term_rental,long_term_rental,empty"
   "property_condition|Property Condition|select|professional|maintained,standard,empty_a_while,deep_clean,renovation_dust,unsure"
 
-  # Service interest
-  "desired_services|Desired Services|multiselect|professional|standard_cleaning,deep_cleaning,recurring_cleaning,holiday_home_prep,arrival_prep,departure_cleaning,airbnb_turnover,move_in,move_out,property_inspection,laundry,linen_change,window_cleaning,fridge_cleaning,oven_cleaning,balcony_terrace,property_care,other"
+  # Service interest. The vocabulary was deliberately cut to five broad options
+  # (the long checklist depressed form completion); specifics now live in the
+  # free-text service notes in Supabase.
+  "desired_services|Desired Services|multiselect|professional|standard_cleaning,deep_cleaning,rental_cleaning,property_care,other"
   "desired_frequency|Desired Frequency|select|professional|one_time,weekly,biweekly,monthly,before_arrival,after_departure,on_demand,not_sure"
   "expected_start_period|Expected Start Period|select|professional|asap,within_1_month,within_3_months,within_6_months,later,no_fixed_date"
   "access_method|Access Method|select|professional|digital_lock,physical_key,person_present,concierge,lockbox,property_manager,other"
   "has_digital_lock|Has Digital Lock|boolean|professional"
+
+  # Standardized service area of the property city (from the canonical city
+  # taxonomy). Drives launch/waiting-list comms; a non-active area never blocks
+  # a registration.
+  "service_area_status|Service Area Status|select|professional|active,planned,waiting_list,unsupported"
+
+  # Digital smart-lock upsell. Product INTEREST only — never an order, and the
+  # €200 price is deliberately NOT sent to Mautic (it stays in Supabase).
+  # NB: Mautic truncates a contact-field alias to 25 characters and then silently
+  # creates a *duplicate* (alias + "1") on the next run if you keep sending the
+  # long form. Every alias below is <= 25 chars for that reason — do not lengthen
+  # them, and keep them identical to the aliases used in src/lib/mautic/mapping.ts.
+  "smart_lock_interest|Smart Lock Interest|select|professional|purchase_interested,already_has_lock,not_interested"
+  "smart_lock_existing_brand|Smart Lock Existing Brand|text|professional"
+  "smart_lock_compatibility|Smart Lock Compatibility|select|professional|not_checked,pending_review,compatible,not_compatible"
 
   # Campaign / lifecycle
   "early_access_status|Early Access Status|select|core|pending,verified,qualified,waitlisted,invited,customer"
@@ -145,7 +174,48 @@ for spec in "${FIELDS[@]}"; do
     props="{\"list\":[${list}]}"
   fi
   body="{\"label\":\"${label}\",\"alias\":\"${alias}\",\"type\":\"${ftype}\",\"group\":\"${fgroup}\",\"isPublished\":true,\"properties\":${props}}"
+  # Remember the intended option list so the reconcile pass below can repair a
+  # field whose vocabulary changed after it was first created.
+  [[ -n "${opts:-}" ]] && WANT_OPTS["$alias"]="$opts"
   report "field ${alias}" "$(api POST /api/fields/contact/new "$body")"
+done
+
+# ── 1b. Reconcile option lists ────────────────────────────────────────────────
+# Creation is skipped for fields that already exist, so a CHANGED select/
+# multiselect vocabulary would silently keep its old options — and segment
+# filters would then stop matching the values the website actually sends.
+# This pass PATCHes any existing field whose option list has drifted, which is
+# what makes this script the true source of truth rather than a one-shot.
+echo "==> reconcile field options"
+existing_fields="$(api GET '/api/fields/contact?limit=500')"
+for alias in "${!WANT_OPTS[@]}"; do
+  want="${WANT_OPTS[$alias]}"
+  # Current options for this alias, comma-joined in Mautic's stored order.
+  have="$(printf '%s' "$existing_fields" | ALIAS="$alias" python3 -c 'import sys,json,os
+d=json.load(sys.stdin); f=d.get("fields",{})
+it=f.values() if isinstance(f,dict) else f
+for x in it:
+    if x.get("alias")==os.environ["ALIAS"]:
+        props=x.get("properties") or {}
+        lst=props.get("list") or []
+        vals=[str(i.get("value","")) for i in lst] if isinstance(lst,list) else []
+        print(",".join(vals)); break')"
+  fid="$(printf '%s' "$existing_fields" | ALIAS="$alias" python3 -c 'import sys,json,os
+d=json.load(sys.stdin); f=d.get("fields",{})
+it=f.values() if isinstance(f,dict) else f
+for x in it:
+    if x.get("alias")==os.environ["ALIAS"]: print(x.get("id","")); break')"
+  [[ -z "$fid" ]] && continue                 # not created yet — nothing to fix
+  [[ "$have" == "$want" ]] && continue        # already correct
+  list=""
+  IFS=',' read -ra values <<<"$want"
+  for v in "${values[@]}"; do
+    [[ -n "$list" ]] && list+=","
+    list+="{\"label\":\"${v}\",\"value\":\"${v}\"}"
+  done
+  echo "  ~ field ${alias}: options [${have}] -> [${want}]"
+  report "field ${alias} options" \
+    "$(api PATCH "/api/fields/contact/${fid}/edit" "{\"properties\":{\"list\":[${list}]}}")"
 done
 
 # ── 2. Tags ───────────────────────────────────────────────────────────────────
@@ -163,6 +233,8 @@ TAGS=(
   frequency-weekly frequency-biweekly frequency-monthly
   frequency-one-time frequency-on-demand
   access-digital-lock access-physical-key access-third-party access-lockbox
+  smart-lock-purchase-interest smart-lock-existing-review smart-lock-no-interest
+  service-area-planned service-area-waiting-list service-area-unsupported
 )
 for tag in "${TAGS[@]}"; do
   report "tag ${tag}" "$(api POST /api/tags/new "{\"tag\":\"${tag}\"}")"
@@ -314,6 +386,18 @@ SEGMENTS=(
   "dt-res-nador|Residence City — Nador|[$(f_eq residence_city Nador)]"
   "dt-res-casablanca|Residence City — Casablanca|[$(f_eq residence_city Casablanca)]"
   "dt-res-agadir|Residence City — Agadir|[$(f_eq residence_city Agadir)]"
+
+  # Digital smart-lock upsell. Interest only — these are follow-up queues, not
+  # buyers: nothing here has been paid for or confirmed as compatible.
+  "dt-lock-interested|Smart Lock — Purchase Interest|[$(f_eq smart_lock_interest purchase_interested select)]"
+  "dt-lock-existing|Smart Lock — Existing Lock Review|[$(f_eq smart_lock_interest already_has_lock select)]"
+  "dt-lock-declined|Smart Lock — Not Interested|[$(f_eq smart_lock_interest not_interested select)]"
+  "dt-lock-pending-review|Smart Lock — Compatibility Pending|[$(f_eq smart_lock_compatibility pending_review select)]"
+
+  # Service-area status of the property city — drives launch and waiting-list comms.
+  "dt-area-planned|Service Area — Planned|[$(f_eq service_area_status planned select)]"
+  "dt-area-waiting-list|Service Area — Waiting List|[$(f_eq service_area_status waiting_list select)]"
+  "dt-area-unsupported|Service Area — Outside Coverage|[$(f_eq service_area_status unsupported select)]"
 
   # Cleaning city
   "dt-city-tangier|Property — Tangier|[$(f_eq cleaning_city Tangier)]"
