@@ -10,11 +10,12 @@
 // ── Option vocabularies ────────────────────────────────────────────────────────
 export const CONTACT_METHODS = ["email", "whatsapp", "telephone"] as const;
 export const RECIPIENT_TYPES = ["private", "business"] as const;
-export const MOROCCAN_CITIES = [
-  "Tetouan", "Tangier", "Rabat", "Meknes", "Fes", "Marrakech",
-  "Al Hoceima", "Nador", "Casablanca", "Agadir",
-] as const;
-export const OTHER_CITY_VALUE = "__other__";
+// City vocabulary is derived from the single canonical taxonomy — never a second
+// hardcoded list. The form renders records; this name array stays for the legacy
+// free-text residence field and back-compatible validation.
+import { MOROCCAN_CITIES as MOROCCAN_CITY_RECORDS, OTHER_CITY_ID } from "@/lib/geo/moroccan-cities";
+export const MOROCCAN_CITIES = MOROCCAN_CITY_RECORDS.map((c) => c.canonicalName);
+export const OTHER_CITY_VALUE = OTHER_CITY_ID;
 export const PROPERTY_TYPES = [
   "apartment", "house", "villa", "holiday_home", "short_term_rental", "riad", "office", "other",
 ] as const;
@@ -28,11 +29,10 @@ export const PROPERTY_CONDITIONS = [
 ] as const;
 export const FURNISHING_STATUSES = ["fully_furnished", "partially_furnished", "unfurnished"] as const;
 export const TRISTATE = ["yes", "no", "unknown"] as const;
+// Deliberately broad, max six choices — a long checklist made the step feel like
+// work and depressed completion. Specifics are captured in serviceNotes instead.
 export const SERVICE_TYPES = [
-  "standard_cleaning", "deep_cleaning", "recurring_cleaning", "holiday_home_prep",
-  "arrival_prep", "departure_cleaning", "airbnb_turnover", "move_in", "move_out",
-  "property_inspection", "laundry", "linen_change", "window_cleaning", "fridge_cleaning",
-  "oven_cleaning", "balcony_terrace", "property_care", "other",
+  "standard_cleaning", "deep_cleaning", "rental_cleaning", "property_care", "other",
 ] as const;
 export const FREQUENCIES = [
   "one_time", "weekly", "biweekly", "monthly", "before_arrival", "after_departure", "on_demand", "not_sure",
@@ -43,6 +43,11 @@ export const START_PERIODS = [
 export const ACCESS_METHODS = [
   "digital_lock", "physical_key", "person_present", "concierge", "lockbox", "property_manager", "other",
 ] as const;
+// Smart-lock offer vocabulary lives in the central product config so the price,
+// currency and product code are never duplicated. Re-exported here so the shared
+// validator can reference the interest options without importing UI concerns.
+export { SMART_LOCK_INTERESTS, type SmartLockInterest } from "@/lib/products/smart-lock";
+import { SMART_LOCK_INTERESTS as SMART_LOCK_INTEREST_OPTIONS } from "@/lib/products/smart-lock";
 
 export const STEPS = [
   "contact", "billing", "property_address", "property_info",
@@ -91,7 +96,9 @@ export type EarlyAccessPayload = {
   propertyUnitNumber?: string;
   propertyFloor?: string;
   propertyPostalCode?: string;
-  propertyCity?: string;
+  propertyCity?: string;             // resolved canonical (or manual) display name
+  propertyCityId?: string;           // canonical taxonomy id, or OTHER_CITY_VALUE
+  propertyCityManualName?: string;   // when "my city is not listed" — unverified
   propertyRegion?: string;
   neighbourhood?: string;
   propertyCountry?: string;      // defaults MA
@@ -131,6 +138,11 @@ export type EarlyAccessPayload = {
   physicalKeyTermsAcknowledged?: boolean;
   thirdPartyDetails?: string;
   accessNotes?: string;
+
+  // Step 6 — digital smart-lock upsell (product INTEREST, never a paid order)
+  smartLockInterest?: string;            // one of SMART_LOCK_INTERESTS
+  existingLockBrand?: string;            // only when already_has_lock
+  existingLockModel?: string;            // optional even then
 
   // Step 7 — review & consent
   confirmAccurate?: boolean;
@@ -216,7 +228,13 @@ export function validateStep(step: StepId, p: EarlyAccessPayload): FieldErrors {
       // submit time, so only require them when NOT copying.
       if (!p.useBillingAsProperty) {
         if (!nonEmpty(p.propertyAddressLine1)) e.propertyAddressLine1 = "required";
-        if (!nonEmpty(p.propertyCity)) e.propertyCity = "required";
+        // A standardized city OR a manual "not listed" name satisfies this; a
+        // waiting-list / not-yet-active area is NEVER rejected here.
+        const hasCity =
+          nonEmpty(p.propertyCityId) || nonEmpty(p.propertyCityManualName) || nonEmpty(p.propertyCity);
+        if (!hasCity) e.propertyCity = "required";
+        if (p.propertyCityId === OTHER_CITY_VALUE && !nonEmpty(p.propertyCityManualName))
+          e.propertyCityManualName = "required";
       }
       if (p.googleMapsUrl && !/^https?:\/\//i.test(p.googleMapsUrl)) e.googleMapsUrl = "invalid_url";
       if (!p.authorizedBySubmitter) e.authorizedBySubmitter = "authorization_required";
@@ -242,6 +260,15 @@ export function validateStep(step: StepId, p: EarlyAccessPayload): FieldErrors {
       // Physical-key handling requires an explicit acknowledgement of the terms.
       if (p.accessMethod === "physical_key" && !p.physicalKeyTermsAcknowledged)
         e.physicalKeyTermsAcknowledged = "acknowledgement_required";
+      // Smart-lock upsell: a choice is required (no preselected paid option), but
+      // ANY choice — including "not_interested" — lets the customer continue.
+      if (!nonEmpty(p.smartLockInterest)) e.smartLockInterest = "smart_lock_choice_required";
+      else if (!oneOf(SMART_LOCK_INTEREST_OPTIONS, p.smartLockInterest))
+        e.smartLockInterest = "invalid";
+      // If they already have a lock, ask for the brand where reasonably possible;
+      // the model stays optional because customers often don't know it.
+      else if (p.smartLockInterest === "already_has_lock" && !nonEmpty(p.existingLockBrand))
+        e.existingLockBrand = "required";
       break;
 
     case "review":

@@ -12,6 +12,50 @@ import { normalizeEmail } from "./schema";
 import { toE164 } from "./phone";
 import { toLeadAttributionColumns, type Attribution } from "./attribution";
 import type { LeadForSync } from "@/lib/mautic/types";
+import {
+  DIGITAL_SMART_LOCK_OFFER,
+  SMART_LOCK_INTERESTS,
+  initialCompatibilityFor,
+  initialFollowupFor,
+  type SmartLockInterest,
+} from "@/lib/products/smart-lock";
+import { findCity, OTHER_CITY_ID } from "@/lib/geo/moroccan-cities";
+
+/**
+ * Resolve the standardized property city into canonical reporting values. A
+ * chosen taxonomy city yields its canonical name, region and service-area
+ * status; the "not listed" path keeps the manual name and marks it unsupported
+ * for review. Falls back to any legacy free-text city name.
+ */
+function resolvePropertyCity(p: EarlyAccessPayload, fallbackName?: string) {
+  const city = p.propertyCityId && p.propertyCityId !== OTHER_CITY_ID ? findCity(p.propertyCityId) : undefined;
+  if (city) {
+    return {
+      name: city.canonicalName,
+      cityId: city.id,
+      regionId: city.regionId,
+      regionName: city.regionName,
+      serviceAreaStatus: city.serviceAreaStatus,
+      manualName: undefined as string | undefined,
+    };
+  }
+  const manual = clean(p.propertyCityManualName, 120);
+  return {
+    name: manual ?? clean(fallbackName, 120),
+    cityId: p.propertyCityId === OTHER_CITY_ID ? OTHER_CITY_ID : undefined,
+    regionId: undefined as string | undefined,
+    regionName: clean(p.propertyRegion, 120),
+    serviceAreaStatus: manual || p.propertyCityId === OTHER_CITY_ID ? ("unsupported" as const) : undefined,
+    manualName: manual,
+  };
+}
+
+/** Narrow the raw payload string to a known interest, or undefined. */
+function smartLockInterest(v: unknown): SmartLockInterest | undefined {
+  return typeof v === "string" && (SMART_LOCK_INTERESTS as readonly string[]).includes(v)
+    ? (v as SmartLockInterest)
+    : undefined;
+}
 
 function clean(v: unknown, max = 500): string | undefined {
   if (typeof v !== "string") return undefined;
@@ -85,6 +129,9 @@ export function buildBillingRow(leadId: string, p: EarlyAccessPayload): Record<s
 export function buildPropertyRow(leadId: string, p: EarlyAccessPayload): Record<string, unknown> {
   // Copy billing → property only when asked AND billing is in Morocco.
   const copy = Boolean(p.useBillingAsProperty && upper2(p.billingCountry) === "MA");
+  // Resolve the standardized city (skipped when copying a billing address, which
+  // may be a free-text foreign city rather than a taxonomy entry).
+  const rc = copy ? null : resolvePropertyCity(p, p.propertyCity);
   return {
     lead_id: leadId,
     property_name: clean(p.propertyName, 120),
@@ -95,8 +142,12 @@ export function buildPropertyRow(leadId: string, p: EarlyAccessPayload): Record<
     unit_number: copy ? clean(p.billingUnit, 60) : clean(p.propertyUnitNumber, 60),
     floor: clean(p.propertyFloor, 40),
     postal_code: copy ? clean(p.billingPostalCode, 20) : clean(p.propertyPostalCode, 20),
-    city: copy ? clean(p.billingCity, 120) : clean(p.propertyCity, 120),
-    region: copy ? clean(p.billingRegion, 120) : clean(p.propertyRegion, 120),
+    city: copy ? clean(p.billingCity, 120) : rc?.name,
+    city_id: rc?.cityId,
+    manual_city_name: rc?.manualName,
+    region_id: rc?.regionId,
+    service_area_status: rc?.serviceAreaStatus,
+    region: copy ? clean(p.billingRegion, 120) : (rc?.regionName ?? clean(p.propertyRegion, 120)),
     neighbourhood: clean(p.neighbourhood, 120),
     country_code: upper2(p.propertyCountry) ?? "MA",
     landmark: clean(p.landmark, 200),
@@ -143,6 +194,8 @@ export function buildAccessRow(
   propertyId: string,
   p: EarlyAccessPayload,
 ): Record<string, unknown> {
+  const interest = smartLockInterest(p.smartLockInterest);
+  const wantsOffer = interest === "purchase_interested";
   return {
     property_id: propertyId,
     access_method: p.accessMethod,
@@ -150,6 +203,23 @@ export function buildAccessRow(
     physical_key_terms_acknowledged: Boolean(p.physicalKeyTermsAcknowledged),
     third_party_details: clean(p.thirdPartyDetails, 500),
     access_notes: clean(p.accessNotes, 1000),
+    // Smart-lock interest. Price/currency snapshot the offer that was shown, and
+    // are stored ONLY when the customer expressed purchase interest. Interest is
+    // never a paid order — compatibility is always pending review at this stage.
+    smart_lock_interest: interest,
+    smart_lock_product_code: wantsOffer ? DIGITAL_SMART_LOCK_OFFER.productCode : undefined,
+    smart_lock_offer_price: wantsOffer ? DIGITAL_SMART_LOCK_OFFER.price : undefined,
+    smart_lock_offer_currency: wantsOffer ? DIGITAL_SMART_LOCK_OFFER.currency : undefined,
+    smart_lock_installation_included: wantsOffer
+      ? DIGITAL_SMART_LOCK_OFFER.installationIncluded
+      : undefined,
+    existing_lock_brand:
+      interest === "already_has_lock" ? clean(p.existingLockBrand, 80) : undefined,
+    existing_lock_model:
+      interest === "already_has_lock" ? clean(p.existingLockModel, 80) : undefined,
+    smart_lock_compatibility_status: interest ? initialCompatibilityFor(interest) : undefined,
+    smart_lock_followup_status: interest ? initialFollowupFor(interest) : undefined,
+    smart_lock_selected_at: interest ? new Date().toISOString() : undefined,
   };
 }
 
@@ -205,8 +275,17 @@ export function toLeadForSync(
     billingRecipientType: p.billingRecipientType ?? null,
     billingCountry: upper2(p.billingCountry) ?? null,
     billingCity: clean(p.billingCity, 120) ?? null,
-    cleaningCity: clean(p.useBillingAsProperty ? p.billingCity : p.propertyCity, 120) ?? null,
-    cleaningRegion: clean(p.useBillingAsProperty ? p.billingRegion : p.propertyRegion, 120) ?? null,
+    cleaningCity: (() => {
+      if (p.useBillingAsProperty) return clean(p.billingCity, 120) ?? null;
+      return resolvePropertyCity(p, p.propertyCity).name ?? null;
+    })(),
+    cleaningRegion: (() => {
+      if (p.useBillingAsProperty) return clean(p.billingRegion, 120) ?? null;
+      return resolvePropertyCity(p, p.propertyCity).regionName ?? null;
+    })(),
+    cleaningServiceAreaStatus: p.useBillingAsProperty
+      ? null
+      : resolvePropertyCity(p, p.propertyCity).serviceAreaStatus ?? null,
     cleaningCountry: (upper2(p.propertyCountry) ?? "MA"),
     propertyType: p.propertyType ?? null,
     propertySizeRange: propertySizeRange(p.sizeM2) ?? null,
@@ -217,6 +296,15 @@ export function toLeadForSync(
     expectedStartPeriod: p.expectedStartPeriod ?? null,
     accessMethod: p.accessMethod ?? null,
     hasDigitalLock: p.accessMethod === "digital_lock" ? true : null,
+    smartLockInterest: smartLockInterest(p.smartLockInterest) ?? null,
+    smartLockExistingBrand:
+      smartLockInterest(p.smartLockInterest) === "already_has_lock"
+        ? clean(p.existingLockBrand, 80) ?? null
+        : null,
+    smartLockCompatibilityStatus: (() => {
+      const i = smartLockInterest(p.smartLockInterest);
+      return i ? initialCompatibilityFor(i) : null;
+    })(),
     firstSourceCode: (row.first_source_code as string) ?? null,
     lastSourceCode: (row.last_source_code as string) ?? null,
     firstUtmSource: (row.first_utm_source as string) ?? null,

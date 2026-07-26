@@ -58,6 +58,21 @@ test("first-touch and last-touch attribution map to separate aliases", () => {
   assert.equal(f.last_utm_source, "instagram");
 });
 
+test("smart-lock interest maps to a field + segment tag, never a price", () => {
+  const f = mapLeadToMauticFields({
+    ...base,
+    smartLockInterest: "purchase_interested",
+    smartLockCompatibilityStatus: "pending_review",
+  });
+  assert.equal(f.smart_lock_interest, "purchase_interested");
+  assert.equal(f.smart_lock_compatibility_status, "pending_review");
+  // Price and coordinates must never be sent to Mautic.
+  assert.ok(!("smart_lock_offer_price" in f) && !("smart_lock_price" in f));
+
+  const tags = tagsForLead({ ...base, smartLockInterest: "already_has_lock" });
+  assert.ok(tags.includes("smart-lock-existing-review"));
+});
+
 test("tagsForLead always includes campaign tags + verification state", () => {
   const tags = tagsForLead(base);
   assert.ok(tags.includes("dar-tahara"));

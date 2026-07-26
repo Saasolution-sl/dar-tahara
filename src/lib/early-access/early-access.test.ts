@@ -5,7 +5,91 @@ import { toE164, isPlausibleE164 } from "./phone";
 import { parseAttribution, toLeadAttributionColumns } from "./attribution";
 import { generateReferralCode, isValidReferralCodeFormat, canCreditReferral } from "./referral";
 import { screenSubmission, isDisposableEmail, MIN_FORM_ELAPSED_MS } from "./antispam";
-import { buildLeadRow, buildPropertyRow, buildConsentRows, propertySizeRange } from "./mappers";
+import { buildLeadRow, buildPropertyRow, buildConsentRows, buildAccessRow, propertySizeRange } from "./mappers";
+
+// ── smart-lock upsell ────────────────────────────────────────────────────────
+test("access step requires a smart-lock choice, but any choice (incl. decline) passes", () => {
+  const { smartLockInterest: _omit, ...noChoice } = full();
+  void _omit;
+  assert.equal(validateStep("access", noChoice).smartLockInterest, "smart_lock_choice_required");
+  assert.deepEqual(validateStep("access", { ...full(), smartLockInterest: "not_interested" }), {});
+  assert.deepEqual(validateStep("access", { ...full(), smartLockInterest: "purchase_interested" }), {});
+  assert.equal(validateStep("access", { ...full(), smartLockInterest: "bogus" }).smartLockInterest, "invalid");
+});
+
+test("already_has_lock requires a brand; model stays optional", () => {
+  assert.equal(
+    validateStep("access", { ...full(), smartLockInterest: "already_has_lock" }).existingLockBrand,
+    "required",
+  );
+  assert.deepEqual(
+    validateStep("access", { ...full(), smartLockInterest: "already_has_lock", existingLockBrand: "TTLock" }),
+    {},
+  );
+});
+
+test("buildAccessRow snapshots the €200 offer only on purchase interest, never as paid", () => {
+  const buy = buildAccessRow("PROP", { ...full(), smartLockInterest: "purchase_interested" });
+  assert.equal(buy.smart_lock_interest, "purchase_interested");
+  assert.equal(buy.smart_lock_offer_price, 200);
+  assert.equal(buy.smart_lock_offer_currency, "EUR");
+  assert.equal(buy.smart_lock_product_code, "digital_smart_lock_installation");
+  assert.equal(buy.smart_lock_installation_included, true);
+  assert.equal(buy.smart_lock_compatibility_status, "pending_review");
+  assert.equal(buy.smart_lock_followup_status, "installation_interest_registered");
+  // Never a paid-order signal.
+  assert.ok(!("paid" in buy) && !("order_confirmed" in buy));
+
+  const no = buildAccessRow("PROP", { ...full(), smartLockInterest: "not_interested" });
+  assert.equal(no.smart_lock_offer_price, undefined);
+  assert.equal(no.smart_lock_compatibility_status, "not_checked");
+  assert.equal(no.smart_lock_followup_status, "no_action_required");
+
+  const own = buildAccessRow("PROP", {
+    ...full(), smartLockInterest: "already_has_lock", existingLockBrand: "Nuki", existingLockModel: "3.0",
+  });
+  assert.equal(own.existing_lock_brand, "Nuki");
+  assert.equal(own.smart_lock_offer_price, undefined); // owning a lock is not buying the offer
+  assert.equal(own.smart_lock_compatibility_status, "pending_review");
+});
+
+// ── standardized Moroccan city ───────────────────────────────────────────────
+test("property step accepts a canonical city, a manual name, or waiting-list; OTHER needs a manual name", () => {
+  const base = { ...full(), useBillingAsProperty: false, propertyAddressLine1: "5 Rue Y" };
+  // A standardized (even waiting-list) city passes and is never rejected.
+  assert.deepEqual(validateStep("property_address", { ...base, propertyCity: "", propertyCityId: "agadir" }), {});
+  // "Not listed" requires the manual name.
+  assert.equal(
+    validateStep("property_address", { ...base, propertyCity: "", propertyCityId: "__other__" }).propertyCityManualName,
+    "required",
+  );
+  assert.deepEqual(
+    validateStep("property_address", { ...base, propertyCity: "", propertyCityId: "__other__", propertyCityManualName: "Ifrane" }),
+    {},
+  );
+  // Nothing at all → required.
+  assert.equal(validateStep("property_address", { ...base, propertyCity: "", propertyCityId: undefined }).propertyCity, "required");
+});
+
+test("buildPropertyRow resolves a canonical city to name + region + service-area status", () => {
+  const row = buildPropertyRow("L", { ...full(), useBillingAsProperty: false, propertyCityId: "tangier", propertyCity: "typed junk" });
+  assert.equal(row.city, "Tangier");            // canonical, not the typed value
+  assert.equal(row.city_id, "tangier");
+  assert.equal(row.region_id, "tanger_tetouan_al_hoceima");
+  assert.equal(row.region, "Tanger-Tétouan-Al Hoceïma");
+  assert.equal(row.service_area_status, "active");
+  assert.equal(row.manual_city_name, undefined);
+});
+
+test("buildPropertyRow keeps a 'not listed' city as an unverified manual name", () => {
+  const row = buildPropertyRow("L", {
+    ...full(), useBillingAsProperty: false, propertyCityId: "__other__", propertyCityManualName: "Ifrane",
+  });
+  assert.equal(row.city, "Ifrane");
+  assert.equal(row.city_id, "__other__");
+  assert.equal(row.manual_city_name, "Ifrane");
+  assert.equal(row.service_area_status, "unsupported");
+});
 
 function full(): EarlyAccessPayload {
   return {
@@ -15,6 +99,7 @@ function full(): EarlyAccessPayload {
     billingRecipientType: "private", billingAddressLine1: "1 Rue X", billingCity: "Brussels", billingCountry: "BE",
     propertyAddressLine1: "5 Rue Y", propertyCity: "Tangier", authorizedBySubmitter: true,
     serviceTypes: ["deep_cleaning"], accessMethod: "digital_lock",
+    smartLockInterest: "not_interested",
     confirmAccurate: true, confirmAuthorized: true, acceptPrivacy: true, acceptOperationalComms: true,
   };
 }

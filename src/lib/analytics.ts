@@ -18,6 +18,11 @@ export type AnalyticsEvent =
   | "early_access_cta_clicked"
   | "early_access_form_started"
   | "early_access_form_submitted"
+  // Smart-lock upsell funnel (coarse, non-identifying — never pass PII as props).
+  | "smart_lock_offer_viewed"
+  | "smart_lock_purchase_interest_selected"
+  | "smart_lock_existing_lock_selected"
+  | "smart_lock_declined"
   | "email_verified"
   | "referral_link_copied"
   | "whatsapp_share_clicked";

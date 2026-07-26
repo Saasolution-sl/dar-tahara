@@ -46,6 +46,7 @@ export function mapLeadToMauticFields(lead: LeadForSync): MauticContactFields {
   put(f, "billing_city", lead.billingCity ?? undefined);
   put(f, "cleaning_city", lead.cleaningCity ?? undefined);
   put(f, "cleaning_region", lead.cleaningRegion ?? undefined);
+  put(f, "service_area_status", lead.cleaningServiceAreaStatus ?? undefined);
   put(f, "cleaning_country", lead.cleaningCountry ?? undefined);
   put(f, "property_type", lead.propertyType ?? undefined);
   put(f, "property_size_range", lead.propertySizeRange ?? undefined);
@@ -62,6 +63,12 @@ export function mapLeadToMauticFields(lead: LeadForSync): MauticContactFields {
   if (typeof lead.hasDigitalLock === "boolean") {
     f["has_digital_lock"] = lead.hasDigitalLock;
   }
+
+  // Smart-lock upsell — interest for segmentation only. Never the price and never
+  // a "paid" flag: purchase interest is not an order.
+  put(f, "smart_lock_interest", lead.smartLockInterest ?? undefined);
+  put(f, "smart_lock_existing_brand", lead.smartLockExistingBrand ?? undefined);
+  put(f, "smart_lock_compatibility_status", lead.smartLockCompatibilityStatus ?? undefined);
 
   // Lifecycle.
   put(f, "early_access_status", lead.status ?? undefined);
@@ -125,6 +132,13 @@ const ACCESS_TAG: Record<string, string> = {
   lockbox: "access-lockbox",
 };
 
+/** Smart-lock interest → segment tag (brief §17 segmentation groups). */
+const SMART_LOCK_TAG: Record<string, string> = {
+  purchase_interested: "smart-lock-purchase-interest",
+  already_has_lock: "smart-lock-existing-review",
+  not_interested: "smart-lock-no-interest",
+};
+
 /** Map a src channel (utm_source or a source code prefix) to a source-* tag. */
 const SOURCE_TAG: Record<string, string> = {
   whatsapp: "source-whatsapp",
@@ -156,6 +170,13 @@ export function tagsForLead(lead: LeadForSync): string[] {
   if (lead.propertyType && PROPERTY_TAG[lead.propertyType]) tags.add(PROPERTY_TAG[lead.propertyType]);
   if (lead.desiredFrequency && FREQUENCY_TAG[lead.desiredFrequency]) tags.add(FREQUENCY_TAG[lead.desiredFrequency]);
   if (lead.accessMethod && ACCESS_TAG[lead.accessMethod]) tags.add(ACCESS_TAG[lead.accessMethod]);
+  if (lead.smartLockInterest && SMART_LOCK_TAG[lead.smartLockInterest]) {
+    tags.add(SMART_LOCK_TAG[lead.smartLockInterest]);
+  }
+  // Waiting-list / not-yet-active leads are worth a segment for launch comms.
+  if (lead.cleaningServiceAreaStatus && lead.cleaningServiceAreaStatus !== "active") {
+    tags.add(`service-area-${lead.cleaningServiceAreaStatus.replace(/_/g, "-")}`);
+  }
 
   return [...tags];
 }
