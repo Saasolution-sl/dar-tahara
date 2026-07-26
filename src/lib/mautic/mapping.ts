@@ -66,9 +66,12 @@ export function mapLeadToMauticFields(lead: LeadForSync): MauticContactFields {
 
   // Smart-lock upsell — interest for segmentation only. Never the price and never
   // a "paid" flag: purchase interest is not an order.
+  // NB: Mautic truncates field aliases at 25 chars, so the compatibility field is
+  // `smart_lock_compatibility`, NOT `..._status`. Sending the long form silently
+  // drops the value (and provisioning it creates a duplicate field).
   put(f, "smart_lock_interest", lead.smartLockInterest ?? undefined);
   put(f, "smart_lock_existing_brand", lead.smartLockExistingBrand ?? undefined);
-  put(f, "smart_lock_compatibility_status", lead.smartLockCompatibilityStatus ?? undefined);
+  put(f, "smart_lock_compatibility", lead.smartLockCompatibilityStatus ?? undefined);
 
   // Lifecycle.
   put(f, "early_access_status", lead.status ?? undefined);
