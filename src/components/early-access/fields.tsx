@@ -15,7 +15,7 @@ const controlBase =
 export function FieldShell({
   id, label, error, hint, required, children,
 }: {
-  id: string; label: string; error?: string; hint?: string; required?: boolean; children: React.ReactNode;
+  id: string; label: React.ReactNode; error?: string; hint?: string; required?: boolean; children: React.ReactNode;
 }) {
   const errId = `${id}-err`;
   const hintId = `${id}-hint`;

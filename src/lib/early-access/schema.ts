@@ -236,6 +236,7 @@ export function validateStep(step: StepId, p: EarlyAccessPayload): FieldErrors {
       if (p.billingRecipientType === "business" && !nonEmpty(p.companyName))
         e.companyName = "required";
       if (!nonEmpty(p.billingAddressLine1)) e.billingAddressLine1 = "required";
+      if (!nonEmpty(p.billingBuildingNumber)) e.billingBuildingNumber = "required";
       if (!nonEmpty(p.billingCity)) e.billingCity = "required";
       if (!nonEmpty(p.billingCountry)) e.billingCountry = "required";
       if (p.invoiceEmail && !isValidEmail(p.invoiceEmail)) e.invoiceEmail = "invalid_email";
@@ -246,6 +247,7 @@ export function validateStep(step: StepId, p: EarlyAccessPayload): FieldErrors {
       // submit time, so only require them when NOT copying.
       if (!p.useBillingAsProperty) {
         if (!nonEmpty(p.propertyAddressLine1)) e.propertyAddressLine1 = "required";
+        if (!nonEmpty(p.propertyBuildingNumber)) e.propertyBuildingNumber = "required";
         // A standardized city OR a manual "not listed" name satisfies this; a
         // waiting-list / not-yet-active area is NEVER rejected here.
         const hasCity =
@@ -254,7 +256,9 @@ export function validateStep(step: StepId, p: EarlyAccessPayload): FieldErrors {
         if (p.propertyCityId === OTHER_CITY_VALUE && !nonEmpty(p.propertyCityManualName))
           e.propertyCityManualName = "required";
       }
-      if (p.googleMapsUrl && !/^https?:\/\//i.test(p.googleMapsUrl)) e.googleMapsUrl = "invalid_url";
+      // Mandatory regardless of useBillingAsProperty — the field is always shown.
+      if (!nonEmpty(p.googleMapsUrl)) e.googleMapsUrl = "required";
+      else if (!/^https?:\/\//i.test(p.googleMapsUrl)) e.googleMapsUrl = "invalid_url";
       if (!p.authorizedBySubmitter) e.authorizedBySubmitter = "authorization_required";
       break;
 

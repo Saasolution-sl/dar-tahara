@@ -96,8 +96,10 @@ function full(): EarlyAccessPayload {
     firstName: "Sam", lastName: "Tahiri", email: "sam@example.com",
     preferredContactMethod: "whatsapp", mobileNumber: "0612345678", countryCallingCode: "+212",
     residenceCity: "Tangier",
-    billingRecipientType: "private", billingAddressLine1: "1 Rue X", billingCity: "Brussels", billingCountry: "BE",
-    propertyAddressLine1: "5 Rue Y", propertyCity: "Tangier", authorizedBySubmitter: true,
+    billingRecipientType: "private", billingAddressLine1: "1 Rue X", billingBuildingNumber: "1",
+    billingCity: "Brussels", billingCountry: "BE",
+    propertyAddressLine1: "5 Rue Y", propertyBuildingNumber: "5", propertyCity: "Tangier",
+    googleMapsUrl: "https://maps.google.com/?q=35.77,-5.83", authorizedBySubmitter: true,
     serviceTypes: ["deep_cleaning"], accessMethod: "digital_lock",
     smartLockInterest: "not_interested",
     confirmAccurate: true, confirmAuthorized: true, acceptPrivacy: true, acceptOperationalComms: true,
@@ -131,6 +133,37 @@ test("property step requires authorization confirmation", () => {
 test("property address not required when copying billing", () => {
   const p = { ...full(), useBillingAsProperty: true, propertyAddressLine1: "", propertyCity: "" };
   assert.deepEqual(validateStep("property_address", p), {});
+});
+
+test("billing building/unit number is required", () => {
+  assert.equal(
+    validateStep("billing", { ...full(), billingBuildingNumber: "" }).billingBuildingNumber,
+    "required",
+  );
+  assert.deepEqual(validateStep("billing", { ...full(), billingBuildingNumber: "12B" }), {});
+});
+
+test("property building/unit number is required unless copying billing", () => {
+  assert.equal(
+    validateStep("property_address", { ...full(), propertyBuildingNumber: "" }).propertyBuildingNumber,
+    "required",
+  );
+  const copying = { ...full(), useBillingAsProperty: true, propertyBuildingNumber: "", propertyAddressLine1: "", propertyCity: "" };
+  assert.equal(validateStep("property_address", copying).propertyBuildingNumber, undefined);
+});
+
+test("Google Maps link is mandatory, including when copying the billing address", () => {
+  assert.equal(
+    validateStep("property_address", { ...full(), googleMapsUrl: "" }).googleMapsUrl,
+    "required",
+  );
+  assert.equal(
+    validateStep("property_address", { ...full(), googleMapsUrl: "not a url" }).googleMapsUrl,
+    "invalid_url",
+  );
+  const copying = { ...full(), useBillingAsProperty: true, googleMapsUrl: "", propertyAddressLine1: "", propertyCity: "" };
+  assert.equal(validateStep("property_address", copying).googleMapsUrl, "required");
+  assert.deepEqual(validateStep("property_address", { ...full(), googleMapsUrl: "https://maps.app.goo.gl/abc123" }), {});
 });
 
 test("services step requires at least one service", () => {

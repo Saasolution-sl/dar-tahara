@@ -502,7 +502,7 @@ function BillingStep({ p, set, errors, copy }: StepProps) {
         </FieldShell>
       ) : null}
 
-      <FieldShell id="baddr-search" label={f.billingAddressLine1}>
+      <FieldShell id="baddr-search" label={f.addressSearch} required error={err(copy, errors.billingAddressLine1)}>
         <AddressAutocomplete
           id="baddr-search"
           value={search}
@@ -524,14 +524,10 @@ function BillingStep({ p, set, errors, copy }: StepProps) {
       <FieldShell id="b2" label={f.billingAddressLine2}>
         <TextInput value={p.billingAddressLine2 ?? ""} onChange={(e) => set("billingAddressLine2", e.target.value)} autoComplete="address-line2" />
       </FieldShell>
-      <div className="grid gap-5 sm:grid-cols-2">
-        <FieldShell id="bhn" label={f.billingBuildingNumber}>
-          <TextInput value={p.billingBuildingNumber ?? ""} onChange={(e) => set("billingBuildingNumber", e.target.value)} />
-        </FieldShell>
-        <FieldShell id="bu" label={f.billingUnit}>
-          <TextInput value={p.billingUnit ?? ""} onChange={(e) => set("billingUnit", e.target.value)} />
-        </FieldShell>
-      </div>
+      {/* Building number and apartment/unit are one field — accepts letters and numbers. */}
+      <FieldShell id="bhn" label={f.billingBuildingNumber} required error={err(copy, errors.billingBuildingNumber)}>
+        <TextInput value={p.billingBuildingNumber ?? ""} onChange={(e) => set("billingBuildingNumber", e.target.value)} />
+      </FieldShell>
       <div className="grid gap-5 sm:grid-cols-2">
         <FieldShell id="bpc" label={f.billingPostalCode}>
           <TextInput value={p.billingPostalCode ?? ""} onChange={(e) => set("billingPostalCode", e.target.value)} autoComplete="postal-code" />
@@ -567,6 +563,9 @@ function PropertyAddressStep({ p, set, errors, copy, locale }: StepProps & { loc
   const f = copy.fields;
   const canCopy = (p.billingCountry ?? "").toUpperCase() === "MA";
   const [search, setSearch] = React.useState("");
+  // Same progressive-disclosure pattern as the billing step: only reveal the
+  // map and structured fields once there is something to show or correct.
+  const propertyShowFields = Boolean(p.propertyManualAddress || p.propertyAddressLine1);
 
   function applyPlace(place: PlaceLike) {
     const a = parsePlace(place);
@@ -609,7 +608,7 @@ function PropertyAddressStep({ p, set, errors, copy, locale }: StepProps & { loc
       </FieldShell>
       {!p.useBillingAsProperty ? (
         <>
-          <FieldShell id="paddr-search" label={f.propertyAddressLine1}>
+          <FieldShell id="paddr-search" label={f.addressSearch} required error={err(copy, errors.propertyAddressLine1)}>
             <AddressAutocomplete
               id="paddr-search"
               value={search}
@@ -621,6 +620,10 @@ function PropertyAddressStep({ p, set, errors, copy, locale }: StepProps & { loc
             />
           </FieldShell>
 
+          {/* Structured fields + map stay hidden until there is something to show
+              or correct — a chosen address, or an explicit switch to manual entry. */}
+          {!propertyShowFields ? null : (
+          <>
           <PropertyMapPicker
             latitude={p.latitude}
             longitude={p.longitude}
@@ -640,20 +643,11 @@ function PropertyAddressStep({ p, set, errors, copy, locale }: StepProps & { loc
           <FieldShell id="pa2" label={f.propertyAddressLine2}>
             <TextInput value={p.propertyAddressLine2 ?? ""} onChange={(e) => set("propertyAddressLine2", e.target.value)} />
           </FieldShell>
+          {/* Building number and apartment/unit/villa number are one field —
+              accepts letters and numbers. */}
           <div className="grid gap-5 sm:grid-cols-2">
-            <FieldShell id="rn" label={f.residenceName}>
-              <TextInput value={p.residenceName ?? ""} onChange={(e) => set("residenceName", e.target.value)} />
-            </FieldShell>
-            <FieldShell id="pbn" label={f.propertyBuildingNumber}>
+            <FieldShell id="pbn" label={f.propertyBuildingNumber} required error={err(copy, errors.propertyBuildingNumber)}>
               <TextInput value={p.propertyBuildingNumber ?? ""} onChange={(e) => set("propertyBuildingNumber", e.target.value)} />
-            </FieldShell>
-          </div>
-          <div className="grid gap-5 sm:grid-cols-3">
-            <FieldShell id="pun" label={f.propertyUnitNumber}>
-              <TextInput value={p.propertyUnitNumber ?? ""} onChange={(e) => set("propertyUnitNumber", e.target.value)} />
-            </FieldShell>
-            <FieldShell id="pf" label={f.propertyFloor}>
-              <TextInput value={p.propertyFloor ?? ""} onChange={(e) => set("propertyFloor", e.target.value)} />
             </FieldShell>
             <FieldShell id="ppc" label={f.propertyPostalCode}>
               <TextInput value={p.propertyPostalCode ?? ""} onChange={(e) => set("propertyPostalCode", e.target.value)} />
@@ -682,12 +676,31 @@ function PropertyAddressStep({ p, set, errors, copy, locale }: StepProps & { loc
               <TextInput value={p.propertyRegion ?? ""} onChange={(e) => set("propertyRegion", e.target.value)} />
             </FieldShell>
           </div>
-          <FieldShell id="nb" label={f.neighbourhood}>
-            <TextInput value={p.neighbourhood ?? ""} onChange={(e) => set("neighbourhood", e.target.value)} />
-          </FieldShell>
+          </>
+          )}
         </>
       ) : null}
-      <FieldShell id="gm" label={f.googleMapsUrl} hint={copy.hints.googleMapsUrl} error={err(copy, errors.googleMapsUrl)}>
+      <FieldShell
+        id="gm"
+        label={
+          <span className="inline-flex items-center gap-1.5">
+            {f.googleMapsUrl}
+            <a
+              href="https://support.google.com/maps/answer/144361"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={f.mapsHelp}
+              title={f.mapsHelp}
+              className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-muted-foreground/40 text-[0.65rem] font-semibold leading-none text-muted-foreground transition hover:border-primary hover:text-primary"
+            >
+              ?
+            </a>
+          </span>
+        }
+        required
+        hint={copy.hints.googleMapsUrl}
+        error={err(copy, errors.googleMapsUrl)}
+      >
         <TextInput type="url" inputMode="url" value={p.googleMapsUrl ?? ""} onChange={(e) => set("googleMapsUrl", e.target.value)} placeholder="https://maps.google.com/…" />
       </FieldShell>
       <FieldShell id="en" label={f.entryNotes} hint={copy.hints.entryNotes}>
