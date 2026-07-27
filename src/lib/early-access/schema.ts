@@ -282,15 +282,19 @@ export function validateStep(step: StepId, p: EarlyAccessPayload): FieldErrors {
       // Physical-key handling requires an explicit acknowledgement of the terms.
       if (p.accessMethod === "physical_key" && !p.physicalKeyTermsAcknowledged)
         e.physicalKeyTermsAcknowledged = "acknowledgement_required";
-      // Smart-lock upsell: a choice is required (no preselected paid option), but
-      // ANY choice — including "not_interested" — lets the customer continue.
-      if (!nonEmpty(p.smartLockInterest)) e.smartLockInterest = "smart_lock_choice_required";
-      else if (!oneOf(SMART_LOCK_INTEREST_OPTIONS, p.smartLockInterest))
-        e.smartLockInterest = "invalid";
-      // If they already have a lock, ask for the brand where reasonably possible;
-      // the model stays optional because customers often don't know it.
-      else if (p.smartLockInterest === "already_has_lock" && !nonEmpty(p.existingLockBrand))
-        e.existingLockBrand = "required";
+      // Smart-lock upsell is only shown (and only asked) when the customer's
+      // chosen access method is a digital lock. When shown, a choice is
+      // required (no preselected paid option), but ANY choice — including
+      // "not_interested" — lets the customer continue.
+      if (p.accessMethod === "digital_lock") {
+        if (!nonEmpty(p.smartLockInterest)) e.smartLockInterest = "smart_lock_choice_required";
+        else if (!oneOf(SMART_LOCK_INTEREST_OPTIONS, p.smartLockInterest))
+          e.smartLockInterest = "invalid";
+        // If they already have a lock, ask for the brand where reasonably
+        // possible; the model stays optional since customers often don't know it.
+        else if (p.smartLockInterest === "already_has_lock" && !nonEmpty(p.existingLockBrand))
+          e.existingLockBrand = "required";
+      }
       break;
 
     case "review":

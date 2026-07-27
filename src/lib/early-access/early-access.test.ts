@@ -8,6 +8,16 @@ import { screenSubmission, isDisposableEmail, MIN_FORM_ELAPSED_MS } from "./anti
 import { buildLeadRow, buildPropertyRow, buildConsentRows, buildAccessRow, propertySizeRange } from "./mappers";
 
 // ── smart-lock upsell ────────────────────────────────────────────────────────
+test("the smart-lock choice is only required (and only asked) when access method is a digital lock", () => {
+  // Box hidden for every other access method: no requirement, never blocks.
+  for (const method of ["physical_key", "person_present", "concierge", "lockbox", "property_manager", "other"]) {
+    const { smartLockInterest: _omit, ...p } = { ...full(), accessMethod: method };
+    void _omit;
+    if (method === "physical_key") p.physicalKeyTermsAcknowledged = true;
+    assert.equal(validateStep("access", p).smartLockInterest, undefined, `should not require smart-lock choice for ${method}`);
+  }
+});
+
 test("access step requires a smart-lock choice, but any choice (incl. decline) passes", () => {
   const { smartLockInterest: _omit, ...noChoice } = full();
   void _omit;

@@ -686,7 +686,9 @@ function PropertyAddressStep({ p, set, errors, copy, locale }: StepProps & { loc
           <span className="inline-flex items-center gap-1.5">
             {f.googleMapsUrl}
             <a
-              href="https://support.google.com/maps/answer/144361"
+              // Short video walkthrough (English) — swapped in per owner request
+              // for an easier-to-follow alternative to the Google support article.
+              href="https://youtu.be/SZhvdCMvNxw"
               target="_blank"
               rel="noopener noreferrer"
               aria-label={f.mapsHelp}
@@ -851,7 +853,9 @@ function AccessStep({ p, set, errors, copy }: StepProps) {
         <TextArea value={p.accessNotes ?? ""} onChange={(e) => set("accessNotes", e.target.value)} />
       </FieldShell>
 
-      <SmartLockUpsell p={p} set={set} errors={errors} copy={copy} />
+      {p.accessMethod === "digital_lock" ? (
+        <SmartLockUpsell p={p} set={set} errors={errors} copy={copy} />
+      ) : null}
     </>
   );
 }
