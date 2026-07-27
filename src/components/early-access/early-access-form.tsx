@@ -469,14 +469,12 @@ function ResidenceCityField({
 
 function BillingStep({ p, set, errors, copy }: StepProps) {
   const f = copy.fields;
-  const [search, setSearch] = React.useState("");
-  // Structured fields stay hidden until there is something to show or correct —
-  // either a chosen address or an explicit switch to manual entry.
+  // The search box IS address line 1 — one field serves both purposes, so the
+  // customer never sees "Address line 1" appear a second time below it.
   const showFields = Boolean(p.billingManualAddress || p.billingAddressLine1);
 
   function applyPlace(place: PlaceLike) {
     const a = parsePlace(place);
-    setSearch(a.formattedAddress ?? "");
     set("billingPlaceId", a.placeId);
     set("billingFormattedAddress", a.formattedAddress);
     set("billingManualAddress", false);
@@ -505,8 +503,8 @@ function BillingStep({ p, set, errors, copy }: StepProps) {
       <FieldShell id="baddr-search" label={f.addressSearch} required error={err(copy, errors.billingAddressLine1)}>
         <AddressAutocomplete
           id="baddr-search"
-          value={search}
-          onChange={setSearch}
+          value={p.billingAddressLine1 ?? ""}
+          onChange={(v) => set("billingAddressLine1", v)}
           onSelect={applyPlace}
           onManual={() => {
             set("billingManualAddress", true);
@@ -518,9 +516,6 @@ function BillingStep({ p, set, errors, copy }: StepProps) {
 
       {!showFields ? null : (
       <>
-      <FieldShell id="b1" label={f.billingAddressLine1} required error={err(copy, errors.billingAddressLine1)}>
-        <TextInput value={p.billingAddressLine1 ?? ""} onChange={(e) => set("billingAddressLine1", e.target.value)} autoComplete="address-line1" />
-      </FieldShell>
       <FieldShell id="b2" label={f.billingAddressLine2}>
         <TextInput value={p.billingAddressLine2 ?? ""} onChange={(e) => set("billingAddressLine2", e.target.value)} autoComplete="address-line2" />
       </FieldShell>
@@ -562,14 +557,14 @@ function BillingStep({ p, set, errors, copy }: StepProps) {
 function PropertyAddressStep({ p, set, errors, copy, locale }: StepProps & { locale: Locale }) {
   const f = copy.fields;
   const canCopy = (p.billingCountry ?? "").toUpperCase() === "MA";
-  const [search, setSearch] = React.useState("");
+  // The search box IS address line 1 — one field serves both purposes, so the
+  // customer never sees "Address line 1" appear a second time below it.
   // Same progressive-disclosure pattern as the billing step: only reveal the
-  // map and structured fields once there is something to show or correct.
+  // map and remaining structured fields once there is something to show or correct.
   const propertyShowFields = Boolean(p.propertyManualAddress || p.propertyAddressLine1);
 
   function applyPlace(place: PlaceLike) {
     const a = parsePlace(place);
-    setSearch(a.formattedAddress ?? "");
     set("propertyPlaceId", a.placeId);
     set("propertyFormattedAddress", a.formattedAddress);
     set("propertyManualAddress", false);
@@ -611,8 +606,8 @@ function PropertyAddressStep({ p, set, errors, copy, locale }: StepProps & { loc
           <FieldShell id="paddr-search" label={f.addressSearch} required error={err(copy, errors.propertyAddressLine1)}>
             <AddressAutocomplete
               id="paddr-search"
-              value={search}
-              onChange={setSearch}
+              value={p.propertyAddressLine1 ?? ""}
+              onChange={(v) => set("propertyAddressLine1", v)}
               onSelect={applyPlace}
               onManual={() => set("propertyManualAddress", true)}
               copy={copy.maps}
@@ -637,9 +632,6 @@ function PropertyAddressStep({ p, set, errors, copy, locale }: StepProps & { loc
             }}
           />
 
-          <FieldShell id="pa1" label={f.propertyAddressLine1} required error={err(copy, errors.propertyAddressLine1)}>
-            <TextInput value={p.propertyAddressLine1 ?? ""} onChange={(e) => set("propertyAddressLine1", e.target.value)} />
-          </FieldShell>
           <FieldShell id="pa2" label={f.propertyAddressLine2}>
             <TextInput value={p.propertyAddressLine2 ?? ""} onChange={(e) => set("propertyAddressLine2", e.target.value)} />
           </FieldShell>
