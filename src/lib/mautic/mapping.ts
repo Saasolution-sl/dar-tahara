@@ -39,6 +39,7 @@ export function mapLeadToMauticFields(lead: LeadForSync): MauticContactFields {
   put(f, "preferred_language", lead.preferredLanguage ?? undefined);
   put(f, "preferred_contact_method", lead.preferredContactMethod ?? undefined);
   put(f, "residence_city", lead.residenceCity ?? undefined);
+  put(f, "phone_country", lead.phoneCountry ?? undefined);
 
   // Billing / property summaries.
   put(f, "billing_recipient_type", lead.billingRecipientType ?? undefined);

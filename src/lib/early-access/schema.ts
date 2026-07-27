@@ -61,7 +61,8 @@ export type EarlyAccessPayload = {
   firstName: string;
   lastName: string;
   email: string;
-  countryCallingCode?: string;   // e.g. "+212"
+  phoneCountry?: string;         // ISO 3166-1 alpha-2, e.g. "MA" — the stored truth
+  countryCallingCode?: string;   // e.g. "+212" — derived from phoneCountry
   mobileNumber?: string;
   whatsappSameAsMobile?: boolean;
   whatsappNumber?: string;

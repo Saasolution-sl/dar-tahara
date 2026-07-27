@@ -9,7 +9,7 @@
  */
 import type { EarlyAccessPayload } from "./schema";
 import { normalizeEmail } from "./schema";
-import { toE164 } from "./phone";
+import { toE164, normalizePhone } from "./phone";
 import { toLeadAttributionColumns, type Attribution } from "./attribution";
 import type { LeadForSync } from "@/lib/mautic/types";
 import {
@@ -82,10 +82,14 @@ export function buildLeadRow(
   attribution: { first?: Attribution; last?: Attribution },
 ): Record<string, unknown> {
   const email = normalizeEmail(p.email);
-  const mobile = toE164(p.mobileNumber, p.countryCallingCode);
+  // Prefer strict validation against the SELECTED country, falling back to the
+  // permissive calling-code combination so an unusual-but-real number is stored
+  // rather than dropped.
+  const phoneOpts = { country: p.phoneCountry, callingCode: p.countryCallingCode };
+  const mobile = normalizePhone(p.mobileNumber, phoneOpts);
   const whatsapp = p.whatsappSameAsMobile
     ? mobile
-    : toE164(p.whatsappNumber ?? p.mobileNumber, p.countryCallingCode);
+    : normalizePhone(p.whatsappNumber ?? p.mobileNumber, phoneOpts);
 
   return {
     first_name: clean(p.firstName, 120),
@@ -94,6 +98,7 @@ export function buildLeadRow(
     normalized_email: email,
     mobile_phone: mobile,
     whatsapp_phone: whatsapp,
+    phone_country: upper2(p.phoneCountry),
     preferred_contact_method: p.preferredContactMethod ?? "whatsapp",
     preferred_language: p.preferredLanguage ?? p.locale ?? "en",
     residence_city: clean(p.residenceCity, 120),
@@ -267,6 +272,7 @@ export function toLeadForSync(
     preferredContactMethod: (row.preferred_contact_method as string) ?? null,
     preferredLanguage: (row.preferred_language as string) ?? null,
     residenceCity: (row.residence_city as string) ?? null,
+    phoneCountry: (row.phone_country as string) ?? null,
     status: extra.emailVerified ? "verified" : "pending",
     emailVerified: extra.emailVerified ?? false,
     referralCode: extra.referralCode ?? null,

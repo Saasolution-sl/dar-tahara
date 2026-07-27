@@ -87,6 +87,7 @@ FIELDS=(
   "preferred_language|Preferred Language|select|core|en,fr,ar,nl,es,de,pt"
   "preferred_contact_method|Preferred Contact Method|select|core|email,whatsapp,telephone"
   "residence_city|City in Morocco|text|core"
+  "phone_country|Phone Country|text|core"
 
   # Billing summary (the full address stays in Supabase)
   "billing_recipient_type|Billing Recipient Type|select|professional|private,business"

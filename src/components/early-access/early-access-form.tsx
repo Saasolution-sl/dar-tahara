@@ -20,6 +20,9 @@ import {
 } from "./fields";
 import { MoroccanCitySelector } from "./moroccan-city-selector";
 import { OTHER_CITY_ID } from "@/lib/geo/moroccan-cities";
+import { PhoneCountrySelect } from "./phone-country-select";
+import { defaultCountryFor } from "@/lib/phone/countries";
+import { getCountryCallingCode } from "@/lib/phone/lib";
 
 const FIRST_TOUCH_KEY = "dt_ea_first_touch";
 
@@ -30,11 +33,9 @@ const COUNTRIES: Record<string, string> = {
   ES: "Spain", GB: "United Kingdom", AE: "United Arab Emirates", IT: "Italy",
   US: "United States", CA: "Canada", CH: "Switzerland", SE: "Sweden", NO: "Norway",
 };
-const CALLING_CODES: Record<string, string> = {
-  "+212": "🇲🇦 +212", "+31": "🇳🇱 +31", "+32": "🇧🇪 +32", "+33": "🇫🇷 +33",
-  "+49": "🇩🇪 +49", "+34": "🇪🇸 +34", "+44": "🇬🇧 +44", "+971": "🇦🇪 +971",
-  "+39": "🇮🇹 +39", "+1": "🇺🇸 +1", "+41": "🇨🇭 +41", "+46": "🇸🇪 +46", "+47": "🇳🇴 +47",
-};
+// Calling codes are no longer hand-maintained here — PhoneCountrySelect derives
+// the full country list, dial codes and localized names from libphonenumber-js
+// metadata plus Intl.DisplayNames.
 const LANGUAGES: Record<string, string> = {
   en: "English", fr: "Français", ar: "العربية", nl: "Nederlands", es: "Español", de: "Deutsch", pt: "Português",
 };
@@ -44,7 +45,10 @@ type Status = "idle" | "submitting" | "error";
 export function EarlyAccessForm({ locale, copy }: { locale: Locale; copy: EarlyAccessCopy }) {
   const [p, setP] = React.useState<EarlyAccessPayload>({
     firstName: "", lastName: "", email: "",
-    countryCallingCode: "+212", preferredContactMethod: "whatsapp",
+    // Suggested from the site locale (never IP geolocation); always changeable.
+    phoneCountry: defaultCountryFor(locale),
+    countryCallingCode: `+${getCountryCallingCode(defaultCountryFor(locale))}`,
+    preferredContactMethod: "whatsapp",
     preferredLanguage: locale, whatsappSameAsMobile: true,
     billingRecipientType: "private", propertyCountry: "MA",
     serviceTypes: [], locale,
@@ -207,7 +211,7 @@ export function EarlyAccessForm({ locale, copy }: { locale: Locale; copy: EarlyA
       <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{copy.steps[step].subtitle}</p>
 
       <div className="mt-6 space-y-5">
-        {step === "contact" && <ContactStep p={p} set={set} errors={errors} copy={copy} />}
+        {step === "contact" && <ContactStep p={p} set={set} errors={errors} copy={copy} locale={locale} />}
         {step === "billing" && <BillingStep p={p} set={set} errors={errors} copy={copy} />}
         {step === "property_address" && <PropertyAddressStep p={p} set={set} errors={errors} copy={copy} locale={locale} />}
         {step === "property_info" && <PropertyInfoStep p={p} set={set} errors={errors} copy={copy} />}
@@ -289,7 +293,7 @@ function err(copy: EarlyAccessCopy, code?: string) {
   return code ? copy.errors[code] ?? copy.errors.invalid : undefined;
 }
 
-function ContactStep({ p, set, errors, copy }: StepProps) {
+function ContactStep({ p, set, errors, copy, locale }: StepProps & { locale: Locale }) {
   const f = copy.fields;
   return (
     <>
@@ -306,7 +310,17 @@ function ContactStep({ p, set, errors, copy }: StepProps) {
       </FieldShell>
       <div className="grid gap-5 sm:grid-cols-[9rem_1fr]">
         <FieldShell id="cc" label={f.countryCallingCode}>
-          <Select options={CALLING_CODES} value={p.countryCallingCode} onChange={(e) => set("countryCallingCode", e.target.value)} />
+          <PhoneCountrySelect
+            id="cc"
+            locale={locale}
+            value={p.phoneCountry ?? defaultCountryFor(locale, p.phoneCountry)}
+            copy={copy.phoneCountry}
+            onChange={(c) => {
+              // ISO code is the stored truth; the calling code is derived from it.
+              set("phoneCountry", c.iso2);
+              set("countryCallingCode", c.callingCode);
+            }}
+          />
         </FieldShell>
         <FieldShell id="mobileNumber" label={f.mobileNumber} error={err(copy, errors.mobileNumber)}>
           <TextInput type="tel" inputMode="tel" value={p.mobileNumber ?? ""} onChange={(e) => set("mobileNumber", e.target.value)} autoComplete="tel-national" />
