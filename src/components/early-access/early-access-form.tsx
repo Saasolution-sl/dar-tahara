@@ -645,24 +645,28 @@ function PropertyAddressStep({ p, set, errors, copy, locale }: StepProps & { loc
               <TextInput value={p.propertyPostalCode ?? ""} onChange={(e) => set("propertyPostalCode", e.target.value)} />
             </FieldShell>
           </div>
-          <MoroccanCitySelector
+          <FieldShell
             id="pcity"
             label={f.propertyCity}
             required
-            locale={locale}
-            value={p.propertyCityId}
-            manualName={p.propertyCityManualName}
-            copy={copy.citySelector}
             error={err(copy, errors.propertyCity) ?? err(copy, errors.propertyCityManualName)}
-            onChange={(sel) => {
-              set("propertyCityId", sel.cityId);
-              set("propertyCityManualName", sel.cityId === OTHER_CITY_ID ? sel.manualName : undefined);
-              set("propertyCity", sel.cityName);
-              // Fill the province/region box from the taxonomy so the customer
-              // doesn't retype it; still editable below.
-              if (sel.regionName) set("propertyRegion", sel.regionName);
-            }}
-          />
+          >
+            <MoroccanCitySelector
+              id="pcity"
+              locale={locale}
+              value={p.propertyCityId}
+              manualName={p.propertyCityManualName}
+              copy={copy.citySelector}
+              onChange={(sel) => {
+                set("propertyCityId", sel.cityId);
+                set("propertyCityManualName", sel.cityId === OTHER_CITY_ID ? sel.manualName : undefined);
+                set("propertyCity", sel.cityName);
+                // Fill the province/region box from the taxonomy so the customer
+                // doesn't retype it; still editable below.
+                if (sel.regionName) set("propertyRegion", sel.regionName);
+              }}
+            />
+          </FieldShell>
           <div className="grid gap-5 sm:grid-cols-2">
             <FieldShell id="preg" label={f.propertyRegion}>
               <TextInput value={p.propertyRegion ?? ""} onChange={(e) => set("propertyRegion", e.target.value)} />
