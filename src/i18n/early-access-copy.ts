@@ -49,6 +49,7 @@ export type EarlyAccessCopy = {
   keyNotice: { title: string; body: string; ack: string };
   thirdPartyNotice: string;
   digitalLockNotice: string;
+  digitalLockInternetRequired: string;
   /**
    * Digital smart-lock upsell. `{price}` placeholders are replaced at render time
    * with the value from the central product config (never hardcoded here), so the
@@ -224,6 +225,7 @@ const en: EarlyAccessCopy = {
   },
   thirdPartyNotice: "We can't reliably plan recurring cleaning around someone who must travel to open the property each time. A dependable access arrangement is required.",
   digitalLockNotice: "Reliable digital access is preferred where available — it improves planning and access control.",
+  digitalLockInternetRequired: "A stable internet connection at the property is required for the digital smart lock to work.",
   phoneCountry: {
     label: "Country code",
     searchPlaceholder: "Search country or code",
@@ -412,6 +414,7 @@ const fr: EarlyAccessCopy = {
   },
   thirdPartyNotice: "Nous ne pouvons pas planifier de façon fiable un ménage récurrent autour d'une personne devant se déplacer pour ouvrir le bien à chaque fois. Un accès fiable est requis.",
   digitalLockNotice: "Un accès numérique fiable est préférable lorsqu'il est disponible — il améliore la planification et le contrôle d'accès.",
+  digitalLockInternetRequired: "Une connexion internet stable au niveau du bien est indispensable au fonctionnement de la serrure connectée.",
   phoneCountry: {
     label: "Indicatif pays",
     searchPlaceholder: "Rechercher un pays ou un indicatif",
@@ -600,6 +603,7 @@ const ar: EarlyAccessCopy = {
   },
   thirdPartyNotice: "لا يمكننا التخطيط بشكل موثوق لتنظيف متكرر يعتمد على شخص يجب أن يتنقل لفتح العقار في كل مرة. يلزم ترتيب وصول موثوق.",
   digitalLockNotice: "يُفضّل الوصول الرقمي الموثوق عند توفره — فهو يحسّن التخطيط والتحكم في الدخول.",
+  digitalLockInternetRequired: "يلزم توفر اتصال إنترنت مستقر في العقار لكي يعمل القفل الذكي الرقمي.",
   phoneCountry: {
     label: "رمز الدولة",
     searchPlaceholder: "ابحث عن دولة أو رمز",
@@ -788,6 +792,7 @@ const nl: EarlyAccessCopy = {
   },
   thirdPartyNotice: "We kunnen terugkerende schoonmaak niet betrouwbaar plannen rond iemand die telkens moet reizen om de woning te openen. Een betrouwbare toegangsregeling is vereist.",
   digitalLockNotice: "Betrouwbare digitale toegang heeft de voorkeur waar beschikbaar — het verbetert de planning en toegangscontrole.",
+  digitalLockInternetRequired: "Een stabiele internetverbinding op het pand is vereist om het digitale smart lock te laten werken.",
   phoneCountry: {
     label: "Landcode",
     searchPlaceholder: "Zoek land of code",
@@ -976,6 +981,7 @@ const es: EarlyAccessCopy = {
   },
   thirdPartyNotice: "No podemos planificar de forma fiable una limpieza recurrente en torno a alguien que deba desplazarse para abrir la propiedad cada vez. Se requiere un acuerdo de acceso fiable.",
   digitalLockNotice: "Se prefiere un acceso digital fiable cuando está disponible — mejora la planificación y el control de acceso.",
+  digitalLockInternetRequired: "Es imprescindible una conexión a internet estable en la propiedad para que la cerradura inteligente funcione.",
   phoneCountry: {
     label: "Prefijo del país",
     searchPlaceholder: "Busca un país o prefijo",
@@ -1164,6 +1170,7 @@ const de: EarlyAccessCopy = {
   },
   thirdPartyNotice: "Wir können eine wiederkehrende Reinigung nicht zuverlässig um jemanden herum planen, der jedes Mal anreisen muss, um die Immobilie zu öffnen. Eine zuverlässige Zugangsregelung ist erforderlich.",
   digitalLockNotice: "Ein zuverlässiger digitaler Zugang wird bevorzugt, wo verfügbar — er verbessert Planung und Zugangskontrolle.",
+  digitalLockInternetRequired: "Eine stabile Internetverbindung in der Immobilie ist zwingend erforderlich, damit das digitale Smart Lock funktioniert.",
   phoneCountry: {
     label: "Ländervorwahl",
     searchPlaceholder: "Land oder Vorwahl suchen",
@@ -1352,6 +1359,7 @@ const pt: EarlyAccessCopy = {
   },
   thirdPartyNotice: "Não conseguimos planear de forma fiável uma limpeza recorrente em torno de alguém que tenha de se deslocar para abrir o imóvel de cada vez. É necessário um acordo de acesso fiável.",
   digitalLockNotice: "Um acesso digital fiável é preferível quando disponível — melhora o planeamento e o controlo de acesso.",
+  digitalLockInternetRequired: "É obrigatória uma ligação à internet estável no imóvel para que a fechadura inteligente digital funcione.",
   phoneCountry: {
     label: "Indicativo do país",
     searchPlaceholder: "Procurar país ou indicativo",

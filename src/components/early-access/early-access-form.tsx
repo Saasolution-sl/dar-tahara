@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, Loader2, ArrowRight, ArrowLeft, ShieldCheck, KeyRound, Info, Lock } from "lucide-react";
+import { Check, Loader2, ArrowRight, ArrowLeft, ShieldCheck, KeyRound, Info, Lock, Wifi } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import type { EarlyAccessCopy } from "@/i18n/early-access-copy";
 import {
@@ -810,10 +810,17 @@ function AccessStep({ p, set, errors, copy }: StepProps) {
       </FieldShell>
 
       {p.accessMethod === "digital_lock" ? (
-        <p className="flex items-start gap-2 rounded-xl bg-primary/5 px-4 py-3 text-xs leading-relaxed text-foreground">
-          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-          {copy.digitalLockNotice}
-        </p>
+        <>
+          <p className="flex items-start gap-2 rounded-xl bg-primary/5 px-4 py-3 text-xs leading-relaxed text-foreground">
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            {copy.digitalLockNotice}
+          </p>
+          {/* Hard requirement, kept visually distinct from the softer notice above. */}
+          <p className="flex items-start gap-2 rounded-xl border border-accent/30 bg-accent/5 px-4 py-3 text-xs font-medium leading-relaxed text-foreground">
+            <Wifi className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
+            {copy.digitalLockInternetRequired}
+          </p>
+        </>
       ) : null}
 
       {p.accessMethod === "physical_key" ? (
