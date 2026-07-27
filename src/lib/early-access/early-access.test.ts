@@ -18,6 +18,28 @@ test("the smart-lock choice is only required (and only asked) when access method
   }
 });
 
+test("digital-lock customers must actively acknowledge the internet requirement", () => {
+  const { digitalLockInternetAcknowledged: _omit, ...p } = full();
+  void _omit;
+  assert.equal(validateStep("access", p).digitalLockInternetAcknowledged, "internet_acknowledgement_required");
+  assert.equal(
+    validateStep("access", { ...p, digitalLockInternetAcknowledged: false }).digitalLockInternetAcknowledged,
+    "internet_acknowledgement_required",
+  );
+  assert.deepEqual(validateStep("access", { ...full(), digitalLockInternetAcknowledged: true }), {});
+});
+
+test("the internet acknowledgement is not required for other access methods", () => {
+  for (const method of ["physical_key", "person_present", "concierge", "lockbox", "property_manager", "other"]) {
+    const p = { ...full(), accessMethod: method, digitalLockInternetAcknowledged: undefined };
+    if (method === "physical_key") p.physicalKeyTermsAcknowledged = true;
+    assert.equal(
+      validateStep("access", p).digitalLockInternetAcknowledged, undefined,
+      `should not require internet acknowledgement for ${method}`,
+    );
+  }
+});
+
 test("access step requires a smart-lock choice, but any choice (incl. decline) passes", () => {
   const { smartLockInterest: _omit, ...noChoice } = full();
   void _omit;
@@ -111,7 +133,7 @@ function full(): EarlyAccessPayload {
     propertyAddressLine1: "5 Rue Y", propertyBuildingNumber: "5", propertyCity: "Tangier",
     googleMapsUrl: "https://maps.google.com/?q=35.77,-5.83", authorizedBySubmitter: true,
     serviceTypes: ["deep_cleaning"], accessMethod: "digital_lock",
-    smartLockInterest: "not_interested",
+    smartLockInterest: "not_interested", digitalLockInternetAcknowledged: true,
     confirmAccurate: true, confirmAuthorized: true, acceptPrivacy: true, acceptOperationalComms: true,
   };
 }

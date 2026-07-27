@@ -807,11 +807,31 @@ function AccessStep({ p, set, errors, copy }: StepProps) {
             <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
             {copy.digitalLockNotice}
           </p>
-          {/* Hard requirement, kept visually distinct from the softer notice above. */}
-          <p className="flex items-start gap-2 rounded-xl border border-accent/30 bg-accent/5 px-4 py-3 text-xs font-medium leading-relaxed text-foreground">
-            <Wifi className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-            {copy.digitalLockInternetRequired}
-          </p>
+          {/* Hard requirement — the customer must actively acknowledge it, not
+              just read it, since a missed visit caused by the property's own
+              connectivity outage is not grounds to waive charges or cancel. */}
+          <div className="rounded-xl border border-accent/30 bg-accent/5 p-4">
+            <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <Wifi className="h-4 w-4 text-accent" />
+              {copy.digitalLockInternetNotice.title}
+            </p>
+            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+              {copy.digitalLockInternetNotice.body}
+            </p>
+            <div className="mt-3">
+              <CheckboxRow
+                id="internet-ack"
+                label={copy.digitalLockInternetNotice.ack}
+                checked={Boolean(p.digitalLockInternetAcknowledged)}
+                onChange={(v) => set("digitalLockInternetAcknowledged", v)}
+              />
+              {errors.digitalLockInternetAcknowledged ? (
+                <p role="alert" className="mt-1 text-xs font-medium text-red-600">
+                  {err(copy, errors.digitalLockInternetAcknowledged)}
+                </p>
+              ) : null}
+            </div>
+          </div>
         </>
       ) : null}
 

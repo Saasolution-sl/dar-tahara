@@ -49,7 +49,7 @@ export type EarlyAccessCopy = {
   keyNotice: { title: string; body: string; ack: string };
   thirdPartyNotice: string;
   digitalLockNotice: string;
-  digitalLockInternetRequired: string;
+  digitalLockInternetNotice: { title: string; body: string; ack: string };
   /**
    * Digital smart-lock upsell. `{price}` placeholders are replaced at render time
    * with the value from the central product config (never hardcoded here), so the
@@ -225,7 +225,11 @@ const en: EarlyAccessCopy = {
   },
   thirdPartyNotice: "We can't reliably plan recurring cleaning around someone who must travel to open the property each time. A dependable access arrangement is required.",
   digitalLockNotice: "Reliable digital access is preferred where available — it improves planning and access control.",
-  digitalLockInternetRequired: "A stable internet connection at the property is required for the digital smart lock to work.",
+  digitalLockInternetNotice: {
+    title: "Internet connection required",
+    body: "A stable internet connection at the property is required for the digital smart lock to work.",
+    ack: "I understand that a stable internet connection at the property is required for the digital smart lock to work, and that Dar Tahara is not responsible for a missed visit caused by a loss of internet connection at the property.",
+  },
   phoneCountry: {
     label: "Country code",
     searchPlaceholder: "Search country or code",
@@ -296,6 +300,7 @@ const en: EarlyAccessCopy = {
     phone_required: "Please add a phone or WhatsApp number, or choose email as your contact method.",
     authorization_required: "Please confirm you're authorized to request services for this property.",
     acknowledgement_required: "Please acknowledge the physical-key conditions to continue.",
+    internet_acknowledgement_required: "Please confirm you understand the internet connection requirement to continue.",
     smart_lock_choice_required: "Please choose a smart-lock option to continue.",
     select_one: "Please select at least one service.", validation_failed: "Please review the highlighted fields.",
     captcha_failed: "We couldn't verify you're human. Please try again.",
@@ -414,7 +419,11 @@ const fr: EarlyAccessCopy = {
   },
   thirdPartyNotice: "Nous ne pouvons pas planifier de façon fiable un ménage récurrent autour d'une personne devant se déplacer pour ouvrir le bien à chaque fois. Un accès fiable est requis.",
   digitalLockNotice: "Un accès numérique fiable est préférable lorsqu'il est disponible — il améliore la planification et le contrôle d'accès.",
-  digitalLockInternetRequired: "Une connexion internet stable au niveau du bien est indispensable au fonctionnement de la serrure connectée.",
+  digitalLockInternetNotice: {
+    title: "Connexion internet requise",
+    body: "Une connexion internet stable au niveau du bien est indispensable au fonctionnement de la serrure connectée.",
+    ack: "Je comprends qu'une connexion internet stable au niveau du bien est indispensable au fonctionnement de la serrure connectée, et que Dar Tahara n'est pas responsable d'une visite manquée en raison d'une perte de connexion internet au niveau du bien.",
+  },
   phoneCountry: {
     label: "Indicatif pays",
     searchPlaceholder: "Rechercher un pays ou un indicatif",
@@ -485,6 +494,7 @@ const fr: EarlyAccessCopy = {
     phone_required: "Ajoutez un numéro de téléphone ou WhatsApp, ou choisissez l'e-mail comme moyen de contact.",
     authorization_required: "Veuillez confirmer que vous êtes autorisé à demander des services pour ce bien.",
     acknowledgement_required: "Veuillez accepter les conditions relatives aux clés physiques pour continuer.",
+    internet_acknowledgement_required: "Veuillez confirmer que vous comprenez l'exigence de connexion internet pour continuer.",
     smart_lock_choice_required: "Veuillez choisir une option de serrure connectée pour continuer.",
     select_one: "Veuillez sélectionner au moins un service.", validation_failed: "Veuillez vérifier les champs indiqués.",
     captcha_failed: "Nous n'avons pas pu vérifier que vous êtes humain. Veuillez réessayer.",
@@ -603,7 +613,11 @@ const ar: EarlyAccessCopy = {
   },
   thirdPartyNotice: "لا يمكننا التخطيط بشكل موثوق لتنظيف متكرر يعتمد على شخص يجب أن يتنقل لفتح العقار في كل مرة. يلزم ترتيب وصول موثوق.",
   digitalLockNotice: "يُفضّل الوصول الرقمي الموثوق عند توفره — فهو يحسّن التخطيط والتحكم في الدخول.",
-  digitalLockInternetRequired: "يلزم توفر اتصال إنترنت مستقر في العقار لكي يعمل القفل الذكي الرقمي.",
+  digitalLockInternetNotice: {
+    title: "اتصال إنترنت مطلوب",
+    body: "يلزم توفر اتصال إنترنت مستقر في العقار لكي يعمل القفل الذكي الرقمي.",
+    ack: "أتفهم أن اتصال إنترنت مستقر في العقار ضروري لعمل القفل الذكي الرقمي، وأن دار طهارة غير مسؤولة عن أي زيارة تفوت بسبب انقطاع الإنترنت في العقار.",
+  },
   phoneCountry: {
     label: "رمز الدولة",
     searchPlaceholder: "ابحث عن دولة أو رمز",
@@ -674,6 +688,7 @@ const ar: EarlyAccessCopy = {
     phone_required: "أضف رقم هاتف أو واتساب، أو اختر البريد الإلكتروني كطريقة تواصل.",
     authorization_required: "يرجى تأكيد أنك مخوّل بطلب الخدمات لهذا العقار.",
     acknowledgement_required: "يرجى الموافقة على شروط المفتاح الفعلي للمتابعة.",
+    internet_acknowledgement_required: "يرجى تأكيد فهمك لشرط اتصال الإنترنت للمتابعة.",
     smart_lock_choice_required: "يرجى اختيار أحد خيارات القفل الذكي للمتابعة.",
     select_one: "يرجى اختيار خدمة واحدة على الأقل.", validation_failed: "يرجى مراجعة الحقول المميزة.",
     captcha_failed: "تعذّر التحقق من أنك إنسان. يرجى المحاولة مرة أخرى.",
@@ -792,7 +807,11 @@ const nl: EarlyAccessCopy = {
   },
   thirdPartyNotice: "We kunnen terugkerende schoonmaak niet betrouwbaar plannen rond iemand die telkens moet reizen om de woning te openen. Een betrouwbare toegangsregeling is vereist.",
   digitalLockNotice: "Betrouwbare digitale toegang heeft de voorkeur waar beschikbaar — het verbetert de planning en toegangscontrole.",
-  digitalLockInternetRequired: "Een stabiele internetverbinding op het pand is vereist om het digitale smart lock te laten werken.",
+  digitalLockInternetNotice: {
+    title: "Internetverbinding vereist",
+    body: "Een stabiele internetverbinding op het pand is vereist om het digitale smart lock te laten werken.",
+    ack: "Ik begrijp dat een stabiele internetverbinding op het pand vereist is voor het digitale smart lock, en dat Dar Tahara niet verantwoordelijk is voor een gemist bezoek door een internetstoring op het pand.",
+  },
   phoneCountry: {
     label: "Landcode",
     searchPlaceholder: "Zoek land of code",
@@ -863,6 +882,7 @@ const nl: EarlyAccessCopy = {
     phone_required: "Voeg een telefoon- of WhatsApp-nummer toe, of kies e-mail als contactmethode.",
     authorization_required: "Bevestig dat u gemachtigd bent om diensten voor deze woning aan te vragen.",
     acknowledgement_required: "Ga akkoord met de voorwaarden voor fysieke sleutels om door te gaan.",
+    internet_acknowledgement_required: "Bevestig dat u de vereiste internetverbinding begrijpt om door te gaan.",
     smart_lock_choice_required: "Kies een smart lock-optie om door te gaan.",
     select_one: "Selecteer minstens één dienst.", validation_failed: "Controleer de gemarkeerde velden.",
     captcha_failed: "We konden niet verifiëren dat u een mens bent. Probeer het opnieuw.",
@@ -981,7 +1001,11 @@ const es: EarlyAccessCopy = {
   },
   thirdPartyNotice: "No podemos planificar de forma fiable una limpieza recurrente en torno a alguien que deba desplazarse para abrir la propiedad cada vez. Se requiere un acuerdo de acceso fiable.",
   digitalLockNotice: "Se prefiere un acceso digital fiable cuando está disponible — mejora la planificación y el control de acceso.",
-  digitalLockInternetRequired: "Es imprescindible una conexión a internet estable en la propiedad para que la cerradura inteligente funcione.",
+  digitalLockInternetNotice: {
+    title: "Conexión a internet necesaria",
+    body: "Es imprescindible una conexión a internet estable en la propiedad para que la cerradura inteligente funcione.",
+    ack: "Entiendo que es imprescindible una conexión a internet estable en la propiedad para que la cerradura inteligente funcione, y que Dar Tahara no se hace responsable de una visita fallida por falta de conexión a internet en la propiedad.",
+  },
   phoneCountry: {
     label: "Prefijo del país",
     searchPlaceholder: "Busca un país o prefijo",
@@ -1052,6 +1076,7 @@ const es: EarlyAccessCopy = {
     phone_required: "Añade un número de teléfono o WhatsApp, o elige el correo como método de contacto.",
     authorization_required: "Confirma que estás autorizado a solicitar servicios para esta propiedad.",
     acknowledgement_required: "Acepta las condiciones de la llave física para continuar.",
+    internet_acknowledgement_required: "Confirma que entiendes el requisito de conexión a internet para continuar.",
     smart_lock_choice_required: "Elige una opción de cerradura inteligente para continuar.",
     select_one: "Selecciona al menos un servicio.", validation_failed: "Revisa los campos marcados.",
     captcha_failed: "No pudimos verificar que eres humano. Inténtalo de nuevo.",
@@ -1170,7 +1195,11 @@ const de: EarlyAccessCopy = {
   },
   thirdPartyNotice: "Wir können eine wiederkehrende Reinigung nicht zuverlässig um jemanden herum planen, der jedes Mal anreisen muss, um die Immobilie zu öffnen. Eine zuverlässige Zugangsregelung ist erforderlich.",
   digitalLockNotice: "Ein zuverlässiger digitaler Zugang wird bevorzugt, wo verfügbar — er verbessert Planung und Zugangskontrolle.",
-  digitalLockInternetRequired: "Eine stabile Internetverbindung in der Immobilie ist zwingend erforderlich, damit das digitale Smart Lock funktioniert.",
+  digitalLockInternetNotice: {
+    title: "Internetverbindung erforderlich",
+    body: "Eine stabile Internetverbindung in der Immobilie ist zwingend erforderlich, damit das digitale Smart Lock funktioniert.",
+    ack: "Ich verstehe, dass eine stabile Internetverbindung in der Immobilie für das digitale Smart Lock zwingend erforderlich ist und dass Dar Tahara nicht für einen ausgefallenen Besuch aufgrund eines Internetausfalls in der Immobilie verantwortlich ist.",
+  },
   phoneCountry: {
     label: "Ländervorwahl",
     searchPlaceholder: "Land oder Vorwahl suchen",
@@ -1241,6 +1270,7 @@ const de: EarlyAccessCopy = {
     phone_required: "Fügen Sie eine Telefon- oder WhatsApp-Nummer hinzu oder wählen Sie E-Mail als Kontaktmethode.",
     authorization_required: "Bitte bestätigen Sie, dass Sie berechtigt sind, für diese Immobilie Leistungen anzufragen.",
     acknowledgement_required: "Bitte bestätigen Sie die Bedingungen für physische Schlüssel, um fortzufahren.",
+    internet_acknowledgement_required: "Bitte bestätigen Sie, dass Sie die Anforderung an die Internetverbindung verstehen, um fortzufahren.",
     smart_lock_choice_required: "Bitte wählen Sie eine Smart-Lock-Option, um fortzufahren.",
     select_one: "Bitte wählen Sie mindestens eine Leistung.", validation_failed: "Bitte überprüfen Sie die markierten Felder.",
     captcha_failed: "Wir konnten nicht bestätigen, dass Sie ein Mensch sind. Bitte versuchen Sie es erneut.",
@@ -1359,7 +1389,11 @@ const pt: EarlyAccessCopy = {
   },
   thirdPartyNotice: "Não conseguimos planear de forma fiável uma limpeza recorrente em torno de alguém que tenha de se deslocar para abrir o imóvel de cada vez. É necessário um acordo de acesso fiável.",
   digitalLockNotice: "Um acesso digital fiável é preferível quando disponível — melhora o planeamento e o controlo de acesso.",
-  digitalLockInternetRequired: "É obrigatória uma ligação à internet estável no imóvel para que a fechadura inteligente digital funcione.",
+  digitalLockInternetNotice: {
+    title: "Ligação à internet obrigatória",
+    body: "É obrigatória uma ligação à internet estável no imóvel para que a fechadura inteligente digital funcione.",
+    ack: "Compreendo que é obrigatória uma ligação à internet estável no imóvel para que a fechadura inteligente digital funcione, e que a Dar Tahara não é responsável por uma visita não realizada devido a uma falha de internet no imóvel.",
+  },
   phoneCountry: {
     label: "Indicativo do país",
     searchPlaceholder: "Procurar país ou indicativo",
@@ -1430,6 +1464,7 @@ const pt: EarlyAccessCopy = {
     phone_required: "Adicione um número de telefone ou WhatsApp, ou escolha o e-mail como método de contacto.",
     authorization_required: "Confirme que está autorizado a solicitar serviços para este imóvel.",
     acknowledgement_required: "Aceite as condições da chave física para continuar.",
+    internet_acknowledgement_required: "Confirme que compreende o requisito de ligação à internet para continuar.",
     smart_lock_choice_required: "Escolha uma opção de fechadura inteligente para continuar.",
     select_one: "Selecione pelo menos um serviço.", validation_failed: "Reveja os campos assinalados.",
     captcha_failed: "Não conseguimos verificar que é humano. Tente novamente.",

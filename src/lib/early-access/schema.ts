@@ -154,6 +154,11 @@ export type EarlyAccessPayload = {
   // Step 6 — access
   accessMethod?: string;
   physicalKeyTermsAcknowledged?: boolean;
+  // Digital-lock access is conditional on the property having internet — the
+  // customer must actively confirm they understand this, since a missed visit
+  // caused by a connectivity outage at the property is not grounds to waive
+  // charges or cancel the subscription.
+  digitalLockInternetAcknowledged?: boolean;
   thirdPartyDetails?: string;
   accessNotes?: string;
 
@@ -290,6 +295,11 @@ export function validateStep(step: StepId, p: EarlyAccessPayload): FieldErrors {
         // possible; the model stays optional since customers often don't know it.
         else if (p.smartLockInterest === "already_has_lock" && !nonEmpty(p.existingLockBrand))
           e.existingLockBrand = "required";
+        // The customer must actively confirm they understand the internet
+        // requirement — a missed visit caused by the property's own
+        // connectivity outage is not grounds to waive charges or cancel.
+        if (!p.digitalLockInternetAcknowledged)
+          e.digitalLockInternetAcknowledged = "internet_acknowledgement_required";
       }
       break;
 
