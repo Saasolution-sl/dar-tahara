@@ -15,10 +15,9 @@ export type PhoneCountryCopy = {
 /**
  * International telephone country selector.
  *
- * Every option shows flag + localized country name + calling code (never a bare
- * ISO abbreviation like "MA"). The collapsed control shows flag + calling code
- * to stay narrow on mobile, with the full country name exposed to assistive
- * technology via aria-label.
+ * Display is flag + calling code, both collapsed and in the list. The localized
+ * country name is not shown, but is still carried for screen readers (a flag
+ * glyph alone is not announceable) and is still searchable.
  *
  * Search matches country name, calling code and ISO code. The flag is
  * decorative — the value handed upward is the ISO alpha-2 code.
@@ -133,9 +132,11 @@ export function PhoneCountrySelect({
                   active === i ? "bg-secondary" : "hover:bg-secondary/60",
                 )}
               >
+                {/* Visible: flag + calling code only. The country name is kept
+                    for screen readers, which cannot interpret a flag glyph. */}
+                <span className="sr-only">{c.name}</span>
                 <span aria-hidden className="text-base leading-none">{c.flag}</span>
-                <span className="min-w-0 flex-1 truncate text-foreground">{c.name}</span>
-                <span className="shrink-0 text-xs text-muted-foreground" dir="ltr">{c.callingCode}</span>
+                <span aria-hidden className="text-foreground" dir="ltr">{c.callingCode}</span>
               </li>
             ))}
             {results.length === 0 ? (
