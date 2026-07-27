@@ -403,7 +403,7 @@ function ResidenceCityField({
 
   return (
     <>
-      <FieldShell id="residenceCity" label={copy.fields.residenceCity} error={error}>
+      <FieldShell id="residenceCity" label={copy.fields.residenceCity} required error={error}>
         <Select
           options={options}
           placeholder="—"

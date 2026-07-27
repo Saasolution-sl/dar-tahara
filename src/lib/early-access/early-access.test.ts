@@ -135,6 +135,13 @@ test("contact step accepts listed and custom Moroccan cities but rejects the Oth
   assert.equal(validateStep("contact", { ...full(), residenceCity: "x".repeat(121) }).residenceCity, "invalid");
 });
 
+test("City in Morocco is mandatory on the contact step", () => {
+  assert.equal(validateStep("contact", { ...full(), residenceCity: "" }).residenceCity, "required");
+  const { residenceCity: _omit, ...noCity } = full();
+  void _omit;
+  assert.equal(validateStep("contact", noCity).residenceCity, "required");
+});
+
 test("property step requires authorization confirmation", () => {
   assert.equal(validateStep("property_address", { ...full(), authorizedBySubmitter: false }).authorizedBySubmitter,
     "authorization_required");

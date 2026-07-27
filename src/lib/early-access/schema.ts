@@ -218,13 +218,9 @@ export function validateStep(step: StepId, p: EarlyAccessPayload): FieldErrors {
       else if (!isValidEmail(p.email)) e.email = "invalid_email";
       if (p.preferredContactMethod && !oneOf(CONTACT_METHODS, p.preferredContactMethod))
         e.preferredContactMethod = "invalid";
-      if (
-        p.residenceCity !== undefined
-        && p.residenceCity !== ""
-        && (!nonEmpty(p.residenceCity)
-          || p.residenceCity.trim().length > 120
-          || p.residenceCity === OTHER_CITY_VALUE)
-      ) e.residenceCity = "invalid";
+      if (!nonEmpty(p.residenceCity)) e.residenceCity = "required";
+      else if (p.residenceCity.trim().length > 120 || p.residenceCity === OTHER_CITY_VALUE)
+        e.residenceCity = "invalid";
       // A WhatsApp/phone number is required unless the sole method is email.
       if (p.preferredContactMethod !== "email" && !nonEmpty(p.mobileNumber) && !nonEmpty(p.whatsappNumber))
         e.mobileNumber = "phone_required";
