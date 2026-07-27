@@ -25,8 +25,28 @@ export type PhoneCountry = {
 };
 
 /**
- * Regional-indicator maths: "MA" → 🇲🇦. Avoids shipping a flag lookup table,
- * and degrades to the plain letters on platforms without flag glyphs.
+ * Flag image URL for a country.
+ *
+ * Emoji flags are NOT usable here: Windows ships no country-flag glyphs, so
+ * Chrome and Edge on Windows render "🇲🇦" as the letters "MA". Real images are
+ * the only thing that renders consistently across platforms.
+ *
+ * These are served from flagcdn.com, so the images are a third-party request.
+ * They are decorative only — no personal data is sent, but the visitor's IP is
+ * visible to that host.
+ */
+export function flagImageUrl(iso2: string, width: 20 | 40 | 80 = 40): string {
+  return `https://flagcdn.com/w${width}/${iso2.toLowerCase()}.png`;
+}
+
+/** 2× source for crisp rendering on high-density screens. */
+export function flagImageSrcSet(iso2: string): string {
+  return `${flagImageUrl(iso2, 20)} 1x, ${flagImageUrl(iso2, 40)} 2x`;
+}
+
+/**
+ * Regional-indicator maths: "MA" → 🇲🇦. Retained for non-visual uses (it is
+ * NOT used for display — see flagImageUrl for why).
  */
 export function flagEmoji(iso2: string): string {
   const code = iso2.toUpperCase();

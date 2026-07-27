@@ -3,8 +3,41 @@
 import * as React from "react";
 import { ChevronDown, Search } from "lucide-react";
 import type { Locale } from "@/i18n/config";
-import { searchCountries, findCountry, type PhoneCountry } from "@/lib/phone/countries";
+import {
+  searchCountries,
+  findCountry,
+  flagImageUrl,
+  flagImageSrcSet,
+  type PhoneCountry,
+} from "@/lib/phone/countries";
 import { cn } from "@/lib/utils";
+
+/**
+ * Flag image. Decorative — the country name is provided separately for screen
+ * readers, so this carries an empty alt. A plain <img> is used rather than
+ * next/image: these are 20px static PNGs on a third-party host, where the
+ * optimisation round-trip would cost more than it saves. If the request is
+ * blocked or fails, the element hides itself and the calling code still shows.
+ */
+function Flag({ iso2 }: { iso2: string }) {
+  return (
+    // eslint-disable-next-line @next/next/no-img-element
+    <img
+      src={flagImageUrl(iso2, 20)}
+      srcSet={flagImageSrcSet(iso2)}
+      alt=""
+      aria-hidden
+      width={20}
+      height={15}
+      // Not lazy: these only enter the DOM when the selector is opened, so
+      // deferring them just leaves a gap where the flag should be.
+      loading="eager"
+      decoding="async"
+      className="h-[15px] w-5 shrink-0 rounded-[2px] object-cover"
+      onError={(e) => { e.currentTarget.style.display = "none"; }}
+    />
+  );
+}
 
 export type PhoneCountryCopy = {
   label: string;
@@ -88,8 +121,8 @@ export function PhoneCountrySelect({
         className="inline-flex h-11 w-full items-center justify-between gap-2 rounded-xl border border-border bg-background px-3 text-sm text-foreground outline-none transition hover:border-foreground/20 focus-visible:ring-2 focus-visible:ring-ring"
       >
         <span className="flex min-w-0 items-center gap-2">
-          <span aria-hidden className="text-base leading-none">{selected?.flag ?? "🌐"}</span>
-          <span className="truncate">{selected?.callingCode ?? "+"}</span>
+          {selected ? <Flag iso2={selected.iso2} /> : null}
+          <span className="truncate" dir="ltr">{selected?.callingCode ?? "+"}</span>
         </span>
         <ChevronDown className={cn("h-4 w-4 shrink-0 text-muted-foreground transition-transform", open && "rotate-180")} aria-hidden />
       </button>
@@ -133,9 +166,9 @@ export function PhoneCountrySelect({
                 )}
               >
                 {/* Visible: flag + calling code only. The country name is kept
-                    for screen readers, which cannot interpret a flag glyph. */}
+                    for screen readers, which cannot interpret a flag image. */}
                 <span className="sr-only">{c.name}</span>
-                <span aria-hidden className="text-base leading-none">{c.flag}</span>
+                <Flag iso2={c.iso2} />
                 <span aria-hidden className="text-foreground" dir="ltr">{c.callingCode}</span>
               </li>
             ))}
