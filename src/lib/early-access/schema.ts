@@ -105,8 +105,25 @@ export type EarlyAccessPayload = {
   propertyCountry?: string;      // defaults MA
   landmark?: string;
   googleMapsUrl?: string;
+  // Confirmed operational location — where the cleaning team should actually
+  // enter. This is the pin the customer confirmed, NOT the geocoded result.
   latitude?: number;
   longitude?: number;
+  // Where the address search originally placed it, kept so we can tell an
+  // untouched geocode from a deliberately corrected entrance.
+  propertySelectedLatitude?: number;
+  propertySelectedLongitude?: number;
+  propertyPinAdjusted?: boolean;
+  propertyLocationSource?: string;   // google_place | map_pin | browser_geolocation | manual
+  propertyPlaceId?: string;
+  propertyFormattedAddress?: string;
+  /** True when the visitor chose to type the address instead of searching. */
+  propertyManualAddress?: boolean;
+
+  // Billing address search (billing may be anywhere in the world).
+  billingPlaceId?: string;
+  billingFormattedAddress?: string;
+  billingManualAddress?: boolean;
   entryNotes?: string;
   authorizedBySubmitter?: boolean;
 

@@ -18,6 +18,12 @@ export type AnalyticsEvent =
   | "early_access_cta_clicked"
   | "early_access_form_started"
   | "early_access_form_submitted"
+  // Address + map funnel. Coarse only — never a full address, coordinates,
+  // phone number or email.
+  | "billing_address_selected"
+  | "billing_address_manual_entry_used"
+  | "property_address_selected"
+  | "property_pin_moved"
   // Smart-lock upsell funnel (coarse, non-identifying — never pass PII as props).
   | "smart_lock_offer_viewed"
   | "smart_lock_purchase_interest_selected"

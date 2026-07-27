@@ -7,7 +7,7 @@ import type { PlaceLike } from "@/lib/maps/types";
 import { cn } from "@/lib/utils";
 
 export type AddressAutocompleteCopy = {
-  placeholder: string;
+  searchPlaceholder: string;
   searching: string;
   noResults: string;
   manualLink: string;
@@ -208,7 +208,7 @@ export function AddressAutocomplete({
           autoComplete="off"
           disabled={disabled}
           className="h-11 w-full rounded-xl border border-border bg-background ps-9 pe-9 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50"
-          placeholder={failed ? copy.unavailable : copy.placeholder}
+          placeholder={failed ? copy.unavailable : copy.searchPlaceholder}
           value={value}
           onChange={(e) => (usable ? onInput(e.target.value) : onChange(e.target.value))}
           onFocus={() => setOpen(true)}

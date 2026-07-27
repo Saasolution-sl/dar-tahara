@@ -21,6 +21,11 @@ import {
 import { MoroccanCitySelector } from "./moroccan-city-selector";
 import { OTHER_CITY_ID } from "@/lib/geo/moroccan-cities";
 import { PhoneCountrySelect } from "./phone-country-select";
+import { AddressAutocomplete } from "@/components/maps/address-autocomplete";
+import { PropertyMapPicker } from "@/components/maps/property-map-picker";
+import { parsePlace } from "@/lib/maps/address";
+import type { PlaceLike } from "@/lib/maps/types";
+import { MOROCCO_COUNTRY_CODE } from "@/lib/maps/config";
 import { defaultCountryFor } from "@/lib/phone/countries";
 import { getCountryCallingCode } from "@/lib/phone/lib";
 
@@ -464,6 +469,28 @@ function ResidenceCityField({
 
 function BillingStep({ p, set, errors, copy }: StepProps) {
   const f = copy.fields;
+  const [search, setSearch] = React.useState("");
+  // Structured fields stay hidden until there is something to show or correct —
+  // either a chosen address or an explicit switch to manual entry.
+  const showFields = Boolean(p.billingManualAddress || p.billingAddressLine1);
+
+  function applyPlace(place: PlaceLike) {
+    const a = parsePlace(place);
+    setSearch(a.formattedAddress ?? "");
+    set("billingPlaceId", a.placeId);
+    set("billingFormattedAddress", a.formattedAddress);
+    set("billingManualAddress", false);
+    // Only overwrite with values Google actually returned — never blank out
+    // something the customer already corrected by hand.
+    if (a.addressLine1) set("billingAddressLine1", a.addressLine1);
+    if (a.streetNumber) set("billingBuildingNumber", a.streetNumber);
+    if (a.postalCode) set("billingPostalCode", a.postalCode);
+    if (a.cityDisplayName) set("billingCity", a.cityDisplayName);
+    if (a.regionName) set("billingRegion", a.regionName);
+    if (a.countryCode) set("billingCountry", a.countryCode);
+    track("billing_address_selected", {});
+  }
+
   return (
     <>
       <FieldShell id="brt" label={f.billingRecipientType}>
@@ -474,6 +501,23 @@ function BillingStep({ p, set, errors, copy }: StepProps) {
           <TextInput value={p.companyName ?? ""} onChange={(e) => set("companyName", e.target.value)} autoComplete="organization" />
         </FieldShell>
       ) : null}
+
+      <FieldShell id="baddr-search" label={f.billingAddressLine1}>
+        <AddressAutocomplete
+          id="baddr-search"
+          value={search}
+          onChange={setSearch}
+          onSelect={applyPlace}
+          onManual={() => {
+            set("billingManualAddress", true);
+            track("billing_address_manual_entry_used", {});
+          }}
+          copy={copy.maps}
+        />
+      </FieldShell>
+
+      {!showFields ? null : (
+      <>
       <FieldShell id="b1" label={f.billingAddressLine1} required error={err(copy, errors.billingAddressLine1)}>
         <TextInput value={p.billingAddressLine1 ?? ""} onChange={(e) => set("billingAddressLine1", e.target.value)} autoComplete="address-line1" />
       </FieldShell>
@@ -504,6 +548,8 @@ function BillingStep({ p, set, errors, copy }: StepProps) {
           <Select options={COUNTRIES} placeholder="—" value={p.billingCountry ?? ""} onChange={(e) => set("billingCountry", e.target.value)} />
         </FieldShell>
       </div>
+      </>
+      )}
       <FieldShell id="tax" label={f.taxId}>
         <TextInput value={p.taxId ?? ""} onChange={(e) => set("taxId", e.target.value)} />
       </FieldShell>
@@ -520,6 +566,39 @@ function BillingStep({ p, set, errors, copy }: StepProps) {
 function PropertyAddressStep({ p, set, errors, copy, locale }: StepProps & { locale: Locale }) {
   const f = copy.fields;
   const canCopy = (p.billingCountry ?? "").toUpperCase() === "MA";
+  const [search, setSearch] = React.useState("");
+
+  function applyPlace(place: PlaceLike) {
+    const a = parsePlace(place);
+    setSearch(a.formattedAddress ?? "");
+    set("propertyPlaceId", a.placeId);
+    set("propertyFormattedAddress", a.formattedAddress);
+    set("propertyManualAddress", false);
+    if (a.addressLine1) set("propertyAddressLine1", a.addressLine1);
+    if (a.streetNumber) set("propertyBuildingNumber", a.streetNumber);
+    if (a.postalCode) set("propertyPostalCode", a.postalCode);
+    if (a.neighborhood) set("neighbourhood", a.neighborhood);
+    // Canonical city from the taxonomy where Google's locality matched one.
+    if (a.cityId) set("propertyCityId", a.cityId);
+    if (a.cityDisplayName) set("propertyCity", a.cityDisplayName);
+    if (a.manualCityName) {
+      set("propertyCityId", OTHER_CITY_ID);
+      set("propertyCityManualName", a.manualCityName);
+    }
+    if (a.regionName) set("propertyRegion", a.regionName);
+    // The geocoded point is only a STARTING position — the customer still has
+    // to confirm the entrance on the map below.
+    if (typeof a.latitude === "number" && typeof a.longitude === "number") {
+      set("propertySelectedLatitude", a.latitude);
+      set("propertySelectedLongitude", a.longitude);
+      set("latitude", a.latitude);
+      set("longitude", a.longitude);
+      set("propertyPinAdjusted", false);
+      set("propertyLocationSource", "google_place");
+    }
+    track("property_address_selected", {});
+  }
+
   return (
     <>
       {canCopy ? (
@@ -530,6 +609,31 @@ function PropertyAddressStep({ p, set, errors, copy, locale }: StepProps & { loc
       </FieldShell>
       {!p.useBillingAsProperty ? (
         <>
+          <FieldShell id="paddr-search" label={f.propertyAddressLine1}>
+            <AddressAutocomplete
+              id="paddr-search"
+              value={search}
+              onChange={setSearch}
+              onSelect={applyPlace}
+              onManual={() => set("propertyManualAddress", true)}
+              copy={copy.maps}
+              countryRestriction={MOROCCO_COUNTRY_CODE}
+            />
+          </FieldShell>
+
+          <PropertyMapPicker
+            latitude={p.latitude}
+            longitude={p.longitude}
+            copy={copy.maps}
+            onConfirm={(loc) => {
+              set("latitude", loc.latitude);
+              set("longitude", loc.longitude);
+              set("propertyPinAdjusted", loc.pinAdjustedByCustomer);
+              set("propertyLocationSource", loc.locationSource);
+              if (loc.pinAdjustedByCustomer) track("property_pin_moved", {});
+            }}
+          />
+
           <FieldShell id="pa1" label={f.propertyAddressLine1} required error={err(copy, errors.propertyAddressLine1)}>
             <TextInput value={p.propertyAddressLine1 ?? ""} onChange={(e) => set("propertyAddressLine1", e.target.value)} />
           </FieldShell>

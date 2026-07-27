@@ -157,8 +157,18 @@ export function buildPropertyRow(leadId: string, p: EarlyAccessPayload): Record<
     country_code: upper2(p.propertyCountry) ?? "MA",
     landmark: clean(p.landmark, 200),
     google_maps_url: clean(p.googleMapsUrl, 500),
+    // Confirmed operational location + how we got there.
     latitude: typeof p.latitude === "number" ? p.latitude : undefined,
     longitude: typeof p.longitude === "number" ? p.longitude : undefined,
+    selected_latitude:
+      typeof p.propertySelectedLatitude === "number" ? p.propertySelectedLatitude : undefined,
+    selected_longitude:
+      typeof p.propertySelectedLongitude === "number" ? p.propertySelectedLongitude : undefined,
+    pin_adjusted_by_customer: Boolean(p.propertyPinAdjusted),
+    location_source: p.propertyLocationSource,
+    google_place_id: clean(p.propertyPlaceId, 200),
+    formatted_address: clean(p.propertyFormattedAddress, 500),
+    manual_address_entry: Boolean(p.propertyManualAddress),
     entry_notes: clean(p.entryNotes, 1000),
     property_type: p.propertyType,
     size_m2: typeof p.sizeM2 === "number" ? p.sizeM2 : undefined,
