@@ -61,7 +61,8 @@ export type EarlyAccessPayload = {
   firstName: string;
   lastName: string;
   email: string;
-  countryCallingCode?: string;   // e.g. "+212"
+  phoneCountry?: string;         // ISO 3166-1 alpha-2, e.g. "MA" — the stored truth
+  countryCallingCode?: string;   // e.g. "+212" — derived from phoneCountry
   mobileNumber?: string;
   whatsappSameAsMobile?: boolean;
   whatsappNumber?: string;
@@ -104,8 +105,25 @@ export type EarlyAccessPayload = {
   propertyCountry?: string;      // defaults MA
   landmark?: string;
   googleMapsUrl?: string;
+  // Confirmed operational location — where the cleaning team should actually
+  // enter. This is the pin the customer confirmed, NOT the geocoded result.
   latitude?: number;
   longitude?: number;
+  // Where the address search originally placed it, kept so we can tell an
+  // untouched geocode from a deliberately corrected entrance.
+  propertySelectedLatitude?: number;
+  propertySelectedLongitude?: number;
+  propertyPinAdjusted?: boolean;
+  propertyLocationSource?: string;   // google_place | map_pin | browser_geolocation | manual
+  propertyPlaceId?: string;
+  propertyFormattedAddress?: string;
+  /** True when the visitor chose to type the address instead of searching. */
+  propertyManualAddress?: boolean;
+
+  // Billing address search (billing may be anywhere in the world).
+  billingPlaceId?: string;
+  billingFormattedAddress?: string;
+  billingManualAddress?: boolean;
   entryNotes?: string;
   authorizedBySubmitter?: boolean;
 
@@ -136,6 +154,11 @@ export type EarlyAccessPayload = {
   // Step 6 — access
   accessMethod?: string;
   physicalKeyTermsAcknowledged?: boolean;
+  // Digital-lock access is conditional on the property having internet — the
+  // customer must actively confirm they understand this, since a missed visit
+  // caused by a connectivity outage at the property is not grounds to waive
+  // charges or cancel the subscription.
+  digitalLockInternetAcknowledged?: boolean;
   thirdPartyDetails?: string;
   accessNotes?: string;
 
@@ -200,13 +223,9 @@ export function validateStep(step: StepId, p: EarlyAccessPayload): FieldErrors {
       else if (!isValidEmail(p.email)) e.email = "invalid_email";
       if (p.preferredContactMethod && !oneOf(CONTACT_METHODS, p.preferredContactMethod))
         e.preferredContactMethod = "invalid";
-      if (
-        p.residenceCity !== undefined
-        && p.residenceCity !== ""
-        && (!nonEmpty(p.residenceCity)
-          || p.residenceCity.trim().length > 120
-          || p.residenceCity === OTHER_CITY_VALUE)
-      ) e.residenceCity = "invalid";
+      if (!nonEmpty(p.residenceCity)) e.residenceCity = "required";
+      else if (p.residenceCity.trim().length > 120 || p.residenceCity === OTHER_CITY_VALUE)
+        e.residenceCity = "invalid";
       // A WhatsApp/phone number is required unless the sole method is email.
       if (p.preferredContactMethod !== "email" && !nonEmpty(p.mobileNumber) && !nonEmpty(p.whatsappNumber))
         e.mobileNumber = "phone_required";
@@ -218,6 +237,7 @@ export function validateStep(step: StepId, p: EarlyAccessPayload): FieldErrors {
       if (p.billingRecipientType === "business" && !nonEmpty(p.companyName))
         e.companyName = "required";
       if (!nonEmpty(p.billingAddressLine1)) e.billingAddressLine1 = "required";
+      if (!nonEmpty(p.billingBuildingNumber)) e.billingBuildingNumber = "required";
       if (!nonEmpty(p.billingCity)) e.billingCity = "required";
       if (!nonEmpty(p.billingCountry)) e.billingCountry = "required";
       if (p.invoiceEmail && !isValidEmail(p.invoiceEmail)) e.invoiceEmail = "invalid_email";
@@ -228,6 +248,7 @@ export function validateStep(step: StepId, p: EarlyAccessPayload): FieldErrors {
       // submit time, so only require them when NOT copying.
       if (!p.useBillingAsProperty) {
         if (!nonEmpty(p.propertyAddressLine1)) e.propertyAddressLine1 = "required";
+        if (!nonEmpty(p.propertyBuildingNumber)) e.propertyBuildingNumber = "required";
         // A standardized city OR a manual "not listed" name satisfies this; a
         // waiting-list / not-yet-active area is NEVER rejected here.
         const hasCity =
@@ -236,7 +257,9 @@ export function validateStep(step: StepId, p: EarlyAccessPayload): FieldErrors {
         if (p.propertyCityId === OTHER_CITY_VALUE && !nonEmpty(p.propertyCityManualName))
           e.propertyCityManualName = "required";
       }
-      if (p.googleMapsUrl && !/^https?:\/\//i.test(p.googleMapsUrl)) e.googleMapsUrl = "invalid_url";
+      // Mandatory regardless of useBillingAsProperty — the field is always shown.
+      if (!nonEmpty(p.googleMapsUrl)) e.googleMapsUrl = "required";
+      else if (!/^https?:\/\//i.test(p.googleMapsUrl)) e.googleMapsUrl = "invalid_url";
       if (!p.authorizedBySubmitter) e.authorizedBySubmitter = "authorization_required";
       break;
 
@@ -260,15 +283,24 @@ export function validateStep(step: StepId, p: EarlyAccessPayload): FieldErrors {
       // Physical-key handling requires an explicit acknowledgement of the terms.
       if (p.accessMethod === "physical_key" && !p.physicalKeyTermsAcknowledged)
         e.physicalKeyTermsAcknowledged = "acknowledgement_required";
-      // Smart-lock upsell: a choice is required (no preselected paid option), but
-      // ANY choice — including "not_interested" — lets the customer continue.
-      if (!nonEmpty(p.smartLockInterest)) e.smartLockInterest = "smart_lock_choice_required";
-      else if (!oneOf(SMART_LOCK_INTEREST_OPTIONS, p.smartLockInterest))
-        e.smartLockInterest = "invalid";
-      // If they already have a lock, ask for the brand where reasonably possible;
-      // the model stays optional because customers often don't know it.
-      else if (p.smartLockInterest === "already_has_lock" && !nonEmpty(p.existingLockBrand))
-        e.existingLockBrand = "required";
+      // Smart-lock upsell is only shown (and only asked) when the customer's
+      // chosen access method is a digital lock. When shown, a choice is
+      // required (no preselected paid option), but ANY choice — including
+      // "not_interested" — lets the customer continue.
+      if (p.accessMethod === "digital_lock") {
+        if (!nonEmpty(p.smartLockInterest)) e.smartLockInterest = "smart_lock_choice_required";
+        else if (!oneOf(SMART_LOCK_INTEREST_OPTIONS, p.smartLockInterest))
+          e.smartLockInterest = "invalid";
+        // If they already have a lock, ask for the brand where reasonably
+        // possible; the model stays optional since customers often don't know it.
+        else if (p.smartLockInterest === "already_has_lock" && !nonEmpty(p.existingLockBrand))
+          e.existingLockBrand = "required";
+        // The customer must actively confirm they understand the internet
+        // requirement — a missed visit caused by the property's own
+        // connectivity outage is not grounds to waive charges or cancel.
+        if (!p.digitalLockInternetAcknowledged)
+          e.digitalLockInternetAcknowledged = "internet_acknowledgement_required";
+      }
       break;
 
     case "review":

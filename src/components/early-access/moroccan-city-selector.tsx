@@ -13,6 +13,14 @@ import {
 import { cn } from "@/lib/utils";
 import { FieldShell, TextInput } from "./fields";
 
+// NB: this component is meant to be wrapped by an EXTERNAL <FieldShell>, the
+// same way AddressAutocomplete is used elsewhere in the form. It must NOT
+// render its own internal FieldShell around the search input: FieldShell
+// clones its direct child and stamps the field's `id` onto it, and here the
+// direct child would be the icon-positioning wrapper <div>, not the <input> —
+// producing two DOM nodes sharing the same id (invalid HTML, and it breaks the
+// label's htmlFor association, since the label ends up pointing at the div).
+
 export type CitySelectorCopy = {
   searchPlaceholder: string;
   notListed: string;
@@ -36,24 +44,23 @@ export type CitySelection = {
  */
 export function MoroccanCitySelector({
   id,
-  label,
-  required,
   locale,
   value,
   manualName,
   onChange,
   copy,
-  error,
+  "aria-invalid": ariaInvalid,
+  "aria-describedby": ariaDescribedBy,
 }: {
   id: string;
-  label: string;
-  required?: boolean;
   locale: Locale;
   value?: string;
   manualName?: string;
   onChange: (sel: CitySelection) => void;
   copy: CitySelectorCopy;
-  error?: string;
+  /** Injected by the wrapping <FieldShell> via cloneElement — forwarded to the real input. */
+  "aria-invalid"?: boolean;
+  "aria-describedby"?: string;
 }) {
   const [query, setQuery] = React.useState("");
   const [open, setOpen] = React.useState(false);
@@ -115,34 +122,34 @@ export function MoroccanCitySelector({
 
   return (
     <div ref={rootRef} className="relative">
-      <FieldShell id={id} label={label} required={required} error={error}>
-        <div className="relative">
-          <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
-          <input
-            id={id}
-            role="combobox"
-            aria-expanded={open}
-            aria-controls={listId}
-            aria-autocomplete="list"
-            autoComplete="off"
-            className="h-11 w-full rounded-xl border border-border bg-background ps-9 pe-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
-            placeholder={copy.searchPlaceholder}
-            value={open ? query : collapsedLabel}
-            onFocus={() => setOpen(true)}
-            onChange={(e) => {
-              setQuery(e.target.value);
-              setOpen(true);
-              setActive(0);
-            }}
-            onKeyDown={(e) => {
-              if (e.key === "ArrowDown") { e.preventDefault(); setOpen(true); setActive((a) => Math.min(a + 1, rows.length - 1)); }
-              else if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => Math.max(a - 1, 0)); }
-              else if (e.key === "Enter") { e.preventDefault(); choose(active); }
-              else if (e.key === "Escape") { setOpen(false); }
-            }}
-          />
-        </div>
-      </FieldShell>
+      <div className="relative">
+        <Search className="pointer-events-none absolute start-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" aria-hidden />
+        <input
+          id={id}
+          role="combobox"
+          aria-expanded={open}
+          aria-controls={listId}
+          aria-autocomplete="list"
+          aria-invalid={ariaInvalid}
+          aria-describedby={ariaDescribedBy}
+          autoComplete="off"
+          className="h-11 w-full rounded-xl border border-border bg-background ps-9 pe-3 text-sm text-foreground outline-none transition placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring"
+          placeholder={copy.searchPlaceholder}
+          value={open ? query : collapsedLabel}
+          onFocus={() => setOpen(true)}
+          onChange={(e) => {
+            setQuery(e.target.value);
+            setOpen(true);
+            setActive(0);
+          }}
+          onKeyDown={(e) => {
+            if (e.key === "ArrowDown") { e.preventDefault(); setOpen(true); setActive((a) => Math.min(a + 1, rows.length - 1)); }
+            else if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => Math.max(a - 1, 0)); }
+            else if (e.key === "Enter") { e.preventDefault(); choose(active); }
+            else if (e.key === "Escape") { setOpen(false); }
+          }}
+        />
+      </div>
 
       {open ? (
         <ul

@@ -6,6 +6,8 @@
  * caller stores the raw value rather than a wrong "normalized" one.
  */
 
+import { parsePhone, type CountryCode } from "@/lib/phone/lib";
+
 /** Strip everything except digits and a single leading plus. */
 function clean(raw: string): string {
   const trimmed = raw.trim().replace(/[^\d+]/g, "");
@@ -46,4 +48,53 @@ export function toE164(
 /** E.164 allows up to 15 digits after the plus; require at least 8 to be real. */
 export function isPlausibleE164(v: string): boolean {
   return /^\+\d{8,15}$/.test(v);
+}
+
+/* ── Country-aware validation ───────────────────────────────────────────────
+ * The helpers above are format-only and stay as the last-resort fallback. The
+ * ones below use libphonenumber metadata to check a number against the rules of
+ * the SELECTED country, which is what actually catches a Dutch mobile typed
+ * while "Morocco" is chosen. */
+
+/**
+ * Parse a national number against an ISO 3166-1 alpha-2 country and return
+ * E.164, or null when it is not a valid number for that country.
+ */
+export function toE164ForCountry(
+  nationalNumber: string | undefined | null,
+  iso2: string | undefined | null,
+): string | null {
+  if (!nationalNumber || !nationalNumber.trim()) return null;
+  const country = iso2?.toUpperCase();
+  if (!country || !/^[A-Z]{2}$/.test(country)) return null;
+  try {
+    const parsed = parsePhone(nationalNumber, country as CountryCode);
+    if (parsed && parsed.isValid()) return parsed.number;
+  } catch {
+    /* fall through to null — never throw at the caller */
+  }
+  return null;
+}
+
+/** True when the number is valid for that country. */
+export function isValidPhoneForCountry(
+  nationalNumber: string | undefined | null,
+  iso2: string | undefined | null,
+): boolean {
+  return toE164ForCountry(nationalNumber, iso2) !== null;
+}
+
+/**
+ * Best available normalization: prefer strict country-aware parsing, then fall
+ * back to the permissive calling-code combination so an unusual-but-real number
+ * is stored rather than dropped.
+ */
+export function normalizePhone(
+  nationalNumber: string | undefined | null,
+  opts: { country?: string | null; callingCode?: string | null },
+): string | null {
+  return (
+    toE164ForCountry(nationalNumber, opts.country) ??
+    toE164(nationalNumber, opts.callingCode)
+  );
 }

@@ -9,7 +9,7 @@
  */
 import type { EarlyAccessPayload } from "./schema";
 import { normalizeEmail } from "./schema";
-import { toE164 } from "./phone";
+import { toE164, normalizePhone } from "./phone";
 import { toLeadAttributionColumns, type Attribution } from "./attribution";
 import type { LeadForSync } from "@/lib/mautic/types";
 import {
@@ -82,10 +82,14 @@ export function buildLeadRow(
   attribution: { first?: Attribution; last?: Attribution },
 ): Record<string, unknown> {
   const email = normalizeEmail(p.email);
-  const mobile = toE164(p.mobileNumber, p.countryCallingCode);
+  // Prefer strict validation against the SELECTED country, falling back to the
+  // permissive calling-code combination so an unusual-but-real number is stored
+  // rather than dropped.
+  const phoneOpts = { country: p.phoneCountry, callingCode: p.countryCallingCode };
+  const mobile = normalizePhone(p.mobileNumber, phoneOpts);
   const whatsapp = p.whatsappSameAsMobile
     ? mobile
-    : toE164(p.whatsappNumber ?? p.mobileNumber, p.countryCallingCode);
+    : normalizePhone(p.whatsappNumber ?? p.mobileNumber, phoneOpts);
 
   return {
     first_name: clean(p.firstName, 120),
@@ -94,6 +98,7 @@ export function buildLeadRow(
     normalized_email: email,
     mobile_phone: mobile,
     whatsapp_phone: whatsapp,
+    phone_country: upper2(p.phoneCountry),
     preferred_contact_method: p.preferredContactMethod ?? "whatsapp",
     preferred_language: p.preferredLanguage ?? p.locale ?? "en",
     residence_city: clean(p.residenceCity, 120),
@@ -152,8 +157,18 @@ export function buildPropertyRow(leadId: string, p: EarlyAccessPayload): Record<
     country_code: upper2(p.propertyCountry) ?? "MA",
     landmark: clean(p.landmark, 200),
     google_maps_url: clean(p.googleMapsUrl, 500),
+    // Confirmed operational location + how we got there.
     latitude: typeof p.latitude === "number" ? p.latitude : undefined,
     longitude: typeof p.longitude === "number" ? p.longitude : undefined,
+    selected_latitude:
+      typeof p.propertySelectedLatitude === "number" ? p.propertySelectedLatitude : undefined,
+    selected_longitude:
+      typeof p.propertySelectedLongitude === "number" ? p.propertySelectedLongitude : undefined,
+    pin_adjusted_by_customer: Boolean(p.propertyPinAdjusted),
+    location_source: p.propertyLocationSource,
+    google_place_id: clean(p.propertyPlaceId, 200),
+    formatted_address: clean(p.propertyFormattedAddress, 500),
+    manual_address_entry: Boolean(p.propertyManualAddress),
     entry_notes: clean(p.entryNotes, 1000),
     property_type: p.propertyType,
     size_m2: typeof p.sizeM2 === "number" ? p.sizeM2 : undefined,
@@ -267,6 +282,7 @@ export function toLeadForSync(
     preferredContactMethod: (row.preferred_contact_method as string) ?? null,
     preferredLanguage: (row.preferred_language as string) ?? null,
     residenceCity: (row.residence_city as string) ?? null,
+    phoneCountry: (row.phone_country as string) ?? null,
     status: extra.emailVerified ? "verified" : "pending",
     emailVerified: extra.emailVerified ?? false,
     referralCode: extra.referralCode ?? null,

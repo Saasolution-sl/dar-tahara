@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, Loader2, ArrowRight, ArrowLeft, ShieldCheck, KeyRound, Info, Lock } from "lucide-react";
+import { Check, Loader2, ArrowRight, ArrowLeft, ShieldCheck, KeyRound, Info, Lock, Wifi } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import type { EarlyAccessCopy } from "@/i18n/early-access-copy";
 import {
@@ -20,6 +20,14 @@ import {
 } from "./fields";
 import { MoroccanCitySelector } from "./moroccan-city-selector";
 import { OTHER_CITY_ID } from "@/lib/geo/moroccan-cities";
+import { PhoneCountrySelect } from "./phone-country-select";
+import { AddressAutocomplete } from "@/components/maps/address-autocomplete";
+import { PropertyMapPicker } from "@/components/maps/property-map-picker";
+import { parsePlace } from "@/lib/maps/address";
+import type { PlaceLike } from "@/lib/maps/types";
+import { MOROCCO_COUNTRY_CODE } from "@/lib/maps/config";
+import { defaultCountryFor } from "@/lib/phone/countries";
+import { getCountryCallingCode } from "@/lib/phone/lib";
 
 const FIRST_TOUCH_KEY = "dt_ea_first_touch";
 
@@ -30,11 +38,9 @@ const COUNTRIES: Record<string, string> = {
   ES: "Spain", GB: "United Kingdom", AE: "United Arab Emirates", IT: "Italy",
   US: "United States", CA: "Canada", CH: "Switzerland", SE: "Sweden", NO: "Norway",
 };
-const CALLING_CODES: Record<string, string> = {
-  "+212": "🇲🇦 +212", "+31": "🇳🇱 +31", "+32": "🇧🇪 +32", "+33": "🇫🇷 +33",
-  "+49": "🇩🇪 +49", "+34": "🇪🇸 +34", "+44": "🇬🇧 +44", "+971": "🇦🇪 +971",
-  "+39": "🇮🇹 +39", "+1": "🇺🇸 +1", "+41": "🇨🇭 +41", "+46": "🇸🇪 +46", "+47": "🇳🇴 +47",
-};
+// Calling codes are no longer hand-maintained here — PhoneCountrySelect derives
+// the full country list, dial codes and localized names from libphonenumber-js
+// metadata plus Intl.DisplayNames.
 const LANGUAGES: Record<string, string> = {
   en: "English", fr: "Français", ar: "العربية", nl: "Nederlands", es: "Español", de: "Deutsch", pt: "Português",
 };
@@ -44,7 +50,10 @@ type Status = "idle" | "submitting" | "error";
 export function EarlyAccessForm({ locale, copy }: { locale: Locale; copy: EarlyAccessCopy }) {
   const [p, setP] = React.useState<EarlyAccessPayload>({
     firstName: "", lastName: "", email: "",
-    countryCallingCode: "+212", preferredContactMethod: "whatsapp",
+    // Suggested from the site locale (never IP geolocation); always changeable.
+    phoneCountry: defaultCountryFor(locale),
+    countryCallingCode: `+${getCountryCallingCode(defaultCountryFor(locale))}`,
+    preferredContactMethod: "whatsapp",
     preferredLanguage: locale, whatsappSameAsMobile: true,
     billingRecipientType: "private", propertyCountry: "MA",
     serviceTypes: [], locale,
@@ -207,7 +216,7 @@ export function EarlyAccessForm({ locale, copy }: { locale: Locale; copy: EarlyA
       <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">{copy.steps[step].subtitle}</p>
 
       <div className="mt-6 space-y-5">
-        {step === "contact" && <ContactStep p={p} set={set} errors={errors} copy={copy} />}
+        {step === "contact" && <ContactStep p={p} set={set} errors={errors} copy={copy} locale={locale} />}
         {step === "billing" && <BillingStep p={p} set={set} errors={errors} copy={copy} />}
         {step === "property_address" && <PropertyAddressStep p={p} set={set} errors={errors} copy={copy} locale={locale} />}
         {step === "property_info" && <PropertyInfoStep p={p} set={set} errors={errors} copy={copy} />}
@@ -289,7 +298,7 @@ function err(copy: EarlyAccessCopy, code?: string) {
   return code ? copy.errors[code] ?? copy.errors.invalid : undefined;
 }
 
-function ContactStep({ p, set, errors, copy }: StepProps) {
+function ContactStep({ p, set, errors, copy, locale }: StepProps & { locale: Locale }) {
   const f = copy.fields;
   return (
     <>
@@ -306,7 +315,17 @@ function ContactStep({ p, set, errors, copy }: StepProps) {
       </FieldShell>
       <div className="grid gap-5 sm:grid-cols-[9rem_1fr]">
         <FieldShell id="cc" label={f.countryCallingCode}>
-          <Select options={CALLING_CODES} value={p.countryCallingCode} onChange={(e) => set("countryCallingCode", e.target.value)} />
+          <PhoneCountrySelect
+            id="cc"
+            locale={locale}
+            value={p.phoneCountry ?? defaultCountryFor(locale, p.phoneCountry)}
+            copy={copy.phoneCountry}
+            onChange={(c) => {
+              // ISO code is the stored truth; the calling code is derived from it.
+              set("phoneCountry", c.iso2);
+              set("countryCallingCode", c.callingCode);
+            }}
+          />
         </FieldShell>
         <FieldShell id="mobileNumber" label={f.mobileNumber} error={err(copy, errors.mobileNumber)}>
           <TextInput type="tel" inputMode="tel" value={p.mobileNumber ?? ""} onChange={(e) => set("mobileNumber", e.target.value)} autoComplete="tel-national" />
@@ -384,7 +403,7 @@ function ResidenceCityField({
 
   return (
     <>
-      <FieldShell id="residenceCity" label={copy.fields.residenceCity} error={error}>
+      <FieldShell id="residenceCity" label={copy.fields.residenceCity} required error={error}>
         <Select
           options={options}
           placeholder="—"
@@ -450,6 +469,26 @@ function ResidenceCityField({
 
 function BillingStep({ p, set, errors, copy }: StepProps) {
   const f = copy.fields;
+  // The search box IS address line 1 — one field serves both purposes, so the
+  // customer never sees "Address line 1" appear a second time below it.
+  const showFields = Boolean(p.billingManualAddress || p.billingAddressLine1);
+
+  function applyPlace(place: PlaceLike) {
+    const a = parsePlace(place);
+    set("billingPlaceId", a.placeId);
+    set("billingFormattedAddress", a.formattedAddress);
+    set("billingManualAddress", false);
+    // Only overwrite with values Google actually returned — never blank out
+    // something the customer already corrected by hand.
+    if (a.addressLine1) set("billingAddressLine1", a.addressLine1);
+    if (a.streetNumber) set("billingBuildingNumber", a.streetNumber);
+    if (a.postalCode) set("billingPostalCode", a.postalCode);
+    if (a.cityDisplayName) set("billingCity", a.cityDisplayName);
+    if (a.regionName) set("billingRegion", a.regionName);
+    if (a.countryCode) set("billingCountry", a.countryCode);
+    track("billing_address_selected", {});
+  }
+
   return (
     <>
       <FieldShell id="brt" label={f.billingRecipientType}>
@@ -460,20 +499,30 @@ function BillingStep({ p, set, errors, copy }: StepProps) {
           <TextInput value={p.companyName ?? ""} onChange={(e) => set("companyName", e.target.value)} autoComplete="organization" />
         </FieldShell>
       ) : null}
-      <FieldShell id="b1" label={f.billingAddressLine1} required error={err(copy, errors.billingAddressLine1)}>
-        <TextInput value={p.billingAddressLine1 ?? ""} onChange={(e) => set("billingAddressLine1", e.target.value)} autoComplete="address-line1" />
+
+      <FieldShell id="baddr-search" label={f.addressSearch} required error={err(copy, errors.billingAddressLine1)}>
+        <AddressAutocomplete
+          id="baddr-search"
+          value={p.billingAddressLine1 ?? ""}
+          onChange={(v) => set("billingAddressLine1", v)}
+          onSelect={applyPlace}
+          onManual={() => {
+            set("billingManualAddress", true);
+            track("billing_address_manual_entry_used", {});
+          }}
+          copy={copy.maps}
+        />
       </FieldShell>
+
+      {!showFields ? null : (
+      <>
       <FieldShell id="b2" label={f.billingAddressLine2}>
         <TextInput value={p.billingAddressLine2 ?? ""} onChange={(e) => set("billingAddressLine2", e.target.value)} autoComplete="address-line2" />
       </FieldShell>
-      <div className="grid gap-5 sm:grid-cols-2">
-        <FieldShell id="bhn" label={f.billingBuildingNumber}>
-          <TextInput value={p.billingBuildingNumber ?? ""} onChange={(e) => set("billingBuildingNumber", e.target.value)} />
-        </FieldShell>
-        <FieldShell id="bu" label={f.billingUnit}>
-          <TextInput value={p.billingUnit ?? ""} onChange={(e) => set("billingUnit", e.target.value)} />
-        </FieldShell>
-      </div>
+      {/* Building number and apartment/unit are one field — accepts letters and numbers. */}
+      <FieldShell id="bhn" label={f.billingBuildingNumber} required error={err(copy, errors.billingBuildingNumber)}>
+        <TextInput value={p.billingBuildingNumber ?? ""} onChange={(e) => set("billingBuildingNumber", e.target.value)} />
+      </FieldShell>
       <div className="grid gap-5 sm:grid-cols-2">
         <FieldShell id="bpc" label={f.billingPostalCode}>
           <TextInput value={p.billingPostalCode ?? ""} onChange={(e) => set("billingPostalCode", e.target.value)} autoComplete="postal-code" />
@@ -490,6 +539,8 @@ function BillingStep({ p, set, errors, copy }: StepProps) {
           <Select options={COUNTRIES} placeholder="—" value={p.billingCountry ?? ""} onChange={(e) => set("billingCountry", e.target.value)} />
         </FieldShell>
       </div>
+      </>
+      )}
       <FieldShell id="tax" label={f.taxId}>
         <TextInput value={p.taxId ?? ""} onChange={(e) => set("taxId", e.target.value)} />
       </FieldShell>
@@ -506,6 +557,42 @@ function BillingStep({ p, set, errors, copy }: StepProps) {
 function PropertyAddressStep({ p, set, errors, copy, locale }: StepProps & { locale: Locale }) {
   const f = copy.fields;
   const canCopy = (p.billingCountry ?? "").toUpperCase() === "MA";
+  // The search box IS address line 1 — one field serves both purposes, so the
+  // customer never sees "Address line 1" appear a second time below it.
+  // Same progressive-disclosure pattern as the billing step: only reveal the
+  // map and remaining structured fields once there is something to show or correct.
+  const propertyShowFields = Boolean(p.propertyManualAddress || p.propertyAddressLine1);
+
+  function applyPlace(place: PlaceLike) {
+    const a = parsePlace(place);
+    set("propertyPlaceId", a.placeId);
+    set("propertyFormattedAddress", a.formattedAddress);
+    set("propertyManualAddress", false);
+    if (a.addressLine1) set("propertyAddressLine1", a.addressLine1);
+    if (a.streetNumber) set("propertyBuildingNumber", a.streetNumber);
+    if (a.postalCode) set("propertyPostalCode", a.postalCode);
+    if (a.neighborhood) set("neighbourhood", a.neighborhood);
+    // Canonical city from the taxonomy where Google's locality matched one.
+    if (a.cityId) set("propertyCityId", a.cityId);
+    if (a.cityDisplayName) set("propertyCity", a.cityDisplayName);
+    if (a.manualCityName) {
+      set("propertyCityId", OTHER_CITY_ID);
+      set("propertyCityManualName", a.manualCityName);
+    }
+    if (a.regionName) set("propertyRegion", a.regionName);
+    // The geocoded point is only a STARTING position — the customer still has
+    // to confirm the entrance on the map below.
+    if (typeof a.latitude === "number" && typeof a.longitude === "number") {
+      set("propertySelectedLatitude", a.latitude);
+      set("propertySelectedLongitude", a.longitude);
+      set("latitude", a.latitude);
+      set("longitude", a.longitude);
+      set("propertyPinAdjusted", false);
+      set("propertyLocationSource", "google_place");
+    }
+    track("property_address_selected", {});
+  }
+
   return (
     <>
       {canCopy ? (
@@ -516,60 +603,102 @@ function PropertyAddressStep({ p, set, errors, copy, locale }: StepProps & { loc
       </FieldShell>
       {!p.useBillingAsProperty ? (
         <>
-          <FieldShell id="pa1" label={f.propertyAddressLine1} required error={err(copy, errors.propertyAddressLine1)}>
-            <TextInput value={p.propertyAddressLine1 ?? ""} onChange={(e) => set("propertyAddressLine1", e.target.value)} />
+          <FieldShell id="paddr-search" label={f.addressSearch} required error={err(copy, errors.propertyAddressLine1)}>
+            <AddressAutocomplete
+              id="paddr-search"
+              value={p.propertyAddressLine1 ?? ""}
+              onChange={(v) => set("propertyAddressLine1", v)}
+              onSelect={applyPlace}
+              onManual={() => set("propertyManualAddress", true)}
+              copy={copy.maps}
+              countryRestriction={MOROCCO_COUNTRY_CODE}
+            />
           </FieldShell>
+
+          {/* Structured fields + map stay hidden until there is something to show
+              or correct — a chosen address, or an explicit switch to manual entry. */}
+          {!propertyShowFields ? null : (
+          <>
+          <PropertyMapPicker
+            latitude={p.latitude}
+            longitude={p.longitude}
+            copy={copy.maps}
+            onConfirm={(loc) => {
+              set("latitude", loc.latitude);
+              set("longitude", loc.longitude);
+              set("propertyPinAdjusted", loc.pinAdjustedByCustomer);
+              set("propertyLocationSource", loc.locationSource);
+              if (loc.pinAdjustedByCustomer) track("property_pin_moved", {});
+            }}
+          />
+
           <FieldShell id="pa2" label={f.propertyAddressLine2}>
             <TextInput value={p.propertyAddressLine2 ?? ""} onChange={(e) => set("propertyAddressLine2", e.target.value)} />
           </FieldShell>
+          {/* Building number and apartment/unit/villa number are one field —
+              accepts letters and numbers. */}
           <div className="grid gap-5 sm:grid-cols-2">
-            <FieldShell id="rn" label={f.residenceName}>
-              <TextInput value={p.residenceName ?? ""} onChange={(e) => set("residenceName", e.target.value)} />
-            </FieldShell>
-            <FieldShell id="pbn" label={f.propertyBuildingNumber}>
+            <FieldShell id="pbn" label={f.propertyBuildingNumber} required error={err(copy, errors.propertyBuildingNumber)}>
               <TextInput value={p.propertyBuildingNumber ?? ""} onChange={(e) => set("propertyBuildingNumber", e.target.value)} />
-            </FieldShell>
-          </div>
-          <div className="grid gap-5 sm:grid-cols-3">
-            <FieldShell id="pun" label={f.propertyUnitNumber}>
-              <TextInput value={p.propertyUnitNumber ?? ""} onChange={(e) => set("propertyUnitNumber", e.target.value)} />
-            </FieldShell>
-            <FieldShell id="pf" label={f.propertyFloor}>
-              <TextInput value={p.propertyFloor ?? ""} onChange={(e) => set("propertyFloor", e.target.value)} />
             </FieldShell>
             <FieldShell id="ppc" label={f.propertyPostalCode}>
               <TextInput value={p.propertyPostalCode ?? ""} onChange={(e) => set("propertyPostalCode", e.target.value)} />
             </FieldShell>
           </div>
-          <MoroccanCitySelector
+          <FieldShell
             id="pcity"
             label={f.propertyCity}
             required
-            locale={locale}
-            value={p.propertyCityId}
-            manualName={p.propertyCityManualName}
-            copy={copy.citySelector}
             error={err(copy, errors.propertyCity) ?? err(copy, errors.propertyCityManualName)}
-            onChange={(sel) => {
-              set("propertyCityId", sel.cityId);
-              set("propertyCityManualName", sel.cityId === OTHER_CITY_ID ? sel.manualName : undefined);
-              set("propertyCity", sel.cityName);
-              // Fill the province/region box from the taxonomy so the customer
-              // doesn't retype it; still editable below.
-              if (sel.regionName) set("propertyRegion", sel.regionName);
-            }}
-          />
+          >
+            <MoroccanCitySelector
+              id="pcity"
+              locale={locale}
+              value={p.propertyCityId}
+              manualName={p.propertyCityManualName}
+              copy={copy.citySelector}
+              onChange={(sel) => {
+                set("propertyCityId", sel.cityId);
+                set("propertyCityManualName", sel.cityId === OTHER_CITY_ID ? sel.manualName : undefined);
+                set("propertyCity", sel.cityName);
+                // Fill the province/region box from the taxonomy so the customer
+                // doesn't retype it; still editable below.
+                if (sel.regionName) set("propertyRegion", sel.regionName);
+              }}
+            />
+          </FieldShell>
           <div className="grid gap-5 sm:grid-cols-2">
             <FieldShell id="preg" label={f.propertyRegion}>
               <TextInput value={p.propertyRegion ?? ""} onChange={(e) => set("propertyRegion", e.target.value)} />
             </FieldShell>
           </div>
-          <FieldShell id="nb" label={f.neighbourhood}>
-            <TextInput value={p.neighbourhood ?? ""} onChange={(e) => set("neighbourhood", e.target.value)} />
-          </FieldShell>
+          </>
+          )}
         </>
       ) : null}
-      <FieldShell id="gm" label={f.googleMapsUrl} hint={copy.hints.googleMapsUrl} error={err(copy, errors.googleMapsUrl)}>
+      <FieldShell
+        id="gm"
+        label={
+          <span className="inline-flex items-center gap-1.5">
+            {f.googleMapsUrl}
+            <a
+              // Short video walkthrough (English) — swapped in per owner request
+              // for an easier-to-follow alternative to the Google support article.
+              href="https://youtu.be/SZhvdCMvNxw"
+              target="_blank"
+              rel="noopener noreferrer"
+              aria-label={f.mapsHelp}
+              title={f.mapsHelp}
+              className="inline-flex h-4 w-4 items-center justify-center rounded-full border border-muted-foreground/40 text-[0.65rem] font-semibold leading-none text-muted-foreground transition hover:border-primary hover:text-primary"
+            >
+              ?
+            </a>
+          </span>
+        }
+        required
+        hint={copy.hints.googleMapsUrl}
+        error={err(copy, errors.googleMapsUrl)}
+      >
         <TextInput type="url" inputMode="url" value={p.googleMapsUrl ?? ""} onChange={(e) => set("googleMapsUrl", e.target.value)} placeholder="https://maps.google.com/…" />
       </FieldShell>
       <FieldShell id="en" label={f.entryNotes} hint={copy.hints.entryNotes}>
@@ -677,10 +806,37 @@ function AccessStep({ p, set, errors, copy }: StepProps) {
       </FieldShell>
 
       {p.accessMethod === "digital_lock" ? (
-        <p className="flex items-start gap-2 rounded-xl bg-primary/5 px-4 py-3 text-xs leading-relaxed text-foreground">
-          <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
-          {copy.digitalLockNotice}
-        </p>
+        <>
+          <p className="flex items-start gap-2 rounded-xl bg-primary/5 px-4 py-3 text-xs leading-relaxed text-foreground">
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-primary" />
+            {copy.digitalLockNotice}
+          </p>
+          {/* Hard requirement — the customer must actively acknowledge it, not
+              just read it, since a missed visit caused by the property's own
+              connectivity outage is not grounds to waive charges or cancel. */}
+          <div className="rounded-xl border border-accent/30 bg-accent/5 p-4">
+            <p className="flex items-center gap-2 text-sm font-semibold text-foreground">
+              <Wifi className="h-4 w-4 text-accent" />
+              {copy.digitalLockInternetNotice.title}
+            </p>
+            <p className="mt-2 text-xs leading-relaxed text-muted-foreground">
+              {copy.digitalLockInternetNotice.body}
+            </p>
+            <div className="mt-3">
+              <CheckboxRow
+                id="internet-ack"
+                label={copy.digitalLockInternetNotice.ack}
+                checked={Boolean(p.digitalLockInternetAcknowledged)}
+                onChange={(v) => set("digitalLockInternetAcknowledged", v)}
+              />
+              {errors.digitalLockInternetAcknowledged ? (
+                <p role="alert" className="mt-1 text-xs font-medium text-red-600">
+                  {err(copy, errors.digitalLockInternetAcknowledged)}
+                </p>
+              ) : null}
+            </div>
+          </div>
+        </>
       ) : null}
 
       {p.accessMethod === "physical_key" ? (
@@ -720,7 +876,9 @@ function AccessStep({ p, set, errors, copy }: StepProps) {
         <TextArea value={p.accessNotes ?? ""} onChange={(e) => set("accessNotes", e.target.value)} />
       </FieldShell>
 
-      <SmartLockUpsell p={p} set={set} errors={errors} copy={copy} />
+      {p.accessMethod === "digital_lock" ? (
+        <SmartLockUpsell p={p} set={set} errors={errors} copy={copy} />
+      ) : null}
     </>
   );
 }

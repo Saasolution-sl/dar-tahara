@@ -8,6 +8,38 @@ import { screenSubmission, isDisposableEmail, MIN_FORM_ELAPSED_MS } from "./anti
 import { buildLeadRow, buildPropertyRow, buildConsentRows, buildAccessRow, propertySizeRange } from "./mappers";
 
 // ── smart-lock upsell ────────────────────────────────────────────────────────
+test("the smart-lock choice is only required (and only asked) when access method is a digital lock", () => {
+  // Box hidden for every other access method: no requirement, never blocks.
+  for (const method of ["physical_key", "person_present", "concierge", "lockbox", "property_manager", "other"]) {
+    const { smartLockInterest: _omit, ...p } = { ...full(), accessMethod: method };
+    void _omit;
+    if (method === "physical_key") p.physicalKeyTermsAcknowledged = true;
+    assert.equal(validateStep("access", p).smartLockInterest, undefined, `should not require smart-lock choice for ${method}`);
+  }
+});
+
+test("digital-lock customers must actively acknowledge the internet requirement", () => {
+  const { digitalLockInternetAcknowledged: _omit, ...p } = full();
+  void _omit;
+  assert.equal(validateStep("access", p).digitalLockInternetAcknowledged, "internet_acknowledgement_required");
+  assert.equal(
+    validateStep("access", { ...p, digitalLockInternetAcknowledged: false }).digitalLockInternetAcknowledged,
+    "internet_acknowledgement_required",
+  );
+  assert.deepEqual(validateStep("access", { ...full(), digitalLockInternetAcknowledged: true }), {});
+});
+
+test("the internet acknowledgement is not required for other access methods", () => {
+  for (const method of ["physical_key", "person_present", "concierge", "lockbox", "property_manager", "other"]) {
+    const p = { ...full(), accessMethod: method, digitalLockInternetAcknowledged: undefined };
+    if (method === "physical_key") p.physicalKeyTermsAcknowledged = true;
+    assert.equal(
+      validateStep("access", p).digitalLockInternetAcknowledged, undefined,
+      `should not require internet acknowledgement for ${method}`,
+    );
+  }
+});
+
 test("access step requires a smart-lock choice, but any choice (incl. decline) passes", () => {
   const { smartLockInterest: _omit, ...noChoice } = full();
   void _omit;
@@ -96,10 +128,12 @@ function full(): EarlyAccessPayload {
     firstName: "Sam", lastName: "Tahiri", email: "sam@example.com",
     preferredContactMethod: "whatsapp", mobileNumber: "0612345678", countryCallingCode: "+212",
     residenceCity: "Tangier",
-    billingRecipientType: "private", billingAddressLine1: "1 Rue X", billingCity: "Brussels", billingCountry: "BE",
-    propertyAddressLine1: "5 Rue Y", propertyCity: "Tangier", authorizedBySubmitter: true,
+    billingRecipientType: "private", billingAddressLine1: "1 Rue X", billingBuildingNumber: "1",
+    billingCity: "Brussels", billingCountry: "BE",
+    propertyAddressLine1: "5 Rue Y", propertyBuildingNumber: "5", propertyCity: "Tangier",
+    googleMapsUrl: "https://maps.google.com/?q=35.77,-5.83", authorizedBySubmitter: true,
     serviceTypes: ["deep_cleaning"], accessMethod: "digital_lock",
-    smartLockInterest: "not_interested",
+    smartLockInterest: "not_interested", digitalLockInternetAcknowledged: true,
     confirmAccurate: true, confirmAuthorized: true, acceptPrivacy: true, acceptOperationalComms: true,
   };
 }
@@ -123,6 +157,13 @@ test("contact step accepts listed and custom Moroccan cities but rejects the Oth
   assert.equal(validateStep("contact", { ...full(), residenceCity: "x".repeat(121) }).residenceCity, "invalid");
 });
 
+test("City in Morocco is mandatory on the contact step", () => {
+  assert.equal(validateStep("contact", { ...full(), residenceCity: "" }).residenceCity, "required");
+  const { residenceCity: _omit, ...noCity } = full();
+  void _omit;
+  assert.equal(validateStep("contact", noCity).residenceCity, "required");
+});
+
 test("property step requires authorization confirmation", () => {
   assert.equal(validateStep("property_address", { ...full(), authorizedBySubmitter: false }).authorizedBySubmitter,
     "authorization_required");
@@ -131,6 +172,37 @@ test("property step requires authorization confirmation", () => {
 test("property address not required when copying billing", () => {
   const p = { ...full(), useBillingAsProperty: true, propertyAddressLine1: "", propertyCity: "" };
   assert.deepEqual(validateStep("property_address", p), {});
+});
+
+test("billing building/unit number is required", () => {
+  assert.equal(
+    validateStep("billing", { ...full(), billingBuildingNumber: "" }).billingBuildingNumber,
+    "required",
+  );
+  assert.deepEqual(validateStep("billing", { ...full(), billingBuildingNumber: "12B" }), {});
+});
+
+test("property building/unit number is required unless copying billing", () => {
+  assert.equal(
+    validateStep("property_address", { ...full(), propertyBuildingNumber: "" }).propertyBuildingNumber,
+    "required",
+  );
+  const copying = { ...full(), useBillingAsProperty: true, propertyBuildingNumber: "", propertyAddressLine1: "", propertyCity: "" };
+  assert.equal(validateStep("property_address", copying).propertyBuildingNumber, undefined);
+});
+
+test("Google Maps link is mandatory, including when copying the billing address", () => {
+  assert.equal(
+    validateStep("property_address", { ...full(), googleMapsUrl: "" }).googleMapsUrl,
+    "required",
+  );
+  assert.equal(
+    validateStep("property_address", { ...full(), googleMapsUrl: "not a url" }).googleMapsUrl,
+    "invalid_url",
+  );
+  const copying = { ...full(), useBillingAsProperty: true, googleMapsUrl: "", propertyAddressLine1: "", propertyCity: "" };
+  assert.equal(validateStep("property_address", copying).googleMapsUrl, "required");
+  assert.deepEqual(validateStep("property_address", { ...full(), googleMapsUrl: "https://maps.app.goo.gl/abc123" }), {});
 });
 
 test("services step requires at least one service", () => {

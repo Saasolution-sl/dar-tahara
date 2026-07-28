@@ -15,6 +15,8 @@ export type LeadForSync = {
   preferredContactMethod?: string | null;
   preferredLanguage?: string | null;
   residenceCity?: string | null;
+  /** ISO 3166-1 alpha-2 of the phone country (never the flag). */
+  phoneCountry?: string | null;
 
   status?: string | null;
   emailVerified?: boolean;
