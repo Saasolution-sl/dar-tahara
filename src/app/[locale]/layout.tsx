@@ -1,7 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import type { ReactNode } from "react";
 import { notFound } from "next/navigation";
-import { locales, isLocale, localeMeta, type Locale } from "@/i18n/config";
+import { isLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { site, whatsappLink } from "@/lib/site";
 import { ThemeProvider } from "@/components/providers/theme-provider";
@@ -14,6 +14,8 @@ import { MauticTracking } from "@/components/analytics/mautic-tracking";
 import { ConsentBanner } from "@/components/analytics/consent-banner";
 import { WebsiteChat } from "@/components/assistant/website-chat";
 import { featureEnabled } from "@/lib/feature-flags";
+import { buildLocalizedMetadata } from "@/lib/seo";
+import { SiteStructuredData } from "@/components/seo/structured-data";
 
 // Feature visibility is database-controlled and must not be frozen into a build.
 export const dynamic = "force-dynamic";
@@ -37,49 +39,22 @@ export async function generateMetadata({
   if (!isLocale(locale)) return {};
   const dict = await getDictionary(locale);
 
-  const languages = Object.fromEntries(
-    locales.map((l) => [localeMeta[l].hreflang, `/${l}`]),
-  );
+  const baseMetadata = buildLocalizedMetadata({
+    locale,
+    title: dict.meta.title,
+    description: dict.meta.description,
+    absoluteTitle: true,
+    imageAlt: dict.meta.ogAlt,
+  });
 
   return {
-    metadataBase: new URL(site.url),
+    ...baseMetadata,
     title: {
       default: dict.meta.title,
-      template: `%s · ${dict.brand.name}`,
+      template: site.titleTemplate,
     },
-    description: dict.meta.description,
     applicationName: dict.brand.name,
     authors: [{ name: dict.brand.name }],
-    keywords: [
-      "home cleaning Morocco",
-      "property concierge",
-      "villa management",
-      "holiday home care",
-      "expat home management",
-      "Dar Tahara",
-    ],
-    alternates: {
-      canonical: `/${locale}`,
-      languages: { ...languages, "x-default": "/en" },
-    },
-    openGraph: {
-      type: "website",
-      locale: localeMeta[locale].hreflang,
-      url: `${site.url}/${locale}`,
-      siteName: dict.brand.name,
-      title: dict.meta.title,
-      description: dict.meta.description,
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: dict.meta.title,
-      description: dict.meta.description,
-    },
-    robots: {
-      index: true,
-      follow: true,
-      googleBot: { index: true, follow: true, "max-image-preview": "large" },
-    },
   };
 }
 
@@ -99,6 +74,7 @@ export default async function LocaleLayout({
 
   return (
     <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+      <SiteStructuredData />
       <a
         href="#main"
         className="sr-only focus:not-sr-only focus:fixed focus:left-4 focus:top-4 focus:z-[100] focus:rounded-full focus:bg-primary focus:px-4 focus:py-2 focus:text-sm focus:text-primary-foreground"

@@ -1,4 +1,12 @@
-dartahara.com, www.dartahara.com {
+http://dartahara.com {
+    redir https://www.dartahara.com{uri} permanent
+}
+
+https://dartahara.com {
+    redir https://www.dartahara.com{uri} permanent
+}
+
+www.dartahara.com {
     encode zstd gzip
     reverse_proxy dar-tahara-web:3000
 

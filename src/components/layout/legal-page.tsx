@@ -1,19 +1,23 @@
 import * as React from "react";
 import { Container } from "@/components/ui/section";
+import { Breadcrumbs, type Crumb } from "@/components/seo/breadcrumbs";
 
 export function LegalPage({
   title,
   updated,
+  breadcrumbs,
   children,
 }: {
   title: string;
   updated: string;
+  breadcrumbs?: Crumb[];
   children: React.ReactNode;
 }) {
   return (
     <article className="pb-24 pt-32 sm:pt-40">
       <Container>
         <div className="mx-auto max-w-3xl">
+          {breadcrumbs ? <Breadcrumbs items={breadcrumbs} className="mb-8" /> : null}
           <span className="eyebrow">Dar Tahara</span>
           <h1 className="mt-4 text-display-md text-foreground">{title}</h1>
           <p className="mt-3 text-sm text-muted-foreground">{updated}</p>

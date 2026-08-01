@@ -26,7 +26,7 @@ trap 'rm -f "${new_app_env}"' EXIT
 
 {
   printf 'NODE_ENV=production\n'
-  printf 'NEXT_PUBLIC_SITE_URL=https://dartahara.com\n'
+  printf 'NEXT_PUBLIC_SITE_URL=https://www.dartahara.com\n'
   printf 'SUPABASE_URL=%s\n' "${supabase_url}"
   printf 'NEXT_PUBLIC_SUPABASE_URL=%s\n' "${supabase_url}"
   printf 'NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=%s\n' "${publishable_key}"

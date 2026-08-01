@@ -1,0 +1,17 @@
+.agents/
+.claude/
+.claude-flow/
+.codex-*.log
+.swarm/
+.git/
+.next/
+.vercel/
+node_modules/
+.env
+.env*.local
+agentdb.rvf*
+ruvector.db
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

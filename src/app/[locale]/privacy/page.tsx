@@ -1,11 +1,42 @@
 import type { Metadata } from "next";
+import { notFound } from "next/navigation";
 import { LegalPage } from "@/components/layout/legal-page";
-import { site } from "@/lib/site";
+import { PageStructuredData } from "@/components/seo/structured-data";
+import { isLocale, type Locale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/dictionaries";
+import { pages, site } from "@/lib/site";
+import { buildLocalizedMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Privacy Policy", description: "How Dar Tahara collects, uses and safeguards personal data." };
+const description = "How Dar Tahara collects, uses and safeguards personal data.";
 
-export default function PrivacyPage() {
-  return <LegalPage title="Privacy Policy" updated="Effective 13 July 2026">
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const dict = await getDictionary(locale);
+  return buildLocalizedMetadata({
+    locale,
+    path: pages.privacy,
+    title: dict.footer.privacy,
+    description,
+  });
+}
+
+export default async function PrivacyPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  if (!isLocale(locale)) notFound();
+  const typedLocale = locale as Locale;
+  const dict = await getDictionary(typedLocale);
+
+  return <>
+    <PageStructuredData locale={typedLocale} path={pages.privacy} name={dict.footer.privacy} description={description} />
+    <LegalPage
+      title="Privacy Policy"
+      updated="Effective 13 July 2026"
+      breadcrumbs={[
+        { label: dict.missionVision.breadcrumb.home, href: `/${typedLocale}` },
+        { label: dict.footer.privacy, href: `/${typedLocale}${pages.privacy}` },
+      ]}
+    >
     <p>Dar Tahara is responsible for the personal data described in this policy. This notice applies to our website, mailing list, Initial Home Assessments, subscriptions, operational email and WhatsApp communications.</p>
     <h2>1. Data we collect</h2>
     <p>We collect identity and contact details; billing identifiers and payment status (card details remain with Stripe); service addresses; declared and verified property size, rooms, condition, pets, smoking, access and care notes; appointment choices; assessment observations; subscription proposals, subscriptions and invoices; communications; legal acceptances; and security data such as IP address, user agent and webhook records.</p>
@@ -27,5 +58,6 @@ export default function PrivacyPage() {
     <h2>9. Children and changes</h2>
     <p>Our services are not directed to children. We may update this policy and will identify the effective date; material changes will be communicated where appropriate.</p>
     <h2>10. Contact</h2><p>For a privacy request, email <a href={`mailto:${site.email}`}>{site.email}</a> and identify the relevant booking or account.</p>
-  </LegalPage>;
+    </LegalPage>
+  </>;
 }

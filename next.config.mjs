@@ -10,6 +10,16 @@ const nextConfig = {
       { protocol: "https", hostname: "plus.unsplash.com" },
     ],
   },
+  async redirects() {
+    return [
+      {
+        source: "/:path*",
+        has: [{ type: "host", value: "dartahara.com" }],
+        destination: "https://www.dartahara.com/:path*",
+        permanent: true,
+      },
+    ];
+  },
   async headers() {
     return [
       {

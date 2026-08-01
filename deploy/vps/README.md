@@ -13,7 +13,7 @@ they are not copied into this repository.
 - Compose project: `dar-tahara-supabase`
 - Private Docker network: `dar-tahara-supabase`
 - Caddy network: external `public-net`
-- Website: `https://dartahara.com`
+- Website: `https://www.dartahara.com`
 - HTTPS API: `https://supabase.dartahara.com`
 - PostgreSQL: not publicly exposed
 - Studio: not publicly exposed

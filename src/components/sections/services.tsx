@@ -1,10 +1,13 @@
 import * as React from "react";
+import Link from "next/link";
 import {
   Sparkles, RefreshCw, ArrowRightLeft, ClipboardCheck, Wrench, KeyRound,
   Plane, Shirt, Droplets, PaintRoller, Zap, Home,
 } from "lucide-react";
 import type { Dictionary } from "@/i18n/dictionaries/en";
+import type { Locale } from "@/i18n/config";
 import { sections } from "@/lib/site";
+import { servicePageSlugs } from "@/lib/service-pages";
 import { Section, Container, SectionHeading } from "@/components/ui/section";
 import { Reveal } from "@/components/motion/reveal";
 
@@ -13,7 +16,7 @@ const icons = [
   Plane, Shirt, Droplets, PaintRoller, Zap, Home,
 ];
 
-export function Services({ dict }: { dict: Dictionary }) {
+export function Services({ locale, dict }: { locale: Locale; dict: Dictionary }) {
   const s = dict.services;
   return (
     <Section id={sections.services} className="bg-secondary/30">
@@ -36,7 +39,18 @@ export function Services({ dict }: { dict: Dictionary }) {
                     <Icon className="h-5 w-5" />
                   </span>
                   <div>
-                    <h3 className="font-serif text-lg text-foreground">{item.title}</h3>
+                    <h3 className="font-serif text-lg text-foreground">
+                      {servicePageSlugs[i] ? (
+                        <Link
+                          href={`/${locale}/services/${servicePageSlugs[i]}`}
+                          className="after:absolute after:inset-0"
+                        >
+                          {item.title}
+                        </Link>
+                      ) : (
+                        item.title
+                      )}
+                    </h3>
                     <p className="mt-2 text-sm leading-relaxed text-muted-foreground">
                       {item.body}
                     </p>

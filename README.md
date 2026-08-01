@@ -118,8 +118,10 @@ Languages: English · Dutch · French · Arabic (RTL) · Spanish · German · Po
 ## SEO
 
 Per-locale titles/descriptions, canonical + `hreflang` alternates, Open Graph &
-Twitter cards, dynamic OG images, `sitemap.xml`, `robots.txt`, PWA manifest and
-schema.org JSON-LD (`HomeAndConstructionBusiness`, service catalog, `FAQPage`).
+Twitter cards, dynamic OG images, `sitemap.xml`, `robots.txt`, `llms.txt`, PWA
+manifest and typed schema.org JSON-LD (`ProfessionalService`, `WebSite`,
+`WebPage`, `AboutPage`, `Service`, `FAQPage`, `BreadcrumbList`). See
+[`docs/SEO_AND_AI_DISCOVERY.md`](docs/SEO_AND_AI_DISCOVERY.md).
 
 ## Before launch
 

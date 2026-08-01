@@ -1,6 +1,7 @@
 import * as React from "react";
 import Link from "next/link";
 import { site } from "@/lib/site";
+import { JsonLd } from "@/components/seo/structured-data";
 import { cn } from "@/lib/utils";
 
 export interface Crumb {
@@ -65,10 +66,7 @@ export function Breadcrumbs({
           })}
         </ol>
       </nav>
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
-      />
+      <JsonLd id="breadcrumb-structured-data" data={jsonLd} />
     </>
   );
 }

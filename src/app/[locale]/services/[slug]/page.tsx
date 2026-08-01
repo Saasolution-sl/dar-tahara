@@ -5,8 +5,11 @@ import { isLocale, type Locale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { servicePageSlugs, servicePages, isServicePageSlug } from "@/lib/service-pages";
 import { sections, whatsappLink } from "@/lib/site";
+import { buildLocalizedMetadata } from "@/lib/seo";
 import { Container } from "@/components/ui/section";
 import { buttonVariants } from "@/components/ui/button";
+import { Breadcrumbs } from "@/components/seo/breadcrumbs";
+import { ServiceStructuredData } from "@/components/seo/structured-data";
 
 export function generateStaticParams() {
   return locales.flatMap((locale) => servicePageSlugs.map((slug) => ({ locale, slug })));
@@ -20,11 +23,12 @@ export async function generateMetadata({
   const { locale, slug } = await params;
   if (!isLocale(locale) || !isServicePageSlug(slug)) return {};
   const page = servicePages[slug];
-  return {
+  return buildLocalizedMetadata({
+    locale,
+    path: `/services/${slug}`,
     title: page.eyebrow,
     description: page.summary,
-    alternates: { canonical: `/${locale}/services/${slug}` },
-  };
+  });
 }
 
 export default async function ServiceDetailPage({
@@ -41,12 +45,26 @@ export default async function ServiceDetailPage({
   const base = `/${typedLocale}`;
 
   return (
-    <article className="pb-24 pt-32 sm:pt-40">
-      <Container>
-        <div className="mx-auto max-w-5xl">
+    <>
+      <ServiceStructuredData
+        locale={typedLocale}
+        slug={slug}
+        name={page.eyebrow}
+        description={page.summary}
+      />
+      <article className="pb-24 pt-32 sm:pt-40">
+        <Container>
+          <div className="mx-auto max-w-5xl">
+            <Breadcrumbs
+              items={[
+                { label: dict.missionVision.breadcrumb.home, href: base },
+                { label: dict.nav.services, href: `${base}#${sections.services}` },
+                { label: page.eyebrow, href: `${base}/services/${slug}` },
+              ]}
+            />
           <Link
             href={`${base}#${sections.services}`}
-            className="inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
+            className="mt-8 inline-flex items-center gap-2 text-sm text-muted-foreground transition-colors hover:text-foreground"
           >
             <ArrowLeft className="h-4 w-4" />
             {dict.nav.services}
@@ -98,8 +116,9 @@ export default async function ServiceDetailPage({
               </div>
             </aside>
           </div>
-        </div>
-      </Container>
-    </article>
+          </div>
+        </Container>
+      </article>
+    </>
   );
 }

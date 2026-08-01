@@ -21,7 +21,7 @@ fi
 docker build \
   --build-arg "NEXT_PUBLIC_SUPABASE_URL=${supabase_url}" \
   --build-arg "NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=${publishable_key}" \
-  --build-arg NEXT_PUBLIC_SITE_URL=https://dartahara.com \
+  --build-arg NEXT_PUBLIC_SITE_URL=https://www.dartahara.com \
   --build-arg "NEXT_PUBLIC_GA_MEASUREMENT_ID=${ga_measurement_id}" \
   --tag "${image}" \
   "${release_dir}"

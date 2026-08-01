@@ -88,7 +88,7 @@ export function MissionVision({
             label={mv.breadcrumb.label}
             items={[
               { label: mv.breadcrumb.home, href: base },
-              { label: mv.breadcrumb.current },
+              { label: mv.breadcrumb.current, href: `${base}/missionandvision` },
             ]}
           />
 

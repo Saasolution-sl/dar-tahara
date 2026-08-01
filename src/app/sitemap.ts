@@ -1,33 +1,29 @@
 import type { MetadataRoute } from "next";
 import { locales } from "@/i18n/config";
-import { site, pages } from "@/lib/site";
+import { servicePageSlugs } from "@/lib/service-pages";
+import { languageAlternates, localizedUrl } from "@/lib/seo";
+import { pages } from "@/lib/site";
 
-/** Locale-prefixed routes, with the crawl hints appropriate to each. */
-const routes: Array<{
-  path: string;
-  changeFrequency: MetadataRoute.Sitemap[number]["changeFrequency"];
-  priority: number;
-}> = [
-  { path: "", changeFrequency: "weekly", priority: 1 },
-  { path: pages.missionVision, changeFrequency: "monthly", priority: 0.8 },
-  { path: "/terms", changeFrequency: "yearly", priority: 0.4 },
-  { path: "/privacy", changeFrequency: "yearly", priority: 0.4 },
-];
+export const indexableLocalizedPaths = [
+  "",
+  pages.missionVision,
+  pages.earlyAccess,
+  pages.terms,
+  pages.privacy,
+  ...servicePageSlugs.map((slug) => `${pages.services}/${slug}`),
+] as const;
+
+const knownLastModified: Partial<Record<(typeof indexableLocalizedPaths)[number], Date>> = {
+  [pages.privacy]: new Date("2026-07-13T00:00:00.000Z"),
+  [pages.terms]: new Date("2026-07-24T00:00:00.000Z"),
+};
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const now = new Date();
-
   return locales.flatMap((locale) =>
-    routes.map((route) => ({
-      url: `${site.url}/${locale}${route.path}`,
-      lastModified: now,
-      changeFrequency: route.changeFrequency,
-      priority: route.priority,
-      alternates: {
-        languages: Object.fromEntries(
-          locales.map((l) => [l, `${site.url}/${l}${route.path}`]),
-        ),
-      },
+    indexableLocalizedPaths.map((path) => ({
+      url: localizedUrl(locale, path),
+      ...(knownLastModified[path] ? { lastModified: knownLastModified[path] } : {}),
+      alternates: { languages: languageAlternates(path) },
     })),
   );
 }

@@ -1,7 +1,7 @@
 import { notFound } from "next/navigation";
 import { isLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { StructuredData } from "@/components/seo/structured-data";
+import { HomePageStructuredData } from "@/components/seo/structured-data";
 import { Hero } from "@/components/sections/hero";
 import { Why } from "@/components/sections/why";
 import { Services } from "@/components/sections/services";
@@ -33,10 +33,10 @@ export default async function HomePage({
 
   return (
     <>
-      <StructuredData locale={typedLocale} dict={dict} />
+      <HomePageStructuredData locale={typedLocale} dict={dict} />
       <Hero locale={typedLocale} dict={dict} features={features} />
       <Why dict={dict} />
-      <Services dict={dict} />
+      <Services locale={typedLocale} dict={dict} />
       <Plans locale={typedLocale} dict={dict} />
       <PricingCalculator locale={typedLocale} dict={dict} features={features} />
       <HowItWorks dict={dict} />

@@ -1,17 +1,42 @@
 import type { Metadata } from "next";
 import { LegalPage } from "@/components/layout/legal-page";
+import { PageStructuredData } from "@/components/seo/structured-data";
 import { isLocale } from "@/i18n/config";
+import { getDictionary } from "@/i18n/dictionaries";
 import { SERVICE_POLICY_COPY } from "@/lib/service-policy";
-import { site } from "@/lib/site";
+import { pages, site } from "@/lib/site";
+import { buildLocalizedMetadata } from "@/lib/seo";
 
-export const metadata: Metadata = { title: "Terms of Service", description: "Terms governing Dar Tahara home assessments and subscriptions." };
+const description = "Terms governing Dar Tahara home assessments and subscriptions.";
+
+export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
+  const { locale } = await params;
+  if (!isLocale(locale)) return {};
+  const dict = await getDictionary(locale);
+  return buildLocalizedMetadata({
+    locale,
+    path: pages.terms,
+    title: dict.footer.terms,
+    description,
+  });
+}
 
 export default async function TermsPage({ params }: { params: Promise<{ locale: string }> }) {
   const { locale: localeParam } = await params;
   const locale = isLocale(localeParam) ? localeParam : "en";
   const policy = SERVICE_POLICY_COPY[locale];
+  const dict = await getDictionary(locale);
 
-  return <LegalPage title="Terms of Service" updated="Effective 24 July 2026">
+  return <>
+    <PageStructuredData locale={locale} path={pages.terms} name={dict.footer.terms} description={description} />
+    <LegalPage
+      title="Terms of Service"
+      updated="Effective 24 July 2026"
+      breadcrumbs={[
+        { label: dict.missionVision.breadcrumb.home, href: `/${locale}` },
+        { label: dict.footer.terms, href: `/${locale}${pages.terms}` },
+      ]}
+    >
     <p>These Terms govern bookings and subscriptions supplied by Dar Tahara in Morocco. By paying for an Initial Home Assessment or accepting a subscription, you agree to these Terms and the order summary shown before payment.</p>
     <h2>1. Initial Home Assessment</h2>
     <p>An Initial Home Assessment is mandatory before any recurring service begins. It is a separate, one-time, prepaid service covering a professional visit, verification of the home information, a cleaning profile and, where reasonably achievable during the allocated visit, initial cleaning. Payment reserves the requested appointment but remains subject to our scheduling confirmation.</p>
@@ -22,6 +47,10 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
     {policy.termsScheduling.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
     <h2>{policy.termsSubscriptionHeading}</h2>
     {policy.termsSubscription.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+    <h2>{policy.termsDurationDiscountsHeading}</h2>
+    {policy.termsDurationDiscounts.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
+    <h2>{policy.termsPauseBenefitHeading}</h2>
+    {policy.termsPauseBenefit.map((paragraph) => <p key={paragraph}>{paragraph}</p>)}
     <h2>5. Quality, damage and complaints</h2>
     <p>Please report a service concern or alleged damage within 48 hours, with reasonable evidence, so we can investigate. Where we are responsible, our first remedy may be a return visit, repair, replacement or an appropriate credit. We are not responsible for pre-existing damage, ordinary wear, undisclosed fragility, inherent defects or events outside reasonable control.</p>
     <h2>6. Liability</h2>
@@ -32,5 +61,6 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
     <p>Our Privacy Policy explains personal-data processing. We may update these Terms prospectively; the version accepted at checkout is recorded with your booking. These Terms are governed by Moroccan law, and disputes are subject to the competent Moroccan courts unless mandatory consumer law provides otherwise.</p>
     <h2>{policy.termsSupportHeading}</h2>
     <p>{policy.termsSupport} <a href={`mailto:${site.email}`}>{site.email}</a>.</p>
-  </LegalPage>;
+    </LegalPage>
+  </>;
 }
