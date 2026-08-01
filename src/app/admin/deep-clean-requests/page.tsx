@@ -1,0 +1,1 @@
+import{DeepCleanRequestsAdminClient}from"./deep-clean-requests-admin-client";import{adminCopy}from"@/i18n/admin-copy";import{getRequestLocale}from"@/lib/request-locale";export default async function DeepCleanRequestsAdminPage(){return <DeepCleanRequestsAdminClient copy={adminCopy[await getRequestLocale()]}/>}
