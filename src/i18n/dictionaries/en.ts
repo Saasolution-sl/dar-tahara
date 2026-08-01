@@ -1,4 +1,4 @@
-const en = {
+﻿const en = {
   meta: {
     title: "Dar Tahara — Premium Home Care & Property Concierge",
     description:
@@ -201,11 +201,39 @@ const en = {
       },
       {
         q: "Can I pause, change or cancel my plan?",
-        a: "Subscriptions cannot be paused. Eligible visit changes and subscription cancellation are managed in the customer portal: visit changes require at least 48 hours’ notice, while subscription cancellation requires at least one month’s notice under the Terms.",
+        a: "A pause may be requested only with a 9- or 12-month subscription, subject to approval. Eligible visit changes and subscription cancellation are managed in the customer portal: visit changes require at least 48 hours’ notice, while subscription cancellation requires at least one month’s notice under the Terms.",
       },
       {
         q: "What products do you use?",
         a: "We use professional, effective and considered products, with eco-conscious and surface-safe options for delicate finishes and sensitive households on request.",
+      },
+      {
+        q: "Which subscription durations are available?",
+        a: "Dar Tahara offers fixed-term subscriptions of 3, 6, 9, and 12 months.",
+      },
+      {
+        q: "Do longer subscriptions cost less?",
+        a: "Yes. The standard duration discounts are 5% for six months, 10% for nine months, and 15% for twelve months. The three-month subscription uses the standard price.",
+      },
+      {
+        q: "When can a pause be approved?",
+        a: "A pause is intended for circumstances such as construction, major renovation, serious property damage, or temporary inaccessibility of the property.",
+      },
+      {
+        q: "Can I pause because I am travelling?",
+        a: "Travel, holidays, temporary absence, low occupancy, or not needing cleaning temporarily do not ordinarily qualify.",
+      },
+      {
+        q: "What happens to my contract during a pause?",
+        a: "Cleaning and recurring billing are suspended during the approved period, and the contract end date is extended by the same period.",
+      },
+      {
+        q: "Can I use two separate one-month pauses?",
+        a: "No. The benefit permits one pause of up to two consecutive months per eligible contract.",
+      },
+      {
+        q: "Does an unused pause carry over?",
+        a: "No. An unused pause has no monetary value and does not carry over to another contract.",
       },
     ],
   },
@@ -243,6 +271,16 @@ const en = {
         note: "Turnover cleaning for Airbnb & short-stay rentals. Includes basic materials, cleaning supplies and toilet paper.",
       },
     },
+    durationLabel: "Subscription duration",
+    durationHelp: "Choose how long you'd like to commit — longer terms save more.",
+    duration: {
+      "3_month": { name: "3 Months", tag: "Flexible Start" },
+      "6_month": { name: "6 Months", tag: "Save 5%" },
+      "9_month": { name: "9 Months", tag: "Save 10%" },
+      "12_month": { name: "12 Months", tag: "Save 15%" },
+      bestValue: "Best Value",
+      pauseBenefit: "Pause Benefit",
+    },
     result: {
       heading: "Your estimate",
       propertySize: "Property size",
@@ -259,6 +297,13 @@ const en = {
       perWeek: "/ week",
       pricePerWeek: "Price per week",
       effective: "Effective price per visit",
+      contractDuration: "Contract",
+      priceBeforeDuration: "Price before duration adjustment",
+      durationDiscount: "Contract discount",
+      durationSavings: "You save",
+      minimumContractValue: "Minimum contract value",
+      pauseBenefitNote: "One approved pause of up to two consecutive months",
+      chooseDuration: "Choose a subscription duration to see your contract price.",
     },
     custom: {
       title: "A home of distinction deserves an individual assessment.",
@@ -313,6 +358,9 @@ const en = {
       heading: "Your selection",
       propertySize: "Property size",
       frequency: "Cleaning frequency",
+      duration: "Subscription duration",
+      durationDiscount: "Contract discount",
+      minimumContractValue: "Minimum contract value",
       estMonthly: "Estimated monthly subscription",
       assessment: "One-time Home Assessment",
       doorlockInstallation: "Smart door-lock installation",
@@ -383,6 +431,7 @@ const en = {
       invalid_customer: "Please add your name, a valid email and a phone number.",
       invalid_property: "Please complete your address and property details.",
       invalid_booking: "Please choose a date and time for your visit.",
+      invalid_duration: "Please choose a subscription duration to continue.",
       pet_details_required: "Please add a few details about your pets.",
       doorlock_internet_required: "Please confirm that the home has an internet connection for the smart door lock.",
       legal_acceptance_required: "Please confirm the details and accept the terms to continue.",

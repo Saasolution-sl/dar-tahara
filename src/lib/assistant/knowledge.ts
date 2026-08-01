@@ -47,8 +47,18 @@ const canonicalArticles = [
     relatedQuestions: ["How does annual billing work?", "Do I save with annual payment?"],
     summary: "Monthly billing renews monthly; annual billing is paid in advance and includes a 5% discount.",
     content:
-      "Monthly billing is charged monthly and renews automatically according to the subscription terms. Annual billing is charged in advance for one year, renews according to the subscription terms, and includes a 5% discount. A subscription may be cancelled only through the customer portal with at least one month's notice. Monthly cancellation takes effect at the end of the paid billing period; annual cancellation takes effect at the end of the twelve-month term. Unused periods are not refundable, subscriptions cannot be paused, and outstanding invoices or charges must be paid before cancellation can take effect. The assistant should compare both options clearly and must not pressure customers into annual billing.",
+      "Monthly billing is charged monthly and renews automatically according to the subscription terms. Annual billing is charged in advance for one year, renews according to the subscription terms, and includes a 5% discount. A subscription may be cancelled only through the customer portal with at least one month's notice. Monthly cancellation takes effect at the end of the paid billing period; annual cancellation takes effect at the end of the twelve-month term. Unused periods are not refundable, and outstanding invoices or charges must be paid before cancellation can take effect. A pause is available only for an eligible nine- or twelve-month subscription, subject to Dar Tahara's approval — see the subscription-duration and pause-benefit article; other subscriptions cannot be paused. The assistant should compare both options clearly and must not pressure customers into annual billing.",
     source: "Pricing calculator and subscription terms",
+  },
+  {
+    id: "subscription-duration-pause",
+    title: "Subscription duration discounts and the pause benefit",
+    category: "billing",
+    keywords: ["duration", "3 month", "6 month", "9 month", "12 month", "discount", "pause", "construction", "renovation", "contract"],
+    relatedQuestions: ["Which subscription durations are available?", "Do longer subscriptions cost less?", "Can I pause my subscription?"],
+    summary: "3/6/9/12-month contract terms give 0/5/10/15% discounts; only 9- and 12-month subscriptions may request one approved pause of up to two consecutive months.",
+    content: APPROVED_FAQ_COPY.en.subscription_duration_pause,
+    source: "Owner-approved subscription-duration and pause-benefit policy",
   },
   {
     id: "payments-stripe",

@@ -1,4 +1,4 @@
-import type { DeepPartial } from "../types";
+﻿import type { DeepPartial } from "../types";
 import type { Dictionary } from "./en";
 
 /** Portuguese — complete translation. */
@@ -204,11 +204,39 @@ const pt: DeepPartial<Dictionary> = {
       },
       {
         q: "Posso pausar, alterar ou cancelar o meu plano?",
-        a: "As subscrições não podem ser pausadas. As alterações de visitas permitidas e o cancelamento são geridos no portal: pelo menos 48 horas para uma visita e um mês para cancelar a subscrição, segundo as Condições.",
+        a: "Uma pausa só pode ser solicitada com uma subscrição de 9 ou 12 meses, sujeita a aprovação. As alterações de visitas permitidas e o cancelamento são geridos no portal: pelo menos 48 horas para uma visita e um mês para cancelar a subscrição, segundo as Condições.",
       },
       {
         q: "Que produtos utilizam?",
         a: "Utilizamos produtos profissionais, eficazes e criteriosamente escolhidos, com opções ecológicas e seguras para as superfícies, para acabamentos delicados e lares sensíveis mediante pedido.",
+      },
+      {
+        q: "Que durações de subscrição estão disponíveis?",
+        a: "A Dar Tahara oferece subscrições de duração fixa de 3, 6, 9 e 12 meses.",
+      },
+      {
+        q: "As subscrições mais longas custam menos?",
+        a: "Sim. Os descontos padrão por duração são 5% para seis meses, 10% para nove meses e 15% para doze meses. A subscrição de três meses utiliza o preço padrão.",
+      },
+      {
+        q: "Quando pode ser aprovada uma pausa?",
+        a: "Uma pausa destina-se a situações como obras de construção, renovação significativa, danos graves no imóvel ou inacessibilidade temporária.",
+      },
+      {
+        q: "Posso pausar porque estou de viagem?",
+        a: "Férias comuns, viagens, ausência temporária, baixa ocupação ou não precisar de limpeza temporariamente normalmente não são elegíveis.",
+      },
+      {
+        q: "O que acontece ao meu contrato durante uma pausa?",
+        a: "A limpeza e a faturação recorrente são suspensas durante o período aprovado, e a data de término do contrato é prolongada pelo mesmo período.",
+      },
+      {
+        q: "Posso usar duas pausas separadas de um mês?",
+        a: "Não. O benefício permite uma única pausa de até dois meses consecutivos por contrato.",
+      },
+      {
+        q: "Uma pausa não utilizada transita?",
+        a: "Não. Uma pausa não utilizada não tem valor monetário e não transita para outro contrato.",
       },
     ],
   },
@@ -246,6 +274,16 @@ const pt: DeepPartial<Dictionary> = {
         note: "Limpeza de rotação para Airbnb e arrendamentos de curta duração. Inclui materiais básicos, produtos de limpeza e papel higiénico.",
       },
     },
+    durationLabel: "Duração da subscrição",
+    durationHelp: "Escolha o tempo de compromisso — durações mais longas poupam mais.",
+    duration: {
+      "3_month": { name: "3 Meses", tag: "Início flexível" },
+      "6_month": { name: "6 Meses", tag: "Poupe 5%" },
+      "9_month": { name: "9 Meses", tag: "Poupe 10%" },
+      "12_month": { name: "12 Meses", tag: "Poupe 15%" },
+      bestValue: "Melhor opção",
+      pauseBenefit: "Benefício de pausa",
+    },
     result: {
       heading: "A sua estimativa",
       propertySize: "Área do imóvel",
@@ -262,6 +300,13 @@ const pt: DeepPartial<Dictionary> = {
       perWeek: "/ semana",
       pricePerWeek: "Preço por semana",
       effective: "Preço efetivo por visita",
+      contractDuration: "Contrato",
+      priceBeforeDuration: "Preço antes do ajuste de duração",
+      durationDiscount: "Desconto de contrato",
+      durationSavings: "Poupa",
+      minimumContractValue: "Valor mínimo do contrato",
+      pauseBenefitNote: "Uma pausa aprovada de até dois meses consecutivos",
+      chooseDuration: "Escolha uma duração de subscrição para ver o preço do seu contrato.",
     },
     custom: {
       title: "Uma casa de distinção merece uma avaliação individual.",
@@ -316,6 +361,9 @@ const pt: DeepPartial<Dictionary> = {
       heading: "A sua seleção",
       propertySize: "Área do imóvel",
       frequency: "Frequência de limpeza",
+      duration: "Duração da subscrição",
+      durationDiscount: "Desconto de contrato",
+      minimumContractValue: "Valor mínimo do contrato",
       estMonthly: "Subscrição mensal estimada",
       assessment: "Avaliação única da casa",
       doorlockInstallation: "Instalação de fechadura inteligente",
@@ -386,6 +434,7 @@ const pt: DeepPartial<Dictionary> = {
       invalid_customer: "Adicione o seu nome, um e-mail válido e um número de telefone.",
       invalid_property: "Complete a sua morada e os detalhes do imóvel.",
       invalid_booking: "Escolha uma data e hora para a sua visita.",
+      invalid_duration: "Escolha uma duração de subscrição para continuar.",
       pet_details_required: "Adicione alguns detalhes sobre os seus animais.",
       doorlock_internet_required: "Confirme que a casa tem ligação à internet para a fechadura inteligente.",
       legal_acceptance_required: "Confirme os dados e aceite os termos para continuar.",

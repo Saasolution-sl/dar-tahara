@@ -244,14 +244,14 @@ const CURRENT_HANDOFF_POLICY: Record<Locale, LocalizedArticle> = {
   },
 };
 
-const FAQ_ARTICLE_TITLES: Record<Locale, { cleaningProducts: string; visitScheduling: string }> = {
-  en: { cleaningProducts: "Cleaning products", visitScheduling: "How visits are scheduled" },
-  nl: { cleaningProducts: "Schoonmaakproducten", visitScheduling: "Hoe bezoeken worden ingepland" },
-  fr: { cleaningProducts: "Produits de nettoyage", visitScheduling: "Planification des visites" },
-  es: { cleaningProducts: "Productos de limpieza", visitScheduling: "Programación de las visitas" },
-  de: { cleaningProducts: "Reinigungsprodukte", visitScheduling: "Planung der Besuche" },
-  pt: { cleaningProducts: "Produtos de limpeza", visitScheduling: "Agendamento das visitas" },
-  ar: { cleaningProducts: "منتجات التنظيف", visitScheduling: "كيفية جدولة الزيارات" },
+const FAQ_ARTICLE_TITLES: Record<Locale, { cleaningProducts: string; visitScheduling: string; subscriptionDurationPause: string }> = {
+  en: { cleaningProducts: "Cleaning products", visitScheduling: "How visits are scheduled", subscriptionDurationPause: "Subscription duration discounts and the pause benefit" },
+  nl: { cleaningProducts: "Schoonmaakproducten", visitScheduling: "Hoe bezoeken worden ingepland", subscriptionDurationPause: "Kortingen op abonnementsduur en de pauzeregeling" },
+  fr: { cleaningProducts: "Produits de nettoyage", visitScheduling: "Planification des visites", subscriptionDurationPause: "Remises liées à la durée de l'abonnement et l'avantage de suspension" },
+  es: { cleaningProducts: "Productos de limpieza", visitScheduling: "Programación de las visitas", subscriptionDurationPause: "Descuentos por duración de la suscripción y el beneficio de pausa" },
+  de: { cleaningProducts: "Reinigungsprodukte", visitScheduling: "Planung der Besuche", subscriptionDurationPause: "Rabatte je nach Abo-Laufzeit und die Pausenregelung" },
+  pt: { cleaningProducts: "Produtos de limpeza", visitScheduling: "Agendamento das visitas", subscriptionDurationPause: "Descontos por duração da subscrição e o benefício de pausa" },
+  ar: { cleaningProducts: "منتجات التنظيف", visitScheduling: "كيفية جدولة الزيارات", subscriptionDurationPause: "خصومات مدة الاشتراك وميزة الإيقاف المؤقت" },
 };
 
 function articleSlug(item: RetrievedKnowledge): string {
@@ -287,6 +287,11 @@ export function localizeRetrievedKnowledge(
         ? {
             title: FAQ_ARTICLE_TITLES[locale].visitScheduling,
             content: APPROVED_FAQ_COPY[locale].visit_scheduling,
+          }
+      : slug === "subscription-duration-pause"
+        ? {
+            title: FAQ_ARTICLE_TITLES[locale].subscriptionDurationPause,
+            content: APPROVED_FAQ_COPY[locale].subscription_duration_pause,
           }
       : slug === "reschedule-cancel-pause"
       ? {

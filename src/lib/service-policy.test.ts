@@ -15,6 +15,23 @@ test("owner-approved service policy has localized customer copy in all supported
     assert.match(copy.articleContent, /portal|portaal|portail|بوابة/iu);
     assert.equal(copy.termsScheduling.length, 4);
     assert.equal(copy.termsSubscription.length, 4);
+    assert.equal(copy.termsDurationDiscounts.length, 3);
+    assert.equal(copy.termsPauseBenefit.length, 4);
+  }
+});
+
+test("duration-discount and pause-benefit copy states the correct figures in every language", () => {
+  for (const locale of locales) {
+    const copy = SERVICE_POLICY_COPY[locale];
+    // 0/5/10/15% duration discounts (Arabic uses its own digit forms elsewhere,
+    // but these percentages are written with Latin numerals in every locale here).
+    assert.match(copy.termsDurationDiscounts.join(" "), /5/);
+    assert.match(copy.termsDurationDiscounts.join(" "), /10/);
+    assert.match(copy.termsDurationDiscounts.join(" "), /15/);
+    // Only 9- and 12-month subscriptions qualify, max two consecutive months.
+    assert.match(copy.termsPauseBenefit.join(" "), /9|nine|neuf|negen|nueve|neun|nove|تسعة/i);
+    assert.match(copy.termsPauseBenefit.join(" "), /12|twelve|douze|twaalf|doce|zwölf|doze|اثنا عشر/i);
+    assert.match(copy.termsPauseBenefit.join(" "), /2|two|deux|twee|dos|zwei|dois|شهران/i);
   }
 });
 

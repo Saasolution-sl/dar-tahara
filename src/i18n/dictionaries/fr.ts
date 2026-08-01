@@ -1,4 +1,4 @@
-import type { DeepPartial } from "../types";
+﻿import type { DeepPartial } from "../types";
 import type { Dictionary } from "./en";
 
 /** French — complete translation. */
@@ -204,11 +204,39 @@ const fr: DeepPartial<Dictionary> = {
       },
       {
         q: "Puis-je suspendre, modifier ou résilier ma formule ?",
-        a: "Un abonnement ne peut pas être suspendu. Les changements de visite autorisés et la résiliation se gèrent dans le portail client : au moins 48 heures pour une visite et un mois pour la résiliation, selon les Conditions.",
+        a: "Une suspension ne peut être demandée que pour un abonnement de 9 ou 12 mois, sous réserve d'approbation. Les changements de visite autorisés et la résiliation se gèrent dans le portail client : au moins 48 heures pour une visite et un mois pour la résiliation, selon les Conditions.",
       },
       {
         q: "Quels produits utilisez-vous ?",
         a: "Nous utilisons des produits professionnels, efficaces et soigneusement choisis, avec des options écoresponsables et respectueuses des surfaces pour les finitions délicates et les foyers sensibles, sur demande.",
+      },
+      {
+        q: "Quelles durées d'abonnement sont disponibles ?",
+        a: "Dar Tahara propose des abonnements à durée fixe de 3, 6, 9 et 12 mois.",
+      },
+      {
+        q: "Les abonnements plus longs coûtent-ils moins cher ?",
+        a: "Oui. Les remises standard de durée sont de 5 % pour six mois, 10 % pour neuf mois et 15 % pour douze mois. L'abonnement de trois mois utilise le prix standard.",
+      },
+      {
+        q: "Quand une suspension peut-elle être approuvée ?",
+        a: "Une suspension est prévue pour des situations telles que des travaux de construction, une rénovation importante, des dommages graves à la propriété ou une inaccessibilité temporaire.",
+      },
+      {
+        q: "Puis-je suspendre parce que je voyage ?",
+        a: "Les vacances, les voyages, l'absence temporaire, la faible occupation ou le fait de ne pas avoir besoin de ménage temporairement ne sont normalement pas éligibles.",
+      },
+      {
+        q: "Qu'advient-il de mon contrat pendant une suspension ?",
+        a: "Le ménage et la facturation récurrente sont suspendus pendant la période approuvée, et la date de fin du contrat est prolongée de la même période.",
+      },
+      {
+        q: "Puis-je utiliser deux suspensions séparées d'un mois ?",
+        a: "Non. L'avantage permet une suspension unique allant jusqu'à deux mois consécutifs par contrat.",
+      },
+      {
+        q: "Une suspension non utilisée est-elle reportée ?",
+        a: "Non. Une suspension non utilisée n'a aucune valeur monétaire et n'est pas reportée sur un autre contrat.",
       },
     ],
   },
@@ -246,6 +274,16 @@ const fr: DeepPartial<Dictionary> = {
         note: "Ménage de rotation pour Airbnb & locations de courte durée. Inclut les produits de base, le matériel d’entretien et le papier toilette.",
       },
     },
+    durationLabel: "Durée de l'abonnement",
+    durationHelp: "Choisissez la durée de votre engagement — les durées plus longues offrent de meilleures économies.",
+    duration: {
+      "3_month": { name: "3 mois", tag: "Début flexible" },
+      "6_month": { name: "6 mois", tag: "Économisez 5 %" },
+      "9_month": { name: "9 mois", tag: "Économisez 10 %" },
+      "12_month": { name: "12 mois", tag: "Économisez 15 %" },
+      bestValue: "Meilleure offre",
+      pauseBenefit: "Avantage suspension",
+    },
     result: {
       heading: "Votre estimation",
       propertySize: "Surface du bien",
@@ -262,6 +300,13 @@ const fr: DeepPartial<Dictionary> = {
       perWeek: "/ semaine",
       pricePerWeek: "Prix par semaine",
       effective: "Prix effectif par visite",
+      contractDuration: "Contrat",
+      priceBeforeDuration: "Prix avant ajustement de durée",
+      durationDiscount: "Remise de contrat",
+      durationSavings: "Vous économisez",
+      minimumContractValue: "Valeur minimale du contrat",
+      pauseBenefitNote: "Une suspension approuvée allant jusqu'à deux mois consécutifs",
+      chooseDuration: "Choisissez une durée d'abonnement pour voir le prix de votre contrat.",
     },
     custom: {
       title: "Une demeure d’exception mérite une évaluation individuelle.",
@@ -316,6 +361,9 @@ const fr: DeepPartial<Dictionary> = {
       heading: "Votre sélection",
       propertySize: "Surface du logement",
       frequency: "Fréquence de ménage",
+      duration: "Durée de l'abonnement",
+      durationDiscount: "Remise de contrat",
+      minimumContractValue: "Valeur minimale du contrat",
       estMonthly: "Abonnement mensuel estimé",
       assessment: "Évaluation ponctuelle du logement",
       doorlockInstallation: "Installation de serrure connectée",
@@ -386,6 +434,7 @@ const fr: DeepPartial<Dictionary> = {
       invalid_customer: "Veuillez indiquer votre nom, un e-mail valide et un numéro de téléphone.",
       invalid_property: "Veuillez compléter votre adresse et les détails du logement.",
       invalid_booking: "Veuillez choisir une date et un horaire pour votre visite.",
+      invalid_duration: "Veuillez choisir une durée d'abonnement pour continuer.",
       pet_details_required: "Veuillez ajouter quelques détails sur vos animaux.",
       doorlock_internet_required: "Veuillez confirmer que le logement dispose d’une connexion internet pour la serrure connectée.",
       legal_acceptance_required: "Veuillez confirmer les informations et accepter les conditions pour continuer.",
