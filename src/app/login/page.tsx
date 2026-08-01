@@ -6,10 +6,11 @@ import { getRequestLocale } from "@/lib/request-locale";
 import { dashboardForRoles, getAuthContext, safeNextPath } from "@/lib/portal-auth";
 
 export const metadata = { title: "Login · Dar Tahara", robots: { index: false, follow: false } };
-export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string }> }) {
+export default async function LoginPage({ searchParams }: { searchParams: Promise<{ next?: string; error?: string }> }) {
   const existing = await getAuthContext();
   if (existing) redirect(dashboardForRoles(existing.roles));
   const locale = await getRequestLocale(); const copy = portalCopy[locale].auth;
-  const next = safeNextPath((await searchParams).next);
-  return <AuthShell title={copy.login}><LoginForm copy={copy} next={next} /></AuthShell>;
+  const params = await searchParams;
+  const next = safeNextPath(params.next);
+  return <AuthShell title={copy.login}><LoginForm copy={copy} next={next} oauthError={params.error === "oauth"} /></AuthShell>;
 }

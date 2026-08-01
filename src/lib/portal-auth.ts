@@ -7,7 +7,14 @@ import { dashboardForRoles, safeNextPath } from "@/lib/portal-routing";
 
 export { dashboardForRoles, safeNextPath } from "@/lib/portal-routing";
 
-export type AppRole = "applicant" | "customer" | "staff" | "administrator";
+export type AppRole =
+  | "applicant"
+  | "customer"
+  | "customer_company"
+  | "staff"
+  | "assessment"
+  | "manager"
+  | "administrator";
 
 export type AuthContext = {
   user: User;
@@ -38,7 +45,15 @@ export async function getAuthContext(): Promise<AuthContext | null> {
 }
 
 function isAppRole(value: string): value is AppRole {
-  return ["applicant", "customer", "staff", "administrator"].includes(value);
+  return [
+    "applicant",
+    "customer",
+    "customer_company",
+    "staff",
+    "assessment",
+    "manager",
+    "administrator",
+  ].includes(value);
 }
 
 export async function requireAuth(next = "/account"): Promise<AuthContext> {

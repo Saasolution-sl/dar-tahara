@@ -13,6 +13,14 @@ export async function POST(req: NextRequest) {
   if(error||!data.user)return NextResponse.json({error:"invalid_credentials"},{status:400});
   const {data:roles}=await supabase.from("user_roles").select("role").eq("user_id",data.user.id);
   const roleValues=(roles||[]).map(r=>r.role as AppRole); const requested=safeNextPath(typeof body.next==="string"?body.next:null);
-  const allowed=requested.startsWith("/admin")?roleValues.some(r=>r==="administrator"||r==="staff"):true;
+  const allowed=requested.startsWith("/admin")
+    ? roleValues.some(r=>r==="administrator"||r==="staff")
+    : requested.startsWith("/manager")
+      ? roleValues.some(r=>r==="administrator"||r==="manager")
+      : requested.startsWith("/assessment")
+        ? roleValues.some(r=>r==="administrator"||r==="assessment")
+        : requested.startsWith("/account")
+          ? roleValues.some(r=>r==="applicant"||r==="customer"||r==="customer_company")
+          : true;
   return NextResponse.json({destination:allowed&&requested!=="/account"?requested:dashboardForRoles(roleValues)});
 }
