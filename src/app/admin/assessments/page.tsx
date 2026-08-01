@@ -1,1 +1,1 @@
-import{AdminClient}from"../admin-client";export default function AssessmentsAdminPage(){return <AdminClient/>}
+import{AdminClient}from"../admin-client";import{adminCopy}from"@/i18n/admin-copy";import{getRequestLocale}from"@/lib/request-locale";export default async function AssessmentsAdminPage(){return <AdminClient copy={adminCopy[await getRequestLocale()]}/>}
