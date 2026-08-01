@@ -626,7 +626,7 @@ def cta_url(locale, config):
     if "cta_path" not in config:
         return None
     path = config["cta_path"]
-    url = f"https://dartahara.com/{locale}"
+    url = f"https://www.dartahara.com/{locale}"
     if path:
         url += "/" + path
     if config.get("referral"):
@@ -666,7 +666,7 @@ def shell(locale, copy, config):
     </div>
     <p style="text-align:center;font-size:12px;color:#9c8562;margin-top:18px;line-height:1.7;">
       Dar Tahara — House of Purity · Morocco<br>
-      <a href="https://dartahara.com/{locale}/privacy" style="color:#9c8562;">{PRIVACY[locale]}</a> ·
+      <a href="https://www.dartahara.com/{locale}/privacy" style="color:#9c8562;">{PRIVACY[locale]}</a> ·
       {{unsubscribe_text}}
     </p>
   </div>
