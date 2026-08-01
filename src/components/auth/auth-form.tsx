@@ -12,6 +12,12 @@ import type { Locale } from "@/i18n/config";
 
 type SocialProvider = "google" | "apple";
 
+// Provider buttons stay hidden until the matching Supabase provider has been
+// configured and verified for the current deployment environment.
+const googleAuthEnabled = process.env.NEXT_PUBLIC_GOOGLE_AUTH_ENABLED === "true";
+const appleAuthEnabled = process.env.NEXT_PUBLIC_APPLE_AUTH_ENABLED === "true";
+const socialAuthEnabled = googleAuthEnabled || appleAuthEnabled;
+
 function GoogleIcon() {
   return <svg aria-hidden="true" viewBox="0 0 24 24" className="h-5 w-5"><path fill="#4285F4" d="M21.6 12.2c0-.7-.1-1.4-.2-2H12v3.9h5.4a4.6 4.6 0 0 1-2 3v2.6h3.3c1.9-1.8 2.9-4.4 2.9-7.5Z"/><path fill="#34A853" d="M12 22c2.7 0 5-.9 6.7-2.3l-3.3-2.6c-.9.6-2.1 1-3.4 1a5.9 5.9 0 0 1-5.5-4.1H3.1v2.7A10 10 0 0 0 12 22Z"/><path fill="#FBBC05" d="M6.5 14a6 6 0 0 1 0-3.9V7.4H3.1a10 10 0 0 0 0 9.3L6.5 14Z"/><path fill="#EA4335" d="M12 6c1.6 0 3 .5 4.1 1.6l3.1-3A10.3 10.3 0 0 0 3.1 7.3L6.5 10A5.9 5.9 0 0 1 12 6Z"/></svg>;
 }
@@ -41,8 +47,8 @@ function SocialAuthButtons({ copy, next, from, oauthError = false }: { copy: Por
 
   return <div>
     <div className="grid gap-3">
-      <button type="button" disabled={busyProvider !== null} onClick={() => continueWith("google")} className="inline-flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-border bg-background px-4 text-sm font-semibold text-foreground transition hover:border-primary/40 hover:bg-secondary/50 disabled:cursor-wait disabled:opacity-60"><GoogleIcon />{busyProvider === "google" ? copy.redirecting : copy.continueGoogle}</button>
-      <button type="button" disabled={busyProvider !== null} onClick={() => continueWith("apple")} className="inline-flex h-12 w-full items-center justify-center gap-3 rounded-xl bg-foreground px-4 text-sm font-semibold text-background transition hover:opacity-90 disabled:cursor-wait disabled:opacity-60"><AppleIcon />{busyProvider === "apple" ? copy.redirecting : copy.continueApple}</button>
+      {googleAuthEnabled ? <button type="button" disabled={busyProvider !== null} onClick={() => continueWith("google")} className="inline-flex h-12 w-full items-center justify-center gap-3 rounded-xl border border-border bg-background px-4 text-sm font-semibold text-foreground transition hover:border-primary/40 hover:bg-secondary/50 disabled:cursor-wait disabled:opacity-60"><GoogleIcon />{busyProvider === "google" ? copy.redirecting : copy.continueGoogle}</button> : null}
+      {appleAuthEnabled ? <button type="button" disabled={busyProvider !== null} onClick={() => continueWith("apple")} className="inline-flex h-12 w-full items-center justify-center gap-3 rounded-xl bg-foreground px-4 text-sm font-semibold text-background transition hover:opacity-90 disabled:cursor-wait disabled:opacity-60"><AppleIcon />{busyProvider === "apple" ? copy.redirecting : copy.continueApple}</button> : null}
     </div>
     {error ? <p role="alert" className="mt-3 text-sm text-red-600">{copy.oauthFailed}</p> : null}
   </div>;
@@ -64,8 +70,7 @@ export function LoginForm({ copy, next, oauthError = false }: { copy: PortalCopy
     setBusy(false); setError(true);
   }
   return <div className="mt-7">
-    <SocialAuthButtons copy={copy} next={next} from="login" oauthError={oauthError} />
-    <AuthDivider label={copy.orEmail} />
+    {socialAuthEnabled ? <><SocialAuthButtons copy={copy} next={next} from="login" oauthError={oauthError} /><AuthDivider label={copy.orEmail} /></> : null}
     <form onSubmit={submit} className="space-y-4">
       <label className="block text-sm font-medium">{copy.email}<input name="email" type="email" autoComplete="email" required className="input mt-2" /></label>
       <label className="block text-sm font-medium">{copy.password}<input name="password" type="password" autoComplete="current-password" required minLength={8} className="input mt-2" /></label>
@@ -98,8 +103,7 @@ export function SignupForm({ copy, next, locale, oauthError = false }: { copy: P
   if (sent) return <div className="mt-7 rounded-2xl bg-primary/10 p-5"><p className="font-semibold text-primary">{copy.checkEmailTitle}</p><p className="mt-2 text-sm leading-relaxed text-muted-foreground">{copy.checkEmail}</p><Link href="/login" className="mt-4 inline-block text-sm font-semibold text-primary underline-offset-4 hover:underline">{copy.backToLogin}</Link></div>;
 
   return <div className="mt-7">
-    <SocialAuthButtons copy={copy} next={next} from="signup" oauthError={oauthError} />
-    <AuthDivider label={copy.orEmail} />
+    {socialAuthEnabled ? <><SocialAuthButtons copy={copy} next={next} from="signup" oauthError={oauthError} /><AuthDivider label={copy.orEmail} /></> : null}
     <form onSubmit={submit} className="space-y-4">
       <fieldset>
         <legend className="text-sm font-medium">{locale === "nl" ? "Accounttype" : "Account type"}</legend>

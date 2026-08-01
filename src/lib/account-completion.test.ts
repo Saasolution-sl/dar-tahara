@@ -38,6 +38,10 @@ test("migration makes payment details a database account-completion invariant", 
   assert.match(migration, /account_completed_at timestamptz/i);
   assert.match(
     migration,
+    /alter table public\.home_assessments[\s\S]*stripe_payment_method_id text/i,
+  );
+  assert.match(
+    migration,
     /customers_completed_account_requires_payment_method/i,
   );
   assert.match(migration, /customers_sync_account_completion/i);

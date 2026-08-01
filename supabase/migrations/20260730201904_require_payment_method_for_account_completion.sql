@@ -1,5 +1,8 @@
 -- An account is complete only after Stripe has confirmed that a reusable
 -- payment method belongs to the customer's Stripe customer.
+alter table public.home_assessments
+  add column if not exists stripe_payment_method_id text;
+
 alter table public.customers
   add column if not exists payment_method_ready_at timestamptz,
   add column if not exists account_completed_at timestamptz;
