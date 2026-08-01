@@ -21,7 +21,6 @@ type DurationTierRow = {
   recommended: boolean;
   enabled: boolean;
   display_order: number;
-  includes_free_deep_clean: boolean;
 };
 
 function rowToTier(row: DurationTierRow): DurationTier {
@@ -35,7 +34,9 @@ function rowToTier(row: DurationTierRow): DurationTier {
     recommended: row.recommended,
     enabled: row.enabled,
     displayOrder: row.display_order,
-    includesFreeDeepClean: row.includes_free_deep_clean,
+    // The free deep-clean benefit belongs to the later billing/cancellation
+    // bundle. Bundle 1 must not query a column that its migrations do not add.
+    includesFreeDeepClean: false,
   };
 }
 
@@ -43,7 +44,7 @@ function rowToTier(row: DurationTierRow): DurationTier {
 export async function getDurationTiers(): Promise<DurationTier[]> {
   try {
     const rows = await serviceSelect<DurationTierRow[]>(
-      "subscription_duration_tiers?select=code,months,discount_basis_points,pause_eligible,max_pause_months,max_pauses_per_contract,recommended,enabled,display_order,includes_free_deep_clean&order=display_order.asc",
+      "subscription_duration_tiers?select=code,months,discount_basis_points,pause_eligible,max_pause_months,max_pauses_per_contract,recommended,enabled,display_order&order=display_order.asc",
     );
     if (rows.length === 0) return DEFAULT_DURATION_TIERS;
     return rows.map(rowToTier);

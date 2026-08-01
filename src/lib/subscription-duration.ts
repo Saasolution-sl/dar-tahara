@@ -54,7 +54,7 @@ export const DEFAULT_DURATION_TIERS: DurationTier[] = [
   {
     code: "12_month", months: 12, discountPercentage: 15,
     pauseEligible: true, maxPauseMonths: 2, maxPausesPerContract: 1,
-    recommended: true, enabled: true, displayOrder: 3, includesFreeDeepClean: true,
+    recommended: true, enabled: true, displayOrder: 3, includesFreeDeepClean: false,
   },
 ];
 
