@@ -5,8 +5,10 @@
 The Next.js application is the public website, Supabase Auth session boundary,
 customer portal, staff/admin console and signed Stripe webhook receiver. Supabase
 is the source of truth for identities, roles, customers, properties, assessments,
-proposals, subscriptions, invoices, payments, support requests, feature flags and
-audit history. Stripe owns payment collection and payment-method data. Mautic is
+proposals, subscriptions, invoices, payments, feature flags and audit history.
+HospitalitySupport is the source of truth for support conversations and agent
+actions; Supabase stores the customer mapping, customer-visible cache, unread state,
+integration events and idempotency records. Stripe owns payment collection and payment-method data. Mautic is
 marketing automation only; it must not be used as an authorization or billing
 source of truth.
 
@@ -80,10 +82,38 @@ Before production, take a database backup. After applying, run the RLS assertion
 in `supabase/tests/verify_customer_portal_rls.sql`, verify Auth redirect URLs and
 confirm the private `assessment-attachments` storage bucket is not public.
 
+## Customer sign-up and social providers
+
+The public `/signup` flow supports email/password, Google and Apple. Keep **Confirm
+email** enabled in Supabase Auth so password accounts cannot sign in until the
+address is verified. The migration
+`20260731133953_provision_public_auth_users.sql` links an Auth identity to an
+existing customer with the same normalized email, or creates an applicant
+profile. It never accepts a role from browser-controlled user metadata.
+
+In the hosted Supabase project:
+
+1. Set the Site URL to `https://www.dartahara.com` and allow
+   `https://www.dartahara.com/auth/callback**` (plus the local callback in
+   development).
+2. Enable Google, add the Google web Client ID/secret, and register the Supabase
+   callback shown in the provider panel with Google Auth Platform.
+3. Enable Apple, configure the Services ID and generated client secret, and use
+   `https://<project-ref>.supabase.co/auth/v1/callback` as Apple's return URL.
+4. Rotate the Apple OAuth client secret at least every six months. Store the
+   `.p8` signing key outside the repository and set an operational reminder.
+5. Verify new password, Google, and Apple accounts each receive an `applicant`
+   role and can only see their own customer data through RLS.
+
+For local OAuth testing, set the four `SUPABASE_AUTH_EXTERNAL_*` values from
+`.env.example`, switch the matching provider's `enabled` value in
+`supabase/config.toml`, and restart the local stack. Provider credentials belong
+in Supabase configuration, never in `NEXT_PUBLIC_*` application variables.
+
 ## Create the first administrator
 
-Keep Supabase Auth public registration disabled. Create or invite the named
-administrator in the Supabase Auth dashboard, copy that user's UUID, then run as
+Create or invite the named administrator in the Supabase Auth dashboard, copy
+that user's UUID, then run as
 a trusted database administrator:
 
 ```sql
@@ -106,6 +136,8 @@ Required application values are documented in `.env.example`. In particular:
 - Stripe secret, webhook secret and optional customer-portal configuration;
 - Resend transactional email values;
 - Mautic integration credentials scoped to contacts/campaign work only.
+- HospitalitySupport/FreeScout API, mailbox and webhook secrets described in
+  `docs/HOSPITALITY_SUPPORT.md`.
 
 `ADMIN_API_TOKEN` and `ADMIN_SESSION_SECRET` are retired. Supabase Auth cookies
 replace the shared-token session. Remove the legacy values from secret stores.

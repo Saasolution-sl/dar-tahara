@@ -3,6 +3,14 @@
     {
       "path": "/api/jobs/assistant",
       "schedule": "17 2 * * *"
+    },
+    {
+      "path": "/api/jobs/assessment-confirmations-retention",
+      "schedule": "47 2 * * *"
+    },
+    {
+      "path": "/api/jobs/hospitality-support-sync",
+      "schedule": "17 3 * * *"
     }
   ]
 }
