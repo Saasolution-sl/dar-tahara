@@ -1,4 +1,4 @@
-import type { DeepPartial } from "../types";
+﻿import type { DeepPartial } from "../types";
 import type { Dictionary } from "./en";
 
 /** Dutch — complete translation. */
@@ -204,11 +204,39 @@ const nl: DeepPartial<Dictionary> = {
       },
       {
         q: "Kan ik mijn abonnement pauzeren, wijzigen of opzeggen?",
-        a: "Abonnementen kunnen niet worden gepauzeerd. Toegestane bezoekwijzigingen en opzegging regelt u in het klantenportaal: voor een bezoek geldt minstens 48 uur en voor opzegging minstens één maand volgens de Voorwaarden.",
+        a: "Een pauze kan alleen worden aangevraagd bij een abonnement van 9 of 12 maanden, onder voorbehoud van goedkeuring. Toegestane bezoekwijzigingen en opzegging regelt u in het klantenportaal: voor een bezoek geldt minstens 48 uur en voor opzegging minstens één maand volgens de Voorwaarden.",
       },
       {
         q: "Welke producten gebruiken jullie?",
         a: "Wij gebruiken professionele, effectieve en zorgvuldig gekozen producten, met milieubewuste en oppervlaktevriendelijke opties voor delicate afwerkingen en gevoelige huishoudens op aanvraag.",
+      },
+      {
+        q: "Welke abonnementsduren zijn beschikbaar?",
+        a: "Dar Tahara biedt abonnementen met een vaste looptijd van 3, 6, 9 en 12 maanden aan.",
+      },
+      {
+        q: "Kosten langere abonnementen minder?",
+        a: "Ja. De standaardkortingen op looptijd zijn 5% voor zes maanden, 10% voor negen maanden en 15% voor twaalf maanden. Het abonnement van drie maanden gebruikt de standaardprijs.",
+      },
+      {
+        q: "Wanneer kan een pauze worden goedgekeurd?",
+        a: "Een pauze is bedoeld voor situaties zoals verbouwing, ingrijpende renovatie, ernstige schade aan de woning of tijdelijke ontoegankelijkheid.",
+      },
+      {
+        q: "Kan ik pauzeren omdat ik op reis ben?",
+        a: "Vakantie, reizen, tijdelijke afwezigheid, lage bezetting of tijdelijk geen behoefte aan schoonmaak komen normaal gesproken niet in aanmerking.",
+      },
+      {
+        q: "Wat gebeurt er met mijn contract tijdens een pauze?",
+        a: "Schoonmaak en terugkerende facturering worden opgeschort tijdens de goedgekeurde periode, en de einddatum van het contract wordt met dezelfde periode verlengd.",
+      },
+      {
+        q: "Kan ik twee losse pauzes van één maand gebruiken?",
+        a: "Nee. De regeling staat één pauze van maximaal twee aaneengesloten maanden per contract toe.",
+      },
+      {
+        q: "Wordt een ongebruikte pauze overgedragen?",
+        a: "Nee. Een ongebruikte pauze heeft geen geldwaarde en wordt niet overgedragen naar een ander contract.",
       },
     ],
   },
@@ -246,6 +274,16 @@ const nl: DeepPartial<Dictionary> = {
         note: "Wisselschoonmaak voor Airbnb & kortverblijfverhuur. Inclusief basismaterialen, schoonmaakmiddelen en toiletpapier.",
       },
     },
+    durationLabel: "Abonnementsduur",
+    durationHelp: "Kies hoe lang u zich wilt binden — langere looptijden leveren meer voordeel op.",
+    duration: {
+      "3_month": { name: "3 maanden", tag: "Flexibele start" },
+      "6_month": { name: "6 maanden", tag: "Bespaar 5%" },
+      "9_month": { name: "9 maanden", tag: "Bespaar 10%" },
+      "12_month": { name: "12 maanden", tag: "Bespaar 15%" },
+      bestValue: "Beste keuze",
+      pauseBenefit: "Pauzeregeling",
+    },
     result: {
       heading: "Uw schatting",
       propertySize: "Woninggrootte",
@@ -262,6 +300,13 @@ const nl: DeepPartial<Dictionary> = {
       perWeek: "/ week",
       pricePerWeek: "Prijs per week",
       effective: "Effectieve prijs per bezoek",
+      contractDuration: "Contract",
+      priceBeforeDuration: "Prijs vóór looptijdaanpassing",
+      durationDiscount: "Contractkorting",
+      durationSavings: "U bespaart",
+      minimumContractValue: "Minimale contractwaarde",
+      pauseBenefitNote: "Eén goedgekeurde pauze van maximaal twee aaneengesloten maanden",
+      chooseDuration: "Kies een abonnementsduur om uw contractprijs te zien.",
     },
     custom: {
       title: "Een woning van niveau verdient een individuele beoordeling.",
@@ -316,6 +361,9 @@ const nl: DeepPartial<Dictionary> = {
       heading: "Uw selectie",
       propertySize: "Woninggrootte",
       frequency: "Schoonmaakfrequentie",
+      duration: "Abonnementsduur",
+      durationDiscount: "Contractkorting",
+      minimumContractValue: "Minimale contractwaarde",
       estMonthly: "Geschat maandabonnement",
       assessment: "Eenmalige Woningbeoordeling",
       doorlockInstallation: "Installatie slimme deurslot",
@@ -386,6 +434,7 @@ const nl: DeepPartial<Dictionary> = {
       invalid_customer: "Voeg uw naam, een geldig e-mailadres en een telefoonnummer toe.",
       invalid_property: "Vul uw adres en woninggegevens in.",
       invalid_booking: "Kies een datum en tijd voor uw bezoek.",
+      invalid_duration: "Kies een abonnementsduur om door te gaan.",
       pet_details_required: "Voeg enkele details over uw huisdieren toe.",
       doorlock_internet_required: "Bevestig dat de woning een internetverbinding heeft voor het slimme deurslot.",
       legal_acceptance_required: "Bevestig de gegevens en accepteer de voorwaarden om door te gaan.",
