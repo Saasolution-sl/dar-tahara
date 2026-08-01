@@ -10,7 +10,8 @@
     "lint": "set ESLINT_USE_FLAT_CONFIG=false&& eslint src --no-cache",
     "typecheck": "tsc --noEmit",
     "test": "tsx --conditions=react-server --test \"src/**/*.test.ts\"",
-    "check:i18n": "tsx scripts/check-i18n.ts"
+    "check:i18n": "tsx scripts/check-i18n.ts",
+    "check:bundle2:staging": "tsx scripts/verify-bundle-02-staging.ts"
   },
   "dependencies": {
     "@supabase/ssr": "^0.12.3",
