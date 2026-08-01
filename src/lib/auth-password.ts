@@ -1,5 +1,6 @@
 export type PasswordUpdateFailure =
   | "invalid_session"
+  | "invalid_current_password"
   | "weak_password"
   | "same_password"
   | "update_failed";
@@ -18,6 +19,7 @@ const SESSION_ERROR_CODES = new Set([
 ]);
 
 export function classifyPasswordUpdateError(error: AuthErrorLike): PasswordUpdateFailure {
+  if (error.code === "invalid_credentials") return "invalid_current_password";
   if (error.code === "weak_password") return "weak_password";
   if (error.code === "same_password") return "same_password";
   if (error.name === "AuthSessionMissingError") return "invalid_session";
