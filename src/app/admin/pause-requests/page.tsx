@@ -1,0 +1,1 @@
+import{PauseRequestsAdminClient}from"./pause-requests-admin-client";import{adminCopy}from"@/i18n/admin-copy";import{getRequestLocale}from"@/lib/request-locale";export default async function PauseRequestsAdminPage(){return <PauseRequestsAdminClient copy={adminCopy[await getRequestLocale()]}/>}
