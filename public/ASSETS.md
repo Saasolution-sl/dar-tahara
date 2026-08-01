@@ -5,7 +5,7 @@ development, but they are required for a polished production launch.
 
 | File | Size | Purpose |
 | --- | --- | --- |
-| `logo.png` | ~512×512, transparent | The official Dar Tahara logo (used in `<Logo variant="full" />`, JSON-LD & rich results). **Do not redesign — use the supplied artwork.** |
+| `logo.png` | ~512×512, transparent | Optional official raster logo for future rich-result use. JSON-LD currently uses the existing crawlable `/icon.svg`; update `site.logoUrl` only when approved artwork is supplied. **Do not redesign — use the supplied artwork.** |
 | `apple-icon.png` | 180×180 | iOS home-screen icon. |
 | `og.jpg` *(optional)* | 1200×630 | Static social share image. Not required — a branded Open Graph card is generated automatically at `/[locale]/opengraph-image`. |
 | `images/social/dar-tahara-early-access-v1.jpg` | 1200×630 | Versioned Open Graph and X preview for every localized Early Access route. |
