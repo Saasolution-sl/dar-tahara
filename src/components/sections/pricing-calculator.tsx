@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
-import { Check, ArrowRight, Sparkles, Info, Package } from "lucide-react";
+import { Check, ArrowRight, Sparkles, Info, Package, ShieldCheck } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import {
@@ -14,6 +14,14 @@ import {
   CUSTOM_QUOTE_THRESHOLD_M2,
   type FrequencyKey,
 } from "@/lib/pricing";
+import {
+  durationOrder,
+  findDurationTier,
+  applyDurationDiscount,
+  type DurationTier,
+  type DurationCode,
+} from "@/lib/subscription-duration";
+import type { DurationMonths } from "@/lib/assessment";
 import { sections } from "@/lib/site";
 import { cn } from "@/lib/utils";
 import { Section, Container, SectionHeading } from "@/components/ui/section";
@@ -31,10 +39,12 @@ export function PricingCalculator({
   locale,
   dict,
   features,
+  durationTiers,
 }: {
   locale: Locale;
   dict: Dictionary;
   features: PublicFeatureState;
+  durationTiers: DurationTier[];
 }) {
   const c = dict.calculator;
 
@@ -43,11 +53,26 @@ export function PricingCalculator({
   const [frequency, setFrequency] = React.useState<FrequencyKey>("biweekly");
   const [overMax, setOverMax] = React.useState(false);
   const [modalOpen, setModalOpen] = React.useState(false);
+  // No default duration — the customer must consciously select one.
+  const [duration, setDuration] = React.useState<DurationMonths | null>(null);
 
   const result = React.useMemo(
     () => calculatePrice(size, frequency),
     [size, frequency],
   );
+
+  const enabledDurationTiers = React.useMemo(
+    () => [...durationTiers].filter((t) => t.enabled).sort((a, b) => a.displayOrder - b.displayOrder),
+    [durationTiers],
+  );
+
+  const durationResult = React.useMemo(() => {
+    if (result.status !== "ok" || duration === null) return null;
+    const tier = findDurationTier(durationTiers, duration);
+    if (!tier) return null;
+    const monthlyCents = Math.round(result.monthlyTotal * 100);
+    return { tier, ...applyDurationDiscount(monthlyCents, tier, durationTiers) };
+  }, [result, duration, durationTiers]);
 
   // Properties over the 250 m² slider ceiling are quoted personally — the user
   // opts in via a toggle since the slider itself is capped at 250 m².
@@ -82,7 +107,7 @@ export function PricingCalculator({
   }
 
   function openBooking() {
-    if (!features.assessmentBookingEnabled) return;
+    if (!features.assessmentBookingEnabled || duration === null) return;
     setModalOpen(true);
   }
 
@@ -236,6 +261,72 @@ export function PricingCalculator({
                   })}
                 </div>
               </fieldset>
+
+              {/* Subscription duration */}
+              <fieldset>
+                <legend className="text-sm font-semibold uppercase tracking-widest text-foreground">
+                  {c.durationLabel}
+                </legend>
+                <p className="mt-1 text-xs text-muted-foreground">{c.durationHelp}</p>
+                <div className="mt-4 grid gap-3">
+                  {enabledDurationTiers.map((tier) => {
+                    const key = tier.code as DurationCode;
+                    const meta = c.duration[key];
+                    const selected = duration === tier.months;
+                    return (
+                      <label
+                        key={tier.code}
+                        className={cn(
+                          "group relative flex cursor-pointer items-start gap-4 rounded-xl border p-4 transition-all duration-200",
+                          "focus-within:ring-2 focus-within:ring-ring",
+                          selected
+                            ? "border-primary bg-primary/[0.04] dark:bg-primary/[0.08]"
+                            : "border-border bg-card hover:border-foreground/25",
+                        )}
+                      >
+                        <input
+                          type="radio"
+                          name="pc-duration"
+                          value={tier.code}
+                          checked={selected}
+                          onChange={() => setDuration(tier.months as DurationMonths)}
+                          className="sr-only"
+                        />
+                        <span
+                          className={cn(
+                            "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors",
+                            selected ? "border-primary bg-primary text-primary-foreground" : "border-border",
+                          )}
+                          aria-hidden
+                        >
+                          {selected ? <Check className="h-3 w-3" /> : null}
+                        </span>
+                        <span className="flex-1">
+                          <span className="flex flex-wrap items-center gap-2">
+                            <span className="font-serif text-base text-foreground">{meta.name}</span>
+                            {tier.recommended ? (
+                              <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider text-accent">
+                                <Sparkles className="h-3 w-3" />
+                                {c.duration.bestValue}
+                              </span>
+                            ) : null}
+                            {tier.pauseEligible ? (
+                              <span className="inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider text-muted-foreground">
+                                {c.duration.pauseBenefit}
+                              </span>
+                            ) : null}
+                          </span>
+                          <span className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
+                            <span className={tier.discountPercentage > 0 ? "font-medium text-accent" : ""}>
+                              {meta.tag}
+                            </span>
+                          </span>
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </fieldset>
             </div>
 
             {/* Result */}
@@ -245,6 +336,8 @@ export function PricingCalculator({
                 result={result}
                 isCustom={isCustom}
                 frequencyLabel={frequencyLabel(frequency)}
+                durationResult={durationResult}
+                durationSelected={duration !== null}
                 onBook={openBooking}
                 features={features}
               />
@@ -274,6 +367,8 @@ export function PricingCalculator({
         sizeM2={size}
         frequency={frequency}
         overMax={isCustom}
+        durationMonths={duration}
+        durationTiers={durationTiers}
         monthlyEnabled={features.monthlySubscriptionEnabled}
         annualEnabled={features.annualSubscriptionEnabled}
       /> : null}
@@ -281,11 +376,15 @@ export function PricingCalculator({
   );
 }
 
+type DurationResult = { tier: DurationTier } & ReturnType<typeof applyDurationDiscount>;
+
 function ResultPanel({
   dict,
   result,
   isCustom,
   frequencyLabel,
+  durationResult,
+  durationSelected,
   onBook,
   features,
 }: {
@@ -293,6 +392,8 @@ function ResultPanel({
   result: ReturnType<typeof calculatePrice>;
   isCustom: boolean;
   frequencyLabel: string;
+  durationResult: DurationResult | null;
+  durationSelected: boolean;
   onBook: () => void;
   features: PublicFeatureState;
 }) {
@@ -366,6 +467,41 @@ function ResultPanel({
             <dd className="font-medium text-foreground">+{formatEuro(result.areaSurcharge)}</dd>
           </div>
         ) : null}
+
+        {!irregular && durationResult ? (
+          <>
+            <div className="flex items-center justify-between gap-4 border-t border-border pt-2.5 text-sm">
+              <dt className="text-muted-foreground">{c.result.contractDuration}</dt>
+              <dd className="font-medium text-foreground">{c.duration[durationResult.tier.code as DurationCode].name}</dd>
+            </div>
+            <div className="flex items-center justify-between gap-4 text-sm">
+              <dt className="text-muted-foreground">{c.result.priceBeforeDuration}</dt>
+              <dd className="font-medium text-foreground">
+                {formatEuro(durationResult.priceBeforeDurationDiscountCents / 100)}
+              </dd>
+            </div>
+            {durationResult.durationDiscountAmountCents > 0 ? (
+              <div className="flex items-center justify-between gap-4 text-sm">
+                <dt className="text-muted-foreground">
+                  {c.result.durationDiscount}
+                  {" · "}
+                  {Math.round(
+                    (durationResult.durationDiscountAmountCents / durationResult.priceBeforeDurationDiscountCents) * 100,
+                  )}%
+                </dt>
+                <dd className="font-medium text-accent">
+                  −{formatEuro(durationResult.durationDiscountAmountCents / 100)}
+                </dd>
+              </div>
+            ) : null}
+            <div className="flex items-center justify-between gap-4 text-sm">
+              <dt className="text-muted-foreground">{c.result.minimumContractValue}</dt>
+              <dd className="font-medium text-foreground">
+                {formatEuro(durationResult.minimumContractValueCents / 100)}
+              </dd>
+            </div>
+          </>
+        ) : null}
       </dl>
 
       {/* Prominent headline price */}
@@ -374,7 +510,11 @@ function ResultPanel({
           <span className="text-sm text-muted-foreground">
             {irregular ? c.result.pricePerWeek : c.result.monthlyTotal}
           </span>
-          {!irregular && result.discountAmount > 0 ? (
+          {!irregular && durationResult && durationResult.durationDiscountAmountCents > 0 ? (
+            <span className="rounded-full bg-accent/15 px-2.5 py-1 text-xs font-medium text-accent">
+              {c.result.durationSavings} {formatEuro(durationResult.durationDiscountAmountCents / 100)}
+            </span>
+          ) : !irregular && !durationResult && result.discountAmount > 0 ? (
             <span className="rounded-full bg-accent/15 px-2.5 py-1 text-xs font-medium text-accent">
               {c.result.youSave} {formatEuro(result.discountAmount)}
             </span>
@@ -382,13 +522,13 @@ function ResultPanel({
         </div>
         <div className="mt-1 flex items-baseline gap-2">
           <motion.span
-            key={result.monthlyTotal}
+            key={durationResult ? durationResult.discountedMonthlyCents : result.monthlyTotal}
             initial={{ opacity: 0.4, y: 4 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
             className="font-serif text-5xl tracking-tight text-foreground"
           >
-            {formatEuro(result.monthlyTotal)}
+            {formatEuro(durationResult ? durationResult.discountedMonthlyCents / 100 : result.monthlyTotal)}
           </motion.span>
           <span className="text-sm text-muted-foreground">
             {irregular ? c.result.perWeek : c.result.perMonth}
@@ -405,12 +545,21 @@ function ResultPanel({
             <span>{c.materialsNote}</span>
           </p>
         ) : null}
+        {!irregular && durationResult?.tier.pauseEligible ? (
+          <p className="mt-3 flex gap-2 rounded-xl bg-secondary/60 px-3.5 py-3 text-xs leading-relaxed text-muted-foreground">
+            <ShieldCheck className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />
+            <span>{c.result.pauseBenefitNote}</span>
+          </p>
+        ) : null}
       </div>
 
       <div className="mt-7">
+        {!durationSelected ? (
+          <p className="mb-3 text-sm leading-relaxed text-muted-foreground">{c.result.chooseDuration}</p>
+        ) : null}
         {features.assessmentBookingEnabled ? <button
-          type="button" onClick={onBook}
-          className={cn(buttonVariants({ variant: "primary", size: "lg" }), "w-full")}
+          type="button" onClick={onBook} disabled={!durationSelected}
+          className={cn(buttonVariants({ variant: "primary", size: "lg" }), "w-full disabled:cursor-not-allowed disabled:opacity-50")}
         >
           {c.cta.book}
           <ArrowRight className="h-4 w-4" />

@@ -6,11 +6,13 @@ import { X, ShieldCheck, Loader2, Lock, KeyRound, Wifi } from "lucide-react";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import type { Locale } from "@/i18n/config";
 import type { FrequencyKey } from "@/lib/pricing";
+import type { DurationTier } from "@/lib/subscription-duration";
 import {
   calculateAssessmentQuote,
   DOORLOCK_INSTALLATION_PRICE_CENTS,
   formatMoneyFromCents,
   type BillingInterval,
+  type DurationMonths,
   type PropertyCondition,
   type TimeSlot,
 } from "@/lib/assessment";
@@ -35,6 +37,8 @@ export function AssessmentBookingModal({
   sizeM2: initialSize,
   frequency,
   overMax,
+  durationMonths,
+  durationTiers,
   monthlyEnabled,
   annualEnabled,
 }: {
@@ -45,6 +49,9 @@ export function AssessmentBookingModal({
   sizeM2: number;
   frequency: FrequencyKey;
   overMax: boolean;
+  /** Chosen on the calculator before this modal opens — consciously selected, never re-picked here. */
+  durationMonths: DurationMonths | null;
+  durationTiers: DurationTier[];
   monthlyEnabled: boolean;
   annualEnabled: boolean;
 }) {
@@ -93,8 +100,10 @@ export function AssessmentBookingModal({
 
   const effectiveOverMax = overMax || sizeM2 > 250;
   const quote = React.useMemo(
-    () => calculateAssessmentQuote(sizeM2, frequency, effectiveOverMax, form.doorlockInstallationRequested),
-    [sizeM2, frequency, effectiveOverMax, form.doorlockInstallationRequested],
+    () => calculateAssessmentQuote(
+      sizeM2, frequency, effectiveOverMax, form.doorlockInstallationRequested, durationMonths, durationTiers,
+    ),
+    [sizeM2, frequency, effectiveOverMax, form.doorlockInstallationRequested, durationMonths, durationTiers],
   );
 
   function set<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
@@ -169,6 +178,7 @@ export function AssessmentBookingModal({
           accessNotes: form.accessNotes || null,
           frequency,
           billingInterval,
+          durationMonths,
           preferredDate: form.preferredDate,
           alternateDate: form.alternateDate || null,
           timeSlot: form.timeSlot,
@@ -188,7 +198,7 @@ export function AssessmentBookingModal({
         : data.error === "application_not_configured" || data.error === "assessment_booking_disabled" ? "checkout_not_configured"
         : data.error;
       const known: ErrorKey[] = [
-        "invalid_customer", "invalid_property", "invalid_booking", "pet_details_required",
+        "invalid_customer", "invalid_property", "invalid_booking", "invalid_duration", "pet_details_required",
         "doorlock_internet_required", "legal_acceptance_required", "rate_limited", "checkout_not_configured", "checkout_failed",
       ];
       setErrorKey(known.includes(serverError as ErrorKey) ? (serverError as ErrorKey) : "checkout_failed");
@@ -245,10 +255,25 @@ export function AssessmentBookingModal({
                 <dl className="mt-3 space-y-1.5 text-sm">
                   <Row label={b.summary.propertySize} value={`${sizeM2} m²`} />
                   <Row label={b.summary.frequency} value={dict.calculator.freq[frequency].name} />
+                  {quote.durationMonths ? (
+                    <Row
+                      label={b.summary.duration}
+                      value={dict.calculator.duration[`${quote.durationMonths}_month` as "3_month"].name}
+                    />
+                  ) : null}
+                  {quote.durationDiscountPercent > 0 ? (
+                    <Row label={b.summary.durationDiscount} value={`${quote.durationDiscountPercent}%`} />
+                  ) : null}
                   <Row
                     label={b.summary.estMonthly}
                     value={quote.estimatedMonthlyCents === null ? "—" : formatMoneyFromCents(quote.estimatedMonthlyCents, locale)}
                   />
+                  {quote.minimumContractValueCents !== null ? (
+                    <Row
+                      label={b.summary.minimumContractValue}
+                      value={formatMoneyFromCents(quote.minimumContractValueCents, locale)}
+                    />
+                  ) : null}
                   <div className="flex items-center justify-between gap-4 border-t border-border pt-2">
                     <dt className="font-medium text-foreground">{b.summary.assessment}</dt>
                     <dd className="font-serif text-lg text-foreground">{formatMoneyFromCents(quote.assessmentPriceCents, locale)}</dd>

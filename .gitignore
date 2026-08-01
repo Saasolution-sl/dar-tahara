@@ -21,4 +21,8 @@ next-env.d.ts
 ruvector.db
 agentdb.rvf*
 
+# Local Codex/Ruflo runtime artifacts
+.codex-*.log
+.claude-flow/
+
 .vercel

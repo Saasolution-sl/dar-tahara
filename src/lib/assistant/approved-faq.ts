@@ -8,7 +8,8 @@ export type ApprovedFaqKey =
   | "presence"
   | "location"
   | "cleaning_products"
-  | "visit_scheduling";
+  | "visit_scheduling"
+  | "subscription_duration_pause";
 
 type ApprovedFaqCopy = Record<ApprovedFaqKey, string>;
 
@@ -22,6 +23,7 @@ export const APPROVED_FAQ_COPY: Record<Locale, ApprovedFaqCopy> = {
     location: "Dar Tahara operates in Morocco and currently focuses on Tetouan, Tangier, Meknes, and Casablanca, with coverage expanding over time. Share your city so Dar Tahara Support can confirm current availability.",
     cleaning_products: "We strive to use only organic cleaning products. In some cases this is not feasible, such as chemical deep cleaning. Wherever chemical products can be avoided, we are happy to do so.",
     visit_scheduling: "Appointments are scheduled based on availability. For the first visit, you receive an invitation by email and in the customer portal, where you can confirm a time that works for both you and the employee. Subsequent visits are scheduled automatically for you. This helps us plan efficient routes and assign available staff for your specific location.",
+    subscription_duration_pause: "Dar Tahara offers 3-, 6-, 9-, and 12-month subscriptions. The 6-month plan receives a 5% discount, the 9-month plan receives a 10% discount, and the 12-month plan receives a 15% discount. Customers with a 9- or 12-month subscription may request one pause of up to two consecutive months per contract, subject to Dar Tahara's approval — it is intended for property-related situations such as construction, major renovation, serious damage, or temporary inaccessibility, not for holidays or travel. During an approved pause, cleaning and recurring billing are suspended, and the contract end date is extended by the approved period. 3- and 6-month subscriptions are not eligible for a pause.",
   },
   nl: {
     first_visit: "Het eerste bezoek is de Initiële Woningbeoordeling. U of een gemachtigde vertegenwoordiger moet aanwezig zijn; registreer de vertegenwoordiger vooraf in het klantenportaal. De beoordeling duurt gewoonlijk 30 tot 90 minuten, afhankelijk van de woninggrootte en uw behoeften. We beoordelen de woning, toegang en schoonmaakvereisten en stellen daarna uw persoonlijke schoonmaakplan op.",
@@ -32,6 +34,7 @@ export const APPROVED_FAQ_COPY: Record<Locale, ApprovedFaqCopy> = {
     location: "Dar Tahara is actief in Marokko en richt zich momenteel op Tetouan, Tanger, Meknes en Casablanca. De dekking wordt verder uitgebreid. Deel uw stad zodat Dar Tahara Support de actuele beschikbaarheid kan bevestigen.",
     cleaning_products: "We streven ernaar uitsluitend biologische schoonmaakproducten te gebruiken. In sommige gevallen is dat helaas niet haalbaar, bijvoorbeeld bij een chemische dieptereiniging. Waar we chemische producten kunnen vermijden, doen we dat graag.",
     visit_scheduling: "Afspraken worden ingepland op basis van beschikbaarheid. Voor het eerste bezoek ontvangt u per e-mail en in het klantenportaal een uitnodiging, waar u een tijd kunt bevestigen die voor u en de medewerker past. Vervolgbezoeken worden automatisch voor u ingepland. Zo kunnen we efficiënte routes plannen en beschikbare medewerkers voor uw locatie inzetten.",
+    subscription_duration_pause: "Dar Tahara biedt abonnementen van 3, 6, 9 en 12 maanden aan. Het abonnement van 6 maanden krijgt 5% korting, dat van 9 maanden 10% korting en dat van 12 maanden 15% korting. Klanten met een abonnement van 9 of 12 maanden kunnen één pauze van maximaal twee aaneengesloten maanden per contract aanvragen, na goedkeuring door Dar Tahara — bedoeld voor situaties rond de woning zoals verbouwing, ingrijpende renovatie, ernstige schade of tijdelijke ontoegankelijkheid, niet voor vakantie of reizen. Tijdens een goedgekeurde pauze worden schoonmaak en terugkerende facturering opgeschort, en de einddatum van het contract wordt verlengd met de goedgekeurde periode. Abonnementen van 3 en 6 maanden komen niet in aanmerking voor een pauze.",
   },
   fr: {
     first_visit: "La première visite est l’Évaluation Initiale du Domicile. Vous ou un représentant autorisé devez être présent ; enregistrez ce représentant dans le portail client. L’évaluation dure normalement de 30 à 90 minutes selon la taille du logement et vos besoins. Nous examinons le logement, l’accès et les besoins de nettoyage, puis préparons votre plan personnalisé.",
@@ -42,6 +45,7 @@ export const APPROVED_FAQ_COPY: Record<Locale, ApprovedFaqCopy> = {
     location: "Dar Tahara opère au Maroc et intervient actuellement principalement à Tétouan, Tanger, Meknès et Casablanca, avec une couverture en expansion. Indiquez votre ville afin que Dar Tahara Support confirme la disponibilité actuelle.",
     cleaning_products: "Nous nous efforçons d’utiliser uniquement des produits de nettoyage biologiques. Dans certains cas, cela n’est malheureusement pas possible, notamment lors d’un nettoyage approfondi chimique. Lorsque nous pouvons éviter les produits chimiques, nous le faisons volontiers.",
     visit_scheduling: "Les rendez-vous sont planifiés selon les disponibilités. Pour la première visite, vous recevez une invitation par e-mail et dans le portail client afin de confirmer un horaire convenant au client et à l’employé. Les visites suivantes sont planifiées automatiquement pour vous. Cela permet d’optimiser les itinéraires et d’affecter le personnel disponible à votre secteur.",
+    subscription_duration_pause: "Dar Tahara propose des abonnements de 3, 6, 9 et 12 mois. La formule 6 mois bénéficie de 5 % de remise, la formule 9 mois de 10 % et la formule 12 mois de 15 %. Les clients ayant un abonnement de 9 ou 12 mois peuvent demander une suspension d'un maximum de deux mois consécutifs par contrat, sous réserve de l'approbation de Dar Tahara — prévue pour des situations liées au logement telles que travaux, rénovation importante, dommages graves ou inaccessibilité temporaire, et non pour les vacances ou les voyages. Pendant une suspension approuvée, le nettoyage et la facturation récurrente sont suspendus, et la date de fin du contrat est prolongée de la période approuvée. Les abonnements de 3 et 6 mois ne sont pas éligibles à une suspension.",
   },
   es: {
     first_visit: "La primera visita es la Evaluación Inicial del Hogar. Debes estar presente tú o un representante autorizado; registra al representante en el portal del cliente. La evaluación suele durar entre 30 y 90 minutos, según el tamaño de la vivienda y tus necesidades. Revisamos la propiedad, el acceso y los requisitos de limpieza y preparamos tu plan personalizado.",
@@ -52,6 +56,7 @@ export const APPROVED_FAQ_COPY: Record<Locale, ApprovedFaqCopy> = {
     location: "Dar Tahara opera en Marruecos y actualmente se centra en Tetuán, Tánger, Mequinez y Casablanca, con una cobertura en expansión. Indica tu ciudad para que Dar Tahara Support confirme la disponibilidad actual.",
     cleaning_products: "Nos esforzamos por utilizar únicamente productos de limpieza orgánicos. Lamentablemente, en algunos casos no es posible, como en una limpieza profunda química. Siempre que podamos evitar los productos químicos, lo hacemos con gusto.",
     visit_scheduling: "Las citas se programan según la disponibilidad. Para la primera visita, recibirás una invitación por correo electrónico y en el portal del cliente, donde podrás confirmar una hora adecuada para ti y para el empleado. Las visitas posteriores se programan automáticamente para ti. Esto nos permite optimizar las rutas y asignar el personal disponible en tu ubicación.",
+    subscription_duration_pause: "Dar Tahara ofrece suscripciones de 3, 6, 9 y 12 meses. El plan de 6 meses recibe un 5 % de descuento, el de 9 meses un 10 % y el de 12 meses un 15 %. Los clientes con una suscripción de 9 o 12 meses pueden solicitar una pausa de hasta dos meses consecutivos por contrato, sujeta a la aprobación de Dar Tahara — pensada para situaciones relacionadas con la propiedad, como obras, reformas importantes, daños graves o inaccesibilidad temporal, no para vacaciones o viajes. Durante una pausa aprobada, la limpieza y la facturación recurrente se suspenden, y la fecha de finalización del contrato se amplía según el período aprobado. Las suscripciones de 3 y 6 meses no son elegibles para una pausa.",
   },
   de: {
     first_visit: "Der erste Besuch ist die Ersteinschätzung des Hauses. Sie oder eine bevollmächtigte Person müssen anwesend sein; tragen Sie die Vertretung im Kundenportal ein. Die Einschätzung dauert je nach Größe des Hauses und Ihren Bedürfnissen normalerweise 30 bis 90 Minuten. Wir prüfen Immobilie, Zugang und Reinigungsanforderungen und erstellen danach Ihren persönlichen Reinigungsplan.",
@@ -62,6 +67,7 @@ export const APPROVED_FAQ_COPY: Record<Locale, ApprovedFaqCopy> = {
     location: "Dar Tahara ist in Marokko tätig und konzentriert sich derzeit auf Tétouan, Tanger, Meknès und Casablanca. Die Abdeckung wird laufend erweitert. Teilen Sie uns Ihre Stadt mit, damit Dar Tahara Support die aktuelle Verfügbarkeit bestätigen kann.",
     cleaning_products: "Wir bemühen uns, ausschließlich biologische Reinigungsprodukte zu verwenden. In manchen Fällen ist dies leider nicht möglich, etwa bei einer chemischen Tiefenreinigung. Wo wir chemische Produkte vermeiden können, tun wir das gerne.",
     visit_scheduling: "Termine werden nach Verfügbarkeit geplant. Für den ersten Besuch erhalten Sie per E-Mail und im Kundenportal eine Einladung, über die Sie eine passende Zeit für sich und den Mitarbeiter bestätigen können. Folgebesuche werden automatisch für Sie geplant. Dadurch können wir effiziente Routen erstellen und verfügbares Personal für Ihren Standort einteilen.",
+    subscription_duration_pause: "Dar Tahara bietet Abos mit 3, 6, 9 und 12 Monaten Laufzeit an. Das 6-Monats-Abo erhält 5 % Rabatt, das 9-Monats-Abo 10 % und das 12-Monats-Abo 15 %. Kunden mit einem Abo von 9 oder 12 Monaten können pro Vertrag eine Pause von bis zu zwei aufeinanderfolgenden Monaten beantragen, vorbehaltlich der Genehmigung durch Dar Tahara — vorgesehen für Situationen rund um die Immobilie wie Bauarbeiten, größere Renovierungen, erhebliche Schäden oder vorübergehende Unzugänglichkeit, nicht für Urlaub oder Reisen. Während einer genehmigten Pause werden Reinigung und wiederkehrende Abrechnung ausgesetzt, und das Vertragsende verlängert sich um den genehmigten Zeitraum. Abos mit 3 und 6 Monaten Laufzeit sind nicht pausenberechtigt.",
   },
   pt: {
     first_visit: "A primeira visita é a Avaliação Inicial da Casa. O cliente ou um representante autorizado deve estar presente; registe o representante no portal do cliente. A avaliação demora normalmente entre 30 e 90 minutos, consoante a dimensão da casa e as suas necessidades. Analisamos a propriedade, o acesso e os requisitos de limpeza e preparamos o seu plano personalizado.",
@@ -72,6 +78,7 @@ export const APPROVED_FAQ_COPY: Record<Locale, ApprovedFaqCopy> = {
     location: "A Dar Tahara opera em Marrocos e concentra-se atualmente em Tetuão, Tânger, Meknès e Casablanca, com cobertura em expansão. Indique a sua cidade para que a Dar Tahara Support confirme a disponibilidade atual.",
     cleaning_products: "Procuramos utilizar apenas produtos de limpeza orgânicos. Infelizmente, em alguns casos isso não é possível, como numa limpeza profunda química. Sempre que pudermos evitar produtos químicos, teremos todo o gosto em fazê-lo.",
     visit_scheduling: "As marcações são agendadas de acordo com a disponibilidade. Para a primeira visita, recebe um convite por e-mail e no portal do cliente, onde pode confirmar um horário adequado para si e para o funcionário. As visitas seguintes são agendadas automaticamente para si. Isto permite planear rotas eficientes e atribuir o pessoal disponível à sua localização.",
+    subscription_duration_pause: "A Dar Tahara oferece subscrições de 3, 6, 9 e 12 meses. O plano de 6 meses tem 5% de desconto, o de 9 meses 10% e o de 12 meses 15%. Os clientes com uma subscrição de 9 ou 12 meses podem solicitar uma pausa de até dois meses consecutivos por contrato, sujeita à aprovação da Dar Tahara — destinada a situações relacionadas com o imóvel, como obras, renovação significativa, danos graves ou inacessibilidade temporária, e não a férias ou viagens. Durante uma pausa aprovada, a limpeza e a faturação recorrente são suspensas, e a data de término do contrato é prolongada pelo período aprovado. As subscrições de 3 e 6 meses não são elegíveis para pausa.",
   },
   ar: {
     first_visit: "الزيارة الأولى هي التقييم الأولي للمنزل. يجب أن تكون أنت أو ممثل مفوض حاضراً، وإذا حضر ممثل فيجب تسجيله في بوابة العميل. يستغرق التقييم عادةً من 30 إلى 90 دقيقة حسب حجم المنزل واحتياجاتك. نراجع العقار وطريقة الدخول ومتطلبات التنظيف ثم نعد خطة التنظيف المخصصة.",
@@ -82,6 +89,7 @@ export const APPROVED_FAQ_COPY: Record<Locale, ApprovedFaqCopy> = {
     location: "تعمل دار طهارة في المغرب وتركز حالياً على تطوان وطنجة ومكناس والدار البيضاء، مع توسع التغطية بمرور الوقت. شارك مدينتك لكي يؤكد Dar Tahara Support توفر الخدمة حالياً.",
     cleaning_products: "نسعى إلى استخدام منتجات تنظيف عضوية فقط. للأسف لا يكون ذلك ممكناً في بعض الحالات، مثل التنظيف العميق الكيميائي. وحيثما يمكننا تجنب المنتجات الكيميائية، يسعدنا القيام بذلك.",
     visit_scheduling: "تُجدول المواعيد حسب التوفر. للزيارة الأولى، تتلقى دعوة عبر البريد الإلكتروني وفي بوابة العميل، حيث يمكنك تأكيد وقت يناسبك ويناسب الموظف. تُجدول الزيارات اللاحقة تلقائياً من أجلك. يساعدنا ذلك على تخطيط مسارات فعالة وتعيين الموظفين المتاحين لموقعك.",
+    subscription_duration_pause: "تقدم دار طهارة اشتراكات لمدة 3 و6 و9 و12 شهراً. تحصل خطة 6 أشهر على خصم 5٪، وخطة 9 أشهر على خصم 10٪، وخطة 12 شهراً على خصم 15٪. يمكن للعملاء الذين لديهم اشتراك لمدة 9 أو 12 شهراً طلب إيقاف مؤقت واحد لمدة أقصاها شهران متتاليان لكل عقد، رهناً بموافقة دار طهارة — وهو مخصص لحالات متعلقة بالعقار مثل أعمال البناء أو التجديد الكبير أو الأضرار الجسيمة أو تعذر الوصول المؤقت، وليس للعطلات أو السفر. أثناء الإيقاف المؤقت المعتمد، يُعلَّق التنظيف والفوترة المتكررة، ويُمدَّد تاريخ انتهاء العقد بمقدار الفترة المعتمدة. لا تكون اشتراكات 3 و6 أشهر مؤهلة للإيقاف المؤقت.",
   },
 };
 
@@ -126,6 +134,17 @@ const FAQ_PATTERNS: Array<{ key: ApprovedFaqKey; pattern: RegExp }> = [
   {
     key: "first_visit",
     pattern: /(?:how|hoe|comment|cómo|wie|como|كيف).{0,30}(?:first visit|home assessment|eerste bezoek|woningbeoordeling|première visite|évaluation initiale|primera visita|evaluación inicial|erster besuch|ersteinschätzung|primeira visita|avaliação inicial|الزيارة الأولى|التقييم الأولي).{0,20}(?:work|werkt|fonctionne|déroule|funciona|funktioniert|trabalha|تعمل|يتم)?/iu,
+  },
+  {
+    // Deliberately narrow: only fires on explicit duration/discount-tier questions
+    // ("which durations", "3/6/9/12 months", "discount for 12 months"). Generic
+    // pause/cancellation questions ("can I pause my subscription?") must NOT match
+    // here — deterministicFaqAnswer takes absolute precedence over the
+    // intent-classified, policy-grounded cancellation answer (service.ts:746), so a
+    // broad match here would hijack cancellation-intent handling that already
+    // correctly reflects the conditional pause rule via service-policy.ts.
+    key: "subscription_duration_pause",
+    pattern: /(?:duration|looptijd|durée|duración|laufzeit|duração|مدة).{0,40}(?:subscription|abonnement|suscripción|abo|assinatura|subscrição|اشتراك)|(?:subscription|abonnement|suscripción|abo|assinatura|subscrição|اشتراك).{0,40}(?:duration|looptijd|durée|duración|laufzeit|duração|discount|korting|remise|descuento|rabatt|desconto|مدة|خصم)|(?:3|6|9|12)[\s-]?(?:month|maand|mois|mes|meses|monat|monate|mês|شهر|أشهر)/iu,
   },
 ];
 

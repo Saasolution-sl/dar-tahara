@@ -1,4 +1,4 @@
-import type { DeepPartial } from "../types";
+﻿import type { DeepPartial } from "../types";
 import type { Dictionary } from "./en";
 
 /** German — complete translation. */
@@ -204,11 +204,39 @@ const de: DeepPartial<Dictionary> = {
       },
       {
         q: "Kann ich mein Paket pausieren, ändern oder kündigen?",
-        a: "Abonnements können nicht pausiert werden. Zulässige Terminänderungen und die Kündigung verwalten Sie im Kundenportal: mindestens 48 Stunden für einen Termin und einen Monat für die Kündigung gemäß den Bedingungen.",
+        a: "Eine Pause kann nur bei einem Abo mit 9 oder 12 Monaten Laufzeit beantragt werden, vorbehaltlich Genehmigung. Zulässige Terminänderungen und die Kündigung verwalten Sie im Kundenportal: mindestens 48 Stunden für einen Termin und einen Monat für die Kündigung gemäß den Bedingungen.",
       },
       {
         q: "Welche Produkte verwenden Sie?",
         a: "Wir verwenden professionelle, wirksame und sorgfältig ausgewählte Produkte, mit umweltbewussten und oberflächenschonenden Optionen für empfindliche Oberflächen und sensible Haushalte auf Anfrage.",
+      },
+      {
+        q: "Welche Abo-Laufzeiten sind verfügbar?",
+        a: "Dar Tahara bietet Abos mit fester Laufzeit von 3, 6, 9 und 12 Monaten an.",
+      },
+      {
+        q: "Kosten längere Abos weniger?",
+        a: "Ja. Die Standardrabatte je nach Laufzeit sind 5 % für sechs Monate, 10 % für neun Monate und 15 % für zwölf Monate. Das Drei-Monats-Abo nutzt den Standardpreis.",
+      },
+      {
+        q: "Wann kann eine Pause genehmigt werden?",
+        a: "Eine Pause ist für Situationen wie Bauarbeiten, größere Renovierungen, erhebliche Schäden an der Immobilie oder vorübergehende Unzugänglichkeit vorgesehen.",
+      },
+      {
+        q: "Kann ich pausieren, weil ich verreist bin?",
+        a: "Gewöhnlicher Urlaub, Reisen, vorübergehende Abwesenheit, geringe Belegung oder vorübergehend kein Reinigungsbedarf berechtigen normalerweise nicht.",
+      },
+      {
+        q: "Was passiert mit meinem Vertrag während einer Pause?",
+        a: "Reinigung und wiederkehrende Abrechnung werden während des genehmigten Zeitraums ausgesetzt, und das Vertragsende verlängert sich um denselben Zeitraum.",
+      },
+      {
+        q: "Kann ich zwei separate Ein-Monats-Pausen nutzen?",
+        a: "Nein. Die Regelung erlaubt eine einzige Pause von bis zu zwei aufeinanderfolgenden Monaten pro Vertrag.",
+      },
+      {
+        q: "Wird eine ungenutzte Pause übertragen?",
+        a: "Nein. Eine ungenutzte Pause hat keinen Geldwert und wird nicht auf einen anderen Vertrag übertragen.",
       },
     ],
   },
@@ -246,6 +274,16 @@ const de: DeepPartial<Dictionary> = {
         note: "Wechselreinigung für Airbnb & Kurzzeitvermietungen. Inklusive Basismaterialien, Reinigungsmitteln und Toilettenpapier.",
       },
     },
+    durationLabel: "Abo-Laufzeit",
+    durationHelp: "Wählen Sie, wie lange Sie sich binden möchten — längere Laufzeiten sparen mehr.",
+    duration: {
+      "3_month": { name: "3 Monate", tag: "Flexibler Start" },
+      "6_month": { name: "6 Monate", tag: "5 % sparen" },
+      "9_month": { name: "9 Monate", tag: "10 % sparen" },
+      "12_month": { name: "12 Monate", tag: "15 % sparen" },
+      bestValue: "Bester Wert",
+      pauseBenefit: "Pausenregelung",
+    },
     result: {
       heading: "Ihre Schätzung",
       propertySize: "Wohnfläche",
@@ -262,6 +300,13 @@ const de: DeepPartial<Dictionary> = {
       perWeek: "/ Woche",
       pricePerWeek: "Preis pro Woche",
       effective: "Effektiver Preis pro Besuch",
+      contractDuration: "Vertrag",
+      priceBeforeDuration: "Preis vor Laufzeitanpassung",
+      durationDiscount: "Vertragsrabatt",
+      durationSavings: "Sie sparen",
+      minimumContractValue: "Mindestvertragswert",
+      pauseBenefitNote: "Eine genehmigte Pause von bis zu zwei aufeinanderfolgenden Monaten",
+      chooseDuration: "Wählen Sie eine Abo-Laufzeit, um Ihren Vertragspreis zu sehen.",
     },
     custom: {
       title: "Ein außergewöhnliches Zuhause verdient eine individuelle Bewertung.",
@@ -316,6 +361,9 @@ const de: DeepPartial<Dictionary> = {
       heading: "Ihre Auswahl",
       propertySize: "Wohnfläche",
       frequency: "Reinigungsfrequenz",
+      duration: "Abo-Laufzeit",
+      durationDiscount: "Vertragsrabatt",
+      minimumContractValue: "Mindestvertragswert",
       estMonthly: "Geschätztes Monatsabo",
       assessment: "Einmalige Wohnungsbewertung",
       doorlockInstallation: "Installation eines smarten Türschlosses",
@@ -386,6 +434,7 @@ const de: DeepPartial<Dictionary> = {
       invalid_customer: "Bitte geben Sie Ihren Namen, eine gültige E-Mail und eine Telefonnummer an.",
       invalid_property: "Bitte vervollständigen Sie Ihre Adresse und die Wohnungsangaben.",
       invalid_booking: "Bitte wählen Sie ein Datum und eine Uhrzeit für Ihren Besuch.",
+      invalid_duration: "Bitte wählen Sie eine Abo-Laufzeit, um fortzufahren.",
       pet_details_required: "Bitte fügen Sie einige Angaben zu Ihren Haustieren hinzu.",
       doorlock_internet_required: "Bitte bestätigen Sie, dass das Haus über Internet für das smarte Türschloss verfügt.",
       legal_acceptance_required: "Bitte bestätigen Sie die Angaben und akzeptieren Sie die Bedingungen.",

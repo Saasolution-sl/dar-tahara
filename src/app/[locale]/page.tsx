@@ -16,6 +16,7 @@ import { Faq } from "@/components/sections/faq";
 import { Cta } from "@/components/sections/cta";
 import { LaunchSignup } from "@/components/sections/launch-signup";
 import { getPublicFeatureState } from "@/lib/feature-flags";
+import { getDurationTiers } from "@/lib/subscription-duration-config";
 
 export const dynamic = "force-dynamic";
 
@@ -30,6 +31,7 @@ export default async function HomePage({
   const typedLocale = locale as Locale;
   const dict = await getDictionary(typedLocale);
   const features = await getPublicFeatureState(typedLocale);
+  const durationTiers = await getDurationTiers();
 
   return (
     <>
@@ -38,7 +40,7 @@ export default async function HomePage({
       <Why dict={dict} />
       <Services locale={typedLocale} dict={dict} />
       <Plans locale={typedLocale} dict={dict} />
-      <PricingCalculator locale={typedLocale} dict={dict} features={features} />
+      <PricingCalculator locale={typedLocale} dict={dict} features={features} durationTiers={durationTiers} />
       <HowItWorks dict={dict} />
       <Audiences dict={dict} />
       <Testimonials dict={dict} />

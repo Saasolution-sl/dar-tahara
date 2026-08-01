@@ -4,6 +4,7 @@ import { TERMS_VERSION, validateAssessmentBooking } from "@/lib/assessment";
 import { isServiceRoleConfigured, serviceInsert, serviceUpdate, serviceUpsert } from "@/lib/supabase-rpc";
 import { rateLimit, clientIpFromHeaders } from "@/lib/mailing-list";
 import { featureEnabled } from "@/lib/feature-flags";
+import { getDurationTiers } from "@/lib/subscription-duration-config";
 import { createAdminClient } from "@/lib/supabase/admin";
 
 /**
@@ -31,7 +32,8 @@ export async function createAssessmentCheckout(
   // Rate-limit checkout-session creation per IP (curbs abuse & rapid double-clicks).
   const rl = rateLimit(`assessment-checkout:${clientIpFromHeaders(req.headers)}`);
   if (!rl.allowed) return { ok: false, error: "rate_limited", status: 429 };
-  const parsed = validateAssessmentBooking(body);
+  const durationTiers = await getDurationTiers();
+  const parsed = validateAssessmentBooking(body, new Date(), durationTiers);
   if (!parsed.ok) {
     const details = body && typeof body === "object" ? body as Record<string, unknown> : {};
     console.warn("[assessment-checkout-validation]", {
@@ -76,6 +78,7 @@ export async function createAssessmentCheckout(
       property_id: property.id,
       requested_frequency: value.frequency,
       requested_billing_interval: value.billingInterval,
+      requested_duration_months: value.durationMonths,
       estimated_monthly_cents: quote.estimatedMonthlyCents,
       estimated_annual_cents: quote.estimatedAnnualCents,
       assessment_price_cents: quote.assessmentPriceCents,
