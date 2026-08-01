@@ -1,1 +1,9 @@
-import{AdminTable}from"@/components/admin/admin-table";import{requireRole}from"@/lib/portal-auth";import{serviceSelect}from"@/lib/supabase-rpc";import{money}from"@/lib/portal-format";export default async function Invoices(){await requireRole(['administrator']);const rows=await serviceSelect<Array<{invoice_number:string|null;stripe_invoice_id:string|null;status:string;amount_due_cents:number;currency:string;created_at:string;customers:{full_name:string}}>>('invoices?select=invoice_number,stripe_invoice_id,status,amount_due_cents,currency,created_at,customers(full_name)&order=created_at.desc&limit=500');return <AdminTable title="Invoices" headers={['Invoice','Customer','Status','Amount','Date']} rows={rows.map(r=>[r.invoice_number||r.stripe_invoice_id||'—',r.customers.full_name,r.status,money(r.amount_due_cents,r.currency),r.created_at.slice(0,10)])}/>}
+import { InvoicesAdminClient } from "./invoices-admin-client";
+import { requireRole } from "@/lib/portal-auth";
+import { adminCopy } from "@/i18n/admin-copy";
+import { getRequestLocale } from "@/lib/request-locale";
+
+export default async function InvoicesAdminPage() {
+  await requireRole(["administrator"]);
+  return <InvoicesAdminClient copy={adminCopy[await getRequestLocale()]} />;
+}

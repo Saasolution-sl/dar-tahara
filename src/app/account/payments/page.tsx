@@ -1,2 +1,5 @@
-import {PortalCard,StatusBadge} from "@/components/portal/portal-shell";import {portalCopy} from "@/i18n/portal-copy";import {requireAuth} from "@/lib/portal-auth";import {getRequestLocale} from "@/lib/request-locale";import {requireCustomerPortal} from "@/lib/feature-flags";import {createClient} from "@/lib/supabase/server";import {money,shortDate} from "@/lib/portal-format";
-export default async function PaymentsPage(){await requireCustomerPortal();const context=await requireAuth();const locale=await getRequestLocale();const c=portalCopy[locale];const db=await createClient();const{data}=await db.from("payments").select("id,status,amount_cents,currency,paid_at,created_at").eq("customer_id",context.customerId||"00000000-0000-0000-0000-000000000000").order("created_at",{ascending:false});return <div><h1 className="font-serif text-4xl">{c.nav.payments}</h1><div className="mt-7 space-y-4">{data?.length?data.map(p=><PortalCard key={p.id} title={money(p.amount_cents,p.currency,locale)}><div className="flex items-center justify-between gap-4"><StatusBadge value={p.status}/><span className="text-sm text-muted-foreground">{shortDate(p.paid_at||p.created_at,locale)}</span></div></PortalCard>):<PortalCard title={c.nav.payments}><p className="text-sm text-muted-foreground">{c.dashboard.empty}</p></PortalCard>}</div></div>}
+import { redirect } from "next/navigation";
+
+export default function PaymentsPage() {
+  redirect("/account/invoices");
+}
