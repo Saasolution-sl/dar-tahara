@@ -68,8 +68,8 @@ mk_point "Opens a Dar Tahara email" \
 # the exact tracked URLs, which only carry meaning once the booking feature is
 # live. They are documented here and should be added in the UI when those URLs
 # exist:  Points → New → "Visits specific URL" with URL
-#   https://dartahara.com/*/early-access   (+3)
-#   https://dartahara.com/*/book*          (+5)
+#   https://www.dartahara.com/*/early-access   (+3)
+#   https://www.dartahara.com/*/book*          (+5)
 
 rm -f /tmp/mautic-p3.json
 echo
