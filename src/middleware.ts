@@ -13,12 +13,17 @@ function skipsLocaleRedirect(pathname: string) {
     pathname.startsWith("/api") ||
     pathname.startsWith("/auth/") ||
     pathname === "/login" ||
+    pathname === "/signup" ||
     pathname === "/forgot-password" ||
     pathname === "/reset-password" ||
     pathname === "/account" ||
     pathname.startsWith("/account/") ||
     pathname === "/admin" ||
     pathname.startsWith("/admin/") ||
+    pathname === "/manager" ||
+    pathname.startsWith("/manager/") ||
+    pathname === "/assessment" ||
+    pathname.startsWith("/assessment/") ||
     PUBLIC_FILE.test(pathname)
   );
 }

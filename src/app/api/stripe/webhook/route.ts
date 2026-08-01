@@ -1,5 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
-import { parseStripeEvent, type StripeCheckoutSession } from "@/lib/stripe";
+import {
+  parseStripeEvent,
+  retrievePaymentIntent,
+  retrieveSetupIntent,
+  setCustomerDefaultPaymentMethod,
+  type StripeCheckoutSession,
+} from "@/lib/stripe";
 import { serviceDelete, serviceInsert, serviceInsertIgnoreDuplicates, serviceSelect, serviceUpdate, serviceUpsert } from "@/lib/supabase-rpc";
 import { sendTransactionalEmail } from "@/lib/transactional-email";
 import type { Locale } from "@/i18n/config";
@@ -12,13 +18,38 @@ type AssessmentMailRow = { reference: string; preferred_date: string; assessment
 async function assessmentPaid(session: StripeCheckoutSession) {
   const id = session.metadata.assessment_id || session.client_reference_id;
   if (!id || session.payment_status !== "paid") return;
+  let paymentMethodId: string | null = null;
+  if (session.payment_intent && session.customer) {
+    const paymentIntent = await retrievePaymentIntent(session.payment_intent);
+    if (
+      paymentIntent.status !== "succeeded"
+      || paymentIntent.customer !== session.customer
+      || !paymentIntent.payment_method
+    ) {
+      throw new Error("assessment_payment_method_not_reusable");
+    }
+    paymentMethodId = paymentIntent.payment_method;
+    await setCustomerDefaultPaymentMethod({
+      customerId: session.customer,
+      paymentMethodId,
+      idempotencyKey: `assessment_default_payment_method_${id}`,
+    });
+  }
   await serviceUpdate("home_assessments", `id=eq.${id}`, {
     payment_status: "paid", status: "assessment", stripe_payment_intent_id: session.payment_intent,
     stripe_customer_id: session.customer, paid_at: new Date().toISOString(), confirmed_at: new Date().toISOString(),
+    stripe_payment_method_id: paymentMethodId,
   });
   if (session.customer) {
     const rows = await serviceSelect<{ customer_id: string }[]>(`home_assessments?id=eq.${id}&select=customer_id&limit=1`);
-    if (rows[0]) await serviceUpdate("customers", `id=eq.${rows[0].customer_id}`, { stripe_customer_id: session.customer });
+    if (rows[0]) {
+      await serviceUpdate("customers", `id=eq.${rows[0].customer_id}`, {
+        stripe_customer_id: session.customer,
+        ...(paymentMethodId
+          ? { payment_method_ready_at: new Date().toISOString() }
+          : {}),
+      });
+    }
   }
   await serviceInsert("assessment_events", { assessment_id: id, event_type: "payment_confirmed", from_status: "awaiting_payment", to_status: "assessment", actor_type: "stripe", actor_reference: session.id });
   const rows = await serviceSelect<AssessmentMailRow[]>(`home_assessments?id=eq.${id}&select=reference,preferred_date,assessment_price_cents,customers(email,full_name,preferred_language)&limit=1`);
@@ -30,6 +61,62 @@ async function assessmentPaid(session: StripeCheckoutSession) {
       sendTransactionalEmail({ template: "payment_confirmation", locale: row.customers.preferred_language, email: row.customers.email, name: row.customers.full_name, reference: row.reference, amount: formatMoneyFromCents(row.assessment_price_cents, row.customers.preferred_language), actionUrl }),
     ]);
   }
+}
+
+async function paymentMethodSetupCompleted(session: StripeCheckoutSession) {
+  const customerId = session.metadata.customer_id;
+  if (
+    session.mode !== "setup"
+    || session.status !== "complete"
+    || !customerId
+    || !session.customer
+    || !session.setup_intent
+  ) {
+    throw new Error("payment_method_setup_incomplete");
+  }
+
+  const setupIntent = await retrieveSetupIntent(session.setup_intent);
+  if (
+    setupIntent.status !== "succeeded"
+    || setupIntent.customer !== session.customer
+    || !setupIntent.payment_method
+  ) {
+    throw new Error("payment_method_setup_not_reusable");
+  }
+
+  const rows = await serviceSelect<{
+    id: string;
+    stripe_customer_id: string | null;
+  }[]>(
+    `customers?id=eq.${encodeURIComponent(customerId)}&select=id,stripe_customer_id&limit=1`,
+  );
+  const customer = rows[0];
+  if (
+    !customer
+    || (customer.stripe_customer_id && customer.stripe_customer_id !== session.customer)
+  ) {
+    throw new Error("payment_method_setup_customer_mismatch");
+  }
+
+  await setCustomerDefaultPaymentMethod({
+    customerId: session.customer,
+    paymentMethodId: setupIntent.payment_method,
+    idempotencyKey: `payment_method_setup_default_${session.id}`,
+  });
+  const completedAt = new Date().toISOString();
+  await serviceUpdate("customers", `id=eq.${customer.id}`, {
+    stripe_customer_id: session.customer,
+    payment_method_ready_at: completedAt,
+  });
+  await serviceInsert("audit_logs", {
+    action: "customer_payment_method_saved",
+    resource_type: "customer",
+    resource_id: customer.id,
+    new_value: {
+      payment_method_ready_at: completedAt,
+      source: "stripe_setup_intent",
+    },
+  });
 }
 
 async function subscriptionPaid(session: StripeCheckoutSession) {
@@ -91,6 +178,7 @@ export async function POST(req: NextRequest) {
     if (event.type === "checkout.session.completed" || event.type === "checkout.session.async_payment_succeeded") {
       const session = event.data.object as unknown as StripeCheckoutSession;
       if (session.metadata?.kind === "home_assessment") await assessmentPaid(session);
+      if (session.metadata?.kind === "payment_method_setup") await paymentMethodSetupCompleted(session);
       if (session.metadata?.kind === "subscription") await subscriptionPaid(session);
     } else if (event.type === "checkout.session.expired") {
       const session = event.data.object as unknown as StripeCheckoutSession;
