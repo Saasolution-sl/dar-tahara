@@ -3,6 +3,7 @@
 import * as React from "react";
 import { Search, Loader2, PencilLine } from "lucide-react";
 import { loadGoogleMaps, mapsEnabled, PLACE_FIELDS } from "@/lib/maps/config";
+import { googlePlaceToPlaceLike, type GooglePlaceDetail } from "@/lib/maps/google-place";
 import type { PlaceLike } from "@/lib/maps/types";
 import { cn } from "@/lib/utils";
 
@@ -14,30 +15,34 @@ export type AddressAutocompleteCopy = {
   unavailable: string;
 };
 
-type Prediction = { placeId: string; primary: string; secondary: string };
+type GPlace = GooglePlaceDetail & {
+  fetchFields: (request: { fields: string[] }) => Promise<void>;
+};
+type GPlacePrediction = {
+  placeId?: string;
+  text: { toString: () => string };
+  toPlace: () => GPlace;
+};
+type GPlacesLibrary = {
+  AutocompleteSessionToken: new () => object;
+  AutocompleteSuggestion: {
+    fetchAutocompleteSuggestions: (request: Record<string, unknown>) => Promise<{
+      suggestions: Array<{ placePrediction?: GPlacePrediction | null }>;
+    }>;
+  };
+};
+type GMaps = {
+  importLibrary: (name: "places") => Promise<GPlacesLibrary>;
+};
+type Prediction = {
+  placeId: string;
+  primary: string;
+  secondary: string;
+  prediction: GPlacePrediction;
+};
 
 /* Minimal shapes for the Google objects we touch — avoids pulling in the full
  * @types/google.maps dependency for four call sites. */
-type GAutocompleteService = {
-  getPlacePredictions: (
-    req: Record<string, unknown>,
-    cb: (res: unknown[] | null, status: string) => void,
-  ) => void;
-};
-type GPlacesService = {
-  getDetails: (
-    req: Record<string, unknown>,
-    cb: (place: PlaceLike | null, status: string) => void,
-  ) => void;
-};
-type GMaps = {
-  places: {
-    AutocompleteService: new () => GAutocompleteService;
-    PlacesService: new (el: HTMLElement) => GPlacesService;
-    AutocompleteSessionToken: new () => object;
-    PlacesServiceStatus: { OK: string };
-  };
-};
 
 function gmaps(): GMaps | null {
   const w = window as unknown as { google?: { maps?: GMaps } };
@@ -47,10 +52,10 @@ function gmaps(): GMaps | null {
 /**
  * Google Places address search.
  *
- * Cost note: predictions and the final getDetails share ONE session token, so
- * the whole lookup bills as a single (free) Autocomplete session rather than
- * one charged request per keystroke. The token is discarded after each
- * selection — reusing it would silently re-bill.
+ * Cost note: predictions and the final fetchFields call share one session
+ * token, grouping the query and selection under Google's session pricing. The
+ * token is discarded after each selection; reusing it would invalidate that
+ * pricing behavior.
  *
  * Availability note: if the key is missing, the script is blocked or Places
  * errors, this degrades to a plain input and surfaces the manual-entry link.
@@ -86,10 +91,10 @@ export function AddressAutocomplete({
   const [active, setActive] = React.useState(0);
 
   const rootRef = React.useRef<HTMLDivElement>(null);
-  const serviceRef = React.useRef<GAutocompleteService | null>(null);
-  const placesRef = React.useRef<GPlacesService | null>(null);
+  const libraryRef = React.useRef<GPlacesLibrary | null>(null);
   const tokenRef = React.useRef<object | null>(null);
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
+  const requestIdRef = React.useRef(0);
   const listId = `${id}-listbox`;
 
   // Load the script lazily — only when this field is actually rendered.
@@ -97,14 +102,12 @@ export function AddressAutocomplete({
     if (!mapsEnabled()) return;
     let alive = true;
     loadGoogleMaps()
-      .then(() => {
+      .then(async () => {
         if (!alive) return;
         const m = gmaps();
         if (!m) { setFailed(true); return; }
-        serviceRef.current = new m.places.AutocompleteService();
-        // PlacesService needs a DOM node; a detached div is fine and avoids
-        // requiring a visible map just to fetch place details.
-        placesRef.current = new m.places.PlacesService(document.createElement("div"));
+        libraryRef.current = await m.importLibrary("places");
+        if (!alive) return;
         setReady(true);
       })
       .catch(() => { if (alive) setFailed(true); });
@@ -125,42 +128,46 @@ export function AddressAutocomplete({
   }, []);
 
   function ensureToken() {
-    const m = gmaps();
-    if (!m) return null;
-    if (!tokenRef.current) tokenRef.current = new m.places.AutocompleteSessionToken();
+    const library = libraryRef.current;
+    if (!library) return null;
+    if (!tokenRef.current) tokenRef.current = new library.AutocompleteSessionToken();
     return tokenRef.current;
   }
 
-  function search(q: string) {
-    const svc = serviceRef.current;
-    const m = gmaps();
-    if (!svc || !m || q.trim().length < 3) { setItems([]); return; }
+  async function search(q: string) {
+    const library = libraryRef.current;
+    if (!library || q.trim().length < 3) { setItems([]); return; }
+    const requestId = ++requestIdRef.current;
     setBusy(true);
     const req: Record<string, unknown> = {
       input: q,
       sessionToken: ensureToken(),
     };
-    if (countryRestriction) req.componentRestrictions = { country: countryRestriction };
+    if (countryRestriction) req.includedRegionCodes = [countryRestriction.toLowerCase()];
 
-    svc.getPlacePredictions(req, (res, status) => {
+    try {
+      const { suggestions } = await library.AutocompleteSuggestion.fetchAutocompleteSuggestions(req);
+      if (requestId !== requestIdRef.current) return;
       setBusy(false);
-      if (status !== m.places.PlacesServiceStatus.OK || !res) { setItems([]); return; }
       setItems(
-        res.slice(0, 6).map((r) => {
-          const p = r as {
-            place_id: string;
-            structured_formatting?: { main_text?: string; secondary_text?: string };
-            description?: string;
-          };
-          return {
-            placeId: p.place_id,
-            primary: p.structured_formatting?.main_text ?? p.description ?? "",
-            secondary: p.structured_formatting?.secondary_text ?? "",
-          };
-        }),
+        suggestions.flatMap(({ placePrediction }) => {
+          if (!placePrediction) return [];
+          const label = placePrediction.text.toString();
+          return [{
+            placeId: placePrediction.placeId ?? label,
+            primary: label,
+            secondary: "",
+            prediction: placePrediction,
+          }];
+        }).slice(0, 6),
       );
       setActive(0);
-    });
+    } catch {
+      if (requestId !== requestIdRef.current) return;
+      setBusy(false);
+      setItems([]);
+      setFailed(true);
+    }
   }
 
   function onInput(v: string) {
@@ -168,25 +175,26 @@ export function AddressAutocomplete({
     setOpen(true);
     if (debounceRef.current) clearTimeout(debounceRef.current);
     // Debounced: one request per pause, not per keystroke.
-    debounceRef.current = setTimeout(() => search(v), 250);
+    debounceRef.current = setTimeout(() => { void search(v); }, 250);
   }
 
-  function choose(index: number) {
+  async function choose(index: number) {
     const item = items[index];
-    const svc = placesRef.current;
-    const m = gmaps();
-    if (!item || !svc || !m) return;
+    if (!item) return;
     setBusy(true);
-    svc.getDetails(
-      { placeId: item.placeId, fields: [...PLACE_FIELDS], sessionToken: ensureToken() },
-      (place, status) => {
-        setBusy(false);
-        setOpen(false);
-        // The session ends with getDetails — a new lookup must start a new one.
-        tokenRef.current = null;
-        if (status === m.places.PlacesServiceStatus.OK && place) onSelect(place);
-      },
-    );
+    try {
+      const place = item.prediction.toPlace();
+      await place.fetchFields({ fields: [...PLACE_FIELDS] });
+      setOpen(false);
+      onSelect(googlePlaceToPlaceLike(place));
+    } catch {
+      setFailed(true);
+      setItems([]);
+    } finally {
+      setBusy(false);
+      // fetchFields concludes the billing session. The next lookup gets a new token.
+      tokenRef.current = null;
+    }
   }
 
   const usable = ready && !failed && !disabled;
@@ -216,7 +224,7 @@ export function AddressAutocomplete({
             if (!items.length) return;
             if (e.key === "ArrowDown") { e.preventDefault(); setActive((a) => Math.min(a + 1, items.length - 1)); }
             else if (e.key === "ArrowUp") { e.preventDefault(); setActive((a) => Math.max(a - 1, 0)); }
-            else if (e.key === "Enter") { e.preventDefault(); choose(active); }
+            else if (e.key === "Enter") { e.preventDefault(); void choose(active); }
             else if (e.key === "Escape") { setOpen(false); }
           }}
         />
@@ -227,6 +235,9 @@ export function AddressAutocomplete({
           />
         ) : null}
       </div>
+      <span className="sr-only" role="status" aria-live="polite">
+        {busy ? copy.searching : ""}
+      </span>
 
       {/* Manual entry is always offered — never a dead end. */}
       <button
@@ -250,7 +261,7 @@ export function AddressAutocomplete({
               role="option"
               aria-selected={active === i}
               onMouseEnter={() => setActive(i)}
-              onClick={() => choose(i)}
+              onClick={() => { void choose(i); }}
               className={cn(
                 "cursor-pointer rounded-lg px-3 py-2 text-sm",
                 active === i ? "bg-secondary" : "hover:bg-secondary/60",
@@ -262,6 +273,13 @@ export function AddressAutocomplete({
               ) : null}
             </li>
           ))}
+          <li
+            role="presentation"
+            aria-hidden
+            className="border-t border-border px-3 py-1.5 text-end text-[0.65rem] font-medium text-muted-foreground"
+          >
+            Powered by Google
+          </li>
         </ul>
       ) : null}
 
