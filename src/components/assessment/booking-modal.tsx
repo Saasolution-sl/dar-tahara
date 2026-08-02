@@ -18,6 +18,11 @@ import {
 } from "@/lib/assessment";
 import { cn } from "@/lib/utils";
 import { buttonVariants } from "@/components/ui/button";
+import { AddressAutocomplete } from "@/components/maps/address-autocomplete";
+import { addressAutocompleteCopy } from "@/i18n/maps-copy";
+import { parsePlace } from "@/lib/maps/address";
+import { MOROCCO_COUNTRY_CODE } from "@/lib/maps/config";
+import type { PlaceLike } from "@/lib/maps/types";
 
 type Status = "idle" | "submitting";
 type ErrorKey = keyof Dictionary["booking"]["errors"];
@@ -64,6 +69,7 @@ export function AssessmentBookingModal({
   const [status, setStatus] = React.useState<Status>("idle");
   const [errorKey, setErrorKey] = React.useState<ErrorKey | null>(null);
   const [invalidFields, setInvalidFields] = React.useState<Set<string>>(new Set());
+  const [manualAddress, setManualAddress] = React.useState(false);
 
   const [form, setForm] = React.useState({
     fullName: "", email: "", phone: "",
@@ -114,6 +120,24 @@ export function AssessmentBookingModal({
       next.delete(key as string);
       return next;
     });
+  }
+
+  function applyAddressPlace(place: PlaceLike) {
+    const address = parsePlace(place);
+    setForm((current) => ({
+      ...current,
+      addressLine1: address.addressLine1 ?? address.formattedAddress ?? current.addressLine1,
+      city: address.cityDisplayName ?? current.city,
+      postalCode: address.postalCode ?? current.postalCode,
+      countryCode: address.countryCode || current.countryCode,
+    }));
+    setInvalidFields((current) => {
+      const next = new Set(current);
+      next.delete("addressLine1");
+      if (address.cityDisplayName) next.delete("city");
+      return next;
+    });
+    setManualAddress(false);
   }
 
   function validate(): boolean {
@@ -399,11 +423,30 @@ export function AssessmentBookingModal({
                   <Field label={b.fields.phone} required error={invalid("phone")}>
                     <input type="tel" autoComplete="tel" value={form.phone} onChange={(e) => set("phone", e.target.value)} className={inputCls(invalid("phone"))} />
                   </Field>
+                  <Field label={b.fields.addressLine1} required error={invalid("addressLine1")} className="sm:col-span-2">
+                    {manualAddress ? (
+                      <input
+                        id="assessment-address"
+                        type="text"
+                        autoComplete="address-line1"
+                        value={form.addressLine1}
+                        onChange={(e) => set("addressLine1", e.target.value)}
+                        className={inputCls(invalid("addressLine1"))}
+                      />
+                    ) : (
+                      <AddressAutocomplete
+                        id="assessment-address"
+                        value={form.addressLine1}
+                        onChange={(value) => set("addressLine1", value)}
+                        onSelect={applyAddressPlace}
+                        onManual={() => setManualAddress(true)}
+                        copy={addressAutocompleteCopy[locale]}
+                        countryRestriction={MOROCCO_COUNTRY_CODE}
+                      />
+                    )}
+                  </Field>
                   <Field label={b.fields.city} required error={invalid("city")}>
                     <input type="text" autoComplete="address-level2" value={form.city} onChange={(e) => set("city", e.target.value)} className={inputCls(invalid("city"))} />
-                  </Field>
-                  <Field label={b.fields.addressLine1} required error={invalid("addressLine1")} className="sm:col-span-2">
-                    <input type="text" autoComplete="address-line1" value={form.addressLine1} onChange={(e) => set("addressLine1", e.target.value)} className={inputCls(invalid("addressLine1"))} />
                   </Field>
                   <Field label={b.fields.addressLine2}>
                     <input type="text" autoComplete="address-line2" value={form.addressLine2} onChange={(e) => set("addressLine2", e.target.value)} className={inputCls(false)} />

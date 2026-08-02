@@ -29,10 +29,10 @@ export const MOROCCO_COUNTRY_CODE = "ma";
 
 /** Only the Place fields we actually consume — Places bills per field group. */
 export const PLACE_FIELDS = [
-  "place_id",
-  "formatted_address",
-  "address_components",
-  "geometry.location",
+  "id",
+  "formattedAddress",
+  "addressComponents",
+  "location",
 ] as const;
 
 export type MapsLoadState = "idle" | "loading" | "ready" | "error";
@@ -45,7 +45,10 @@ let loadPromise: Promise<void> | null = null;
  * usable; rejects when the key is absent or the script cannot load, so every
  * caller can fall back to manual entry instead of hanging on a spinner.
  *
- * `libraries=places,marker` covers autocomplete and AdvancedMarkerElement.
+ * `libraries=places,marker` covers Places (New) autocomplete and
+ * AdvancedMarkerElement. Callers use `google.maps.importLibrary()` after this
+ * bootstrap script resolves so new projects do not depend on legacy Places
+ * classes that Google no longer makes available to new customers.
  */
 export function loadGoogleMaps(): Promise<void> {
   if (typeof window === "undefined") {
