@@ -1,0 +1,131 @@
+# Release bundles
+
+This document tracks the customer-platform work as staged deployment bundles. A
+bundle may contain multiple commits, but it is promoted as one staging or
+production release. Do not deploy a later bundle before its dependencies.
+
+## Bundle 0 — repository safety — ✅ shipped
+
+Merged into `main` via #36.
+
+No application or database behavior changes.
+
+## Bundle 1 — subscription pricing — ✅ shipped
+
+Merged into `main` via #36 (subscription duration tiers, discounts,
+validation, calculator, policies, FAQ content, and translations).
+
+## Bundle 2 — identity, assessment, and account foundation — ✅ shipped
+
+Merged into `main` via #37 and #38 (public auth, multi-profile roles,
+assessment and manager workspaces, Stripe account/subscription primitives,
+secure profile/company profile/property/payment-method setup).
+
+## Bundle 3 — pause and deep-clean operations — PR #42 (draft)
+
+Branch: `codex/bundle-03-pause-deep-clean` (base `main`).
+
+Adds pause and deep-clean request workflows: eligibility, pricing, admin
+approval UI, customer modals, API routes, a scheduled job, and 3 migrations.
+
+Note: this branch's admin pages reference a type introduced in Bundle 4
+(`src/i18n/admin-copy.ts`), so it does not typecheck standalone — merge
+together with or before Bundle 4. Validated at the Bundle 3+4 combined tip.
+
+Production gate:
+
+- Add or verify dedicated, default-off kill switches for both workflows.
+- Verify eligibility, approval, rejection, attachments, emails, Stripe pause/resume,
+  and free deep-clean consumption in staging.
+- Configure and execute the pause-request job deliberately; do not expose the UI
+  before operations staff approve the workflow.
+
+## Bundle 4 — invoice documents — PR #43 (draft)
+
+Branch: `codex/bundle-04-invoices` (base `codex/bundle-03-pause-deep-clean`,
+stacked on #42).
+
+Adds invoice statements, unit filtering, PDF documents, and the admin invoice
+view. Introduces `src/i18n/admin-copy.ts`.
+
+Production gate:
+
+- Visually review invoice, statement, and pause-notice PDFs.
+- Verify ownership checks and downloads with at least two isolated customer accounts.
+- Compare totals, discounts, payment references, and unit grouping against real fixtures.
+
+## Bundle 5 — billing lifecycle — PR #44 (draft)
+
+Branch: `codex/bundle-05-billing-lifecycle` (base `codex/bundle-04-invoices`,
+stacked on #43).
+
+Adds subscription activation, payment recovery, cancellation, early-termination
+settlement, prepaid renewal, jobs, and extends the Stripe webhook handler.
+6 migrations.
+
+**Highest sensitivity bundle** — modifies the live Stripe webhook endpoint
+(`src/app/api/stripe/webhook/route.ts`). Review that file personally
+regardless of test results.
+
+Production gate:
+
+- Replay representative Stripe test-mode webhook events, including duplicates.
+- Complete activation, failed payment, suspension, recovery, cancellation, settlement,
+  and prepaid-renewal journeys end to end.
+- Decide and configure schedules for billing collection and prepaid renewals.
+- Verify migration backfills and constraints on production-like data.
+- Keep subscription checkout and early termination disabled until smoke tests pass.
+
+## Bundle 6 — HospitalitySupport portal — PR #45 (draft)
+
+Branch: `codex/bundle-06-support-portal` (base `main`, independent of Bundles 3–5).
+
+Adds the HospitalitySupport portal integration: provider API, attachments,
+webhook, sync, database mappings, configuration, and runbook
+(`docs/HOSPITALITY_SUPPORT.md`). 1 migration.
+
+Production gate:
+
+- Configure a staging mailbox, API token, webhook secret, sync secret, and private bucket.
+- Verify ownership isolation, allowed attachments, webhook signature checks, deduplication,
+  replies, unread state, resolution, reopening, and reconciliation.
+- Keep the support portal unavailable until the provider and storage checks pass.
+
+## Bundle 7 — admin integration — PR #46 (draft)
+
+Branch: `codex/bundle-07-admin-console` (base `codex/bundle-05-billing-lifecycle`,
+stacked on #44).
+
+Localizes and expands the admin console navigation and tables for the
+features shipped in Bundles 3–5.
+
+Production gate:
+
+- Verify all admin navigation destinations and role restrictions.
+- Verify translated tables, feature controls, assessment actions, and dashboard queries.
+- Deploy only after every admin destination being exposed has been approved.
+
+## Known issue — migration timestamp ordering
+
+Bundles 3–6 carry Supabase migration filenames timestamped `20260729`–`20260801`,
+authored before Bundle 2's migrations (already applied to production, up to
+`20260731160349`) were finalized. If `supabase db push` applies strictly by
+filename order against a watermark of already-applied migrations, these older
+timestamps may not apply as intended. Rename to current timestamps and verify
+against a staging database before running any of these migrations against
+production.
+
+## Required verification for every bundle
+
+Before production approval, run:
+
+1. `npm test`
+2. `npm run typecheck`
+3. `npm run lint`
+4. `npm run check:i18n`
+5. `npm run build`
+6. Applicable Supabase migration, RLS, advisor, and upgrade tests in staging
+7. Manual browser smoke tests for the affected customer and staff journeys
+
+Only one bundle is approved at a time. A later bundle is not implicitly approved
+when an earlier bundle is accepted.
