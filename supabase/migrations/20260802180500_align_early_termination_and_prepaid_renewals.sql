@@ -1,5 +1,5 @@
 -- Forward-only alignment for projects that already applied the original
--- 20260730120000 settlement migration before its implementation was expanded.
+-- 20260802180400 settlement migration before its implementation was expanded.
 -- All changes are additive/backfilled and preserve the legacy calculation and
 -- invoice columns for historical compatibility.
 

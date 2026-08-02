@@ -37,7 +37,7 @@ test("authorization and booking tables are customer-owned, read-only through RLS
   const migration = readFileSync(
     join(
       root,
-      "supabase/migrations/20260730181047_subscription_payment_authorization_and_service_bookings.sql",
+      "supabase/migrations/20260802180700_subscription_payment_authorization_and_service_bookings.sql",
     ),
     "utf8",
   );

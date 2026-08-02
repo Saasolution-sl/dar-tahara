@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import { join } from "node:path";
 import test from "node:test";
 
-const sql = readFileSync(join(process.cwd(), "supabase", "migrations", "20260801113752_hospitality_support_portal.sql"), "utf8");
+const sql = readFileSync(join(process.cwd(), "supabase", "migrations", "20260802180800_hospitality_support_portal.sql"), "utf8");
 
 test("support migration includes RLS, ownership indexes, and idempotency boundaries", () => {
   for (const token of ["support_messages", "support_attachments", "support_reply_submissions", "support_sync_events", "support_notifications"]) assert.match(sql, new RegExp(token));

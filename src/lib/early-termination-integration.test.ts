@@ -7,7 +7,7 @@ const root = process.cwd();
 
 test("settlement migration enforces classification, ownership, and one invoice per calculation", () => {
   const sql = readFileSync(
-    join(root, "supabase/migrations/20260730120000_early_termination_settlement.sql"),
+    join(root, "supabase/migrations/20260802180400_early_termination_settlement.sql"),
     "utf8",
   );
   assert.match(sql, /invoice_type in \('standard', 'early_termination_settlement', 'prepaid_renewal'\)/);
@@ -63,7 +63,7 @@ test("prepaid portal and renewal workflow cannot enter monthly early termination
 
 test("database rejects prepaid early-termination calculations and settlement invoices", () => {
   const sql = readFileSync(
-    join(root, "supabase/migrations/20260730155756_prevent_prepaid_early_termination.sql"),
+    join(root, "supabase/migrations/20260802180600_prevent_prepaid_early_termination.sql"),
     "utf8",
   );
   assert.match(sql, /subscription_billing_interval is distinct from 'monthly'/);

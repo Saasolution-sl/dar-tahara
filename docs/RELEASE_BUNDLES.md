@@ -105,15 +105,16 @@ Production gate:
 - Verify translated tables, feature controls, assessment actions, and dashboard queries.
 - Deploy only after every admin destination being exposed has been approved.
 
-## Known issue — migration timestamp ordering
+## Resolved — migration timestamp ordering
 
-Bundles 3–6 carry Supabase migration filenames timestamped `20260729`–`20260801`,
-authored before Bundle 2's migrations (already applied to production, up to
-`20260731160349`) were finalized. If `supabase db push` applies strictly by
-filename order against a watermark of already-applied migrations, these older
-timestamps may not apply as intended. Rename to current timestamps and verify
-against a staging database before running any of these migrations against
-production.
+Bundles 3–6 originally carried Supabase migration filenames timestamped
+`20260729`–`20260801`, authored before Bundle 2's migrations (applied to
+production up to `20260731160349`) were finalized — which would have applied
+out of order against `supabase db push`'s watermark of already-applied
+migrations. Renamed to `20260802180000`–`20260802180800` (preserving relative
+order) so they sort after everything already in production. Still verify
+against a staging database before running these against production —
+renaming fixes the ordering, not the untested SQL itself.
 
 ## Required verification for every bundle
 
