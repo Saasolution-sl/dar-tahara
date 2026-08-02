@@ -4,6 +4,13 @@ This document tracks the customer-platform work as staged deployment bundles. A
 bundle may contain multiple commits, but it is promoted as one staging or
 production release. Do not deploy a later bundle before its dependencies.
 
+**Status as of 2026-08-03**: all bundles (0–7) are merged into `main`.
+`npm test` (492/492) and `npm run typecheck` re-verified clean against current
+`main`. Lint, i18n check, and build have not been re-run since the merges.
+None of the per-bundle "production gate" staging/webhook/portal checks below
+are confirmed done — merged to `main` means code-complete, not
+production-approved.
+
 ## Bundle 0 — repository safety — ✅ shipped
 
 Merged into `main` via #36.
@@ -21,9 +28,10 @@ Merged into `main` via #37 and #38 (public auth, multi-profile roles,
 assessment and manager workspaces, Stripe account/subscription primitives,
 secure profile/company profile/property/payment-method setup).
 
-## Bundle 3 — pause and deep-clean operations — PR #42 (draft)
+## Bundle 3 — pause and deep-clean operations — ✅ merged (#42)
 
-Branch: `codex/bundle-03-pause-deep-clean` (base `main`).
+Branch: `codex/bundle-03-pause-deep-clean` (base `main`). Merged into `main`
+2026-08-02.
 
 Adds pause and deep-clean request workflows: eligibility, pricing, admin
 approval UI, customer modals, API routes, a scheduled job, and 3 migrations.
@@ -32,7 +40,8 @@ Note: this branch's admin pages reference a type introduced in Bundle 4
 (`src/i18n/admin-copy.ts`), so it does not typecheck standalone — merge
 together with or before Bundle 4. Validated at the Bundle 3+4 combined tip.
 
-Production gate:
+Merged to `main`; production gate below is **not yet confirmed satisfied** —
+run it before this workflow is exposed in production:
 
 - Add or verify dedicated, default-off kill switches for both workflows.
 - Verify eligibility, approval, rejection, attachments, emails, Stripe pause/resume,
@@ -40,24 +49,26 @@ Production gate:
 - Configure and execute the pause-request job deliberately; do not expose the UI
   before operations staff approve the workflow.
 
-## Bundle 4 — invoice documents — PR #43 (draft)
+## Bundle 4 — invoice documents — ✅ merged (#43)
 
 Branch: `codex/bundle-04-invoices` (base `codex/bundle-03-pause-deep-clean`,
-stacked on #42).
+stacked on #42). Merged into `main` 2026-08-02.
 
 Adds invoice statements, unit filtering, PDF documents, and the admin invoice
 view. Introduces `src/i18n/admin-copy.ts`.
 
-Production gate:
+Merged to `main`; production gate below is **not yet confirmed satisfied**:
 
 - Visually review invoice, statement, and pause-notice PDFs.
 - Verify ownership checks and downloads with at least two isolated customer accounts.
 - Compare totals, discounts, payment references, and unit grouping against real fixtures.
 
-## Bundle 5 — billing lifecycle — PR #44 (draft)
+## Bundle 5 — billing lifecycle — ✅ merged (#44)
 
 Branch: `codex/bundle-05-billing-lifecycle` (base `codex/bundle-04-invoices`,
-stacked on #43).
+stacked on #43). Merged into `main` 2026-08-02, plus a follow-up hardening
+commit (#48: fail settlement webhook on Stripe cancel failure, dedupe payment
+insert).
 
 Adds subscription activation, payment recovery, cancellation, early-termination
 settlement, prepaid renewal, jobs, and extends the Stripe webhook handler.
@@ -67,7 +78,8 @@ settlement, prepaid renewal, jobs, and extends the Stripe webhook handler.
 (`src/app/api/stripe/webhook/route.ts`). Review that file personally
 regardless of test results.
 
-Production gate:
+Merged to `main`; production gate below is **not yet confirmed satisfied** —
+treat this as the top-priority verification item given the live webhook:
 
 - Replay representative Stripe test-mode webhook events, including duplicates.
 - Complete activation, failed payment, suspension, recovery, cancellation, settlement,
@@ -76,34 +88,45 @@ Production gate:
 - Verify migration backfills and constraints on production-like data.
 - Keep subscription checkout and early termination disabled until smoke tests pass.
 
-## Bundle 6 — HospitalitySupport portal — PR #45 (draft)
+## Bundle 6 — HospitalitySupport portal — ✅ merged (#45)
 
 Branch: `codex/bundle-06-support-portal` (base `main`, independent of Bundles 3–5).
+Merged into `main` 2026-08-02.
 
 Adds the HospitalitySupport portal integration: provider API, attachments,
 webhook, sync, database mappings, configuration, and runbook
 (`docs/HOSPITALITY_SUPPORT.md`). 1 migration.
 
-Production gate:
+Merged to `main`; production gate below is **not yet confirmed satisfied**:
 
 - Configure a staging mailbox, API token, webhook secret, sync secret, and private bucket.
 - Verify ownership isolation, allowed attachments, webhook signature checks, deduplication,
   replies, unread state, resolution, reopening, and reconciliation.
 - Keep the support portal unavailable until the provider and storage checks pass.
 
-## Bundle 7 — admin integration — PR #46 (draft)
+## Bundle 7 — admin integration — ✅ merged (#46)
 
 Branch: `codex/bundle-07-admin-console` (base `codex/bundle-05-billing-lifecycle`,
-stacked on #44).
+stacked on #44). Merged into `main` 2026-08-02.
 
 Localizes and expands the admin console navigation and tables for the
 features shipped in Bundles 3–5.
 
-Production gate:
+Merged to `main`; production gate below is **not yet confirmed satisfied**:
 
 - Verify all admin navigation destinations and role restrictions.
 - Verify translated tables, feature controls, assessment actions, and dashboard queries.
 - Deploy only after every admin destination being exposed has been approved.
+
+## Retired integration branches
+
+`codex/release-bundles` (#40) and `codex/prod-runner-bundle-02a` (#41) were
+Codex's original monolithic integration branches, kept open as drafts while
+Bundles 3–7 were extracted from them one at a time into their own PRs (#42–#46)
+following the pattern above. Once all bundles were merged individually, both
+PRs were closed unmerged on 2026-08-03 — confirmed via
+`git log main..origin/<branch>` that neither carried anything not already on
+`main`.
 
 ## Resolved — migration timestamp ordering
 
