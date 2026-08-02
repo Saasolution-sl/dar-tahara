@@ -31,7 +31,15 @@ export type AnalyticsEvent =
   | "smart_lock_declined"
   | "email_verified"
   | "referral_link_copied"
-  | "whatsapp_share_clicked";
+  | "whatsapp_share_clicked"
+  // Subscription pause-request workflow (coarse only — never a reason,
+  // date range or other PII as props).
+  | "pause_request_started"
+  | "pause_request_submitted"
+  | "pause_request_approved"
+  | "pause_request_rejected"
+  | "subscription_paused"
+  | "subscription_resumed";
 
 type Props = Record<string, string | number | boolean>;
 

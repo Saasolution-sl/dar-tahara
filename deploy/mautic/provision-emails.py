@@ -83,7 +83,7 @@ def shell(heading, body_html, cta_text=None, cta_url=None, note=None):
     </div>
     <p style="text-align:center;font-size:12px;color:#9c8562;margin-top:18px;line-height:1.7;">
       Dar Tahara — House of Purity · Morocco<br>
-      <a href="https://dartahara.com/en/privacy" style="color:#9c8562;">Privacy</a> ·
+      <a href="https://www.dartahara.com/en/privacy" style="color:#9c8562;">Privacy</a> ·
       {{unsubscribe_text}}
     </p>
   </div>
@@ -94,7 +94,7 @@ def p(text):
     return f'<p style="font-size:15px;line-height:1.7;color:#574a3c;margin:0 0 14px;">{text}</p>'
 
 
-REF_LINK = "https://dartahara.com/en/early-access?ref={contactfield=referral_code}"
+REF_LINK = "https://www.dartahara.com/en/early-access?ref={contactfield=referral_code}"
 
 # ── Email definitions ──────────────────────────────────────────────────────────
 EMAILS = [
@@ -105,7 +105,7 @@ EMAILS = [
             "Just one step to secure your place",
             p("Hi {contactfield=firstname}, thanks again for requesting early access to Dar Tahara home care.")
             + p("We haven't been able to confirm your email yet. Please confirm it so we can keep you updated and let you know the moment service opens in your area."),
-            "Confirm my email", "https://dartahara.com/en/early-access/success?status=pending",
+            "Confirm my email", "https://www.dartahara.com/en/early-access/success?status=pending",
         ),
     },
     {
@@ -115,7 +115,7 @@ EMAILS = [
             "This is our last reminder",
             p("Hi {contactfield=firstname}, your early-access request is almost complete.")
             + p("If you'd still like priority access to Dar Tahara home care and property care in Morocco, please confirm your email. We won't send further reminders."),
-            "Confirm my email", "https://dartahara.com/en/early-access/success?status=pending",
+            "Confirm my email", "https://www.dartahara.com/en/early-access/success?status=pending",
         ),
     },
     {
@@ -148,7 +148,7 @@ EMAILS = [
             "We're launching in {contactfield=cleaning_city}",
             p("Great news, {contactfield=firstname}. Dar Tahara home cleaning and property care is becoming available in {contactfield=cleaning_city}.")
             + p("As an early-access member, you're invited to be among the first to arrange service for your property."),
-            "See what's available", "https://dartahara.com/en",
+            "See what's available", "https://www.dartahara.com/en",
         ),
     },
     {
@@ -167,7 +167,7 @@ EMAILS = [
             "We're still here for your home",
             p("Hi {contactfield=firstname}, it's been a little while. We're continuing to expand Dar Tahara across Morocco and wanted to check in.")
             + p("If your property or service needs have changed, you can update your preferences any time so we reach you with the right information."),
-            "Update my preferences", "https://dartahara.com/en/early-access",
+            "Update my preferences", "https://www.dartahara.com/en/early-access",
         ),
     },
     {
@@ -177,7 +177,7 @@ EMAILS = [
             "Keep your details up to date",
             p("Hi {contactfield=firstname}, you can update your property details, service interests and contact preferences whenever you like.")
             + p("Keeping these current helps us reach you with relevant updates as we open new areas."),
-            "Update my preferences", "https://dartahara.com/en/early-access",
+            "Update my preferences", "https://www.dartahara.com/en/early-access",
         ),
     },
     {
@@ -187,7 +187,7 @@ EMAILS = [
             "You're unsubscribed",
             p("Hi {contactfield=firstname}, you've been removed from Dar Tahara marketing emails and won't receive further marketing updates from us.")
             + p("You may still receive essential messages about an active early-access request. If this was a mistake, you can rejoin any time."),
-            "Rejoin early access", "https://dartahara.com/en/early-access",
+            "Rejoin early access", "https://www.dartahara.com/en/early-access",
         ),
     },
 ]
