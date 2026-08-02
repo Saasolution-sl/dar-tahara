@@ -116,6 +116,31 @@ order) so they sort after everything already in production. Still verify
 against a staging database before running these against production —
 renaming fixes the ordering, not the untested SQL itself.
 
+## Apple Sign-In key rotation
+
+Google and Apple Sign-In are both fully configured (Supabase Auth providers +
+`NEXT_PUBLIC_GOOGLE_AUTH_ENABLED` / `NEXT_PUBLIC_APPLE_AUTH_ENABLED` in Vercel
+production). Prod and staging use separate, dedicated Google OAuth clients and
+Apple Services IDs/keys — nothing is shared between environments.
+
+Google's client secret does not expire. **Apple's does — Apple caps the
+Sign-In-with-Apple client secret JWT at a 6-month lifetime, enforced by
+Apple's own OAuth server, regardless of key or environment.** If a key isn't
+rotated in time, web sign-in for that environment silently stops working.
+
+| Environment | Key ID | Actual expiry | Rotate by (1 week buffer) |
+| --- | --- | --- | --- |
+| Production | `6G46RAL4L2` | 2027-01-27 14:35 UTC | **2027-01-20** |
+| Staging | `2X9GGYDP7K` | 2027-01-29 19:19 UTC | **2027-01-22** |
+
+To rotate: in Apple Developer (Certificates, Identifiers & Profiles → Keys),
+register a new Sign in with Apple key against the same Services ID, download
+the `.p8` (one-time download), generate a new client-secret JWT
+(`iss`=Team ID `7U2425WHTJ`, `kid`=new Key ID, `aud`=`https://appleid.apple.com`,
+`sub`=Services ID, max 6-month `exp`), and paste it into the environment's
+Supabase Auth → Apple provider Secret Key field. The `.p8` files live in
+`C:\Users\othma\keystores\apple-signin-keys\`.
+
 ## Required verification for every bundle
 
 Before production approval, run:
