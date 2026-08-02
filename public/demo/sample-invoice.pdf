@@ -1,0 +1,33 @@
+%PDF-1.4
+1 0 obj
+<< /Type /Catalog /Pages 2 0 R >>
+endobj
+2 0 obj
+<< /Type /Pages /Kids [3 0 R] /Count 1 >>
+endobj
+3 0 obj
+<< /Type /Page /Parent 2 0 R /Resources << /Font << /F1 4 0 R >> >> /MediaBox [0 0 612 792] /Contents 5 0 R >>
+endobj
+4 0 obj
+<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>
+endobj
+5 0 obj
+<< /Length 194 >>
+stream
+BT
+/F1 24 Tf
+72 700 Td
+(Dar Tahara - Sample Invoice) Tj
+/F1 12 Tf
+0 -40 Td
+(Invoice: DTH-INV-2026-0001) Tj
+0 -20 Td
+(Amount: EUR 2,052.00) Tj
+0 -20 Td
+(Status: Paid - Local Demo Document) Tj
+ET
+endstream
+endobj
+trailer
+<< /Size 6 /Root 1 0 R >>
+%%EOF
