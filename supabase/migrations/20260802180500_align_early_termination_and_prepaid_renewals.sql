@@ -190,7 +190,18 @@ alter table public.early_termination_calculations
 
 alter table public.early_termination_calculations
   drop constraint if exists early_termination_calculations_discount_correction_cents_check,
-  drop constraint if exists early_termination_calculations_status_check;
+  drop constraint if exists early_termination_calculations_status_check,
+  drop constraint if exists early_termination_calculations_completed_months_check,
+  drop constraint if exists early_termination_calculations_current_contract_month_check,
+  drop constraint if exists early_termination_calculations_original_monthly_amount_cents_check,
+  drop constraint if exists early_termination_calculations_replacement_monthly_amount_cents_check,
+  drop constraint if exists early_termination_calculations_amount_previously_paid_cents_check,
+  drop constraint if exists early_termination_calculations_recalculated_consumed_amount_cents_check,
+  drop constraint if exists early_termination_calculations_remaining_minimum_term_amount_cents_check,
+  drop constraint if exists early_termination_calculations_payments_allocated_remaining_check,
+  drop constraint if exists early_termination_calculations_included_invoice_outstanding_check,
+  drop constraint if exists early_termination_calculations_additional_charges_check,
+  drop constraint if exists early_termination_calculations_settlement_payments_check;
 
 alter table public.early_termination_calculations
   add constraint early_termination_calculations_completed_months_check
