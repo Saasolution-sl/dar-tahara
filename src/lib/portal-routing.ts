@@ -5,10 +5,12 @@ export type RoutableRole =
   | "staff"
   | "assessment"
   | "manager"
+  | "regional_manager"
   | "administrator";
 
 export function dashboardForRoles(roles: readonly RoutableRole[]): string {
   if (roles.includes("administrator")) return "/admin";
+  if (roles.includes("regional_manager")) return "/regional-manager";
   if (roles.includes("manager")) return "/manager";
   if (roles.includes("assessment")) return "/assessment";
   if (roles.includes("staff")) return "/admin/assessments";

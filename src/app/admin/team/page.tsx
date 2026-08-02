@@ -3,5 +3,5 @@ import { requireRole } from "@/lib/portal-auth";
 
 export default async function TeamProfilesPage() {
   await requireRole(["administrator"]);
-  return <TeamProfilesClient />;
+  return <TeamProfilesClient canInvite />;
 }

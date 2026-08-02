@@ -4,7 +4,6 @@ import { notFound } from "next/navigation";
 import { isLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
 import { site, whatsappLink } from "@/lib/site";
-import { ThemeProvider } from "@/components/providers/theme-provider";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { DetectionTracker } from "@/components/layout/detection-tracker";
@@ -73,7 +72,7 @@ export default async function LocaleLayout({
   const newsletterEnabled = await featureEnabled("newsletter_signup_enabled");
 
   return (
-    <ThemeProvider attribute="class" defaultTheme="light" enableSystem disableTransitionOnChange>
+    <>
       <SiteStructuredData />
       <a
         href="#main"
@@ -90,6 +89,6 @@ export default async function LocaleLayout({
       <Footer locale={typedLocale} dict={dict} />
       {newsletterEnabled ? <LaunchPopup locale={typedLocale} dict={dict.mailing} /> : null}
       <WebsiteChat locale={typedLocale} copy={dict.assistant.chat} />
-    </ThemeProvider>
+    </>
   );
 }

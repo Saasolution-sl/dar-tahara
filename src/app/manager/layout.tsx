@@ -13,6 +13,9 @@ export default async function ManagerLayout({ children }: { children: ReactNode 
       links={[
         { href: "/manager", label: "Operations review" },
         { href: "/manager/refunds", label: "Refund confirmation" },
+        { href: "/manager/customers", label: "Customers" },
+        { href: "/manager/subscriptions", label: "Subscriptions" },
+        { href: "/manager/team", label: "Personnel" },
       ]}
     >
       {children}

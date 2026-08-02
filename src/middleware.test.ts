@@ -103,6 +103,8 @@ test("never redirects localized URLs, exempt application routes, or public files
     "/login",
     "/account",
     "/admin",
+    "/manager",
+    "/regional-manager",
     "/icon.svg",
   ]) {
     assert.equal(localeRedirectResponse(request(path)), null);

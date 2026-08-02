@@ -4,6 +4,7 @@ import Link from "next/link";
 import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/brand/logo";
+import { ThemeToggle } from "@/components/layout/theme-toggle";
 import { cn } from "@/lib/utils";
 
 export function RoleWorkspaceShell({
@@ -28,6 +29,7 @@ export function RoleWorkspaceShell({
         <div className="container flex min-h-16 items-center justify-between gap-4">
           <Link href="/"><Logo variant="wordmark" /></Link>
           <div className="flex items-center gap-3">
+            <ThemeToggle />
             <span className="hidden text-sm text-muted-foreground sm:block">{email}</span>
             <button onClick={logout} className="text-sm font-medium text-primary hover:underline">Sign out</button>
           </div>

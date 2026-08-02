@@ -7,10 +7,19 @@ import { serviceInsert, serviceSelect, serviceUpsert } from "@/lib/supabase-rpc"
 
 export const runtime = "nodejs";
 
+const EMPLOYEE_PREFIX: Record<string, string> = { manager: "MGR", assessment: "ASM", regional_manager: "RGM" };
+
 export async function GET() {
-  const auth = await authorizeApi(["administrator"]);
+  const auth = await authorizeApi(["administrator", "manager", "regional_manager"]);
   if (!auth.ok) return NextResponse.json({ error: auth.error }, { status: auth.status });
-  const profiles = await serviceSelect("staff_members?role=in.(assessment,manager)&select=id,auth_user_id,full_name,email,phone,role,employee_number,active,created_at&order=created_at.desc");
+
+  const scopedToOffices = auth.context.roles.includes("regional_manager") && !auth.context.roles.includes("administrator") && !auth.context.roles.includes("manager");
+  if (scopedToOffices && auth.context.officeIds.length === 0) return NextResponse.json({ profiles: [] });
+  const officeFilter = scopedToOffices ? `&office_id=in.(${auth.context.officeIds.join(",")})` : "";
+
+  const profiles = await serviceSelect(
+    `staff_members?role=in.(assessment,manager,regional_manager)&select=id,auth_user_id,full_name,email,phone,role,employee_number,active,office_id,created_at&order=created_at.desc${officeFilter}`,
+  );
   return NextResponse.json({ profiles });
 }
 
@@ -22,10 +31,10 @@ export async function POST(req: NextRequest) {
   const fullName = typeof body?.fullName === "string" ? body.fullName.trim().slice(0, 200) : "";
   const email = typeof body?.email === "string" ? body.email.trim().toLowerCase().slice(0, 320) : "";
   const phone = typeof body?.phone === "string" ? body.phone.trim().slice(0, 50) : "";
-  const role = body?.role === "manager" || body?.role === "assessment" ? body.role : null;
+  const role = body?.role === "manager" || body?.role === "assessment" || body?.role === "regional_manager" ? body.role : null;
   if (!fullName || !/^\S+@\S+\.\S+$/.test(email) || !phone || !role) return NextResponse.json({ error: "team_profile_fields_required" }, { status: 400 });
 
-  const employeeNumber = `${role === "manager" ? "MGR" : "ASM"}-${new Date().getFullYear()}-${randomBytes(3).toString("hex").toUpperCase()}`;
+  const employeeNumber = `${EMPLOYEE_PREFIX[role]}-${new Date().getFullYear()}-${randomBytes(3).toString("hex").toUpperCase()}`;
   const admin = createAdminClient();
   const invited = await admin.auth.admin.inviteUserByEmail(email, {
     redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL || req.nextUrl.origin}/reset-password`,

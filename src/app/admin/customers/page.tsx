@@ -1,1 +1,7 @@
-import{AdminTable}from"@/components/admin/admin-table";import{requireRole}from"@/lib/portal-auth";import{serviceSelect}from"@/lib/supabase-rpc";import{adminCopy}from"@/i18n/admin-copy";import{getRequestLocale}from"@/lib/request-locale";export default async function Customers(){await requireRole(['administrator']);const copy=adminCopy[await getRequestLocale()];const c=copy.tables.customers;const rows=await serviceSelect<Array<{full_name:string;email:string;status:string;created_at:string;last_login_at:string|null}>>('customers?select=full_name,email,status,created_at,last_login_at&order=created_at.desc&limit=500');return <AdminTable title={c.title} headers={c.headers} emptyLabel={copy.common.noRecords} rows={rows.map(r=>[r.full_name,r.email,r.status,r.created_at.slice(0,10),r.last_login_at?.slice(0,10)||'—'])}/>}
+import { CustomersTable } from "@/components/admin/customers-table";
+import { requireRole } from "@/lib/portal-auth";
+
+export default async function Customers() {
+  await requireRole(["administrator"]);
+  return <CustomersTable canAssignOffice />;
+}

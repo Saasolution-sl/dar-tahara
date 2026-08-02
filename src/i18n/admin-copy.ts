@@ -59,9 +59,9 @@ export type AdminCopy = {
   };
   tables: {
     auditLog: { title: string; headers: [string, string, string, string, string] };
-    customers: { title: string; headers: [string, string, string, string, string] };
+    customers: { title: string; headers: [string, string, string, string, string, string] };
     properties: { title: string; headers: [string, string, string, string, string] };
-    subscriptions: { title: string; headers: [string, string, string, string, string, string] };
+    subscriptions: { title: string; headers: [string, string, string, string, string, string, string] };
   };
   features: {
     title: string; subtitle: string; enabled: string; disabled: string;
@@ -125,9 +125,9 @@ const en: AdminCopy = {
   },
   tables: {
     auditLog: { title: "Audit log", headers: ["Time", "Actor", "Action", "Resource", "Identifier"] },
-    customers: { title: "Customers", headers: ["Customer", "Email", "Status", "Created", "Last login"] },
+    customers: { title: "Customers", headers: ["Customer", "Email", "Status", "Created", "Last login", "Actions"] },
     properties: { title: "Properties", headers: ["Address", "City", "Customer", "Type", "Size"] },
-    subscriptions: { title: "Subscriptions", headers: ["Customer", "Status", "Frequency", "Billing", "Amount", "Cancellation"] },
+    subscriptions: { title: "Subscriptions", headers: ["Customer", "Status", "Frequency", "Billing", "Amount", "Cancellation", "Actions"] },
   },
   features: {
     title: "Feature settings", subtitle: "Database-controlled public and payment capabilities. Scheduled windows are evaluated on every server request.",
@@ -191,9 +191,9 @@ const nl: AdminCopy = {
   },
   tables: {
     auditLog: { title: "Auditlogboek", headers: ["Tijd", "Actor", "Actie", "Bron", "Identificatie"] },
-    customers: { title: "Klanten", headers: ["Klant", "E-mail", "Status", "Aangemaakt", "Laatste login"] },
+    customers: { title: "Klanten", headers: ["Klant", "E-mail", "Status", "Aangemaakt", "Laatste login", "Acties"] },
     properties: { title: "Woningen", headers: ["Adres", "Stad", "Klant", "Type", "Grootte"] },
-    subscriptions: { title: "Abonnementen", headers: ["Klant", "Status", "Frequentie", "Facturering", "Bedrag", "Opzegging"] },
+    subscriptions: { title: "Abonnementen", headers: ["Klant", "Status", "Frequentie", "Facturering", "Bedrag", "Opzegging", "Acties"] },
   },
   features: {
     title: "Functie-instellingen", subtitle: "Database-gestuurde publieke en betalingsfuncties. Geplande periodes worden bij elk serververzoek geëvalueerd.",
@@ -257,9 +257,9 @@ const fr: AdminCopy = {
   },
   tables: {
     auditLog: { title: "Journal d’audit", headers: ["Heure", "Auteur", "Action", "Ressource", "Identifiant"] },
-    customers: { title: "Clients", headers: ["Client", "E-mail", "Statut", "Créé le", "Dernière connexion"] },
+    customers: { title: "Clients", headers: ["Client", "E-mail", "Statut", "Créé le", "Dernière connexion", "Actions"] },
     properties: { title: "Propriétés", headers: ["Adresse", "Ville", "Client", "Type", "Taille"] },
-    subscriptions: { title: "Abonnements", headers: ["Client", "Statut", "Fréquence", "Facturation", "Montant", "Résiliation"] },
+    subscriptions: { title: "Abonnements", headers: ["Client", "Statut", "Fréquence", "Facturation", "Montant", "Résiliation", "Actions"] },
   },
   features: {
     title: "Paramètres des fonctionnalités", subtitle: "Fonctionnalités publiques et de paiement pilotées par la base de données. Les fenêtres planifiées sont évaluées à chaque requête serveur.",
@@ -323,9 +323,9 @@ const ar: AdminCopy = {
   },
   tables: {
     auditLog: { title: "سجل التدقيق", headers: ["الوقت", "الجهة الفاعلة", "الإجراء", "المورد", "المعرّف"] },
-    customers: { title: "العملاء", headers: ["العميل", "البريد الإلكتروني", "الحالة", "تاريخ الإنشاء", "آخر تسجيل دخول"] },
+    customers: { title: "العملاء", headers: ["العميل", "البريد الإلكتروني", "الحالة", "تاريخ الإنشاء", "آخر تسجيل دخول", "الإجراءات"] },
     properties: { title: "العقارات", headers: ["العنوان", "المدينة", "العميل", "النوع", "الحجم"] },
-    subscriptions: { title: "الاشتراكات", headers: ["العميل", "الحالة", "التكرار", "الفوترة", "المبلغ", "الإلغاء"] },
+    subscriptions: { title: "الاشتراكات", headers: ["العميل", "الحالة", "التكرار", "الفوترة", "المبلغ", "الإلغاء", "الإجراءات"] },
   },
   features: {
     title: "إعدادات الميزات", subtitle: "ميزات عامة وميزات دفع تُدار من قاعدة البيانات. تُقيَّم الفترات المجدولة مع كل طلب للخادم.",
@@ -389,9 +389,9 @@ const es: AdminCopy = {
   },
   tables: {
     auditLog: { title: "Registro de auditoría", headers: ["Hora", "Actor", "Acción", "Recurso", "Identificador"] },
-    customers: { title: "Clientes", headers: ["Cliente", "Correo", "Estado", "Creado", "Último acceso"] },
+    customers: { title: "Clientes", headers: ["Cliente", "Correo", "Estado", "Creado", "Último acceso", "Acciones"] },
     properties: { title: "Propiedades", headers: ["Dirección", "Ciudad", "Cliente", "Tipo", "Tamaño"] },
-    subscriptions: { title: "Suscripciones", headers: ["Cliente", "Estado", "Frecuencia", "Facturación", "Importe", "Cancelación"] },
+    subscriptions: { title: "Suscripciones", headers: ["Cliente", "Estado", "Frecuencia", "Facturación", "Importe", "Cancelación", "Acciones"] },
   },
   features: {
     title: "Configuración de funciones", subtitle: "Funciones públicas y de pago controladas por la base de datos. Las ventanas programadas se evalúan en cada solicitud al servidor.",
@@ -455,9 +455,9 @@ const de: AdminCopy = {
   },
   tables: {
     auditLog: { title: "Prüfprotokoll", headers: ["Zeit", "Akteur", "Aktion", "Ressource", "Kennung"] },
-    customers: { title: "Kunden", headers: ["Kunde", "E-Mail", "Status", "Erstellt", "Letzte Anmeldung"] },
+    customers: { title: "Kunden", headers: ["Kunde", "E-Mail", "Status", "Erstellt", "Letzte Anmeldung", "Aktionen"] },
     properties: { title: "Immobilien", headers: ["Adresse", "Stadt", "Kunde", "Typ", "Größe"] },
-    subscriptions: { title: "Abonnements", headers: ["Kunde", "Status", "Häufigkeit", "Abrechnung", "Betrag", "Kündigung"] },
+    subscriptions: { title: "Abonnements", headers: ["Kunde", "Status", "Häufigkeit", "Abrechnung", "Betrag", "Kündigung", "Aktionen"] },
   },
   features: {
     title: "Funktionseinstellungen", subtitle: "Datenbankgesteuerte öffentliche Funktionen und Zahlungsfunktionen. Geplante Zeitfenster werden bei jeder Serveranfrage ausgewertet.",
@@ -521,9 +521,9 @@ const pt: AdminCopy = {
   },
   tables: {
     auditLog: { title: "Registo de auditoria", headers: ["Hora", "Ator", "Ação", "Recurso", "Identificador"] },
-    customers: { title: "Clientes", headers: ["Cliente", "E-mail", "Estado", "Criado", "Último início de sessão"] },
+    customers: { title: "Clientes", headers: ["Cliente", "E-mail", "Estado", "Criado", "Último início de sessão", "Ações"] },
     properties: { title: "Propriedades", headers: ["Morada", "Cidade", "Cliente", "Tipo", "Tamanho"] },
-    subscriptions: { title: "Subscrições", headers: ["Cliente", "Estado", "Frequência", "Faturação", "Montante", "Cancelamento"] },
+    subscriptions: { title: "Subscrições", headers: ["Cliente", "Estado", "Frequência", "Faturação", "Montante", "Cancelamento", "Ações"] },
   },
   features: {
     title: "Definições de funcionalidades", subtitle: "Funcionalidades públicas e de pagamento controladas pela base de dados. As janelas agendadas são avaliadas em cada pedido ao servidor.",

@@ -22,6 +22,8 @@ function skipsLocaleRedirect(pathname: string) {
     pathname.startsWith("/admin/") ||
     pathname === "/manager" ||
     pathname.startsWith("/manager/") ||
+    pathname === "/regional-manager" ||
+    pathname.startsWith("/regional-manager/") ||
     pathname === "/assessment" ||
     pathname.startsWith("/assessment/") ||
     PUBLIC_FILE.test(pathname)

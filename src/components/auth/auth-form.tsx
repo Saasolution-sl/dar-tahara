@@ -58,9 +58,9 @@ function AuthDivider({ label }: { label: string }) {
   return <div className="my-6 flex items-center gap-3" aria-hidden="true"><span className="h-px flex-1 bg-border"/><span className="text-xs font-medium uppercase tracking-[0.16em] text-muted-foreground">{label}</span><span className="h-px flex-1 bg-border"/></div>;
 }
 
-export function LoginForm({ copy, next, oauthError = false }: { copy: PortalCopy["auth"]; next: string; oauthError?: boolean }) {
+export function LoginForm({ copy, next, oauthError = false, suspendedError = false }: { copy: PortalCopy["auth"]; next: string; oauthError?: boolean; suspendedError?: boolean }) {
   const [busy, setBusy] = React.useState(false);
-  const [error, setError] = React.useState(false);
+  const [error, setError] = React.useState(suspendedError);
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault(); setBusy(true); setError(false);
     const data = new FormData(event.currentTarget);
