@@ -173,7 +173,7 @@ async function subscriptionPaid(session: StripeCheckoutSession) {
   await serviceUpdate("home_assessments", `id=eq.${assessmentId}`, { status: "subscription_active" });
   await serviceInsert("assessment_events", { assessment_id: assessmentId, event_type: "subscription_activated", from_status: "approved", to_status: "subscription_active", actor_type: "stripe", actor_reference: session.id });
   const rows=await serviceSelect<{customer_id:string;customers:{auth_user_id:string|null}}[]>(`subscriptions?id=eq.${subscriptionId}&select=customer_id,customers(auth_user_id)&limit=1`);const owner=rows[0];
-  if(owner){await serviceUpdate("customers",`id=eq.${owner.customer_id}`,{status:"customer"});if(owner.customers.auth_user_id)await serviceInsertIgnoreDuplicates("user_roles",{user_id:owner.customers.auth_user_id,role:"customer"},"user_id,role");await serviceInsert("payments",{customer_id:owner.customer_id,subscription_id:subscriptionId,provider_payment_id:session.payment_intent||session.id,amount_cents:session.amount_total||0,currency:session.currency||"eur",status:"succeeded",paid_at:new Date().toISOString()});}
+  if(owner){await serviceUpdate("customers",`id=eq.${owner.customer_id}`,{status:"customer"});if(owner.customers.auth_user_id)await serviceInsertIgnoreDuplicates("user_roles",{user_id:owner.customers.auth_user_id,role:"customer"},"user_id,role");await serviceInsertIgnoreDuplicates("payments",{customer_id:owner.customer_id,subscription_id:subscriptionId,provider_payment_id:session.payment_intent||session.id,amount_cents:session.amount_total||0,currency:session.currency||"eur",status:"succeeded",paid_at:new Date().toISOString()},"provider_payment_id");}
 }
 
 type InvoiceObject={id:string;customer:string|null;subscription:string|null;amount_due:number;amount_paid:number;currency:string;status:string;hosted_invoice_url:string|null;invoice_pdf:string|null;period_start:number;period_end:number;attempt_count?:number;number?:string|null;payment_intent?:string|null};
@@ -517,11 +517,10 @@ async function settlementInvoicePaid(invoiceId: string, subscriptionId: string |
   });
 
   if (subscription.stripe_subscription_id) {
-    try {
-      await cancelStripeSubscription({ subscriptionId: subscription.stripe_subscription_id, idempotencyKey: `cancel_${subscriptionId}` });
-    } catch (error) {
-      console.error("[stripe-webhook] settlement cancel failed", error instanceof Error ? error.message : "unknown");
-    }
+    // Do not swallow this: if the provider cancel fails, the webhook must
+    // fail too (Stripe retries) rather than telling the customer the
+    // subscription is cancelled while it can still charge them.
+    await cancelStripeSubscription({ subscriptionId: subscription.stripe_subscription_id, idempotencyKey: `cancel_${subscriptionId}` });
   }
 
   await sendTransactionalEmail({
