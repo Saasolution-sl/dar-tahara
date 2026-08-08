@@ -12,6 +12,7 @@ import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { MauticTracking } from "@/components/analytics/mautic-tracking";
 import { ConsentBanner } from "@/components/analytics/consent-banner";
 import { WebsiteChat } from "@/components/assistant/website-chat";
+import { shouldShowAssistantLauncher } from "@/lib/assistant/availability-state";
 import { featureEnabled } from "@/lib/feature-flags";
 import { buildLocalizedMetadata } from "@/lib/seo";
 import { SiteStructuredData } from "@/components/seo/structured-data";
@@ -69,7 +70,10 @@ export default async function LocaleLayout({
 
   const typedLocale = locale as Locale;
   const dict = await getDictionary(typedLocale);
-  const newsletterEnabled = await featureEnabled("newsletter_signup_enabled");
+  const [newsletterEnabled, assistantEnabled] = await Promise.all([
+    featureEnabled("newsletter_signup_enabled"),
+    featureEnabled("ai_assistant_enabled"),
+  ]);
 
   return (
     <>
@@ -88,7 +92,9 @@ export default async function LocaleLayout({
       <main id="main">{children}</main>
       <Footer locale={typedLocale} dict={dict} />
       {newsletterEnabled ? <LaunchPopup locale={typedLocale} dict={dict.mailing} /> : null}
-      <WebsiteChat locale={typedLocale} copy={dict.assistant.chat} />
+      {shouldShowAssistantLauncher(assistantEnabled)
+        ? <WebsiteChat locale={typedLocale} copy={dict.assistant.chat} />
+        : null}
     </>
   );
 }

@@ -7,6 +7,7 @@ import { isActive } from "@/lib/feature-flag-state";
 export { isActive } from "@/lib/feature-flag-state";
 
 export const FEATURE_KEYS = [
+  "ai_assistant_enabled",
   "initial_assessment_booking_enabled",
   "early_access_enabled",
   "customer_registration_enabled",
@@ -35,15 +36,26 @@ export type FeatureFlag = {
 
 const defaults: Record<FeatureKey, Omit<FeatureFlag, "key">> = Object.fromEntries(
   FEATURE_KEYS.map((key) => [key, {
-    name: key.replaceAll("_", " "), description: "", enabled: [
+    name: key === "ai_assistant_enabled" ? "AI Assistant" : key.replaceAll("_", " "),
+    description: key === "ai_assistant_enabled"
+      ? "Controls whether the Dar Tahara AI Assistant is available to customers and website visitors."
+      : "",
+    enabled: [
+      "ai_assistant_enabled",
       "early_access_enabled", "customer_registration_enabled", "annual_subscription_enabled",
       "monthly_subscription_enabled", "whatsapp_contact_enabled", "newsletter_signup_enabled",
     ].includes(key), starts_at: null, ends_at: null,
     public_disabled_message: key === "initial_assessment_booking_enabled"
       ? "Initial home assessments are not yet open for direct booking. Join early access and we will contact you when assessments become available in your area."
-      : null,
-    fallback_cta_label: key === "initial_assessment_booking_enabled" ? "Join Early Access" : null,
-    fallback_cta_url: key === "initial_assessment_booking_enabled" ? "/early-access" : null,
+      : key === "ai_assistant_enabled"
+        ? "Our automated assistant is temporarily unavailable. Please contact Dar Tahara Support."
+        : null,
+    fallback_cta_label: key === "initial_assessment_booking_enabled"
+      ? "Join Early Access"
+      : key === "ai_assistant_enabled" ? "Contact Support" : null,
+    fallback_cta_url: key === "initial_assessment_booking_enabled"
+      ? "/early-access"
+      : key === "ai_assistant_enabled" ? "/#contact" : null,
     updated_at: new Date(0).toISOString(), updated_by: null,
   }]),
 ) as Record<FeatureKey, Omit<FeatureFlag, "key">>;
