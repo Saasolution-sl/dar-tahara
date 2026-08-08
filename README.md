@@ -1,4 +1,4 @@
-# Dar Tahara — Website
+# Dar Tahara Website
 
 Production WhatsApp assistant setup and operations: [`docs/WHATSAPP_SUPPORT.md`](docs/WHATSAPP_SUPPORT.md).
 
@@ -6,7 +6,7 @@ Production WhatsApp assistant setup and operations: [`docs/WHATSAPP_SUPPORT.md`]
 > _Always arrive home to comfort._
 
 A production-grade, multilingual marketing site built to feel like a premium
-concierge service rather than a cleaning company — minimal, elegant, calm.
+concierge service rather than a cleaning company: minimal, elegant, calm.
 
 ## Stack
 
@@ -75,7 +75,7 @@ use the same session system and RLS enforces ownership at the database boundary.
 
 ## Design system
 
-The palette is derived from the official logo — **forest green** primary,
+The palette is derived from the official logo: **forest green** primary,
 warm **gold** accent, grounded in **warm white / stone / beige / charcoal**.
 
 - Tokens: `tailwind.config.ts` (brand scales) + `src/app/globals.css` (semantic
@@ -125,7 +125,7 @@ manifest and typed schema.org JSON-LD (`ProfessionalService`, `WebSite`,
 
 ## Before launch
 
-1. Add brand assets to `/public` — see [`public/ASSETS.md`](public/ASSETS.md).
+1. Add brand assets to `/public`. See [`public/ASSETS.md`](public/ASSETS.md).
 2. Set real values in `src/lib/site.ts` (domain, email, phone, WhatsApp, socials).
 3. Have qualified Moroccan counsel review the operational terms and privacy notice.
 4. Set the correct Supabase, Stripe, Resend and Meta server credentials.

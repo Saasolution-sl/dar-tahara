@@ -1,6 +1,6 @@
-# Stripe setup — Dar Tahara
+# Stripe setup for Dar Tahara
 
-Merchant of record: **Paradox FZCO (Dubai, UAE)** — the entity that collects online
+Merchant of record: **Paradox FZCO (Dubai, UAE)**, the entity that collects online
 customer payments, manages subscriptions and support. Dar Tahara (Morocco) performs
 the cleaning and invoices Paradox FZCO separately. Every customer-facing artefact
 (checkout, receipts, invoices, statement descriptor) must show **Paradox FZCO** as the
@@ -74,7 +74,7 @@ country and device. The code does **not** hardcode methods.
 
 ## 9. Apple Pay domain verification
 *Settings → Payment methods → Apple Pay → Add a new domain*. Add your production domain.
-Stripe hosts the verification automatically for Checkout — no file upload needed for
+Stripe hosts the verification automatically for Checkout, with no file upload needed for
 Stripe-hosted Checkout. Required before the Apple Pay button appears.
 
 ## 10. Google Pay
@@ -101,7 +101,7 @@ emails for failed recurring invoices. The app marks subscriptions `past_due` on
 ## 15. Tax (if legally applicable)
 *Tax → Settings*: register origin/collection as advised by your tax adviser, then set
 `STRIPE_TAX_ENABLED=true`. Checkout then enables `automatic_tax`. Leave `false` until
-confirmed with a professional — see the open questions in the final report.
+confirmed with a professional. See the open questions in the final report.
 
 ## 16. Test cards
 `4242 4242 4242 4242` (success), `4000 0000 0000 9995` (declined),
@@ -120,7 +120,7 @@ stripe trigger charge.refunded
 ## 18. Staging → live switch
 In staging use **test** keys. In production set **live** keys (`sk_live_…`, `pk_live_…`),
 create a **separate live webhook endpoint** and use its live `whsec_…`. Keys are
-environment-specific — never mix.
+environment-specific and must never be mixed.
 
 ## 19. Verify the production webhook
 Send a test event from the Dashboard endpoint and confirm a `200` and a row in

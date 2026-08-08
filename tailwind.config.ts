@@ -2,7 +2,7 @@ import type { Config } from "tailwindcss";
 import animate from "tailwindcss-animate";
 
 /**
- * Dar Tahara — Design System
+ * Dar Tahara: Design System
  * Palette derived from the official logo: deep forest green + warm gold,
  * grounded in warm whites, natural stone, soft beige and deep charcoal.
  */

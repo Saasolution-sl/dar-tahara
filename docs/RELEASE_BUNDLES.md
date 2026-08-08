@@ -8,27 +8,27 @@ production release. Do not deploy a later bundle before its dependencies.
 `npm test` (492/492) and `npm run typecheck` re-verified clean against current
 `main`. Lint, i18n check, and build have not been re-run since the merges.
 None of the per-bundle "production gate" staging/webhook/portal checks below
-are confirmed done — merged to `main` means code-complete, not
+are confirmed done. Merged to `main` means code-complete, not
 production-approved.
 
-## Bundle 0 — repository safety — ✅ shipped
+## Bundle 0: repository safety (✅ shipped)
 
 Merged into `main` via #36.
 
 No application or database behavior changes.
 
-## Bundle 1 — subscription pricing — ✅ shipped
+## Bundle 1: subscription pricing (✅ shipped)
 
 Merged into `main` via #36 (subscription duration tiers, discounts,
 validation, calculator, policies, FAQ content, and translations).
 
-## Bundle 2 — identity, assessment, and account foundation — ✅ shipped
+## Bundle 2: identity, assessment, and account foundation (✅ shipped)
 
 Merged into `main` via #37 and #38 (public auth, multi-profile roles,
 assessment and manager workspaces, Stripe account/subscription primitives,
 secure profile/company profile/property/payment-method setup).
 
-## Bundle 3 — pause and deep-clean operations — ✅ merged (#42)
+## Bundle 3: pause and deep-clean operations (✅ merged, #42)
 
 Branch: `codex/bundle-03-pause-deep-clean` (base `main`). Merged into `main`
 2026-08-02.
@@ -37,11 +37,11 @@ Adds pause and deep-clean request workflows: eligibility, pricing, admin
 approval UI, customer modals, API routes, a scheduled job, and 3 migrations.
 
 Note: this branch's admin pages reference a type introduced in Bundle 4
-(`src/i18n/admin-copy.ts`), so it does not typecheck standalone — merge
+(`src/i18n/admin-copy.ts`), so it does not typecheck standalone. Merge
 together with or before Bundle 4. Validated at the Bundle 3+4 combined tip.
 
-Merged to `main`; production gate below is **not yet confirmed satisfied** —
-run it before this workflow is exposed in production:
+Merged to `main`; the production gate below is **not yet confirmed satisfied**.
+Run it before this workflow is exposed in production:
 
 - Add or verify dedicated, default-off kill switches for both workflows.
 - Verify eligibility, approval, rejection, attachments, emails, Stripe pause/resume,
@@ -49,7 +49,7 @@ run it before this workflow is exposed in production:
 - Configure and execute the pause-request job deliberately; do not expose the UI
   before operations staff approve the workflow.
 
-## Bundle 4 — invoice documents — ✅ merged (#43)
+## Bundle 4: invoice documents (✅ merged, #43)
 
 Branch: `codex/bundle-04-invoices` (base `codex/bundle-03-pause-deep-clean`,
 stacked on #42). Merged into `main` 2026-08-02.
@@ -63,7 +63,7 @@ Merged to `main`; production gate below is **not yet confirmed satisfied**:
 - Verify ownership checks and downloads with at least two isolated customer accounts.
 - Compare totals, discounts, payment references, and unit grouping against real fixtures.
 
-## Bundle 5 — billing lifecycle — ✅ merged (#44)
+## Bundle 5: billing lifecycle (✅ merged, #44)
 
 Branch: `codex/bundle-05-billing-lifecycle` (base `codex/bundle-04-invoices`,
 stacked on #43). Merged into `main` 2026-08-02, plus a follow-up hardening
@@ -74,12 +74,12 @@ Adds subscription activation, payment recovery, cancellation, early-termination
 settlement, prepaid renewal, jobs, and extends the Stripe webhook handler.
 6 migrations.
 
-**Highest sensitivity bundle** — modifies the live Stripe webhook endpoint
+**Highest sensitivity bundle:** modifies the live Stripe webhook endpoint
 (`src/app/api/stripe/webhook/route.ts`). Review that file personally
 regardless of test results.
 
-Merged to `main`; production gate below is **not yet confirmed satisfied** —
-treat this as the top-priority verification item given the live webhook:
+Merged to `main`; the production gate below is **not yet confirmed satisfied**.
+Treat this as the top-priority verification item given the live webhook:
 
 - Replay representative Stripe test-mode webhook events, including duplicates.
 - Complete activation, failed payment, suspension, recovery, cancellation, settlement,
@@ -88,7 +88,7 @@ treat this as the top-priority verification item given the live webhook:
 - Verify migration backfills and constraints on production-like data.
 - Keep subscription checkout and early termination disabled until smoke tests pass.
 
-## Bundle 6 — HospitalitySupport portal — ✅ merged (#45)
+## Bundle 6: HospitalitySupport portal (✅ merged, #45)
 
 Branch: `codex/bundle-06-support-portal` (base `main`, independent of Bundles 3–5).
 Merged into `main` 2026-08-02.
@@ -104,7 +104,7 @@ Merged to `main`; production gate below is **not yet confirmed satisfied**:
   replies, unread state, resolution, reopening, and reconciliation.
 - Keep the support portal unavailable until the provider and storage checks pass.
 
-## Bundle 7 — admin integration — ✅ merged (#46)
+## Bundle 7: admin integration (✅ merged, #46)
 
 Branch: `codex/bundle-07-admin-console` (base `codex/bundle-05-billing-lifecycle`,
 stacked on #44). Merged into `main` 2026-08-02.
@@ -124,29 +124,28 @@ Merged to `main`; production gate below is **not yet confirmed satisfied**:
 Codex's original monolithic integration branches, kept open as drafts while
 Bundles 3–7 were extracted from them one at a time into their own PRs (#42–#46)
 following the pattern above. Once all bundles were merged individually, both
-PRs were closed unmerged on 2026-08-03 — confirmed via
-`git log main..origin/<branch>` that neither carried anything not already on
-`main`.
+A `git log main..origin/<branch>` check on 2026-08-03 confirmed that both PRs
+were closed and unmerged, with neither carrying anything not already on `main`.
 
-## Resolved — migration timestamp ordering
+## Resolved: migration timestamp ordering
 
 Bundles 3–6 originally carried Supabase migration filenames timestamped
 `20260729`–`20260801`, authored before Bundle 2's migrations (applied to
-production up to `20260731160349`) were finalized — which would have applied
+production up to `20260731160349`) were finalized. This would have applied
 out of order against `supabase db push`'s watermark of already-applied
 migrations. Renamed to `20260802180000`–`20260802180800` (preserving relative
 order) so they sort after everything already in production. Still verify
-against a staging database before running these against production —
-renaming fixes the ordering, not the untested SQL itself.
+against a staging database before running these against production.
+Renaming fixes the ordering, not the untested SQL itself.
 
 ## Apple Sign-In key rotation
 
 Google and Apple Sign-In are both fully configured (Supabase Auth providers +
 `NEXT_PUBLIC_GOOGLE_AUTH_ENABLED` / `NEXT_PUBLIC_APPLE_AUTH_ENABLED` in Vercel
 production). Prod and staging use separate, dedicated Google OAuth clients and
-Apple Services IDs/keys — nothing is shared between environments.
+Apple Services IDs/keys. Nothing is shared between environments.
 
-Google's client secret does not expire. **Apple's does — Apple caps the
+Google's client secret does not expire. **Apple's does; Apple caps the
 Sign-In-with-Apple client secret JWT at a 6-month lifetime, enforced by
 Apple's own OAuth server, regardless of key or environment.** If a key isn't
 rotated in time, web sign-in for that environment silently stops working.

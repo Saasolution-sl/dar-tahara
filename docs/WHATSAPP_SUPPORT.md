@@ -197,7 +197,7 @@ npm run check:i18n
 npm run build
 ```
 
-Use staging—not the normal suite—for live Meta verification, Supabase migration/advisor checks, Groq connectivity, FreeScout delivery and email reply testing.
+Use staging, not the normal suite, for live Meta verification, Supabase migration/advisor checks, Groq connectivity, FreeScout delivery and email reply testing.
 
 ## Deployment, scheduling and backup
 

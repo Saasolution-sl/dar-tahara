@@ -130,19 +130,19 @@ Migration: `supabase/migrations/20260716151742_assistant_knowledge_builder.sql`.
 
 New/extended storage:
 
-- `knowledge_builder_questions` — owner interview and approval queue;
-- `assistant_knowledge_gaps` — clustered unanswered questions;
-- `assistant_provider_events` — privacy-safe provider cost/failure telemetry;
-- `knowledge_articles` / `knowledge_article_versions` — canonical metadata and immutable versions;
-- `knowledge_entries` — published retrieval records with keywords, synonyms, scope and full-text search;
-- `assistant_feedback` — helpful/unhelpful customer feedback (existing table, new API/UI use).
+- `knowledge_builder_questions`: owner interview and approval queue;
+- `assistant_knowledge_gaps`: clustered unanswered questions;
+- `assistant_provider_events`: privacy-safe provider cost/failure telemetry;
+- `knowledge_articles` / `knowledge_article_versions`: canonical metadata and immutable versions;
+- `knowledge_entries`: published retrieval records with keywords, synonyms, scope and full-text search;
+- `assistant_feedback`: helpful/unhelpful customer feedback (existing table, new API/UI use).
 
 Routes:
 
-- `POST /api/assistant/chat` — shared website assistant;
-- `POST /api/assistant/feedback` — session-bound answer feedback;
-- `GET|POST /api/admin/assistant/knowledge` — administrator Knowledge Builder;
-- `POST /api/jobs/assistant` — authenticated telemetry retention cleanup.
+- `POST /api/assistant/chat`: shared website assistant;
+- `POST /api/assistant/feedback`: session-bound answer feedback;
+- `GET|POST /api/admin/assistant/knowledge`: administrator Knowledge Builder;
+- `POST /api/jobs/assistant`: authenticated telemetry retention cleanup.
 
 All Knowledge Builder, gap and provider-event tables have RLS enabled and no anonymous/authenticated grants. The app accesses them with the server-only service role through protected routes.
 
@@ -201,4 +201,4 @@ The tests cover all supported languages, short greetings, natural/explicit langu
 
 ## First owner interview batch
 
-The original migration seeds ten owner questions. The owner-approved policy migration resolves subscription pauses, visit cancellation/rescheduling, and Dar Tahara Support hours/SLA. Remaining unresolved items—such as tailored large-home pricing, window inclusion, physical-key fees and broad refund eligibility—must still be answered in Admin → Automated Assistant → Knowledge Builder and reviewed before publication.
+The original migration seeds ten owner questions. The owner-approved policy migration resolves subscription pauses, visit cancellation/rescheduling, and Dar Tahara Support hours/SLA. Remaining unresolved items, such as tailored large-home pricing, window inclusion, physical-key fees and broad refund eligibility, must still be answered in Admin → Automated Assistant → Knowledge Builder and reviewed before publication.
