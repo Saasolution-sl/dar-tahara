@@ -4,7 +4,7 @@ Provision Dar Tahara Mautic reports (Phase 3, brief §30).
 
 Idempotent (matched by name). Run on the VPS. Reports use the `leads` source with
 early-access custom-field columns, plus one `email.stats` engagement report. Each
-groups the marketing data marketers actually filter on — city, country, source /
+groups the marketing data marketers actually filter on: city, country, source /
 UTM, service interest, property type, verification/stage, referrals, access.
 
 Usage:  sudo python3 provision-reports.py
@@ -42,7 +42,7 @@ def report(name, source, columns, filters=None, description=""):
 
 
 REPORTS = [
-    report("DT · Early Access — All Contacts", "leads",
+    report("DT · Early Access: All Contacts", "leads",
            ["l.firstname", "l.lastname", "l.email", "l.cleaning_city",
             "l.early_access_status", "l.lead_score", "l.date_added"],
            description="Master list of early-access contacts."),

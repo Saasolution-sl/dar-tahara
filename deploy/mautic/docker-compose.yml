@@ -1,4 +1,4 @@
-# Mautic — private marketing backend for Dar Tahara.
+# Mautic, the private marketing backend for Dar Tahara.
 # Public URL: https://marketing.saasolution.es (fronted by the shared Caddy proxy).
 #
 # Deployed to /opt/projects/mautic on the SaaSolution VPS. Secrets live in the
@@ -9,12 +9,12 @@
 #                 → mautic-net  (talks to the database)
 #   mautic-cron   → mautic-net  (Mautic's scheduled jobs; no HTTP surface)
 #   mautic-worker → mautic-net  (Messenger consumer: async email + hit tracking)
-#   mautic-db     → mautic-net  ONLY — no published ports, unreachable from the
+#   mautic-db     → mautic-net ONLY; no published ports and unreachable from the
 #                               internet and from the host network.
 #
 # Env-var contract verified against the mautic/mautic:7.1.3-apache image itself
 # (/entrypoint.sh + /templates/local.php), not from memory. Note the DB name var
-# is MAUTIC_DB_DATABASE — MAUTIC_DB_NAME is silently ignored.
+# is MAUTIC_DB_DATABASE. MAUTIC_DB_NAME is silently ignored.
 
 name: mautic
 
@@ -41,7 +41,7 @@ x-mautic-env: &mautic-env
   # `mailer_from_*` are read ONLY from config/local.php (trusted_proxies via
   # app/middlewares/TrustMiddleware). The var below is kept for documentation,
   # but the value that actually takes effect is written to local.php by
-  # ./configure-local.sh, which MUST be run once after mautic:install — without
+  # ./configure-local.sh, which MUST be run once after mautic:install. Without
   # trusted_proxies in local.php, Mautic 301-loops the login page behind Caddy.
   MAUTIC_TRUSTED_PROXIES: '["10.0.0.0/8","172.16.0.0/12","192.168.0.0/16"]'
 
@@ -85,7 +85,7 @@ x-mautic-common: &mautic-common
     - mautic-media:/var/www/html/docroot/media
     - mautic-plugins:/var/www/html/docroot/plugins
     - mautic-themes:/var/www/html/docroot/themes
-    # Patch for a 7.1.3+PHP8.3 Twig TypeError that 500s the login page — see
+    # Patch for a 7.1.3+PHP8.3 Twig TypeError that returns 500 on the login page. See
     # patches/OverrideIncludeExtension.php. Read-only; drop when upstream fixes it.
     - ./patches/OverrideIncludeExtension.php:/var/www/html/docroot/app/bundles/CoreBundle/Twig/Extension/OverrideIncludeExtension.php:ro
   depends_on:
@@ -137,7 +137,7 @@ services:
       start_period: 180s
 
   # Runs Mautic's scheduled jobs. Campaigns, segment membership and broadcast
-  # emails ONLY advance because this container exists — without it, automation
+  # emails ONLY advance because this container exists. Without it, automation
   # appears to "work" in the UI but nothing is ever executed. The crontab is
   # bind-mounted (see cron/mautic) because the image's default template leaves
   # broadcasts and webhook processing commented out.

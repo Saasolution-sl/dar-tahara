@@ -155,8 +155,8 @@ TRANSLATIONS = {
             "heading": f"Bienvenue dans l'accès anticipé, {FIRSTNAME}",
             "paragraphs": [
                 f"Votre e-mail est confirmé. Vous êtes maintenant sur la liste d'accès anticipé Dar Tahara. Nous vous contacterons dès que le service sera disponible pour votre bien à {CITY}.",
-                "Ceci n'est pas une réservation confirmée — c'est votre place dans la file. Vous serez parmi les premières personnes contactées à l'ouverture de votre région.",
-                "<strong>Invitez vos proches.</strong> Partagez votre lien d'invitation personnel — cela nous aide à arriver plus vite dans votre ville.",
+                "Ceci n'est pas une réservation confirmée. C'est votre place dans la file. Vous serez parmi les premières personnes contactées à l'ouverture de votre région.",
+                "<strong>Invitez vos proches.</strong> Partagez votre lien d'invitation personnel. Cela nous aide à arriver plus vite dans votre ville.",
             ],
             "cta": "Ouvrir mes outils de parrainage",
             "note": "L'inscription est une demande d'accès anticipé, et non un rendez-vous confirmé.",
@@ -166,8 +166,8 @@ TRANSLATIONS = {
             "heading": f"مرحبًا بك في الوصول المبكر، {FIRSTNAME}",
             "paragraphs": [
                 f"تم تأكيد بريدك الإلكتروني. أنت الآن على قائمة الوصول المبكر لدار طهارة. سنتواصل معك عند توفّر الخدمة لعقارك في {CITY}.",
-                "هذا ليس حجزًا مؤكدًا — إنه مكانك في القائمة. ستكون من أوائل من نتواصل معهم عند افتتاح منطقتك.",
-                "<strong>ادعُ العائلة والأصدقاء.</strong> شارك رابط دعوتك الشخصي — فهذا يساعدنا على الوصول إلى مدينتك أسرع.",
+                "هذا ليس حجزًا مؤكدًا؛ إنه مكانك في القائمة. ستكون من أوائل من نتواصل معهم عند افتتاح منطقتك.",
+                "<strong>ادعُ العائلة والأصدقاء.</strong> شارك رابط دعوتك الشخصي، فهذا يساعدنا على الوصول إلى مدينتك أسرع.",
             ],
             "cta": "فتح أدوات الإحالة",
             "note": "التسجيل هو طلب وصول مبكر وليس موعدًا مؤكدًا.",
@@ -177,8 +177,8 @@ TRANSLATIONS = {
             "heading": f"Welkom bij early access, {FIRSTNAME}",
             "paragraphs": [
                 f"Uw e-mail is bevestigd. U staat nu op de Dar Tahara early-access-lijst. We nemen contact op zodra de dienst beschikbaar is voor uw woning in {CITY}.",
-                "Dit is geen bevestigde boeking — het is uw plek in de rij. Zodra we uw regio openen, nemen we als een van de eersten contact met u op.",
-                "<strong>Nodig familie en vrienden uit.</strong> Deel uw persoonlijke uitnodigingslink — zo brengen we Dar Tahara sneller naar uw stad.",
+                "Dit is geen bevestigde boeking. Het is uw plek in de rij. Zodra we uw regio openen, nemen we als een van de eersten contact met u op.",
+                "<strong>Nodig familie en vrienden uit.</strong> Deel uw persoonlijke uitnodigingslink. Zo brengen we Dar Tahara sneller naar uw stad.",
             ],
             "cta": "Mijn verwijshulpmiddelen openen",
             "note": "Registratie is een early-access-aanvraag, geen bevestigde afspraak.",
@@ -188,8 +188,8 @@ TRANSLATIONS = {
             "heading": f"Bienvenido al acceso anticipado, {FIRSTNAME}",
             "paragraphs": [
                 f"Tu correo está confirmado. Ya estás en la lista de acceso anticipado de Dar Tahara. Te contactaremos cuando el servicio esté disponible para tu propiedad en {CITY}.",
-                "Esto no es una reserva confirmada — es tu lugar en la fila. Estarás entre las primeras personas a las que avisemos al abrir tu zona.",
-                "<strong>Invita a familiares y amigos.</strong> Comparte tu enlace de invitación personal — nos ayuda a llegar antes a tu ciudad.",
+                "Esto no es una reserva confirmada. Es tu lugar en la fila. Estarás entre las primeras personas a las que avisemos al abrir tu zona.",
+                "<strong>Invita a familiares y amigos.</strong> Comparte tu enlace de invitación personal. Nos ayuda a llegar antes a tu ciudad.",
             ],
             "cta": "Abrir mis herramientas de referidos",
             "note": "El registro es una solicitud de acceso anticipado, no una cita confirmada.",
@@ -199,8 +199,8 @@ TRANSLATIONS = {
             "heading": f"Willkommen beim frühen Zugang, {FIRSTNAME}",
             "paragraphs": [
                 f"Ihre E-Mail ist bestätigt. Sie stehen jetzt auf der Dar Tahara Early-Access-Liste. Wir melden uns, sobald der Service für Ihre Immobilie in {CITY} verfügbar ist.",
-                "Dies ist keine bestätigte Buchung — es ist Ihr Platz in der Warteliste. Sobald wir Ihre Region eröffnen, gehören Sie zu den Ersten, die wir kontaktieren.",
-                "<strong>Laden Sie Familie und Freunde ein.</strong> Teilen Sie Ihren persönlichen Einladungslink — so bringen wir Dar Tahara schneller in Ihre Stadt.",
+                "Dies ist keine bestätigte Buchung. Es ist Ihr Platz in der Warteliste. Sobald wir Ihre Region eröffnen, gehören Sie zu den Ersten, die wir kontaktieren.",
+                "<strong>Laden Sie Familie und Freunde ein.</strong> Teilen Sie Ihren persönlichen Einladungslink. So bringen wir Dar Tahara schneller in Ihre Stadt.",
             ],
             "cta": "Meine Empfehlungstools öffnen",
             "note": "Die Registrierung ist eine Early-Access-Anfrage, kein bestätigter Termin.",
@@ -210,8 +210,8 @@ TRANSLATIONS = {
             "heading": f"Bem-vindo ao acesso antecipado, {FIRSTNAME}",
             "paragraphs": [
                 f"O seu e-mail está confirmado. Está agora na lista de acesso antecipado da Dar Tahara. Entraremos em contacto quando o serviço estiver disponível para o seu imóvel em {CITY}.",
-                "Isto não é uma reserva confirmada — é o seu lugar na fila. Estará entre as primeiras pessoas que contactaremos ao abrir a sua região.",
-                "<strong>Convide família e amigos.</strong> Partilhe o seu link de convite pessoal — ajuda-nos a chegar mais cedo à sua cidade.",
+                "Isto não é uma reserva confirmada. É o seu lugar na fila. Estará entre as primeiras pessoas que contactaremos ao abrir a sua região.",
+                "<strong>Convide família e amigos.</strong> Partilhe o seu link de convite pessoal. Isso ajuda-nos a chegar mais cedo à sua cidade.",
             ],
             "cta": "Abrir as minhas ferramentas de indicação",
             "note": "O registo é um pedido de acesso antecipado, não uma marcação confirmada.",
@@ -222,7 +222,7 @@ TRANSLATIONS = {
             "subject": f"Merci de faire connaître Dar Tahara, {FIRSTNAME}",
             "heading": "Vos invitations font la différence",
             "paragraphs": [
-                f"Bonjour {FIRSTNAME}, merci d'avoir invité d'autres personnes à l'accès anticipé Dar Tahara — vos parrainages nous aident à choisir les régions où lancer le service en priorité.",
+                f"Bonjour {FIRSTNAME}, merci d'avoir invité d'autres personnes à l'accès anticipé Dar Tahara. Vos parrainages nous aident à choisir les régions où lancer le service en priorité.",
                 "Continuez à partager votre lien personnel avec vos proches qui possèdent ou gèrent un logement au Maroc.",
             ],
             "cta": "Partager à nouveau",
@@ -232,7 +232,7 @@ TRANSLATIONS = {
             "subject": f"شكرًا لنشر الخبر، {FIRSTNAME}",
             "heading": "دعواتك تُحدث فرقًا",
             "paragraphs": [
-                f"مرحبًا {FIRSTNAME}، شكرًا لدعوة الآخرين إلى الوصول المبكر لدار طهارة — تساعدنا إحالاتك على تحديد المناطق التي نطلق فيها أولًا.",
+                f"مرحبًا {FIRSTNAME}، شكرًا لدعوة الآخرين إلى الوصول المبكر لدار طهارة. تساعدنا إحالاتك على تحديد المناطق التي نطلق فيها أولًا.",
                 "واصل مشاركة رابطك الشخصي مع العائلة والأصدقاء الذين يملكون أو يديرون منزلًا في المغرب.",
             ],
             "cta": "المشاركة مجددًا",
@@ -242,7 +242,7 @@ TRANSLATIONS = {
             "subject": f"Bedankt dat u het nieuws deelt, {FIRSTNAME}",
             "heading": "Uw uitnodigingen maken het verschil",
             "paragraphs": [
-                f"Hallo {FIRSTNAME}, bedankt dat u anderen uitnodigt voor early access tot Dar Tahara — uw verwijzingen helpen ons bepalen waar we als eerste starten.",
+                f"Hallo {FIRSTNAME}, bedankt dat u anderen uitnodigt voor early access tot Dar Tahara. Uw verwijzingen helpen ons bepalen waar we als eerste starten.",
                 "Blijf uw persoonlijke link delen met familie en vrienden die een woning in Marokko bezitten of beheren.",
             ],
             "cta": "Opnieuw delen",
@@ -252,7 +252,7 @@ TRANSLATIONS = {
             "subject": f"Gracias por correr la voz, {FIRSTNAME}",
             "heading": "Tus invitaciones marcan la diferencia",
             "paragraphs": [
-                f"Hola {FIRSTNAME}, gracias por invitar a otras personas al acceso anticipado de Dar Tahara — tus referidos nos ayudan a decidir dónde lanzar primero.",
+                f"Hola {FIRSTNAME}, gracias por invitar a otras personas al acceso anticipado de Dar Tahara. Tus referidos nos ayudan a decidir dónde lanzar primero.",
                 "Sigue compartiendo tu enlace personal con familiares y amigos que tengan o gestionen una vivienda en Marruecos.",
             ],
             "cta": "Compartir de nuevo",
@@ -262,7 +262,7 @@ TRANSLATIONS = {
             "subject": f"Danke, dass Sie Dar Tahara weiterempfehlen, {FIRSTNAME}",
             "heading": "Ihre Einladungen machen einen Unterschied",
             "paragraphs": [
-                f"Hallo {FIRSTNAME}, vielen Dank, dass Sie andere zum frühen Zugang zu Dar Tahara einladen — Ihre Empfehlungen helfen uns zu entscheiden, wo wir zuerst starten.",
+                f"Hallo {FIRSTNAME}, vielen Dank, dass Sie andere zum frühen Zugang zu Dar Tahara einladen. Ihre Empfehlungen helfen uns zu entscheiden, wo wir zuerst starten.",
                 "Teilen Sie Ihren persönlichen Link weiterhin mit Familie und Freunden, die ein Zuhause in Marokko besitzen oder verwalten.",
             ],
             "cta": "Erneut teilen",
@@ -272,7 +272,7 @@ TRANSLATIONS = {
             "subject": f"Obrigado por divulgar a Dar Tahara, {FIRSTNAME}",
             "heading": "Os seus convites fazem a diferença",
             "paragraphs": [
-                f"Olá {FIRSTNAME}, obrigado por convidar outras pessoas para o acesso antecipado da Dar Tahara — as suas indicações ajudam-nos a decidir onde lançar primeiro.",
+                f"Olá {FIRSTNAME}, obrigado por convidar outras pessoas para o acesso antecipado da Dar Tahara. As suas indicações ajudam-nos a decidir onde lançar primeiro.",
                 "Continue a partilhar o seu link pessoal com família e amigos que possuem ou gerem uma casa em Marrocos.",
             ],
             "cta": "Partilhar novamente",
@@ -341,7 +341,7 @@ TRANSLATIONS = {
             "heading": "Préparons ensemble la suite",
             "paragraphs": [
                 f"Bonjour {FIRSTNAME}, merci pour les informations que vous avez partagées au sujet de votre bien à {CITY}.",
-                "Comme vous souhaitez commencer prochainement, un membre de l'équipe Dar Tahara aimerait s'assurer que tout sera prêt dès l'ouverture de votre région. Nous vous contacterons bientôt — vous pouvez répondre à cet e-mail si vous avez des questions.",
+                "Comme vous souhaitez commencer prochainement, un membre de l'équipe Dar Tahara aimerait s'assurer que tout sera prêt dès l'ouverture de votre région. Nous vous contacterons bientôt. Vous pouvez répondre à cet e-mail si vous avez des questions.",
             ],
         },
         "ar": {
@@ -349,7 +349,7 @@ TRANSLATIONS = {
             "heading": "لنساعدك على الاستعداد",
             "paragraphs": [
                 f"مرحبًا {FIRSTNAME}، شكرًا على التفاصيل التي شاركتها بشأن عقارك في {CITY}.",
-                "لأنك ترغب في البدء قريبًا، يود أحد أعضاء فريق دار طهارة التأكد من استعدادنا لك فور افتتاح منطقتك. سنتواصل معك قريبًا — ويمكنك الرد على هذه الرسالة إذا كانت لديك أي أسئلة.",
+                "لأنك ترغب في البدء قريبًا، يود أحد أعضاء فريق دار طهارة التأكد من استعدادنا لك فور افتتاح منطقتك. سنتواصل معك قريبًا، ويمكنك الرد على هذه الرسالة إذا كانت لديك أي أسئلة.",
             ],
         },
         "nl": {
@@ -357,7 +357,7 @@ TRANSLATIONS = {
             "heading": "We helpen u graag voorbereiden",
             "paragraphs": [
                 f"Hallo {FIRSTNAME}, bedankt voor de informatie die u over uw woning in {CITY} hebt gedeeld.",
-                "Omdat u binnenkort wilt starten, zorgt een lid van het Dar Tahara-team graag dat we voor u klaarstaan zodra uw regio opent. We nemen spoedig contact op — antwoord gerust op deze e-mail als u vragen hebt.",
+                "Omdat u binnenkort wilt starten, zorgt een lid van het Dar Tahara-team graag dat we voor u klaarstaan zodra uw regio opent. We nemen spoedig contact op. Antwoord gerust op deze e-mail als u vragen hebt.",
             ],
         },
         "es": {
@@ -365,7 +365,7 @@ TRANSLATIONS = {
             "heading": "Te ayudamos a prepararlo todo",
             "paragraphs": [
                 f"Hola {FIRSTNAME}, gracias por los detalles que compartiste sobre tu propiedad en {CITY}.",
-                "Como quieres empezar pronto, un miembro del equipo de Dar Tahara se asegurará de que estemos preparados para ti en cuanto abramos tu zona. Nos pondremos en contacto contigo muy pronto — responde a este correo si tienes alguna pregunta.",
+                "Como quieres empezar pronto, un miembro del equipo de Dar Tahara se asegurará de que estemos preparados para ti en cuanto abramos tu zona. Nos pondremos en contacto contigo muy pronto. Responde a este correo si tienes alguna pregunta.",
             ],
         },
         "de": {
@@ -373,7 +373,7 @@ TRANSLATIONS = {
             "heading": "Wir helfen Ihnen bei der Vorbereitung",
             "paragraphs": [
                 f"Hallo {FIRSTNAME}, vielen Dank für die Angaben zu Ihrer Immobilie in {CITY}.",
-                "Da Sie bald starten möchten, will ein Mitglied des Dar Tahara-Teams sicherstellen, dass wir bei der Eröffnung Ihrer Region für Sie bereit sind. Wir melden uns in Kürze — antworten Sie bei Fragen gerne auf diese E-Mail.",
+                "Da Sie bald starten möchten, will ein Mitglied des Dar Tahara-Teams sicherstellen, dass wir bei der Eröffnung Ihrer Region für Sie bereit sind. Wir melden uns in Kürze. Antworten Sie bei Fragen gerne auf diese E-Mail.",
             ],
         },
         "pt": {
@@ -381,7 +381,7 @@ TRANSLATIONS = {
             "heading": "Vamos ajudar a preparar tudo",
             "paragraphs": [
                 f"Olá {FIRSTNAME}, obrigado pelos detalhes que partilhou sobre o seu imóvel em {CITY}.",
-                "Como pretende começar em breve, um membro da equipa da Dar Tahara quer garantir que estamos preparados para si assim que abrirmos a sua região. Entraremos em contacto em breve — responda a este e-mail se tiver alguma questão.",
+                "Como pretende começar em breve, um membro da equipa da Dar Tahara quer garantir que estamos preparados para si assim que abrirmos a sua região. Entraremos em contacto em breve. Responda a este e-mail se tiver alguma questão.",
             ],
         },
     },
@@ -665,7 +665,7 @@ def shell(locale, copy, config):
       {note}
     </div>
     <p style="text-align:center;font-size:12px;color:#9c8562;margin-top:18px;line-height:1.7;">
-      Dar Tahara — House of Purity · Morocco<br>
+      Dar Tahara, House of Purity · Morocco<br>
       <a href="https://www.dartahara.com/{locale}/privacy" style="color:#9c8562;">{PRIVACY[locale]}</a> ·
       {{unsubscribe_text}}
     </p>

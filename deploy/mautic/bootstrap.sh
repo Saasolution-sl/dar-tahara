@@ -6,7 +6,7 @@
 # this twice can never rotate the DB password out from under a running MariaDB
 # (which would lock Mautic out of its own database).
 #
-# Secrets are generated ON the server and never printed to stdout — read them
+# Secrets are generated ON the server and never printed to stdout. Read them
 # back with `sudo cat /opt/projects/mautic/.env` if you need them.
 #
 # Usage:  sudo ./bootstrap.sh [--mailer-dsn smtp://...]
@@ -29,7 +29,7 @@ if [[ $EUID -ne 0 ]]; then
 fi
 
 if [[ -f "${ENV_FILE}" ]]; then
-  echo "${ENV_FILE} already exists — leaving it untouched."
+  echo "${ENV_FILE} already exists. Leaving it untouched."
   echo "To rotate secrets, follow README.md §Rotating secrets instead."
   exit 0
 fi
@@ -42,7 +42,7 @@ gen() { openssl rand -hex 32; }
 
 # Until a Resend key is supplied, park the mailer on Symfony's null transport.
 # Mautic then boots and queues mail cleanly instead of crash-looping on an
-# unresolvable SMTP host — mail simply is not delivered until the DSN is set.
+# unresolvable SMTP host, so mail is not delivered until the DSN is set.
 if [[ -z "${MAILER_DSN}" ]]; then
   MAILER_DSN="null://null"
   echo "WARNING: no --mailer-dsn given; mail transport set to null://null (no email will be delivered)."

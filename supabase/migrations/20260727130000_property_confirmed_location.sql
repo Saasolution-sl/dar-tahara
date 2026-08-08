@@ -7,7 +7,7 @@
 --
 -- The distinction matters operationally. A geocoded result points at a postal
 -- address; the pin the customer dragged points at the door the cleaner should
--- actually use. Those are frequently not the same place — a villa gate, a
+-- actually use. Those are frequently not the same place, a villa gate, a
 -- residence side entrance, an unnamed lane.
 
 alter table public.cleaning_properties
@@ -24,6 +24,6 @@ alter table public.cleaning_properties
   add column if not exists manual_address_entry boolean not null default false;
 
 comment on column public.cleaning_properties.pin_adjusted_by_customer is
-  'True when the customer moved the pin off the geocoded result — treat that position as authoritative for routing.';
+  'True when the customer moved the pin off the geocoded result, treat that position as authoritative for routing.';
 comment on column public.cleaning_properties.location_source is
   'How the confirmed coordinates were obtained. "manual" means no Google result was used.';

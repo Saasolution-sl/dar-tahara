@@ -1,4 +1,4 @@
-# Mautic crontab — bind-mounted into the mautic-cron container at
+# Mautic crontab, bind-mounted into the mautic-cron container at
 # /opt/mautic/cron/mautic and registered for the www-data user on boot.
 #
 # The image ships a template with broadcasts and webhook processing commented
@@ -17,17 +17,17 @@ SHELL=/bin/bash
 PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 BASH_ENV=/tmp/cron.env
 
-# Segment membership — recomputes which contacts belong to each dynamic segment.
+# Segment membership: recomputes which contacts belong to each dynamic segment.
 # Everything downstream (campaign entry, reports) depends on this running.
 0,15,30,45 * * * * php /var/www/html/bin/console mautic:segments:update 2>&1 | tee /tmp/stdout
 
-# Campaign membership — recomputes who qualifies for each campaign.
+# Campaign membership: recomputes who qualifies for each campaign.
 5,20,35,50 * * * * php /var/www/html/bin/console mautic:campaigns:update 2>&1 | tee /tmp/stdout
 
-# Campaign execution — fires the scheduled actions (send email, add tag, wait).
+# Campaign execution: fires the scheduled actions (send email, add tag, wait).
 10,25,40,55 * * * * php /var/www/html/bin/console mautic:campaigns:trigger 2>&1 | tee /tmp/stdout
 
-# Broadcast/segment email sending — required for one-off sends such as a city
+# Broadcast/segment email sending is required for one-off sends such as a city
 # launch announcement. Not in the image's default crontab.
 2,12,22,32,42,52 * * * * php /var/www/html/bin/console mautic:broadcasts:send 2>&1 | tee /tmp/stdout
 
@@ -44,5 +44,5 @@ BASH_ENV=/tmp/cron.env
 # Housekeeping: purge audit-log rows, page hits and *anonymous* (never
 # identified) visitors older than a year. Identified contacts are NOT touched by
 # this command. Retention here must stay in step with the published privacy
-# policy — if the policy period changes, change --days-old to match.
+# policy. If the policy period changes, change --days-old to match.
 41 3 * * * php /var/www/html/bin/console mautic:maintenance:cleanup --days-old=365 --no-interaction 2>&1 | tee /tmp/stdout

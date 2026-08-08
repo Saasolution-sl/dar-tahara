@@ -2,7 +2,7 @@
 #
 # Phase 3 Mautic provisioning: lead-scoring fields + behavioural point actions.
 #
-# Idempotent. Run on the VPS (talks to the Mautic API over the PUBLIC https URL —
+# Idempotent. Run on the VPS (talks to the Mautic API over the PUBLIC https URL,
 # since trusted_proxies is set, Mautic enforces https and rejects internal http).
 #
 # Scoring model split:

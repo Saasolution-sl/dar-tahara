@@ -3,7 +3,7 @@
 # Provision the Mautic data model for Dar Tahara early access.
 #
 # Creates, idempotently:
-#   1. Custom contact fields  (the marketing-relevant subset — brief §19)
+#   1. Custom contact fields  (the marketing-relevant subset from brief §19)
 #   2. Tags                   (brief §20)
 #   3. Roles                  (brief §4, least-privilege)
 #   4. A dedicated API user    used by the Dar Tahara website to sync contacts
@@ -11,7 +11,7 @@
 #
 # Idempotent by design: every object is looked up by its unique key (field alias,
 # tag name, role name, segment alias) and skipped if it already exists. Re-running
-# after adding a new field to the tables below creates only the new one — which is
+# after adding a new field to the tables below creates only the new one, which is
 # how this stays the source of truth rather than a one-shot.
 #
 # Runs ON the VPS; talks to Mautic over the container's own loopback, so no
@@ -35,7 +35,7 @@ created=0; existed=0; failed=0
 #
 # This used to go over the container's loopback (http://127.0.0.1) so it worked
 # before DNS/TLS existed. Mautic now force-redirects every http request to its
-# configured https site_url — and it ignores X-Forwarded-Proto — so loopback
+# configured https site_url and ignores X-Forwarded-Proto, so loopback
 # calls 301 and POSTs fail with a misleading "No route found". The container
 # does not listen on 443 either (Caddy terminates TLS), so the only working
 # transport is the public hostname through Caddy. Traffic stays on this host.
@@ -117,11 +117,11 @@ FIELDS=(
   # a registration.
   "service_area_status|Service Area Status|select|professional|active,planned,waiting_list,unsupported"
 
-  # Digital smart-lock upsell. Product INTEREST only — never an order, and the
+  # Digital smart-lock upsell. Product INTEREST only, never an order, and the
   # €200 price is deliberately NOT sent to Mautic (it stays in Supabase).
   # NB: Mautic truncates a contact-field alias to 25 characters and then silently
   # creates a *duplicate* (alias + "1") on the next run if you keep sending the
-  # long form. Every alias below is <= 25 chars for that reason — do not lengthen
+  # long form. Every alias below is <= 25 chars for that reason. Do not lengthen
   # them, and keep them identical to the aliases used in src/lib/mautic/mapping.ts.
   "smart_lock_interest|Smart Lock Interest|select|professional|purchase_interested,already_has_lock,not_interested"
   "smart_lock_existing_brand|Smart Lock Existing Brand|text|professional"
@@ -183,7 +183,7 @@ done
 
 # ── 1b. Reconcile option lists ────────────────────────────────────────────────
 # Creation is skipped for fields that already exist, so a CHANGED select/
-# multiselect vocabulary would silently keep its old options — and segment
+# multiselect vocabulary would silently keep its old options, and segment
 # filters would then stop matching the values the website actually sends.
 # This pass PATCHes any existing field whose option list has drifted, which is
 # what makes this script the true source of truth rather than a one-shot.
@@ -206,7 +206,7 @@ d=json.load(sys.stdin); f=d.get("fields",{})
 it=f.values() if isinstance(f,dict) else f
 for x in it:
     if x.get("alias")==os.environ["ALIAS"]: print(x.get("id","")); break')"
-  [[ -z "$fid" ]] && continue                 # not created yet — nothing to fix
+  [[ -z "$fid" ]] && continue                 # not created yet, so nothing to fix
   [[ "$have" == "$want" ]] && continue        # already correct
   list=""
   IFS=',' read -ra values <<<"$want"
@@ -243,7 +243,7 @@ done
 
 # ── 3. Roles ──────────────────────────────────────────────────────────────────
 # Least privilege: only the Mautic Administrator role is a true admin. Dar Tahara
-# staff get exactly the permissions their job needs — a Reporting-Only user can
+# staff get exactly the permissions their job needs. A Reporting-Only user can
 # read contacts and reports but cannot email anyone or export data.
 #
 # Mautic permission bits: 1=view(own) 2=viewother 4=editown 8=editother
@@ -263,7 +263,7 @@ create_role() {
     "$(api POST /api/roles/new "{\"name\":\"${name}\",\"description\":\"${desc}\",\"isAdmin\":false,\"rawPermissions\":${perms}}")"
 }
 
-# Full administrator (Mautic's own isAdmin flag — bypasses granular perms).
+# Full administrator (Mautic's own isAdmin flag, which bypasses granular perms).
 existing_roles="$(api GET '/api/roles?limit=200')"
 if grep -qF '"name":"Mautic Administrator"' <<<"$existing_roles"; then
   echo "  = role Mautic Administrator (exists)"; existed=$((existed+1))
@@ -272,31 +272,31 @@ else
     "$(api POST /api/roles/new '{"name":"Mautic Administrator","description":"Full system administration. Infrastructure owner only.","isAdmin":true}')"
 fi
 
-# Marketing Manager — runs the whole Dar Tahara marketing function, but cannot
+# Marketing Manager: runs the whole Dar Tahara marketing function, but cannot
 # administer users, roles or system config.
 create_role "Dar Tahara Marketing Manager" \
   "Full marketing operations: contacts, segments, campaigns, emails, reports. No user/system administration." \
   '{"lead:leads":["full"],"lead:lists":["full"],"lead:imports":["full"],"email:emails":["full"],"campaign:campaigns":["full"],"page:pages":["full"],"form:forms":["full"],"asset:assets":["full"],"point:points":["full"],"point:triggers":["full"],"report:reports":["full"],"stage:stages":["full"]}'
 
-# Campaign Manager — builds and runs campaigns/emails; may read contacts and
+# Campaign Manager: builds and runs campaigns/emails; may read contacts and
 # segments but must not delete contacts or edit the segment definitions others rely on.
 create_role "Campaign Manager" \
   "Builds and runs campaigns and emails. Read-only on contacts and segments." \
   '{"lead:leads":["viewown","viewother"],"lead:lists":["viewown","viewother"],"email:emails":["full"],"campaign:campaigns":["full"],"page:pages":["viewown","viewother"],"asset:assets":["viewown","viewother"],"report:reports":["viewown","viewother"]}'
 
-# Lead Manager — works the inbound leads (qualify, tag, follow up). Cannot send
+# Lead Manager: works the inbound leads (qualify, tag, follow up). Cannot send
 # marketing email or change automation.
 create_role "Lead Manager" \
   "Works inbound leads: view, edit, qualify, tag. Cannot send marketing email or change automation." \
   '{"lead:leads":["viewown","viewother","editown","editother","create"],"lead:lists":["viewown","viewother"],"report:reports":["viewown","viewother"],"campaign:campaigns":["viewown","viewother"]}'
 
-# Reporting Only — the safe default for anyone who just needs the numbers.
+# Reporting Only: the safe default for anyone who just needs the numbers.
 # View-only everywhere; cannot export, email, or edit anything.
 create_role "Reporting Only" \
   "Read-only access to contacts, segments, campaigns and reports. Cannot edit, email or export." \
   '{"lead:leads":["viewown","viewother"],"lead:lists":["viewown","viewother"],"email:emails":["viewown","viewother"],"campaign:campaigns":["viewown","viewother"],"report:reports":["viewown","viewother"]}'
 
-# API integration role — the website's sync user. It needs to read and write
+# API integration role for the website's sync user. It needs to read and write
 # contacts and to read segments, and nothing else. Notably it cannot send email,
 # so a leaked API credential cannot be used to mail the contact database.
 create_role "Dar Tahara API Integration" \
@@ -315,7 +315,7 @@ d=json.load(sys.stdin); r=d["roles"]; it=r.values() if isinstance(r,dict) else r
 print(next((x["id"] for x in it if x["name"]=="Dar Tahara API Integration"),""))' 2>/dev/null || true)"
 
 if [[ -z "${API_ROLE_ID}" ]]; then
-  echo "  ! could not resolve the API integration role id — skipping API user"; failed=$((failed+1))
+  echo "  ! could not resolve the API integration role id. Skipping API user"; failed=$((failed+1))
 else
   existing_users="$(api GET '/api/users?limit=200')"
   if grep -qF '"username":"dt-api"' <<<"$existing_users"; then
@@ -328,7 +328,7 @@ else
     if ! grep -q '"errors"' <<<"$resp"; then
       umask 077
       cat > "$API_CRED_FILE" <<CRED
-# Mautic API user for the dartahara.com website — generated $(date -u +%FT%TZ).
+# Mautic API user for the dartahara.com website, generated $(date -u +%FT%TZ).
 # These are the values for MAUTIC_API_USERNAME / MAUTIC_API_PASSWORD.
 MAUTIC_BASE_URL=https://marketing.saasolution.es
 MAUTIC_API_USERNAME=dt-api
@@ -348,7 +348,7 @@ fi
 echo "==> segments"
 
 # Build a tag-name → tag-id map once. The tags segment filter is a Symfony
-# ChoiceType whose valid values are tag IDs, not the tag strings — passing the
+# ChoiceType whose valid values are tag IDs, not the tag strings. Passing the
 # string fails NotBlank validation with a misleading "A value is required".
 declare -A TAG_ID
 while IFS=$'\t' read -r tid tname; do
@@ -370,61 +370,61 @@ f_eq()   { printf '{"glue":"and","field":"%s","object":"lead","type":"%s","opera
 f_bool() { printf '{"glue":"and","field":"%s","object":"lead","type":"boolean","operator":"=","filter":"%s","display":""}' "$1" "$2"; }
 
 SEGMENTS=(
-  "dt-early-access-all|Dar Tahara Early Access — All|[$(f_tag early-access)]"
-  "dt-ea-pending|Dar Tahara Early Access — Pending Verification|[$(f_tag early-access),$(f_eq early_access_status pending select)]"
-  "dt-ea-verified|Dar Tahara Early Access — Verified|[$(f_tag early-access),$(f_bool email_verified 1)]"
-  "dt-ea-qualified|Dar Tahara Early Access — Qualified|[$(f_tag early-access),$(f_eq early_access_status qualified select)]"
-  "dt-ea-waitlisted|Dar Tahara Early Access — Waitlisted|[$(f_tag early-access),$(f_eq early_access_status waitlisted select)]"
+  "dt-early-access-all|Dar Tahara Early Access: All|[$(f_tag early-access)]"
+  "dt-ea-pending|Dar Tahara Early Access: Pending Verification|[$(f_tag early-access),$(f_eq early_access_status pending select)]"
+  "dt-ea-verified|Dar Tahara Early Access: Verified|[$(f_tag early-access),$(f_bool email_verified 1)]"
+  "dt-ea-qualified|Dar Tahara Early Access: Qualified|[$(f_tag early-access),$(f_eq early_access_status qualified select)]"
+  "dt-ea-waitlisted|Dar Tahara Early Access: Waitlisted|[$(f_tag early-access),$(f_eq early_access_status waitlisted select)]"
 
   # Residence city in Morocco
-  "dt-res-tetouan|Residence City — Tetouan|[$(f_eq residence_city Tetouan)]"
-  "dt-res-tangier|Residence City — Tangier|[$(f_eq residence_city Tangier)]"
-  "dt-res-rabat|Residence City — Rabat|[$(f_eq residence_city Rabat)]"
-  "dt-res-meknes|Residence City — Meknes|[$(f_eq residence_city Meknes)]"
-  "dt-res-fes|Residence City — Fes|[$(f_eq residence_city Fes)]"
-  "dt-res-marrakech|Residence City — Marrakech|[$(f_eq residence_city Marrakech)]"
-  "dt-res-al-hoceima|Residence City — Al Hoceima|[$(f_eq residence_city 'Al Hoceima')]"
-  "dt-res-nador|Residence City — Nador|[$(f_eq residence_city Nador)]"
-  "dt-res-casablanca|Residence City — Casablanca|[$(f_eq residence_city Casablanca)]"
-  "dt-res-agadir|Residence City — Agadir|[$(f_eq residence_city Agadir)]"
+  "dt-res-tetouan|Residence City: Tetouan|[$(f_eq residence_city Tetouan)]"
+  "dt-res-tangier|Residence City: Tangier|[$(f_eq residence_city Tangier)]"
+  "dt-res-rabat|Residence City: Rabat|[$(f_eq residence_city Rabat)]"
+  "dt-res-meknes|Residence City: Meknes|[$(f_eq residence_city Meknes)]"
+  "dt-res-fes|Residence City: Fes|[$(f_eq residence_city Fes)]"
+  "dt-res-marrakech|Residence City: Marrakech|[$(f_eq residence_city Marrakech)]"
+  "dt-res-al-hoceima|Residence City: Al Hoceima|[$(f_eq residence_city 'Al Hoceima')]"
+  "dt-res-nador|Residence City: Nador|[$(f_eq residence_city Nador)]"
+  "dt-res-casablanca|Residence City: Casablanca|[$(f_eq residence_city Casablanca)]"
+  "dt-res-agadir|Residence City: Agadir|[$(f_eq residence_city Agadir)]"
 
-  # Digital smart-lock upsell. Interest only — these are follow-up queues, not
+  # Digital smart-lock upsell. Interest only; these are follow-up queues, not
   # buyers: nothing here has been paid for or confirmed as compatible.
-  "dt-lock-interested|Smart Lock — Purchase Interest|[$(f_eq smart_lock_interest purchase_interested select)]"
-  "dt-lock-existing|Smart Lock — Existing Lock Review|[$(f_eq smart_lock_interest already_has_lock select)]"
-  "dt-lock-declined|Smart Lock — Not Interested|[$(f_eq smart_lock_interest not_interested select)]"
-  "dt-lock-pending-review|Smart Lock — Compatibility Pending|[$(f_eq smart_lock_compatibility pending_review select)]"
+  "dt-lock-interested|Smart Lock: Purchase Interest|[$(f_eq smart_lock_interest purchase_interested select)]"
+  "dt-lock-existing|Smart Lock: Existing Lock Review|[$(f_eq smart_lock_interest already_has_lock select)]"
+  "dt-lock-declined|Smart Lock: Not Interested|[$(f_eq smart_lock_interest not_interested select)]"
+  "dt-lock-pending-review|Smart Lock: Compatibility Pending|[$(f_eq smart_lock_compatibility pending_review select)]"
 
-  # Service-area status of the property city — drives launch and waiting-list comms.
-  "dt-area-planned|Service Area — Planned|[$(f_eq service_area_status planned select)]"
-  "dt-area-waiting-list|Service Area — Waiting List|[$(f_eq service_area_status waiting_list select)]"
-  "dt-area-unsupported|Service Area — Outside Coverage|[$(f_eq service_area_status unsupported select)]"
+  # Service-area status of the property city, which drives launch and waiting-list comms.
+  "dt-area-planned|Service Area: Planned|[$(f_eq service_area_status planned select)]"
+  "dt-area-waiting-list|Service Area: Waiting List|[$(f_eq service_area_status waiting_list select)]"
+  "dt-area-unsupported|Service Area: Outside Coverage|[$(f_eq service_area_status unsupported select)]"
 
   # Cleaning city
-  "dt-city-tangier|Property — Tangier|[$(f_eq cleaning_city Tangier)]"
-  "dt-city-tetouan|Property — Tetouan|[$(f_eq cleaning_city Tetouan)]"
-  "dt-city-fnideq|Property — Fnideq|[$(f_eq cleaning_city Fnideq)]"
-  "dt-city-casablanca|Property — Casablanca|[$(f_eq cleaning_city Casablanca)]"
-  "dt-city-rabat|Property — Rabat|[$(f_eq cleaning_city Rabat)]"
-  "dt-city-marrakech|Property — Marrakech|[$(f_eq cleaning_city Marrakech)]"
+  "dt-city-tangier|Property: Tangier|[$(f_eq cleaning_city Tangier)]"
+  "dt-city-tetouan|Property: Tetouan|[$(f_eq cleaning_city Tetouan)]"
+  "dt-city-fnideq|Property: Fnideq|[$(f_eq cleaning_city Fnideq)]"
+  "dt-city-casablanca|Property: Casablanca|[$(f_eq cleaning_city Casablanca)]"
+  "dt-city-rabat|Property: Rabat|[$(f_eq cleaning_city Rabat)]"
+  "dt-city-marrakech|Property: Marrakech|[$(f_eq cleaning_city Marrakech)]"
 
   # Language
-  "dt-lang-en|Language — English|[$(f_eq preferred_language en select)]"
-  "dt-lang-fr|Language — French|[$(f_eq preferred_language fr select)]"
-  "dt-lang-ar|Language — Arabic|[$(f_eq preferred_language ar select)]"
-  "dt-lang-nl|Language — Dutch|[$(f_eq preferred_language nl select)]"
-  "dt-lang-es|Language — Spanish|[$(f_eq preferred_language es select)]"
-  "dt-lang-de|Language — German|[$(f_eq preferred_language de select)]"
-  "dt-lang-pt|Language — Portuguese|[$(f_eq preferred_language pt select)]"
+  "dt-lang-en|Language: English|[$(f_eq preferred_language en select)]"
+  "dt-lang-fr|Language: French|[$(f_eq preferred_language fr select)]"
+  "dt-lang-ar|Language: Arabic|[$(f_eq preferred_language ar select)]"
+  "dt-lang-nl|Language: Dutch|[$(f_eq preferred_language nl select)]"
+  "dt-lang-es|Language: Spanish|[$(f_eq preferred_language es select)]"
+  "dt-lang-de|Language: German|[$(f_eq preferred_language de select)]"
+  "dt-lang-pt|Language: Portuguese|[$(f_eq preferred_language pt select)]"
 
   # Service interest / frequency
-  "dt-freq-weekly|Interest — Weekly Cleaning|[$(f_eq desired_frequency weekly select)]"
-  "dt-freq-biweekly|Interest — Biweekly Cleaning|[$(f_eq desired_frequency biweekly select)]"
-  "dt-freq-monthly|Interest — Monthly Cleaning|[$(f_eq desired_frequency monthly select)]"
+  "dt-freq-weekly|Interest: Weekly Cleaning|[$(f_eq desired_frequency weekly select)]"
+  "dt-freq-biweekly|Interest: Biweekly Cleaning|[$(f_eq desired_frequency biweekly select)]"
+  "dt-freq-monthly|Interest: Monthly Cleaning|[$(f_eq desired_frequency monthly select)]"
 
   # Access
-  "dt-access-digital|Access — Digital Lock|[$(f_eq access_method digital_lock select)]"
-  "dt-access-key|Access — Physical Key|[$(f_eq access_method physical_key select)]"
+  "dt-access-digital|Access: Digital Lock|[$(f_eq access_method digital_lock select)]"
+  "dt-access-key|Access: Physical Key|[$(f_eq access_method physical_key select)]"
 
   # High intent
   "dt-start-1m|Start Within One Month|[$(f_eq expected_start_period within_1_month select)]"

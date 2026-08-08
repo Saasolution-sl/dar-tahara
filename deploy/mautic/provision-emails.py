@@ -4,7 +4,7 @@ Provision Dar Tahara-branded Mautic campaign emails (Phase 3, brief §25).
 
 Idempotent: emails are matched by name and skipped if they already exist. Run on
 the VPS (talks to the Mautic API over the public https URL). Creates the emails
-the automation campaigns send — verification reminders, the verified welcome,
+the automation campaigns send: verification reminders, the verified welcome,
 referral milestone, city launch, high-intent follow-up, re-engagement, preference
 update and unsubscribe confirmation.
 
@@ -82,7 +82,7 @@ def shell(heading, body_html, cta_text=None, cta_url=None, note=None):
       {note_html}
     </div>
     <p style="text-align:center;font-size:12px;color:#9c8562;margin-top:18px;line-height:1.7;">
-      Dar Tahara — House of Purity · Morocco<br>
+      Dar Tahara, House of Purity · Morocco<br>
       <a href="https://www.dartahara.com/en/privacy" style="color:#9c8562;">Privacy</a> ·
       {{unsubscribe_text}}
     </p>
@@ -124,8 +124,8 @@ EMAILS = [
         "html": shell(
             "Welcome to early access, {contactfield=firstname}",
             p("Your email is confirmed and you're on the Dar Tahara early-access list. We'll contact you when service becomes available for your property in {contactfield=cleaning_city}.")
-            + p("This is not a confirmed booking — it's your place in line. As we open your area, you'll be among the first we reach out to.")
-            + p("<strong>Invite friends and family.</strong> Share your personal invitation link — it helps us bring Dar Tahara to your city sooner."),
+            + p("This is not a confirmed booking. It's your place in line. As we open your area, you'll be among the first we reach out to.")
+            + p("<strong>Invite friends and family.</strong> Share your personal invitation link to help us bring Dar Tahara to your city sooner."),
             "Open my referral tools", REF_LINK,
             note="Registration is an early-access request, not a confirmed appointment.",
         ),
@@ -135,7 +135,7 @@ EMAILS = [
         "subject": "Thank you for spreading the word, {contactfield=firstname}",
         "html": shell(
             "Your invitations are making a difference",
-            p("Hi {contactfield=firstname}, thank you for inviting others to Dar Tahara early access — your referrals help us prioritise where to launch first.")
+            p("Hi {contactfield=firstname}, thank you for inviting others to Dar Tahara early access. Your referrals help us prioritise where to launch first.")
             + p("Keep sharing your personal link with friends and family who own or manage a home in Morocco."),
             "Share again", REF_LINK,
             note="Any rewards will be confirmed to you directly when they become available.",
@@ -157,7 +157,7 @@ EMAILS = [
         "html": shell(
             "Let's help you get ready",
             p("Hi {contactfield=firstname}, thank you for the detail you shared about your property in {contactfield=cleaning_city}.")
-            + p("Because you're looking to start soon, a member of the Dar Tahara team would like to make sure we're ready for you the moment we open your area. We'll be in touch shortly — feel free to reply to this email with any questions."),
+            + p("Because you're looking to start soon, a member of the Dar Tahara team would like to make sure we're ready for you the moment we open your area. We'll be in touch shortly. Feel free to reply to this email with any questions."),
         ),
     },
     {

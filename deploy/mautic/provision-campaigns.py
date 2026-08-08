@@ -10,7 +10,7 @@ Campaigns (source segment → actions):
   2. Verified Welcome      (dt-ea-verified) → welcome email + swap verification tags
   3. High-Intent Follow-Up (dt-high-intent) → follow-up email + qualified-lead tag
   4. Referral Milestone    (referrers 1+)   → milestone email
-  5. City Launch — Tangier (dt-city-tangier)→ city-launch email  (clone per city)
+  5. City Launch: Tangier (dt-city-tangier)→ city-launch email  (clone per city)
   6. Re-engagement         (dt-ea-verified) → re-engagement email @60d
 
 Every action is anchored to the segment source (leadsource) with a trigger
@@ -112,9 +112,9 @@ def main():
         "high": segment_id("dt-high-intent"),
         "tangier": segment_id("dt-city-tangier"),
     }
-    # Create the "Referrers — 1+ Verified" segment if missing.
+    # Create the "Referrers: 1+ Verified" segment if missing.
     seg["referrers"] = segment_id("dt-referrers-1", create={
-        "name": "Referrers — 1 Verified Referral", "alias": "dt-referrers-1",
+        "name": "Referrers: 1 Verified Referral", "alias": "dt-referrers-1",
         "isPublished": True,
         "filters": [{
             "glue": "and", "field": "verified_referral_count", "object": "lead",
@@ -146,7 +146,7 @@ def main():
               seg["referrers"], [
                   send(e("Referral milestone"), "Send milestone", "immediate", 1, "d", "new_1"),
               ]),
-        build("DT · City Launch — Tangier",
+        build("DT · City Launch: Tangier",
               "Announces launch to leads with a property in Tangier. Clone per city.",
               seg["tangier"], [
                   send(e("City launch announcement"), "Send city launch", "immediate", 1, "d", "new_1"),
@@ -177,7 +177,7 @@ def main():
             print(f"  ! {c['name']} FAILED: {r}"); failed += 1
 
     print(f"\ncreated: {created}  existed: {existed}  failed: {failed}")
-    print("NOTE: campaigns are UNPUBLISHED — review + publish in the Mautic UI.")
+    print("NOTE: campaigns are UNPUBLISHED. Review and publish them in the Mautic UI.")
     raise SystemExit(1 if failed else 0)
 
 

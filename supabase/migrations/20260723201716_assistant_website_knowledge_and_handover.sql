@@ -145,7 +145,7 @@ create index if not exists website_versions_source_created_idx
 create index if not exists website_embeddings_search_idx
   on public.website_embeddings using gin (search_document);
 -- pgvector is installed into the `extensions` schema (see above), which is not on
--- the migration search_path — so the operator class must be schema-qualified,
+-- the migration search_path, so the operator class must be schema-qualified,
 -- exactly like the `extensions.vector(512)` column types.
 create index if not exists website_embeddings_vector_idx
   on public.website_embeddings using hnsw (embedding extensions.vector_cosine_ops)

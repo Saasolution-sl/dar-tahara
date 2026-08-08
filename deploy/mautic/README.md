@@ -1,4 +1,4 @@
-# Mautic — Dar Tahara marketing backend
+# Mautic, Dar Tahara's marketing backend
 
 Self-hosted **Mautic 7.1.3** at `https://marketing.saasolution.es`, the private
 marketing automation and analytics backend for the Dar Tahara early-access
@@ -25,14 +25,14 @@ on the server and never committed.
 ssh vps
 cd /opt/projects/mautic
 
-# 1. Generate secrets (idempotent — refuses to overwrite an existing .env).
+# 1. Generate secrets (idempotent; refuses to overwrite an existing .env).
 #    Pass the Resend DSN once available; otherwise mail parks on null://.
 sudo ./bootstrap.sh --mailer-dsn 'smtp://resend:re_XXXX@smtp.resend.com:587'
 
 # 2. Bring the DB up first so it seeds cleanly, then the web app.
 sudo docker compose up -d mautic-db
 sudo docker compose up -d mautic-web        # seeds the shared plugin/theme volumes
-#    (starting all four at once races on volume creation — start web alone first)
+#    (starting all four at once races on volume creation, so start web alone first)
 
 # 3. Install Mautic (schema + admin user). Admin password is generated and
 #    written to /root/mautic-admin-credentials.txt (root 0600).
@@ -43,7 +43,7 @@ sudo docker compose up -d mautic-web        # seeds the shared plugin/theme volu
 sudo docker compose up -d mautic-cron mautic-worker
 
 # 5. Write the config the image does NOT read from env (trusted_proxies + the
-#    Resend mailer DSN). REQUIRED — without trusted_proxies the login page
+#    Resend mailer DSN). REQUIRED: without trusted_proxies the login page
 #    301-loops behind Caddy, and mailer_dsn otherwise stays at localhost:25.
 sudo ./configure-local.sh
 
@@ -53,16 +53,16 @@ sudo ./provision.sh
 
 ## Known upstream issues handled here
 
-- **Login page 500 (Twig)** — Mautic 7.1.3 on PHP 8.3 throws
+- **Login page 500 (Twig):** Mautic 7.1.3 on PHP 8.3 throws
   `includeWithEvent(): Return value must be of type string, Twig\Markup returned`.
   Fixed by `patches/OverrideIncludeExtension.php` (bind-mounted read-only in
   `docker-compose.yml`). Remove the patch + mount once upstream ships a fix.
-- **Login redirect loop** — `trusted_proxies` must be in `local.php` (the env var
+- **Login redirect loop:** `trusted_proxies` must be in `local.php` (the env var
   is ignored). Handled by `configure-local.sh`.
-- **Mail parked on localhost:25** — `mailer_dsn` in `local.php` takes precedence
+- **Mail parked on localhost:25:** `mailer_dsn` in `local.php` takes precedence
   over the env var. Also handled by `configure-local.sh`.
 
-## Cron — how to verify it is running
+## How to verify cron is running
 
 Campaigns, segment membership and broadcast emails advance ONLY because
 `mautic-cron` runs `bin/console` on a schedule. To confirm:
@@ -139,8 +139,8 @@ jump a major version without reading the Mautic upgrade notes.
 
 ## Known blockers (need action outside this box)
 
-1. **DNS** — `marketing.saasolution.es` has no A record. Add
+1. **DNS:** `marketing.saasolution.es` has no A record. Add
    `A marketing → 85.215.221.142` at GoDaddy; Caddy then issues the TLS cert
    automatically. Until then the site is only reachable internally.
-2. **Mail** — set a real Resend DSN (`MAUTIC_MAILER_DSN`) and verify
+2. **Mail:** set a real Resend DSN (`MAUTIC_MAILER_DSN`) and verify
    `dartahara.com` in Resend (DKIM/SPF) before any production send.

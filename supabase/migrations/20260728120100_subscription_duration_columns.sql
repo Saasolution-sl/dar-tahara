@@ -3,12 +3,12 @@
 --
 -- Legacy handling: pre-existing subscriptions/proposals predate this feature
 -- entirely (open-ended monthly/annual billing, no fixed contract term), so
--- they explicitly get contract_duration_months = NULL ("no fixed term — not
+-- they explicitly get contract_duration_months = NULL ("no fixed term, not
 -- a guess") rather than being backfilled to some assumed duration.
 --
 -- This migration adds columns only. The pause-REQUEST workflow (a
 -- pause_requests table, approval flow, scheduling/billing suspension) is a
--- separate, later phase — these columns just give price-versioning and
+-- separate, later phase, these columns just give price-versioning and
 -- pause-entitlement tracking somewhere to live.
 
 alter table public.home_assessments

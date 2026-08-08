@@ -4,7 +4,7 @@
 -- ---------------------------------------------------------------------------
 -- Blocking: subscriptions gain a manual-suspension value alongside the
 -- existing automated non-payment suspension. customers.status already has
--- 'suspended'; staff_members.active already exists — neither needs a schema
+-- 'suspended'; staff_members.active already exists, neither needs a schema
 -- change, just enforcement in application code (see portal-auth.ts).
 -- ---------------------------------------------------------------------------
 

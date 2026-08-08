@@ -1,6 +1,6 @@
 -- Fix: staff_members_read_via_own_assessment (previous migration) subqueries
 -- home_assessments directly in its USING clause. home_assessments has its own
--- RLS policy (assessments_staff_read) that subqueries staff_members — the two
+-- RLS policy (assessments_staff_read) that subqueries staff_members, the two
 -- policies trigger each other's RLS evaluation and Postgres reports
 -- "infinite recursion detected in policy for relation staff_members".
 --

@@ -10,7 +10,7 @@ image="dar-tahara-web:${image_tag}"
 publishable_key="$(sed -n 's/^NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY=//p' "${app_env}" | head -n 1)"
 supabase_url="$(sed -n 's/^NEXT_PUBLIC_SUPABASE_URL=//p' "${app_env}" | head -n 1)"
 # Optional: GA4 measurement id. NEXT_PUBLIC_* is inlined at build time, so it
-# must be passed as a build arg. Empty simply means analytics stays disabled.
+# must be passed as a build arg. If empty, analytics stays disabled.
 ga_measurement_id="$(sed -n 's/^NEXT_PUBLIC_GA_MEASUREMENT_ID=//p' "${app_env}" | head -n 1)"
 
 if [[ -z "${supabase_url}" || -z "${publishable_key}" ]]; then

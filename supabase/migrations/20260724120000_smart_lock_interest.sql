@@ -1,4 +1,4 @@
--- Digital smart-lock upsell — capture the customer's product INTEREST during
+-- Digital smart-lock upsell, capture the customer's product INTEREST during
 -- early access. This is never a paid order: no charge is made here and
 -- installation is always subject to a later door/lock compatibility review.
 --
@@ -36,4 +36,4 @@ create index if not exists property_access_smart_lock_followup_idx
     and smart_lock_followup_status <> 'no_action_required';
 
 comment on column public.property_access_preferences.smart_lock_interest is
-  'Customer product interest only — NOT a paid order. Price/currency snapshot the shown offer.';
+  'Customer product interest only, NOT a paid order. Price/currency snapshot the shown offer.';

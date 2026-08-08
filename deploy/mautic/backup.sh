@@ -1,18 +1,18 @@
 #!/usr/bin/env bash
 #
-# Mautic backup — database + the volumes that hold anything unrecoverable.
+# Mautic backup for the database and volumes that hold anything unrecoverable.
 #
 # Run nightly from the host crontab (see README §Backups). Writes a single
 # timestamped directory per run to /opt/backups/mautic and prunes runs older
 # than RETENTION_DAYS.
 #
 # What is backed up and why:
-#   db      — contacts, campaigns, segments, scores, email stats. The one thing
+#   db: contacts, campaigns, segments, scores, email stats. The one thing
 #             that genuinely cannot be rebuilt.
-#   config  — local.php: DB creds, site_url, tuned parameters.
-#   media   — uploaded images used by email templates and landing pages.
-#   themes  — the custom Dar Tahara email theme.
-#   plugins — only if custom/third-party plugins are ever installed.
+#   config: local.php, DB creds, site_url, tuned parameters.
+#   media: uploaded images used by email templates and landing pages.
+#   themes: the custom Dar Tahara email theme.
+#   plugins: only if custom/third-party plugins are ever installed.
 #
 # Deliberately NOT backed up: logs (noise, and re-creatable) and the Docker
 # images themselves (pinned by tag, re-pullable).

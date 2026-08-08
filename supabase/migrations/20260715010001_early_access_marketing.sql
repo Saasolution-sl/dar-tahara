@@ -1,16 +1,16 @@
--- Early-access marketing system — structured system of record.
+-- Early-access marketing system, structured system of record.
 --
 -- This is the Supabase half of the Dar Tahara ↔ Mautic architecture: Mautic owns
 -- the marketing data (contacts, campaigns, scoring, engagement); these tables own
 -- the structured application data that must NOT live only as Mautic contact
--- fields — exact billing/property addresses, coordinates, entry notes,
+-- fields, exact billing/property addresses, coordinates, entry notes,
 -- per-property service preferences, consent audit trail, campaign-source registry
 -- and the referral graph.
 --
 -- Security model: every table below is written EXCLUSIVELY by the Next.js server
 -- using the service-role key, which bypasses RLS. Public visitors reach the data
 -- only through validated server routes, never the Data API directly. So RLS is
--- enabled on every table with NO anon/authenticated policies — a deny-by-default
+-- enabled on every table with NO anon/authenticated policies, a deny-by-default
 -- posture. `revoke all ... from anon, authenticated` makes that explicit even if
 -- a policy is added carelessly later.
 
@@ -45,7 +45,7 @@ create table if not exists public.marketing_leads (
   mautic_last_error text,
 
   -- Campaign attribution (the source that first brought this lead in). The FK to
-  -- campaign_sources is added lower down, after that table is created — declaring
+  -- campaign_sources is added lower down, after that table is created, declaring
   -- it inline here would fail because the referenced table does not exist yet.
   campaign_source_id uuid,
 
@@ -158,7 +158,7 @@ $$;
 
 -- ── billing_profiles ───────────────────────────────────────────────────────────
 -- Customer-account / invoicing address. May be anywhere in the world; do not
--- force Moroccan formatting. Never a payment-card address — no card data here.
+-- force Moroccan formatting. Never a payment-card address, no card data here.
 create table if not exists public.billing_profiles (
   id uuid primary key default gen_random_uuid(),
   lead_id uuid not null references public.marketing_leads(id) on delete cascade,
@@ -281,7 +281,7 @@ create index if not exists property_access_preferences_property_idx
 
 -- ── lead_consents ──────────────────────────────────────────────────────────────
 -- Append-only audit trail. Operational-communication consent and optional
--- marketing consent are recorded as SEPARATE rows (brief §16) — never merged.
+-- marketing consent are recorded as SEPARATE rows (brief §16), never merged.
 -- Withdrawal is a new row with granted=false, so history is preserved.
 create table if not exists public.lead_consents (
   id uuid primary key default gen_random_uuid(),
@@ -292,7 +292,7 @@ create table if not exists public.lead_consents (
   policy_version text,
   locale text,
   source text,       -- e.g. early_access_form
-  request_metadata jsonb,   -- privacy-safe only: coarse UA, hashed IP — never raw PII
+  request_metadata jsonb,   -- privacy-safe only: coarse UA, hashed IP, never raw PII
   created_at timestamptz not null default now()
 );
 create index if not exists lead_consents_lead_type_idx on public.lead_consents (lead_id, consent_type);

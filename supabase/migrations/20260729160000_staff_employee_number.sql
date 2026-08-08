@@ -7,7 +7,7 @@ alter table public.staff_members
 -- member is assigned (as cleaner or inspector) to one of the customer's own
 -- assessments. The application only ever selects `employee_number` through
 -- this path (never email/phone), but the RLS policy itself is the real
--- boundary — keep it scoped to exactly this relationship, nothing broader.
+-- boundary, keep it scoped to exactly this relationship, nothing broader.
 create policy staff_members_read_via_own_assessment on public.staff_members for select to authenticated
 using (
   id in (

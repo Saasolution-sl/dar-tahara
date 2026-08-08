@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
 #
 # Ensure Mautic's local.php has the parameters the 7.1.3 image does NOT read from
-# environment variables. Run once after `mautic:install` (idempotent — safe to
+# environment variables. Run once after `mautic:install` (idempotent and safe to
 # re-run).
 #
 # Why this exists: contrary to expectation, Mautic 7.1.3 does NOT overlay every
 # MAUTIC_<PARAM> env var onto its config. In particular:
 #   - trusted_proxies is read ONLY from local.php (app/middlewares/TrustMiddleware)
-#     — without it Mautic never trusts Caddy's X-Forwarded-Proto, always thinks the
+#     Without it, Mautic never trusts Caddy's X-Forwarded-Proto, always thinks the
 #     request is http, and 301-loops the login page behind TLS.
 #   - mailer_dsn / mailer_from_* in local.php take precedence over the env vars,
 #     and a fresh install leaves mailer_dsn at smtp://localhost:25.
@@ -38,4 +38,4 @@ docker compose exec -T mautic-web rm -f /tmp/configure-local.php || true
 # Reload config across the app + workers and clear the compiled cache.
 docker compose exec -T -u www-data mautic-web php /var/www/html/bin/console cache:clear >/dev/null 2>&1 || true
 docker compose restart mautic-web mautic-cron mautic-worker >/dev/null 2>&1 || true
-echo "done — Mautic reloaded with trusted_proxies + Resend mailer."
+echo "Done. Mautic reloaded with trusted_proxies + Resend mailer."

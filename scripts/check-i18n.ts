@@ -53,7 +53,7 @@ for (const [name, dict] of Object.entries(locales)) {
   );
 
   const coverage = (((enKeys.length - missing.length) / enKeys.length) * 100).toFixed(1);
-  console.log(`\n${name.toUpperCase()}  —  ${coverage}% keys present (${enKeys.length - missing.length}/${enKeys.length})`);
+  console.log(`\n${name.toUpperCase()}, ${coverage}% keys present (${enKeys.length - missing.length}/${enKeys.length})`);
 
   if (missing.length) {
     hadMissing = true;

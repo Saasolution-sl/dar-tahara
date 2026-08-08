@@ -8,7 +8,7 @@
 -- Retries, configured in the Stripe Dashboard). This schema records that
 -- provider-driven attempt history locally and drives OUR OWN
 -- suspension/notification workflow on top of it once the configured
--- threshold is reached — it is not a second, competing retry scheduler.
+-- threshold is reached, it is not a second, competing retry scheduler.
 
 alter table public.invoices
   add column if not exists failed_attempt_count integer not null default 0 check (failed_attempt_count >= 0),
@@ -28,7 +28,7 @@ alter table public.subscriptions
   add column if not exists suspension_invoice_id uuid references public.invoices(id) on delete set null;
 
 -- Every payment attempt (Stripe-initiated retry, customer payment-link click,
--- or a future manual admin retry) is recorded here — never full card/bank
+-- or a future manual admin retry) is recorded here, never full card/bank
 -- details, only provider references and sanitized failure info.
 create table if not exists public.payment_attempts (
   id uuid primary key default gen_random_uuid(),
@@ -53,7 +53,7 @@ create table if not exists public.payment_attempts (
 create index if not exists payment_attempts_invoice_idx on public.payment_attempts(invoice_id, initiated_at desc);
 create index if not exists payment_attempts_customer_idx on public.payment_attempts(customer_id);
 
--- History log — a subscription can be suspended and restored more than once
+-- History log, a subscription can be suspended and restored more than once
 -- over its life, so this is append-only, not a single mutable state.
 create table if not exists public.subscription_suspensions (
   id uuid primary key default gen_random_uuid(),
@@ -73,7 +73,7 @@ create unique index if not exists subscription_suspensions_one_open_idx
   on public.subscription_suspensions(subscription_id) where ended_at is null;
 
 -- Secure, single-purpose, time-limited payment links. The token is the
--- authority for the 7-day window — the Stripe Checkout Session behind it is
+-- authority for the 7-day window, the Stripe Checkout Session behind it is
 -- created fresh at redemption time, not pre-created, since Stripe's own
 -- session expiry is far shorter than 7 days.
 create table if not exists public.payment_links (

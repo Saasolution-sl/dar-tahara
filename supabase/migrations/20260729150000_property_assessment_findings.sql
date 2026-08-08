@@ -1,7 +1,7 @@
 -- Assessment-findings fields for the customer portal's Properties table
 -- (expandable row: m², AC units, access type, rooms, kitchens, living
 -- spaces, outside spaces). Follows the existing declared_/verified_ pattern
--- already on this table for size/bedrooms/bathrooms — these are additional
+-- already on this table for size/bedrooms/bathrooms, these are additional
 -- staff-verified findings from the professional home assessment visit.
 
 alter table public.properties

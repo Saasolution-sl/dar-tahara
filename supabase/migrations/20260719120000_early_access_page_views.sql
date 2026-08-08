@@ -3,7 +3,7 @@
 -- Why this exists: the tracked links produced by the campaign-sources admin
 -- utility tell us what we SENT, but nothing about what arrived. Counting views
 -- closes that loop (views → submissions per source) without a single analytics
--- cookie, so the counter runs before — and independently of — any cookie
+-- cookie, so the counter runs before, and independently of, any cookie
 -- consent decision.
 --
 -- Privacy posture. A row records only:
@@ -13,7 +13,7 @@
 --   • a SALTED SHA-256 hash of the client IP, truncated to 128 bits.
 -- No raw IP, no user agent, no referrer, no cookie, no identifier that could be
 -- joined back to a person. The IP hash exists purely so "views" can be reported
--- alongside "unique-ish visitors" — coarse dedupe, not identity. It is salted
+-- alongside "unique-ish visitors", coarse dedupe, not identity. It is salted
 -- with RATE_LIMIT_SECRET (see src/lib/early-access/request-meta.ts), so the
 -- stored value is not reversible with a rainbow table of the IPv4 space.
 --
@@ -41,7 +41,7 @@ create table if not exists public.early_access_page_views (
   utm_content text,
   utm_term text,
 
-  -- Salted, truncated IP hash. Nullable — when the IP is unavailable the view is
+  -- Salted, truncated IP hash. Nullable, when the IP is unavailable the view is
   -- still counted, it just cannot contribute to the unique-visitor estimate.
   ip_hash text
 );

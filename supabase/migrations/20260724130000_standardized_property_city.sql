@@ -2,8 +2,8 @@
 --
 -- `city` keeps holding the canonical (or manual) display name for back-compat and
 -- simple reporting. The new columns add the stable taxonomy id, region, the
--- service-area status at signup time, and — for the "my city is not listed"
--- path — an unverified manual name flagged for internal review. A non-active
+-- service-area status at signup time, and, for the "my city is not listed"
+-- path, an unverified manual name flagged for internal review. A non-active
 -- service area never blocks a registration; it is recorded for launch comms.
 
 alter table public.cleaning_properties
@@ -23,4 +23,4 @@ create index if not exists cleaning_properties_city_id_idx
   where city_id is not null;
 
 comment on column public.cleaning_properties.manual_city_name is
-  'Unverified free-text city from the "not listed" path — for review, never auto-added to the canonical taxonomy.';
+  'Unverified free-text city from the "not listed" path, for review, never auto-added to the canonical taxonomy.';
