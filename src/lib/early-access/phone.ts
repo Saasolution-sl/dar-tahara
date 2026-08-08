@@ -1,8 +1,8 @@
 /**
  * Best-effort phone normalization to E.164, without pulling in a full
- * phone-parsing dependency. It handles the common cases the form produces —
+ * phone-parsing dependency. It handles the common cases the form produces,
  * a country calling code plus a national number, or a number the user already
- * typed with a leading "+" or "00" prefix — and otherwise returns null so the
+ * typed with a leading "+" or "00" prefix, and otherwise returns null so the
  * caller stores the raw value rather than a wrong "normalized" one.
  */
 
@@ -71,7 +71,7 @@ export function toE164ForCountry(
     const parsed = parsePhone(nationalNumber, country as CountryCode);
     if (parsed && parsed.isValid()) return parsed.number;
   } catch {
-    /* fall through to null — never throw at the caller */
+    /* fall through to null, never throw at the caller */
   }
   return null;
 }

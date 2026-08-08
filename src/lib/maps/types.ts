@@ -7,7 +7,7 @@
  *     separate. The confirmed pin is the operational truth (where the cleaner
  *     actually walks in); the geocoded result is only a starting point.
  *  2. Every component is optional except the country, because Google frequently
- *     omits postal codes, neighbourhoods and building numbers in Morocco —
+ *     omits postal codes, neighbourhoods and building numbers in Morocco,
  *     and a missing component must never block a registration.
  */
 
@@ -47,7 +47,7 @@ export type PropertyLocation = {
   /** Where the address search put it. */
   selectedLatitude?: number;
   selectedLongitude?: number;
-  /** Where the customer confirmed the entrance is — the operational location. */
+  /** Where the customer confirmed the entrance is, the operational location. */
   confirmedLatitude: number;
   confirmedLongitude: number;
   pinAdjustedByCustomer: boolean;

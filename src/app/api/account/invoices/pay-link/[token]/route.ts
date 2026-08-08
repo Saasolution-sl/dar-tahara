@@ -12,7 +12,7 @@ type CustomerRow = { email: string; preferred_language: Locale };
 
 /**
  * Redeems a secure, single-purpose, time-limited payment link clicked from
- * an email. Deliberately does NOT require an active portal session — the
+ * an email. Deliberately does NOT require an active portal session: the
  * token itself (32 random bytes, unguessable) is the sole authority, and
  * the URL carries nothing else identifying (no invoice id, no customer id)
  * so it can't be enumerated or correlated. A fresh Stripe Checkout Session

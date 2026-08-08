@@ -1,5 +1,5 @@
 /**
- * Refund request validation — pure logic shared by the admin route and tests.
+ * Refund request validation, pure logic shared by the admin route and tests.
  */
 export const REFUND_REASONS = ["duplicate", "fraudulent", "requested_by_customer"] as const;
 export type RefundReason = (typeof REFUND_REASONS)[number];

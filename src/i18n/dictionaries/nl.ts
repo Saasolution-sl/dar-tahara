@@ -1,13 +1,13 @@
 ﻿import type { DeepPartial } from "../types";
 import type { Dictionary } from "./en";
 
-/** Dutch — complete translation. */
+/** Dutch: complete translation. */
 const nl: DeepPartial<Dictionary> = {
   meta: {
-    title: "Dar Tahara — Premium woningverzorging & vastgoedconciërge",
+    title: "Dar Tahara: Premium woningverzorging & vastgoedconciërge",
     description:
       "Dar Tahara is een premium woningverzorging en vastgoedconciërge in Marokko. Professionele reiniging, inspecties en onderhoud, zodat u altijd thuiskomt in comfort.",
-    ogAlt: "Dar Tahara — Huis van Zuiverheid",
+    ogAlt: "Dar Tahara: Huis van Zuiverheid",
   },
   brand: {
     name: "Dar Tahara",
@@ -34,9 +34,9 @@ const nl: DeepPartial<Dictionary> = {
   },
   hero: {
     eyebrow: "Woningverzorging & vastgoedconciërge",
-    title: "Uw huis verdient meer dan schoonmaken—het verdient uitzonderlijke zorg.",
+    title: "Uw huis verdient meer dan schoonmaken: het verdient uitzonderlijke zorg.",
     subtitle:
-      "Voor huiseigenaren, expats en eigenaren van vakantiewoningen in heel Marokko. Wij reinigen, inspecteren en onderhouden uw woning met stille precisie—zodat u terugkeert naar comfort, nooit naar zorgen.",
+      "Voor huiseigenaren, expats en eigenaren van vakantiewoningen in heel Marokko. Wij reinigen, inspecteren en onderhouden uw woning met stille precisie: zodat u terugkeert naar comfort, nooit naar zorgen.",
     ctaPrimary: "Eerste woningbeoordeling boeken",
     ctaTertiary: "Meer weten",
     stat1Value: "500+",
@@ -51,7 +51,7 @@ const nl: DeepPartial<Dictionary> = {
     eyebrow: "Waarom Dar Tahara",
     title: "Gemoedsrust, tot aan uw voordeur geleverd.",
     subtitle:
-      "Dar Tahara betekent Huis van Zuiverheid. Wij zijn geen schoonmaakbedrijf—wij zijn de vertrouwde hoeders van uw huis terwijl u weg bent, en de reden dat alles moeiteloos voelt wanneer u terugkeert.",
+      "Dar Tahara betekent Huis van Zuiverheid. Wij zijn geen schoonmaakbedrijf: wij zijn de vertrouwde hoeders van uw huis terwijl u weg bent, en de reden dat alles moeiteloos voelt wanneer u terugkeert.",
     pillars: [
       {
         title: "Absoluut vertrouwen",
@@ -59,7 +59,7 @@ const nl: DeepPartial<Dictionary> = {
       },
       {
         title: "Compromisloze kwaliteit",
-        body: "Een nauwgezette standaard voor elk oppervlak, elk detail—geïnspecteerd, gefotografeerd en afgetekend.",
+        body: "Een nauwgezette standaard voor elk oppervlak, elk detail: geïnspecteerd, gefotografeerd en afgetekend.",
       },
       {
         title: "Moeiteloos voor u",
@@ -75,7 +75,7 @@ const nl: DeepPartial<Dictionary> = {
     eyebrow: "Wat wij doen",
     title: "Complete zorg voor elke hoek van uw huis.",
     subtitle:
-      "Van één vlekkeloze schoonmaakbeurt tot volledig beheer van uw vakantiewoning—kies precies wat uw woning nodig heeft.",
+      "Van één vlekkeloze schoonmaakbeurt tot volledig beheer van uw vakantiewoning: kies precies wat uw woning nodig heeft.",
     items: [
       { title: "Premium reiniging", body: "Een verfijnde reiniging van boven tot onder, afgestemd op mooie woningen en afwerkingen." },
       { title: "Terugkerende reiniging", body: "Wekelijks of tweewekelijks onderhoud dat uw huis constant onberispelijk houdt." },
@@ -139,7 +139,7 @@ const nl: DeepPartial<Dictionary> = {
     title: "Vertrouwd door mensen die hun tijd en hun huis waarderen.",
     items: [
       { title: "Mensen die in het buitenland wonen", body: "Uw Marokkaanse woning, onberispelijk en klaar tussen bezoeken door." },
-      { title: "Drukke professionals", body: "Herwin uw avonden en weekenden—wij regelen de rest." },
+      { title: "Drukke professionals", body: "Herwin uw avonden en weekenden: wij regelen de rest." },
       { title: "Gezinnen", body: "Een gezond, vlekkeloos huis zodat u zich kunt richten op wat telt." },
       { title: "Eigenaren van vakantiewoningen", body: "Kom thuis in een huis waar de vakantie al vroeg begonnen lijkt." },
       { title: "Airbnb-eigenaren", body: "Vijfsterrenwissels, aanvullen van voorraden en gastklare presentatie." },
@@ -196,7 +196,7 @@ const nl: DeepPartial<Dictionary> = {
       },
       {
         q: "Kunt u mijn huis voorbereiden voordat ik aankom?",
-        a: "Ja. Deel uw aankomstgegevens en wij zorgen voor fris linnengoed, een vlekkeloos huis, een aangename temperatuur en alle benodigdheden die u wenst—klaar op het moment dat u binnenstapt.",
+        a: "Ja. Deel uw aankomstgegevens en wij zorgen voor fris linnengoed, een vlekkeloos huis, een aangename temperatuur en alle benodigdheden die u wenst: klaar op het moment dat u binnenstapt.",
       },
       {
         q: "Welke steden bedienen jullie?",
@@ -254,7 +254,7 @@ const nl: DeepPartial<Dictionary> = {
     eyebrow: "Transparante tarieven",
     title: "Bereken uw maandelijkse zorg.",
     subtitle:
-      "Verschuif de schuifregelaar en kies een ritme. Uw schatting wordt direct bijgewerkt—geen registratie, geen verrassingen.",
+      "Verschuif de schuifregelaar en kies een ritme. Uw schatting wordt direct bijgewerkt: geen registratie, geen verrassingen.",
     sizeLabel: "Woninggrootte",
     sizeUnit: "m²",
     sizeHelp: "Voer in of schuif tussen 20 en 250 m².",
@@ -275,7 +275,7 @@ const nl: DeepPartial<Dictionary> = {
       },
     },
     durationLabel: "Abonnementsduur",
-    durationHelp: "Kies hoe lang u zich wilt binden — langere looptijden leveren meer voordeel op.",
+    durationHelp: "Kies hoe lang u zich wilt binden: langere looptijden leveren meer voordeel op.",
     duration: {
       "3_month": { name: "3 maanden", tag: "Flexibele start" },
       "6_month": { name: "6 maanden", tag: "Bespaar 5%" },
@@ -393,7 +393,7 @@ const nl: DeepPartial<Dictionary> = {
       bedrooms: "Slaapkamers",
       bathrooms: "Badkamers",
       accessNotes: "Toegangsnotities (optioneel)",
-      accessNotesPlaceholder: "Parkeren, sleutels, poortcodes — alles wat we moeten weten",
+      accessNotesPlaceholder: "Parkeren, sleutels, poortcodes: alles wat we moeten weten",
       pets: "Er zijn huisdieren in de woning",
       petDetails: "Details huisdieren",
       petDetailsPlaceholder: "Soort en aantal huisdieren",
@@ -425,7 +425,7 @@ const nl: DeepPartial<Dictionary> = {
     },
     legal: {
       accuracy:
-        "Ik bevestig dat de bovenstaande woninggegevens — grootte, slaapkamers, badkamers, huisdieren, roken en staat — juist zijn.",
+        "Ik bevestig dat de bovenstaande woninggegevens: grootte, slaapkamers, badkamers, huisdieren, roken en staat: juist zijn.",
       termsLink: "Algemene voorwaarden",
       privacyLink: "Privacybeleid",
       note: "Dar Tahara kan deze informatie tijdens de beoordeling verifiëren en het doorlopende plan aanpassen wanneer de woning wezenlijk afwijkt.",
@@ -439,14 +439,14 @@ const nl: DeepPartial<Dictionary> = {
       doorlock_internet_required: "Bevestig dat de woning een internetverbinding heeft voor het slimme deurslot.",
       legal_acceptance_required: "Bevestig de gegevens en accepteer de voorwaarden om door te gaan.",
       rate_limited: "Te veel pogingen. Probeer het over een minuut opnieuw.",
-      checkout_not_configured: "Aanvragen zijn momenteel niet beschikbaar — meld u aan voor vroege toegang.",
+      checkout_not_configured: "Aanvragen zijn momenteel niet beschikbaar: meld u aan voor vroege toegang.",
       checkout_failed: "Uw aanvraag kon niet worden ingediend. Probeer het opnieuw.",
       network: "Netwerkfout. Controleer uw verbinding en probeer het opnieuw.",
     },
   },
   consent: {
     message:
-      "We gebruiken analytische cookies om te begrijpen hoe onze site wordt gebruikt. Weigert u? Dan verandert er niets — de site werkt precies hetzelfde.",
+      "We gebruiken analytische cookies om te begrijpen hoe onze site wordt gebruikt. Weigert u? Dan verandert er niets: de site werkt precies hetzelfde.",
     accept: "Accepteren",
     decline: "Weigeren",
     privacy: "Privacybeleid",
@@ -475,7 +475,7 @@ const nl: DeepPartial<Dictionary> = {
     footerBody:
       "Laat uw e-mailadres achter en we laten het u weten zodra onze schoonmaakabonnementen beschikbaar zijn.",
     confirmedTitle: "Inschrijving bevestigd",
-    confirmedBody: "Bedankt voor uw bevestiging. Alles is in orde—we nemen contact op zodra we live gaan.",
+    confirmedBody: "Bedankt voor uw bevestiging. Alles is in orde: we nemen contact op zodra we live gaan.",
     unsubscribedTitle: "U bent uitgeschreven",
     unsubscribedBody: "U ontvangt geen lancerings-updates meer. U kunt zich altijd opnieuw aanmelden.",
     invalidTitle: "Link verlopen of ongeldig",
@@ -509,7 +509,7 @@ const nl: DeepPartial<Dictionary> = {
       title: "Missie & Visie",
       description:
         "Dar Tahara combineert professionele mensen, innovatieve technologie en transparante service om woningreiniging in Marokko opnieuw te definiëren. Ontdek onze missie, visie, waarden en beloften.",
-      ogAlt: "Dar Tahara — Missie & Visie",
+      ogAlt: "Dar Tahara: Missie & Visie",
     },
     breadcrumb: { home: "Home", current: "Missie & Visie", label: "Kruimelpad" },
     hero: {
@@ -614,11 +614,11 @@ const nl: DeepPartial<Dictionary> = {
         },
         {
           title: "Registratie bij de CNSS",
-          body: "Naarmate onze activiteiten groeien, werken wij eraan om daarvoor in aanmerking komende medewerkers te registreren bij het Marokkaanse Nationaal Socialezekerheidsfonds (Caisse Nationale de Sécurité Sociale — CNSS), overeenkomstig de wettelijke en arbeidsrechtelijke vereisten.",
+          body: "Naarmate onze activiteiten groeien, werken wij eraan om daarvoor in aanmerking komende medewerkers te registreren bij het Marokkaanse Nationaal Socialezekerheidsfonds (Caisse Nationale de Sécurité Sociale: CNSS), overeenkomstig de wettelijke en arbeidsrechtelijke vereisten.",
         },
         {
           title: "Toepasselijke AMO-zorgdekking",
-          body: "Onze uitvoeringsdoelstelling omvat de toepasselijke verplichte zorgverzekering (Assurance Maladie Obligatoire — AMO) voor daarvoor in aanmerking komende medewerkers via het CNSS-stelsel.",
+          body: "Onze uitvoeringsdoelstelling omvat de toepasselijke verplichte zorgverzekering (Assurance Maladie Obligatoire: AMO) voor daarvoor in aanmerking komende medewerkers via het CNSS-stelsel.",
         },
         {
           title: "Duidelijke arbeidsvoorwaarden",
@@ -706,7 +706,7 @@ const nl: DeepPartial<Dictionary> = {
       title: "Meer dan schoonmaken",
       body: [
         "Dar Tahara bouwt aan een nieuwe standaard voor woningreiniging in Marokko.",
-        "Door vakkundige professionals, innovatieve technologie en oprechte zorg voor onze klanten te combineren, leveren wij meer dan een schoon huis—wij leveren gemoedsrust.",
+        "Door vakkundige professionals, innovatieve technologie en oprechte zorg voor onze klanten te combineren, leveren wij meer dan een schoon huis: wij leveren gemoedsrust.",
       ],
       ctaPrimary: "Boek uw eerste woningbeoordeling",
       ctaSecondary: "Ontdek onze diensten",
@@ -714,7 +714,7 @@ const nl: DeepPartial<Dictionary> = {
     teaser: {
       eyebrow: "Waarom Dar Tahara?",
       title: "Meer dan schoonmaken.",
-      body: "Professionele mensen, innovatieve technologie en transparante service—samen herdefiniëren zij woningreiniging in Marokko.",
+      body: "Professionele mensen, innovatieve technologie en transparante service: samen herdefiniëren zij woningreiniging in Marokko.",
       cta: "Lees onze missie & visie",
       points: [
         "Technologiegedreven bedrijfsvoering",

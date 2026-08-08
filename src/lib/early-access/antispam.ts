@@ -2,7 +2,7 @@
  * Lightweight bot heuristics that complement (not replace) Turnstile.
  *
  * These are cheap server-side signals: a filled honeypot field and an
- * implausibly fast submission. They are intentionally forgiving — the goal is to
+ * implausibly fast submission. They are intentionally forgiving, the goal is to
  * catch trivial bots without ever blocking a fast, legitimate human on a slow
  * connection, so the thresholds are generous and Turnstile does the heavy lifting.
  */

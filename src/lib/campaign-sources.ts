@@ -1,11 +1,11 @@
 /**
- * Campaign-source link management (brief §28) — pure domain logic.
+ * Campaign-source link management (brief §28), pure domain logic.
  *
  * A "campaign source" maps an opaque tracking code (e.g. wa_tng_001) to a human
  * label and a set of UTM parameters, so a distributed link can be attributed
  * back to the exact WhatsApp group / partner / flyer it came from. This module
  * validates the input and builds the public trackable URL; storage + the admin
- * UI live elsewhere. Deliberately minimal — Mautic remains the marketing backend.
+ * UI live elsewhere. Deliberately minimal, Mautic remains the marketing backend.
  */
 import { site } from "@/lib/site";
 

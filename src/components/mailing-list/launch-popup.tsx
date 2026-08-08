@@ -28,7 +28,7 @@ function safeSet(storage: Storage | undefined, key: string, value: string) {
   try {
     storage?.setItem(key, value);
   } catch {
-    /* storage blocked — degrade gracefully */
+    /* storage blocked: degrade gracefully */
   }
 }
 

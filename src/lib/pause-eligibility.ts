@@ -1,11 +1,11 @@
 /**
- * Dar Tahara — subscription pause-request eligibility and validation.
+ * Dar Tahara, subscription pause-request eligibility and validation.
  *
  * Pure, no Supabase/Stripe dependency, so this stays directly unit-testable
  * (same split as pricing.ts / subscription-duration.ts). The caller (an API
  * route) is responsible for fetching the subscription row, the applicable
  * duration tier's max_pause_months, and whether a non-terminal pause request
- * already exists for this subscription, then passing all of that in here —
+ * already exists for this subscription, then passing all of that in here,
  * this module never touches the database itself.
  */
 
@@ -20,14 +20,14 @@ const REASON_CATEGORIES = new Set<PauseReasonCategory>([
   "construction", "major_renovation", "property_damage", "inaccessible", "other",
 ]);
 
-/** Non-terminal pause-request statuses — only one may exist per subscription at a time. */
+/** Non-terminal pause-request statuses, only one may exist per subscription at a time. */
 export const ACTIVE_PAUSE_REQUEST_STATUSES = ["submitted", "under_review", "approved", "active"] as const;
 
 export type SubscriptionForPauseCheck = {
   status: string;
   pauseEligible: boolean;
   pauseUsed: boolean;
-  /** The contract's current end date (already extended by any prior pause) — the requested range must fall within it. */
+  /** The contract's current end date (already extended by any prior pause), the requested range must fall within it. */
   currentContractEndDate: string | null;
 };
 
@@ -64,8 +64,8 @@ function addMonthsUTC(dateStr: string, months: number): Date {
  * current state and the applicable tier's pause entitlement. Every check the
  * spec lists explicitly: active subscription, pause-eligible tier, not
  * already used, no conflicting request, dates not before today, range not
- * exceeding the tier's max pause months, and — if the contract end date is
- * known — the requested range must fall within the active contract.
+ * exceeding the tier's max pause months, and, if the contract end date is
+ * known, the requested range must fall within the active contract.
  */
 export function validatePauseRequest(
   subscription: SubscriptionForPauseCheck,
@@ -112,7 +112,7 @@ export function validatePauseRequest(
 
 /**
  * "YYYY-MM" for every calendar month an approved pause window actually
- * covers — `startDate` inclusive, `endDate` exclusive (the end date is the
+ * covers, `startDate` inclusive, `endDate` exclusive (the end date is the
  * resume date, not itself a paused month; e.g. 2026-08-01 → 2026-10-01
  * covers August and September, resuming October 1st).
  */

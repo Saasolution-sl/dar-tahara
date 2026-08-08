@@ -9,7 +9,7 @@ import { MauticClient } from "./client";
  *
  * Returns null when Mautic is not configured, so the website degrades gracefully:
  * the lead is still saved to Supabase and marked `pending` for later reconcile
- * (brief §36 — a temporary Mautic absence must never lose a valid lead).
+ * (brief §36, a temporary Mautic absence must never lose a valid lead).
  */
 export function mauticFromEnv(): MauticClient | null {
   const baseUrl = process.env.MAUTIC_BASE_URL;

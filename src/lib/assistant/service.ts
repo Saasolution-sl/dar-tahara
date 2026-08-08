@@ -185,13 +185,13 @@ function buildActions(suggestions: AssistantSuggestion[]) {
 }
 
 const WEBSITE_CONFIRMATION_PREFIX: Record<Locale, string> = {
-  en: "Absolutely — here’s what I can confirm:",
-  nl: "Zeker — dit kan ik bevestigen:",
-  fr: "Bien sûr — voici ce que je peux confirmer :",
-  es: "Por supuesto — esto es lo que puedo confirmar:",
-  de: "Gern — Folgendes kann ich bestätigen:",
-  pt: "Claro — isto é o que posso confirmar:",
-  ar: "بالتأكيد — إليك ما يمكنني تأكيده:",
+  en: "Absolutely, here’s what I can confirm:",
+  nl: "Zeker, dit kan ik bevestigen:",
+  fr: "Bien sûr, voici ce que je peux confirmer :",
+  es: "Por supuesto, esto es lo que puedo confirmar:",
+  de: "Gern, Folgendes kann ich bestätigen:",
+  pt: "Claro, isto é o que posso confirmar:",
+  ar: "بالتأكيد, إليك ما يمكنني تأكيده:",
 };
 
 function conciseWebsiteAnswer(content: string, locale: Locale): string {

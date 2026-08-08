@@ -7,7 +7,7 @@ import { track } from "@/lib/analytics";
 /**
  * Fires `language_detected` once on a first visit (no saved NEXT_LOCALE cookie),
  * i.e. when the locale came from browser detection rather than a manual
- * choice. No PII — only the resolved locale.
+ * choice. No PII: only the resolved locale.
  */
 export function DetectionTracker({ locale }: { locale: string }) {
   React.useEffect(() => {

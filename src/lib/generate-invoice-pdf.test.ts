@@ -24,12 +24,12 @@ const baseInput: InvoicePdfInput = {
 
 /**
  * pdf-lib Flate-compresses content/font streams by default, and writes each
- * `Tj` string operand as a hex literal (`<...>`) rather than `(...)` — both
+ * `Tj` string operand as a hex literal (`<...>`) rather than `(...)`, both
  * correct, standard PDF, just not directly greppable. Decompress every
  * `stream...endstream` block that inflates cleanly, then hex-decode every
  * `<HEX> Tj` operand, so the test asserts on what the PDF actually renders.
  * The standard fonts use WinAnsiEncoding, which puts the euro sign at byte
- * 0x80 — decoding as latin1 (ISO-8859-1) would otherwise turn that single
+ * 0x80, decoding as latin1 (ISO-8859-1) would otherwise turn that single
  * byte into the unrelated control character U+0080, so it's mapped back.
  */
 function extractReadableText(pdf: Buffer): string {

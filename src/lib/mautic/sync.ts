@@ -1,8 +1,8 @@
 /**
  * Sync orchestration: turn a Supabase lead into a synchronized Mautic contact.
  *
- * Pure of I/O beyond the injected client, so the whole state machine — success,
- * transient failure → retry_scheduled, permanent failure → permanently_failed —
+ * Pure of I/O beyond the injected client, so the whole state machine, success,
+ * transient failure → retry_scheduled, permanent failure → permanently_failed,
  * is unit-tested with a fake client. The retry budget lives here; the caller
  * persists the returned status onto marketing_leads.
  */
@@ -22,7 +22,7 @@ export type SyncOptions = {
 
 /**
  * Redact anything that could be PII before it reaches a log line. We only ever
- * emit the lead id, the step, and the coarse error class — never names, emails,
+ * emit the lead id, the step, and the coarse error class, never names, emails,
  * addresses or the API response body.
  */
 function safeError(err: unknown): string {
@@ -50,8 +50,8 @@ export async function syncLeadToMautic(
     return failure(err, "upsert", priorAttempts);
   }
 
-  // Step 2: tags. A failure here is non-fatal to the contact existing — the
-  // contact is already saved — but we still surface it so it can be retried.
+  // Step 2: tags. A failure here is non-fatal to the contact existing, the
+  // contact is already saved, but we still surface it so it can be retried.
   try {
     await client.addTags(contactId, tagsForLead(lead));
   } catch (err) {

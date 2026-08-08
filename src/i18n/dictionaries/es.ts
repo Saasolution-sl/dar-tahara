@@ -1,13 +1,13 @@
 ﻿import type { DeepPartial } from "../types";
 import type { Dictionary } from "./en";
 
-/** Spanish — complete translation. */
+/** Spanish: complete translation. */
 const es: DeepPartial<Dictionary> = {
   meta: {
-    title: "Dar Tahara — Cuidado del hogar y conserjería de propiedades premium",
+    title: "Dar Tahara: Cuidado del hogar y conserjería de propiedades premium",
     description:
       "Dar Tahara es un servicio premium de cuidado del hogar y conserjería de propiedades en Marruecos. Limpieza profesional, inspecciones y mantenimiento para llegar siempre a un hogar de confort.",
-    ogAlt: "Dar Tahara — Casa de la Pureza",
+    ogAlt: "Dar Tahara: Casa de la Pureza",
   },
   brand: {
     name: "Dar Tahara",
@@ -275,7 +275,7 @@ const es: DeepPartial<Dictionary> = {
       },
     },
     durationLabel: "Duración de la suscripción",
-    durationHelp: "Elige cuánto tiempo quieres comprometerte — los plazos más largos ahorran más.",
+    durationHelp: "Elige cuánto tiempo quieres comprometerte: los plazos más largos ahorran más.",
     duration: {
       "3_month": { name: "3 meses", tag: "Inicio flexible" },
       "6_month": { name: "6 meses", tag: "Ahorra 5 %" },
@@ -393,7 +393,7 @@ const es: DeepPartial<Dictionary> = {
       bedrooms: "Dormitorios",
       bathrooms: "Baños",
       accessNotes: "Notas de acceso (opcional)",
-      accessNotesPlaceholder: "Aparcamiento, llaves, códigos de puerta — cualquier cosa que debamos saber",
+      accessNotesPlaceholder: "Aparcamiento, llaves, códigos de puerta: cualquier cosa que debamos saber",
       pets: "Hay mascotas en la vivienda",
       petDetails: "Detalles de mascotas",
       petDetailsPlaceholder: "Tipo y número de mascotas",
@@ -425,7 +425,7 @@ const es: DeepPartial<Dictionary> = {
     },
     legal: {
       accuracy:
-        "Confirmo que la información anterior — tamaño, dormitorios, baños, mascotas, tabaco y estado — es exacta.",
+        "Confirmo que la información anterior: tamaño, dormitorios, baños, mascotas, tabaco y estado: es exacta.",
       termsLink: "Términos y condiciones",
       privacyLink: "Política de privacidad",
       note: "Dar Tahara puede verificar esta información durante la evaluación y ajustar el plan continuo cuando la propiedad difiera de forma significativa.",
@@ -439,7 +439,7 @@ const es: DeepPartial<Dictionary> = {
       doorlock_internet_required: "Confirme que la vivienda tiene conexión a internet para la cerradura inteligente.",
       legal_acceptance_required: "Confirma los datos y acepta los términos para continuar.",
       rate_limited: "Demasiados intentos. Inténtalo de nuevo en un minuto.",
-      checkout_not_configured: "Las solicitudes no están disponibles — únase al acceso anticipado.",
+      checkout_not_configured: "Las solicitudes no están disponibles: únase al acceso anticipado.",
       checkout_failed: "No pudimos enviar su solicitud. Inténtelo de nuevo.",
       network: "Error de red. Comprueba tu conexión e inténtalo de nuevo.",
     },
@@ -509,7 +509,7 @@ const es: DeepPartial<Dictionary> = {
       title: "Misión y Visión",
       description:
         "Dar Tahara combina profesionales cualificados, tecnología innovadora y un servicio transparente para redefinir la limpieza residencial en Marruecos. Descubre nuestra misión, visión, valores y compromisos.",
-      ogAlt: "Dar Tahara — Misión y Visión",
+      ogAlt: "Dar Tahara: Misión y Visión",
     },
     breadcrumb: { home: "Inicio", current: "Misión y Visión", label: "Ruta de navegación" },
     hero: {
@@ -615,11 +615,11 @@ const es: DeepPartial<Dictionary> = {
         },
         {
           title: "Registro en la CNSS",
-          body: "A medida que crecen nuestras operaciones, trabajamos para que los empleados que cumplan los requisitos se registren en el Fondo Nacional de Seguridad Social de Marruecos (Caisse Nationale de Sécurité Sociale — CNSS), conforme a los requisitos legales y laborales aplicables.",
+          body: "A medida que crecen nuestras operaciones, trabajamos para que los empleados que cumplan los requisitos se registren en el Fondo Nacional de Seguridad Social de Marruecos (Caisse Nationale de Sécurité Sociale: CNSS), conforme a los requisitos legales y laborales aplicables.",
         },
         {
           title: "Cobertura AMO aplicable",
-          body: "Nuestro objetivo de implantación incluye la cobertura sanitaria aplicable del Seguro Médico Obligatorio (Assurance Maladie Obligatoire — AMO) para los empleados que cumplan los requisitos a través del sistema de la CNSS.",
+          body: "Nuestro objetivo de implantación incluye la cobertura sanitaria aplicable del Seguro Médico Obligatorio (Assurance Maladie Obligatoire: AMO) para los empleados que cumplan los requisitos a través del sistema de la CNSS.",
         },
         {
           title: "Condiciones laborales claras",

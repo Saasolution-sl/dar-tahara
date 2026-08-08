@@ -54,7 +54,7 @@ test("no invoices produces no statements", () => {
 
 test("a real invoice always shows, even if the subscription's own createdAt is (implausibly) after the invoice's month", () => {
   // Regression: unit C's createdAt (2026-07) is after June, but it has a real
-  // June invoice — the invoice is evidence it existed, so it must still show
+  // June invoice, the invoice is evidence it existed, so it must still show
   // rather than being silently dropped by the "didn't exist yet" filter.
   const invoices: MonthlyInvoiceLine[] = [
     { subscriptionId: "c", periodStart: "2026-06-01T00:00:00Z", amountCents: 8000, currency: "eur" },
@@ -72,9 +72,9 @@ test("discount breakdown reverses the frequency discount and reads the duration 
     // biweekly = 15% frequency discount. Pre-duration (post-frequency) price 15_300,
     // actually charged 13_005 (12-month tier, 15% duration discount off the 3-month anchor).
     { subscriptionId: "a", propertyLabel: "Unit A", frequency: "biweekly", onHold: false, amountCents: 13_005, originalPriceCents: 15_300 },
-    // monthly = 0% frequency discount, no duration ever selected (legacy) — no discount recoverable.
+    // monthly = 0% frequency discount, no duration ever selected (legacy), no discount recoverable.
     { subscriptionId: "b", propertyLabel: "Unit B", frequency: "monthly", onHold: false, amountCents: 9_000, originalPriceCents: null },
-    // on hold — excluded entirely from the breakdown.
+    // on hold, excluded entirely from the breakdown.
     { subscriptionId: "c", propertyLabel: "Unit C", frequency: "weekly", onHold: true, amountCents: 0, originalPriceCents: 38_400 },
   ];
   const breakdown = buildStatementDiscountBreakdown(lines);

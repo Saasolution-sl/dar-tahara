@@ -77,7 +77,7 @@ export default async function EarlyAccessPage({
 
   // Cookieless view counter. The request is inspected during render (`headers()`
   // is not callable inside `after`), then the write is deferred so the visitor
-  // waits on nothing. Only reached once the locale is valid — a 404 is not a view.
+  // waits on nothing. Only reached once the locale is valid: a 404 is not a view.
   const query = await searchParams;
   after(await prepareEarlyAccessPageView(typedLocale, query));
   const copy = getEarlyAccessCopy(typedLocale);

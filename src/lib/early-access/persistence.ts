@@ -84,7 +84,7 @@ export async function persistSubmission(
     await serviceInsert("property_access_preferences", buildAccessRow(propertyId, p));
   }
 
-  // Consent is append-only (audit trail) — never deleted on resubmit.
+  // Consent is append-only (audit trail), never deleted on resubmit.
   await serviceInsert("lead_consents", buildConsentRows(leadId, p, {
     policyVersion: ctx.policyVersion,
     locale: p.locale,

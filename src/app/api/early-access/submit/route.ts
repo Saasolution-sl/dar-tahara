@@ -101,7 +101,7 @@ export async function POST(req: NextRequest) {
     console.error("[early-access] verification email step failed");
   }
 
-  // Mautic sync — fail-open: on any error the lead stays queued for the
+  // Mautic sync: fail-open: on any error the lead stays queued for the
   // reconation job (its mautic_sync_status was written by persistSubmission).
   try {
     await syncLeadAfterSubmit(leadId, body, { emailVerified: false });

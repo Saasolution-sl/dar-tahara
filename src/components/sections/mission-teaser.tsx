@@ -10,7 +10,7 @@ import { Reveal } from "@/components/motion/reveal";
 import { buttonVariants } from "@/components/ui/button";
 
 /**
- * Homepage teaser for the Mission & Vision page — a short brand-story band
+ * Homepage teaser for the Mission & Vision page: a short brand-story band
  * that strengthens internal linking without competing with the Why section.
  */
 export function MissionTeaser({ locale, dict }: { locale: Locale; dict: Dictionary }) {

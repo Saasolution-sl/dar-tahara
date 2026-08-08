@@ -1,5 +1,5 @@
 /**
- * Shared types for the Mautic integration. No runtime code, no secrets — safe to
+ * Shared types for the Mautic integration. No runtime code, no secrets, safe to
  * import from anywhere (including tests).
  */
 
@@ -44,7 +44,7 @@ export type LeadForSync = {
   accessMethod?: string | null;
   hasDigitalLock?: boolean | null;
 
-  // Smart-lock upsell segmentation (interest only — never a paid order, and no
+  // Smart-lock upsell segmentation (interest only, never a paid order, and no
   // price/coordinates sent to Mautic).
   smartLockInterest?: string | null;
   smartLockExistingBrand?: string | null;
@@ -64,7 +64,7 @@ export type LeadForSync = {
   lastUtmContent?: string | null;
 };
 
-/** Mautic contact payload — a flat map of field alias → value. */
+/** Mautic contact payload, a flat map of field alias → value. */
 export type MauticContactFields = Record<string, string | number | boolean>;
 
 export type MauticContact = {

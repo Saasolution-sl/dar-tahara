@@ -6,7 +6,7 @@ type LeadRow = { id: string; referral_code: string | null; referred_by_code: str
 
 /**
  * Credit a verified referral to the referrer, once. Called when a REFERRED lead
- * verifies their email (a referral only counts after verification — brief §29).
+ * verifies their email (a referral only counts after verification, brief §29).
  * Guards against self-referral and loops, and is idempotent via the unique index
  * on referral_events(referrer, referred, event_type).
  */
@@ -41,7 +41,7 @@ export async function creditReferralIfEligible(args: {
       status: "counted",
     });
   } catch (e) {
-    // A duplicate (already counted) surfaces as a 409-style conflict — treat as
+    // A duplicate (already counted) surfaces as a 409-style conflict, treat as
     // success-without-increment rather than an error.
     if (String(e).includes("409") || String(e).toLowerCase().includes("duplicate")) {
       return { credited: false, reason: "already_counted" };

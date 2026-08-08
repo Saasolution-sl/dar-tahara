@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 interface RevealProps {
   children: React.ReactNode;
   className?: string;
-  /** Stagger index — multiplies the base delay. */
+  /** Stagger index: multiplies the base delay. */
   index?: number;
   delay?: number;
   y?: number;

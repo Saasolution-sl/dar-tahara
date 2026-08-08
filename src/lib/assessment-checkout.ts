@@ -10,7 +10,7 @@ import { createAdminClient } from "@/lib/supabase/admin";
 /**
  * Shared assessment-checkout logic. Lives in a lib module (not a route file)
  * because Next.js 15 forbids route files from exporting anything other than HTTP
- * handlers + config — both /api/assessment/checkout and /api/assessment/visit
+ * handlers + config, both /api/assessment/checkout and /api/assessment/visit
  * call this.
  */
 

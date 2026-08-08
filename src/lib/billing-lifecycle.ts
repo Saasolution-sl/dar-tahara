@@ -1,14 +1,14 @@
 /**
- * Dar Tahara — failed-payment recovery / service-suspension pure logic.
+ * Dar Tahara, failed-payment recovery / service-suspension pure logic.
  *
  * Pure, no Supabase/Stripe dependency, so this stays directly unit-testable
  * (same split as pricing.ts / subscription-duration.ts / pause-eligibility.ts).
  * The caller (the Stripe webhook route, the collection job) is responsible
- * for all DB/Stripe I/O — this module only decides what should happen given
+ * for all DB/Stripe I/O, this module only decides what should happen given
  * known state.
  *
  * Retry timing itself is Stripe's own (Smart Retries, configured in the
- * Stripe Dashboard) — this module reacts to Stripe's own `attempt_count` on
+ * Stripe Dashboard), this module reacts to Stripe's own `attempt_count` on
  * each `invoice.payment_failed` event; it never schedules a retry itself.
  */
 
@@ -27,12 +27,12 @@ export function generatePaymentLinkToken(): string {
   return randomBytes(32).toString("base64url");
 }
 
-/** `now` plus a whole number of days — the shared basis for every link/settlement expiry in this module. */
+/** `now` plus a whole number of days, the shared basis for every link/settlement expiry in this module. */
 export function computeExpiryInDays(now: Date, days: number): Date {
   return new Date(now.getTime() + days * 24 * 60 * 60 * 1000);
 }
 
-/** `now` plus a whole number of hours — used for the shorter cancellation-preview quote window. */
+/** `now` plus a whole number of hours, used for the shorter cancellation-preview quote window. */
 export function computeExpiryInHours(now: Date, hours: number): Date {
   return new Date(now.getTime() + hours * 60 * 60 * 1000);
 }
@@ -55,7 +55,7 @@ export function nextCollectionStageAfterExpiry(current: CollectionStage): Collec
 
 /**
  * Stripe's own `attempt_count` on the invoice object is the source of truth
- * for how many times a charge has been tried — this reflects it directly
+ * for how many times a charge has been tried, this reflects it directly
  * rather than keeping a second, independently-incremented counter that could
  * drift out of sync with what Stripe actually did.
  */

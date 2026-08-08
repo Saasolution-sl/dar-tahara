@@ -13,7 +13,7 @@ import {
 import { cn } from "@/lib/utils";
 
 /**
- * Flag image. Decorative — the country name is provided separately for screen
+ * Flag image. Decorative: the country name is provided separately for screen
  * readers, so this carries an empty alt. A plain <img> is used rather than
  * next/image: these are 20px static PNGs on a third-party host, where the
  * optimisation round-trip would cost more than it saves. If the request is
@@ -53,7 +53,7 @@ export type PhoneCountryCopy = {
  * glyph alone is not announceable) and is still searchable.
  *
  * Search matches country name, calling code and ISO code. The flag is
- * decorative — the value handed upward is the ISO alpha-2 code.
+ * decorative: the value handed upward is the ISO alpha-2 code.
  */
 export function PhoneCountrySelect({
   id,

@@ -1,5 +1,5 @@
 /**
- * Mailing-list domain logic — pure, framework-agnostic helpers shared by the
+ * Mailing-list domain logic, pure, framework-agnostic helpers shared by the
  * API route, the tests and (where relevant) the client. No secrets here.
  */
 
@@ -16,7 +16,7 @@ export function isSignupSource(value: unknown): value is SignupSource {
  */
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
-/** Trim surrounding whitespace and lowercase — the canonical stored form. */
+/** Trim surrounding whitespace and lowercase, the canonical stored form. */
 export function normalizeEmail(raw: string): string {
   return raw.trim().toLowerCase();
 }
@@ -70,7 +70,7 @@ export function validateSubscribe(body: unknown): SubscribeValidation {
 }
 
 /**
- * Minimal in-memory fixed-window rate limiter. Per serverless instance only —
+ * Minimal in-memory fixed-window rate limiter. Per serverless instance only,
  * a good first defence; pair with Turnstile and, for scale, an edge KV store.
  */
 const RATE_LIMIT = { windowMs: 60_000, max: 5 };

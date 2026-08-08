@@ -16,9 +16,9 @@ declare global {
  * Google Analytics 4 with Consent Mode v2.
  *
  * - Nothing is loaded unless NEXT_PUBLIC_GA_MEASUREMENT_ID is set AND the
- *   visitor has accepted analytics — so no GA cookies/requests pre-consent.
+ *   visitor has accepted analytics: so no GA cookies/requests pre-consent.
  * - Consent defaults are denied; only `analytics_storage` is upgraded on accept
- *   (advertising signals stay denied — we do not run ads).
+ *   (advertising signals stay denied: we do not run ads).
  * - The App Router does not trigger page loads on client navigation, so
  *   subsequent route changes send an explicit `page_view` (the first one is sent
  *   by `config` itself, so it is never duplicated).

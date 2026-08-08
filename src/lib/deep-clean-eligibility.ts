@@ -1,5 +1,5 @@
 /**
- * Dar Tahara — deep-clean request eligibility and validation.
+ * Dar Tahara, deep-clean request eligibility and validation.
  *
  * Pure, no Supabase/Stripe dependency (same split as pause-eligibility.ts).
  * The caller fetches the subscription row, its duration tier, the property
@@ -11,7 +11,7 @@ export const ACTIVE_DEEP_CLEAN_REQUEST_STATUSES = ["submitted", "under_review", 
 
 export type SubscriptionForDeepCleanCheck = {
   status: string;
-  /** Whether the subscription's current contract tier includes a complimentary deep clean — read from `DurationTier.includesFreeDeepClean`, not a hardcoded term check. */
+  /** Whether the subscription's current contract tier includes a complimentary deep clean, read from `DurationTier.includesFreeDeepClean`, not a hardcoded term check. */
   contractIncludesFreeDeepClean: boolean;
   deepCleanFreeUsed: boolean;
 };

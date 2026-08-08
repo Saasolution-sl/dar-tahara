@@ -27,7 +27,7 @@ export function PauseRequestsAdminClient({copy}:{copy:AdminCopy}){const c=copy.p
         <td className="p-4"><p className="font-medium">{row.customers.full_name}</p><p className="text-xs text-muted-foreground">{row.customers.email}</p></td>
         <td className="p-4"><p>{row.reason_category.replaceAll('_',' ')}</p><p className="max-w-xs text-xs text-muted-foreground">{row.reason_description}</p></td>
         <td className="p-4">{row.requested_start_date} → {row.requested_end_date}</td>
-        <td className="p-4">{row.approved_start_date?`${row.approved_start_date} → ${row.approved_end_date}`:'—'}</td>
+        <td className="p-4">{row.approved_start_date?`${row.approved_start_date} → ${row.approved_end_date}`:'Not available'}</td>
         <td className="p-4"><span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">{labels[row.status]||row.status}</span></td>
         <td className="p-4"><div className="flex flex-wrap gap-2">
           {row.status==='submitted'?<button disabled={busy===row.id} onClick={()=>action(row,'review')} className={buttonVariants({variant:'outline',size:'sm'})}>{c.actions.startReview}</button>:null}

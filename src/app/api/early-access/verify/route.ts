@@ -10,7 +10,7 @@ export const runtime = "nodejs";
  * Email-verification link target (GET, from the email button). Validates the
  * token, marks the lead verified, generates its referral code, credits any
  * referrer, re-syncs Mautic and redirects to the localised success page. Errors
- * redirect to the success page with a status flag rather than leaking detail —
+ * redirect to the success page with a status flag rather than leaking detail :
  * and we never reveal whether an unrelated account exists.
  */
 export async function GET(req: NextRequest) {

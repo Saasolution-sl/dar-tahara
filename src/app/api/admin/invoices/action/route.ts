@@ -22,7 +22,7 @@ function siteRoot(): string {
 }
 
 /**
- * Financial notice actions — administrator only (matches this page's
+ * Financial notice actions: administrator only (matches this page's
  * historical `requireRole(['administrator'])` restriction, stricter than
  * the `staff` read access the listing route allows). Both actions are safe
  * to click repeatedly: `resend_notice` reuses a still-active link rather

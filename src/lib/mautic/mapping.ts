@@ -1,6 +1,6 @@
 /**
  * Pure mapping from a Supabase lead to Mautic contact fields, tags and segment
- * selection. No I/O, no secrets, no env — everything here is deterministic and
+ * selection. No I/O, no secrets, no env, everything here is deterministic and
  * unit-tested. The field aliases MUST match the custom fields provisioned in
  * Mautic (deploy/mautic/provision.sh §1); a typo here silently drops a value.
  */
@@ -28,7 +28,7 @@ function put(
 export function mapLeadToMauticFields(lead: LeadForSync): MauticContactFields {
   const f: MauticContactFields = {};
 
-  // Core identity — Mautic's built-in aliases.
+  // Core identity, Mautic's built-in aliases.
   put(f, "firstname", lead.firstName);
   put(f, "lastname", lead.lastName);
   put(f, "email", lead.normalizedEmail || lead.email);
@@ -65,7 +65,7 @@ export function mapLeadToMauticFields(lead: LeadForSync): MauticContactFields {
     f["has_digital_lock"] = lead.hasDigitalLock;
   }
 
-  // Smart-lock upsell — interest for segmentation only. Never the price and never
+  // Smart-lock upsell, interest for segmentation only. Never the price and never
   // a "paid" flag: purchase interest is not an order.
   // NB: Mautic truncates field aliases at 25 chars, so the compatibility field is
   // `smart_lock_compatibility`, NOT `..._status`. Sending the long form silently
@@ -87,7 +87,7 @@ export function mapLeadToMauticFields(lead: LeadForSync): MauticContactFields {
     f["verified_referral_count"] = lead.verifiedReferralCount;
   }
 
-  // Attribution — first-touch (only when set) and last-touch (always current).
+  // Attribution, first-touch (only when set) and last-touch (always current).
   put(f, "first_source_code", lead.firstSourceCode ?? undefined);
   put(f, "last_source_code", lead.lastSourceCode ?? undefined);
   put(f, "first_utm_source", lead.firstUtmSource ?? undefined);

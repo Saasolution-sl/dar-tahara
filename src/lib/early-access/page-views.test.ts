@@ -73,7 +73,7 @@ test("indexStatsBySource keys tagged sources and separates untagged traffic", ()
   assert.equal(bySource.get("ig_bio")?.unique_visitors, 12);
   assert.equal(bySource.has(""), false);
   assert.equal(untagged?.views, 7);
-  // Untagged traffic counts toward the total — staff should see the real number.
+  // Untagged traffic counts toward the total, staff should see the real number.
   assert.equal(totalViews, 59);
 });
 

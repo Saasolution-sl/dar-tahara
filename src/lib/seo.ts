@@ -117,7 +117,7 @@ export function buildLocalizedMetadata({
       images: [
         {
           url: socialImage,
-          alt: imageAlt || `${site.siteName} — ${title}`,
+          alt: imageAlt || `${site.siteName}, ${title}`,
           width: 1200,
           height: 630,
         },
@@ -127,7 +127,7 @@ export function buildLocalizedMetadata({
       card: "summary_large_image",
       title: socialTitle,
       description,
-      images: [{ url: socialImage, alt: imageAlt || `${site.siteName} — ${title}` }],
+      images: [{ url: socialImage, alt: imageAlt || `${site.siteName}, ${title}` }],
     },
     robots: index ? indexableRobots() : noIndexMetadata().robots,
     verification: verificationMetadata(),

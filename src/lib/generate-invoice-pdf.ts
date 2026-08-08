@@ -1,6 +1,6 @@
 /**
  * Branded PDF generator for the combined monthly statement (and reusable for
- * any future generated invoice-like document). Built on `pdf-lib` — pure JS,
+ * any future generated invoice-like document). Built on `pdf-lib`, pure JS,
  * no native dependencies, safe to run inside a Next.js API route.
  *
  * Layout matches the owner-supplied invoice template: a thin accent bar top
@@ -167,7 +167,7 @@ export async function generateInvoicePdf(input: InvoicePdfInput): Promise<Buffer
   }
   y -= 18;
 
-  // Payment details — enough for a bookkeeper to match this statement to a real bank/card transaction
+  // Payment details, enough for a bookkeeper to match this statement to a real bank/card transaction
   if (input.payment && (input.payment.method || input.payment.descriptor || input.payment.references?.length)) {
     page.drawText("PAYMENT DETAILS", { x: MARGIN_X, y, size: 9, font: sansBold, color: MUTED });
     y -= 16;

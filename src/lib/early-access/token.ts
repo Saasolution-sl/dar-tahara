@@ -25,7 +25,7 @@ export function generateVerificationToken(
   return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-/** SHA-256 hex of the token — this is what is stored and compared. */
+/** SHA-256 hex of the token, this is what is stored and compared. */
 export async function hashToken(token: string): Promise<string> {
   const data = new TextEncoder().encode(token);
   const digest = await globalThis.crypto.subtle.digest("SHA-256", data);

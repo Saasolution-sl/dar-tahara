@@ -5,7 +5,7 @@ import { DEFAULT_DURATION_TIERS, type DurationCode, type DurationTier } from "@/
 
 /**
  * DB-backed admin configuration for subscription-duration tiers, with the
- * hardcoded defaults as a fallback — same shape as feature-flags.ts's
+ * hardcoded defaults as a fallback, same shape as feature-flags.ts's
  * getFeatureFlags(). Not unit tested for the same reason getFeatureFlags()
  * isn't: it's a thin DB round trip with no logic of its own (the actual
  * pricing math lives in subscription-duration.ts, which is tested).

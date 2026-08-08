@@ -52,17 +52,17 @@ test("findAnchorTier picks the tier with the largest discount percentage", () =>
 });
 
 // Owner-confirmed real model (2026-07-30, second correction): the anchor
-// (12 months, the largest discount) is the best REAL price on offer — its
+// (12 months, the largest discount) is the best REAL price on offer, its
 // final price equals the plain frequency-adjusted price exactly, and every
 // shorter tier genuinely costs more (reverse-derived via the tier-ratio
 // formula), matching the original 2026-07-28 real pricing. What changed from
 // that original model is DISCLOSURE only: `priceBeforeDurationDiscountCents`
-// is no longer "the anchor's own raw input" — it's reverse-derived from EACH
+// is no longer "the anchor's own raw input", it's reverse-derived from EACH
 // tier's own final price using that tier's own percentage
 // (`tierPrice / (1 − tier%)`), which is mathematically the SAME number
 // (the 0%-discount / no-commitment price) regardless of which tier you ask.
-// That makes `durationDiscountAmountCents` always ≥ 0 — a real, positive
-// discount at every tier including the anchor itself — never negative, so
+// That makes `durationDiscountAmountCents` always ≥ 0, a real, positive
+// discount at every tier including the anchor itself, never negative, so
 // the "surcharge" framing/copy is gone for good without changing any real
 // charged price. See subscription-duration.ts's doc comment.
 
@@ -93,7 +93,7 @@ test("owner-confirmed real example: monthly frequency (no frequency discount)", 
   assert.equal(applyDurationDiscount(p, tier(3), DEFAULT_DURATION_TIERS).discountedMonthlyCents, 10_588); // round(9000*1.00/0.85)
 });
 
-test("owner-confirmed real example: biweekly frequency (15% frequency discount already applied) — matches 211.75 x 0.85 x 0.85 = 153 worked example", () => {
+test("owner-confirmed real example: biweekly frequency (15% frequency discount already applied), matches 211.75 x 0.85 x 0.85 = 153 worked example", () => {
   const p = 15_300; // €153.00, already includes the 15% biweekly frequency discount
   const r12 = applyDurationDiscount(p, tier(12), DEFAULT_DURATION_TIERS);
   assert.equal(r12.discountedMonthlyCents, 15_300); // the €153 target, unchanged
@@ -116,7 +116,7 @@ test("each shorter tier costs strictly more than the next-longer tier", () => {
   assert.ok(price9 > price12);
 });
 
-test("durationDiscountAmountCents is always >= 0 — zero only at the 0%-discount tier, positive (a real discount) at every other tier including the anchor", () => {
+test("durationDiscountAmountCents is always >= 0, zero only at the 0%-discount tier, positive (a real discount) at every other tier including the anchor", () => {
   const p = 15_300;
   assert.equal(applyDurationDiscount(p, tier(3), DEFAULT_DURATION_TIERS).durationDiscountAmountCents, 0);
   assert.ok(applyDurationDiscount(p, tier(6), DEFAULT_DURATION_TIERS).durationDiscountAmountCents > 0);
@@ -124,7 +124,7 @@ test("durationDiscountAmountCents is always >= 0 — zero only at the 0%-discoun
   assert.ok(applyDurationDiscount(p, tier(12), DEFAULT_DURATION_TIERS).durationDiscountAmountCents > 0);
 });
 
-test("the 3-month price is exactly 15% more than the 12-month (anchor) price — matches 'save 15%' marketing copy", () => {
+test("the 3-month price is exactly 15% more than the 12-month (anchor) price, matches 'save 15%' marketing copy", () => {
   const p = 15_300;
   const price3 = applyDurationDiscount(p, tier(3), DEFAULT_DURATION_TIERS).discountedMonthlyCents;
   const price12 = applyDurationDiscount(p, tier(12), DEFAULT_DURATION_TIERS).discountedMonthlyCents;

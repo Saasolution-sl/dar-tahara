@@ -30,7 +30,7 @@ type InvoiceRow = {
   invoice_type: "standard" | "early_termination_settlement" | "prepaid_renewal";
 };
 
-/** No logo file exists in the repo yet — read it if/when one is added, without requiring a code change. */
+/** No logo file exists in the repo yet: read it if/when one is added, without requiring a code change. */
 async function readLogoBytes(): Promise<Uint8Array | undefined> {
   try {
     return await readFile(path.join(process.cwd(), "public", "logo.png"));
@@ -117,9 +117,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ mont
     items: statement.lines.map((line) => {
       const breakdown = lineBreakdowns.get(line.subscriptionId);
       return {
-        description: `${line.propertyLabel}${line.onHold ? " (on hold)" : ` — ${line.frequency}`}`,
+        description: `${line.propertyLabel}${line.onHold ? " (on hold)" : `: ${line.frequency}`}`,
         qty: 1,
-        // The list price (Subtotal), before the frequency/duration discounts broken out below — not what was actually charged.
+        // The list price (Subtotal), before the frequency/duration discounts broken out below: not what was actually charged.
         rate: breakdown ? breakdown.trueListPriceCents / 100 : line.amountCents / 100,
       };
     }),

@@ -345,7 +345,7 @@ async function activateSubscriptionAfterFirstPayment(
  * (Stripe's own subscription billing, or our side-channel payment-link
  * checkout). Invalidates any other still-active payment links, clears the
  * collection stage, and restores the subscription ONLY when no other
- * open/overdue invoice remains for it — a customer can have more than one
+ * open/overdue invoice remains for it: a customer can have more than one
  * unpaid invoice, and paying one must never silently reactivate services
  * while another is still owed.
  */
@@ -406,7 +406,7 @@ type SuspensionMailRow = {
 /**
  * Stripe's own `attempt_count` on the invoice object is the source of
  * truth for how many times a subscription charge has been tried (Smart
- * Retries, timed by Stripe, not by this app) — this reacts to that count
+ * Retries, timed by Stripe, not by this app): this reacts to that count
  * rather than running a second, competing retry scheduler. Once the
  * configured threshold is reached, suspends the subscription and sends the
  * first dunning email with a fresh 7-day payment link. Fully idempotent:
@@ -425,7 +425,7 @@ async function invoicePaymentFailed(invoice: InvoiceObject) {
     `invoices?stripe_invoice_id=eq.${encodeURIComponent(invoice.id)}&select=id,customer_id,subscription_id,invoice_number,amount_due_cents,amount_paid_cents,failed_attempt_count,collection_stage,customers(email,full_name,preferred_language)&limit=1`,
   );
   const row = rows[0];
-  if (!row) return; // Not yet synced locally (no invoice.paid/invoice.created event seen for it yet) — nothing to attach the attempt to.
+  if (!row) return; // Not yet synced locally (no invoice.paid/invoice.created event seen for it yet): nothing to attach the attempt to.
 
   const providerReference = `${invoice.id}_attempt_${attemptCount}`;
   await serviceInsertIgnoreDuplicates("payment_attempts", {
@@ -533,12 +533,12 @@ async function settlementInvoicePaid(invoiceId: string, subscriptionId: string |
 /**
  * A customer paying through one of our secure payment links pays via a
  * fresh, standalone one-off Checkout Session (see stripe.ts), not through
- * Stripe's own invoice-payment flow — so this is a SEPARATE event
+ * Stripe's own invoice-payment flow: so this is a SEPARATE event
  * (checkout.session.completed/async_payment_succeeded tagged
  * kind=invoice_payment_link) from invoice.paid, not a variant of it. Known
  * trade-off, flagged plainly rather than hidden: Stripe's own invoice
  * object is not marked paid by this path (it has no knowledge of the
- * side-channel charge) — our own `invoices` row is the paid source of
+ * side-channel charge): our own `invoices` row is the paid source of
  * truth for the customer/admin-facing state, which is what this app
  * actually reads everywhere.
  */

@@ -1,5 +1,5 @@
 /**
- * Language resolution — the single source of truth for "which locale should a
+ * Language resolution, the single source of truth for "which locale should a
  * visitor see", used by the middleware. Pure and unit-tested.
  *
  * Priority order:

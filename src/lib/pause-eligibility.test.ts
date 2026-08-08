@@ -100,7 +100,7 @@ test("a null contract end date (unknown) does not block an otherwise valid reque
   assert.ok(result.ok);
 });
 
-test("an unknown reason category is rejected — never trust a client-sent free-text category", () => {
+test("an unknown reason category is rejected, never trust a client-sent free-text category", () => {
   const result = validatePauseRequest(eligibleSub(), false, 2, validBody({ reasonCategory: "vacation" }), TODAY);
   assert.deepEqual(result, { ok: false, error: "invalid_reason_category" });
 });

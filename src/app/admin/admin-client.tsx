@@ -187,7 +187,7 @@ export function AdminClient({ copy }: { copy: AdminCopy }) {
                 <td className="p-4">
                   {row.submitted_at?.slice(0, 10) ||
                     row.preferred_date ||
-                    "—"}
+                    "Not available"}
                 </td>
                 <td className="p-4">
                   <span className="rounded-full bg-primary/10 px-2.5 py-1 text-xs font-semibold text-primary">

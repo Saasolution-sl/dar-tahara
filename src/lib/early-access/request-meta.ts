@@ -1,7 +1,7 @@
 import "server-only";
 
 /**
- * Privacy-safe request metadata. We never store a raw IP against a lead — only a
+ * Privacy-safe request metadata. We never store a raw IP against a lead, only a
  * salted hash, which is enough to spot abuse patterns (many signups from one
  * source) without retaining personal data. The salt comes from RATE_LIMIT_SECRET
  * so hashes are not reversible via a rainbow table of IPs.

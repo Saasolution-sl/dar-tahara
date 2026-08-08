@@ -184,7 +184,7 @@ const en: PortalCopy = {
     suspensionTitle: "Services temporarily suspended",
     suspensionBody: "Invoice {reference} for {amount} is unpaid. Pay by {date} to restore your services.",
     payNow: "Pay now",
-    suspensionNoLinkNote: "A new payment link is being generated — please check back shortly, or contact support for assistance.",
+    suspensionNoLinkNote: "A new payment link is being generated. Please check back shortly or contact support for assistance.",
     finalSettlementBadge: "Early-termination settlement",
   },
   cancellation: {
@@ -216,7 +216,7 @@ const en: PortalCopy = {
     deepCleanRecoveryLabel: "Complimentary deep-clean recovery",
     creditsLabel: "Credits",
     totalLabel: "Final outstanding amount",
-    noChargeMessage: "Your contract term is already fully served — no early-termination charge applies.",
+    noChargeMessage: "Your contract term is already fully served, so no early-termination charge applies.",
     creditReviewMessage: "This calculation produces a possible customer credit. It has been held at zero and sent for administrator review; no refund or settlement invoice has been generated.",
     disclosure: "This does not remove or reduce any amount you already owe. Confirming stops future cleaning services and, where a balance is due, generates a final settlement invoice payable within the stated window.",
     confirmButton: "Confirm cancellation",
@@ -737,7 +737,7 @@ Object.assign(portalCopy.nl.invoices, {
   suspensionTitle: "Diensten tijdelijk opgeschort",
   suspensionBody: "Factuur {reference} van {amount} is onbetaald. Betaal vóór {date} om uw diensten te herstellen.",
   payNow: "Nu betalen",
-  suspensionNoLinkNote: "Er wordt een nieuwe betaallink aangemaakt — kijk zo weer, of neem contact op met support.",
+  suspensionNoLinkNote: "Er wordt een nieuwe betaallink aangemaakt: kijk zo weer, of neem contact op met support.",
   finalSettlementBadge: "Eindafrekening",
 });
 
@@ -752,7 +752,7 @@ Object.assign(portalCopy.fr.invoices, {
   suspensionTitle: "Services temporairement suspendus",
   suspensionBody: "La facture {reference} de {amount} est impayée. Payez avant le {date} pour rétablir vos services.",
   payNow: "Payer maintenant",
-  suspensionNoLinkNote: "Un nouveau lien de paiement est en cours de génération — revenez sous peu ou contactez le support.",
+  suspensionNoLinkNote: "Un nouveau lien de paiement est en cours de génération: revenez sous peu ou contactez le support.",
   finalSettlementBadge: "Décompte final",
 });
 
@@ -767,7 +767,7 @@ Object.assign(portalCopy.ar.invoices, {
   suspensionTitle: "الخدمات موقوفة مؤقتاً",
   suspensionBody: "الفاتورة {reference} بقيمة {amount} غير مدفوعة. ادفع قبل {date} لاستعادة خدماتك.",
   payNow: "الدفع الآن",
-  suspensionNoLinkNote: "يتم إنشاء رابط دفع جديد — يرجى التحقق مرة أخرى قريباً أو التواصل مع الدعم.",
+  suspensionNoLinkNote: "يتم إنشاء رابط دفع جديد: يرجى التحقق مرة أخرى قريباً أو التواصل مع الدعم.",
   finalSettlementBadge: "التسوية النهائية",
 });
 
@@ -782,7 +782,7 @@ Object.assign(portalCopy.es.invoices, {
   suspensionTitle: "Servicios suspendidos temporalmente",
   suspensionBody: "La factura {reference} de {amount} está impagada. Paga antes del {date} para restablecer tus servicios.",
   payNow: "Pagar ahora",
-  suspensionNoLinkNote: "Se está generando un nuevo enlace de pago — vuelve a comprobarlo en breve o contacta con soporte.",
+  suspensionNoLinkNote: "Se está generando un nuevo enlace de pago: vuelve a comprobarlo en breve o contacta con soporte.",
   finalSettlementBadge: "Liquidación final",
 });
 
@@ -797,7 +797,7 @@ Object.assign(portalCopy.de.invoices, {
   suspensionTitle: "Leistungen vorübergehend ausgesetzt",
   suspensionBody: "Rechnung {reference} über {amount} ist unbezahlt. Zahlen Sie bis {date}, um Ihre Leistungen wiederherzustellen.",
   payNow: "Jetzt bezahlen",
-  suspensionNoLinkNote: "Ein neuer Zahlungslink wird erstellt — bitte schauen Sie in Kürze wieder vorbei oder kontaktieren Sie den Support.",
+  suspensionNoLinkNote: "Ein neuer Zahlungslink wird erstellt: bitte schauen Sie in Kürze wieder vorbei oder kontaktieren Sie den Support.",
   finalSettlementBadge: "Endabrechnung",
 });
 
@@ -812,7 +812,7 @@ Object.assign(portalCopy.pt.invoices, {
   suspensionTitle: "Serviços temporariamente suspensos",
   suspensionBody: "A fatura {reference} de {amount} está por pagar. Pague até {date} para restabelecer os seus serviços.",
   payNow: "Pagar agora",
-  suspensionNoLinkNote: "Está a ser gerada uma nova ligação de pagamento — volte a verificar em breve ou contacte o apoio.",
+  suspensionNoLinkNote: "Está a ser gerada uma nova ligação de pagamento: volte a verificar em breve ou contacte o apoio.",
   finalSettlementBadge: "Acerto final",
 });
 
@@ -832,7 +832,7 @@ Object.assign(portalCopy.nl.cancellation, {
   deepCleanRecoveryLabel: "Terugvordering gratis grondige schoonmaak",
   creditsLabel: "Tegoeden",
   totalLabel: "Totaal verschuldigd",
-  noChargeMessage: "Uw contracttermijn is al volledig verstreken — er geldt geen kosten voor vroegtijdige beëindiging.",
+  noChargeMessage: "Uw contracttermijn is al volledig verstreken: er geldt geen kosten voor vroegtijdige beëindiging.",
   disclosure: "Dit verwijdert of vermindert geen reeds verschuldigd bedrag. Bevestigen stopt toekomstige schoonmaakdiensten en genereert, indien een bedrag verschuldigd is, een eindafrekening die binnen de aangegeven termijn betaald moet worden.",
   confirmButton: "Opzegging bevestigen",
   confirming: "Bevestigen…",
@@ -868,7 +868,7 @@ Object.assign(portalCopy.fr.cancellation, {
   deepCleanRecoveryLabel: "Récupération du nettoyage en profondeur offert",
   creditsLabel: "Crédits",
   totalLabel: "Total dû",
-  noChargeMessage: "Votre durée contractuelle est déjà entièrement écoulée — aucun frais de résiliation anticipée ne s'applique.",
+  noChargeMessage: "Votre durée contractuelle est déjà entièrement écoulée: aucun frais de résiliation anticipée ne s'applique.",
   disclosure: "Cela ne supprime ni ne réduit les montants déjà dus. La confirmation arrête les services de nettoyage futurs et, si un solde est dû, génère une facture de décompte final payable dans le délai indiqué.",
   confirmButton: "Confirmer la résiliation",
   confirming: "Confirmation…",
@@ -904,7 +904,7 @@ Object.assign(portalCopy.ar.cancellation, {
   deepCleanRecoveryLabel: "استرداد قيمة التنظيف العميق المجاني",
   creditsLabel: "الأرصدة الدائنة",
   totalLabel: "الإجمالي المستحق",
-  noChargeMessage: "لقد انقضت مدة عقدك بالكامل بالفعل — لا تُطبَّق أي رسوم إنهاء مبكر.",
+  noChargeMessage: "لقد انقضت مدة عقدك بالكامل بالفعل: لا تُطبَّق أي رسوم إنهاء مبكر.",
   disclosure: "هذا لا يلغي أو يقلل أي مبلغ مستحق عليك بالفعل. يؤدي التأكيد إلى إيقاف خدمات التنظيف المستقبلية، وفي حال استحقاق رصيد، يتم إصدار فاتورة تسوية نهائية واجبة الدفع خلال المهلة المحددة.",
   confirmButton: "تأكيد الإلغاء",
   confirming: "جارٍ التأكيد…",
@@ -940,7 +940,7 @@ Object.assign(portalCopy.es.cancellation, {
   deepCleanRecoveryLabel: "Recuperación de la limpieza profunda gratuita",
   creditsLabel: "Créditos",
   totalLabel: "Total adeudado",
-  noChargeMessage: "Tu período contractual ya se ha cumplido por completo — no se aplica ningún cargo por terminación anticipada.",
+  noChargeMessage: "Tu período contractual ya se ha cumplido por completo: no se aplica ningún cargo por terminación anticipada.",
   disclosure: "Esto no elimina ni reduce ningún importe ya adeudado. Confirmar detiene los servicios de limpieza futuros y, si hay un saldo pendiente, genera una factura de liquidación final pagadera dentro del plazo indicado.",
   confirmButton: "Confirmar cancelación",
   confirming: "Confirmando…",
@@ -976,7 +976,7 @@ Object.assign(portalCopy.de.cancellation, {
   deepCleanRecoveryLabel: "Rückforderung der kostenlosen Grundreinigung",
   creditsLabel: "Gutschriften",
   totalLabel: "Gesamtbetrag fällig",
-  noChargeMessage: "Ihre Vertragslaufzeit ist bereits vollständig erfüllt — es fallen keine Kosten für eine vorzeitige Kündigung an.",
+  noChargeMessage: "Ihre Vertragslaufzeit ist bereits vollständig erfüllt: es fallen keine Kosten für eine vorzeitige Kündigung an.",
   disclosure: "Dies entfernt oder reduziert keinen bereits geschuldeten Betrag. Die Bestätigung beendet zukünftige Reinigungsleistungen und erstellt, falls ein Betrag fällig ist, eine Endabrechnung, die innerhalb der angegebenen Frist zu zahlen ist.",
   confirmButton: "Kündigung bestätigen",
   confirming: "Wird bestätigt…",
@@ -1012,7 +1012,7 @@ Object.assign(portalCopy.pt.cancellation, {
   deepCleanRecoveryLabel: "Recuperação da limpeza profunda gratuita",
   creditsLabel: "Créditos",
   totalLabel: "Total devido",
-  noChargeMessage: "O seu período contratual já foi totalmente cumprido — não se aplica qualquer encargo de rescisão antecipada.",
+  noChargeMessage: "O seu período contratual já foi totalmente cumprido: não se aplica qualquer encargo de rescisão antecipada.",
   disclosure: "Isto não remove nem reduz qualquer montante já devido. Ao confirmar, os serviços de limpeza futuros são interrompidos e, caso exista saldo devedor, é gerada uma fatura de acerto final a pagar dentro do prazo indicado.",
   confirmButton: "Confirmar cancelamento",
   confirming: "A confirmar…",

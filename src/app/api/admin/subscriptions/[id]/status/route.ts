@@ -39,7 +39,7 @@ export async function PATCH(req: NextRequest, { params }: { params: Promise<{ id
 
   if (subscription.operational_status === operationalStatus) return NextResponse.json({ ok: true, operational_status: operationalStatus });
 
-  // Only manual suspensions/restores go through this route — automated
+  // Only manual suspensions/restores go through this route: automated
   // non-payment suspension (billing-collection job) and cancellation-pending
   // states manage themselves and must not be clobbered here.
   if (subscription.operational_status !== "active" && subscription.operational_status !== "suspended_manual") {

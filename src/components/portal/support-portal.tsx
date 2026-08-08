@@ -39,13 +39,13 @@ function StatusPill({ status, copy }: { status: CustomerSupportStatus; copy: Sup
 }
 
 function dateTime(value: string | null, locale: string) {
-  if (!value) return "—";
+  if (!value) return "Not available";
   return new Intl.DateTimeFormat(locale, { dateStyle:"medium", timeStyle:"short" }).format(new Date(value));
 }
 
 function RelatedSelect({ name, label, options }: { name: string; label: string; options: Option[] }) {
   if (!options.length) return null;
-  return <label className="block text-sm font-medium">{label}<select name={name} className="input mt-2"><option value="">—</option>{options.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}</select></label>;
+  return <label className="block text-sm font-medium">{label}<select name={name} className="input mt-2"><option value="">Select</option>{options.map((option) => <option key={option.id} value={option.id}>{option.label}</option>)}</select></label>;
 }
 
 export function SupportOverview({ initialRequests, related, copy, locale, openNew = false }: { initialRequests: OverviewRequest[]; related: RelatedOptions; copy: SupportCopy; locale: string; openNew?: boolean }) {
@@ -94,8 +94,8 @@ export function SupportOverview({ initialRequests, related, copy, locale, openNe
     <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between"><div><h1 className="font-serif text-4xl">{copy.title}</h1><p className="mt-2 max-w-2xl text-sm leading-6 text-muted-foreground">{copy.intro}</p></div><button type="button" onClick={() => setShowForm(true)} className={cn(buttonVariants({variant:"primary",size:"md"}),"shrink-0")}><Plus className="mr-2 h-4 w-4"/>{copy.newRequest}</button></div>
     {showForm ? <section className="rounded-2xl border border-border bg-card p-5 shadow-soft"><div className="flex items-center justify-between"><h2 className="font-serif text-2xl">{copy.newRequest}</h2><button type="button" onClick={() => setShowForm(false)} className="text-sm text-muted-foreground hover:text-foreground">{copy.cancel}</button></div><form onSubmit={submit} className="mt-5 grid gap-4 md:grid-cols-2">
       <label className="block text-sm font-medium md:col-span-2">{copy.subject}<input name="subject" required maxLength={160} className="input mt-2"/></label>
-      <label className="block text-sm font-medium">{copy.category}<select name="category" required value={category} onChange={(event) => setCategory(event.target.value as SupportCategory)} className="input mt-2"><option value="" disabled>—</option>{SUPPORT_CATEGORIES.map((categoryOption) => <option key={categoryOption} value={categoryOption}>{copy.categoryLabels[categoryOption]}</option>)}</select></label>
-      <label className="block text-sm font-medium">{copy.contactMethod} <span className="font-normal text-muted-foreground">({copy.optional})</span><select name="preferredContactMethod" className="input mt-2"><option value="">—</option>{Object.entries(copy.contactMethods).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label>
+      <label className="block text-sm font-medium">{copy.category}<select name="category" required value={category} onChange={(event) => setCategory(event.target.value as SupportCategory)} className="input mt-2"><option value="" disabled>Select</option>{SUPPORT_CATEGORIES.map((categoryOption) => <option key={categoryOption} value={categoryOption}>{copy.categoryLabels[categoryOption]}</option>)}</select></label>
+      <label className="block text-sm font-medium">{copy.contactMethod} <span className="font-normal text-muted-foreground">({copy.optional})</span><select name="preferredContactMethod" className="input mt-2"><option value="">Select</option>{Object.entries(copy.contactMethods).map(([value,label])=><option key={value} value={value}>{label}</option>)}</select></label>
       <label className="block text-sm font-medium md:col-span-2">{copy.description}<textarea name="description" required maxLength={8000} rows={7} className="input mt-2 h-auto py-3" placeholder={copy.descriptionHint}/></label>
       {relatedFields.includes("property") ? <RelatedSelect name="relatedPropertyId" label={copy.property} options={related.properties}/> : null}
       {relatedFields.includes("subscription") ? <RelatedSelect name="relatedSubscriptionId" label={copy.subscription} options={related.subscriptions}/> : null}

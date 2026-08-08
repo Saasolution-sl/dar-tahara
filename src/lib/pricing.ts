@@ -1,8 +1,8 @@
 /**
- * Dar Tahara — pricing engine.
+ * Dar Tahara, pricing engine.
  *
  * Single source of truth for all pricing rules and the pure calculation used
- * by the UI and the tests. Change prices, tiers, discounts or limits here —
+ * by the UI and the tests. Change prices, tiers, discounts or limits here,
  * no calculation logic lives in the components.
  */
 

@@ -20,7 +20,7 @@ export function Logo({
     return (
       <Image
         src="/logo.png"
-        alt="Dar Tahara — House of Purity"
+        alt="Dar Tahara: House of Purity"
         width={320}
         height={320}
         priority
@@ -60,7 +60,7 @@ export function Logo({
 }
 
 /**
- * A minimal dome-arch mark echoing the logo's silhouette — used only as a
+ * A minimal dome-arch mark echoing the logo's silhouette: used only as a
  * compact UI glyph and favicon, never as a replacement for the full logo.
  */
 export function DomeMark({ className }: { className?: string }) {

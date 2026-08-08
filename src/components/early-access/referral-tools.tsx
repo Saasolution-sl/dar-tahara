@@ -27,7 +27,7 @@ export function ReferralTools({
       track("referral_link_copied", {});
       setTimeout(() => setCopied(false), 2000);
     } catch {
-      /* clipboard blocked — the input below still lets them copy manually */
+      /* clipboard blocked: the input below still lets them copy manually */
     }
   }
 

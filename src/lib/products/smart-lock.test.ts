@@ -41,7 +41,7 @@ test("each interest maps to a distinct internal follow-up status", () => {
   assert.equal(initialFollowupFor("not_interested"), "no_action_required");
 });
 
-test("there is no 'more information' choice — three clear options only", () => {
+test("there is no 'more information' choice, three clear options only", () => {
   assert.deepEqual([...SMART_LOCK_INTERESTS], [
     "purchase_interested",
     "already_has_lock",

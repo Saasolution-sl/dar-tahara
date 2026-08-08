@@ -9,5 +9,5 @@ export function compactInvoiceReference(
   const withoutYear = (reference || "").replace(/\b(?:19|20)\d{2}\b/g, "");
   const referenceDigits = withoutYear.replace(/\D/g, "");
   const fallbackDigits = fallbackId.replace(/\D/g, "");
-  return (referenceDigits || fallbackDigits).slice(0, 8) || "—";
+  return (referenceDigits || fallbackDigits).slice(0, 8) || ", ";
 }

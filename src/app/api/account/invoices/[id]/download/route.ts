@@ -14,7 +14,7 @@ export const runtime = "nodejs";
 
 // DEMO-ONLY CARVE-OUT: also allow http(s)://localhost(:port) so a locally
 // seeded invoice can point at a real sample PDF for UI testing. This must be
-// reverted before this route is ever deployed — production receipt_url
+// reverted before this route is ever deployed: production receipt_url
 // values only ever come from real Stripe-hosted documents.
 function isAllowedDocumentHost(url: URL): boolean {
   if (url.hostname === "stripe.com" || url.hostname.endsWith(".stripe.com")) return url.protocol === "https:";
@@ -130,7 +130,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     return streamUpstream(customerId, id, invoice.receipt_url, `receipt-${invoice.invoice_number || id}`);
   }
 
-  // Legacy/unlinked invoices (no subscription) have no pricing pipeline to regenerate from — fall back to whatever Stripe-hosted PDF is on file.
+  // Legacy/unlinked invoices (no subscription) have no pricing pipeline to regenerate from: fall back to whatever Stripe-hosted PDF is on file.
   if (!invoice.subscription_id) {
     return streamUpstream(customerId, id, invoice.invoice_pdf_url, `invoice-${invoice.invoice_number || id}`);
   }

@@ -1,13 +1,13 @@
 ﻿import type { DeepPartial } from "../types";
 import type { Dictionary } from "./en";
 
-/** French — complete translation. */
+/** French: complete translation. */
 const fr: DeepPartial<Dictionary> = {
   meta: {
-    title: "Dar Tahara — Conciergerie & entretien de résidence premium",
+    title: "Dar Tahara: Conciergerie & entretien de résidence premium",
     description:
       "Dar Tahara est une conciergerie résidentielle premium au Maroc. Nettoyage professionnel, inspections et entretien pour rentrer toujours dans un intérieur parfait.",
-    ogAlt: "Dar Tahara — Maison de la Pureté",
+    ogAlt: "Dar Tahara: Maison de la Pureté",
   },
   brand: {
     name: "Dar Tahara",
@@ -34,9 +34,9 @@ const fr: DeepPartial<Dictionary> = {
   },
   hero: {
     eyebrow: "Entretien & conciergerie de résidence",
-    title: "Votre maison mérite mieux qu’un ménage — elle mérite un soin d’exception.",
+    title: "Votre maison mérite mieux qu’un ménage: elle mérite un soin d’exception.",
     subtitle:
-      "Pour les propriétaires, expatriés et propriétaires de résidences secondaires partout au Maroc. Nous nettoyons, inspectons et entretenons votre bien avec une précision discrète — pour que vous retrouviez le confort, jamais les soucis.",
+      "Pour les propriétaires, expatriés et propriétaires de résidences secondaires partout au Maroc. Nous nettoyons, inspectons et entretenons votre bien avec une précision discrète: pour que vous retrouviez le confort, jamais les soucis.",
     ctaPrimary: "Réserver l’Évaluation Initiale",
     ctaTertiary: "En savoir plus",
     stat1Value: "500+",
@@ -51,7 +51,7 @@ const fr: DeepPartial<Dictionary> = {
     eyebrow: "Pourquoi Dar Tahara",
     title: "La tranquillité d’esprit, livrée à votre porte.",
     subtitle:
-      "Dar Tahara signifie Maison de la Pureté. Nous ne sommes pas une entreprise de ménage — nous sommes les gardiens de confiance de votre maison en votre absence, et la raison pour laquelle tout semble sans effort à votre retour.",
+      "Dar Tahara signifie Maison de la Pureté. Nous ne sommes pas une entreprise de ménage: nous sommes les gardiens de confiance de votre maison en votre absence, et la raison pour laquelle tout semble sans effort à votre retour.",
     pillars: [
       {
         title: "Confiance absolue",
@@ -59,7 +59,7 @@ const fr: DeepPartial<Dictionary> = {
       },
       {
         title: "Qualité sans compromis",
-        body: "Un standard méticuleux appliqué à chaque surface, chaque détail — inspecté, photographié et validé.",
+        body: "Un standard méticuleux appliqué à chaque surface, chaque détail: inspecté, photographié et validé.",
       },
       {
         title: "Sans effort pour vous",
@@ -75,7 +75,7 @@ const fr: DeepPartial<Dictionary> = {
     eyebrow: "Ce que nous faisons",
     title: "Un soin complet pour chaque recoin de votre maison.",
     subtitle:
-      "D’un simple nettoyage impeccable à la gestion complète de votre résidence secondaire — choisissez exactement ce dont votre bien a besoin.",
+      "D’un simple nettoyage impeccable à la gestion complète de votre résidence secondaire: choisissez exactement ce dont votre bien a besoin.",
     items: [
       { title: "Ménage premium", body: "Un nettoyage raffiné de haut en bas, adapté aux belles demeures et aux finitions délicates." },
       { title: "Ménage récurrent", body: "Un entretien hebdomadaire ou bimensuel qui garde votre maison constamment impeccable." },
@@ -139,7 +139,7 @@ const fr: DeepPartial<Dictionary> = {
     title: "La confiance de ceux qui tiennent à leur temps et à leur maison.",
     items: [
       { title: "Personnes vivant à l’étranger", body: "Votre maison marocaine, impeccable et prête entre deux séjours." },
-      { title: "Professionnels très occupés", body: "Retrouvez vos soirées et week-ends — nous nous occupons du reste." },
+      { title: "Professionnels très occupés", body: "Retrouvez vos soirées et week-ends: nous nous occupons du reste." },
       { title: "Familles", body: "Une maison saine et impeccable pour vous concentrer sur l’essentiel." },
       { title: "Propriétaires de résidences secondaires", body: "Arrivez dans une maison où les vacances semblent déjà commencées." },
       { title: "Propriétaires Airbnb", body: "Des rotations cinq étoiles, réapprovisionnement et présentation prête pour les voyageurs." },
@@ -196,7 +196,7 @@ const fr: DeepPartial<Dictionary> = {
       },
       {
         q: "Pouvez-vous préparer ma maison avant mon arrivée ?",
-        a: "Oui. Communiquez-nous vos détails d’arrivée et nous veillerons à du linge frais, une maison impeccable, une température agréable et tous les essentiels souhaités — prêts dès que vous franchissez la porte.",
+        a: "Oui. Communiquez-nous vos détails d’arrivée et nous veillerons à du linge frais, une maison impeccable, une température agréable et tous les essentiels souhaités: prêts dès que vous franchissez la porte.",
       },
       {
         q: "Quelles villes desservez-vous ?",
@@ -254,7 +254,7 @@ const fr: DeepPartial<Dictionary> = {
     eyebrow: "Tarifs transparents",
     title: "Estimez votre entretien mensuel.",
     subtitle:
-      "Déplacez le curseur et choisissez un rythme. Votre estimation se met à jour instantanément — sans inscription, sans surprise.",
+      "Déplacez le curseur et choisissez un rythme. Votre estimation se met à jour instantanément: sans inscription, sans surprise.",
     sizeLabel: "Surface du bien",
     sizeUnit: "m²",
     sizeHelp: "Saisissez ou faites glisser entre 20 et 250 m².",
@@ -275,7 +275,7 @@ const fr: DeepPartial<Dictionary> = {
       },
     },
     durationLabel: "Durée de l'abonnement",
-    durationHelp: "Choisissez la durée de votre engagement — les durées plus longues offrent de meilleures économies.",
+    durationHelp: "Choisissez la durée de votre engagement: les durées plus longues offrent de meilleures économies.",
     duration: {
       "3_month": { name: "3 mois", tag: "Début flexible" },
       "6_month": { name: "6 mois", tag: "Économisez 5 %" },
@@ -393,7 +393,7 @@ const fr: DeepPartial<Dictionary> = {
       bedrooms: "Chambres",
       bathrooms: "Salles de bain",
       accessNotes: "Notes d'accès (facultatif)",
-      accessNotesPlaceholder: "Stationnement, clés, codes de portail — tout ce que nous devons savoir",
+      accessNotesPlaceholder: "Stationnement, clés, codes de portail: tout ce que nous devons savoir",
       pets: "Il y a des animaux dans le logement",
       petDetails: "Détails sur les animaux",
       petDetailsPlaceholder: "Type et nombre d'animaux",
@@ -425,7 +425,7 @@ const fr: DeepPartial<Dictionary> = {
     },
     legal: {
       accuracy:
-        "Je confirme que les informations ci-dessus — surface, chambres, salles de bain, animaux, tabac et état — sont exactes.",
+        "Je confirme que les informations ci-dessus: surface, chambres, salles de bain, animaux, tabac et état: sont exactes.",
       termsLink: "Conditions générales",
       privacyLink: "Politique de confidentialité",
       note: "Dar Tahara peut vérifier ces informations lors de l'évaluation et ajuster le plan continu lorsque le logement diffère de manière significative.",
@@ -439,14 +439,14 @@ const fr: DeepPartial<Dictionary> = {
       doorlock_internet_required: "Veuillez confirmer que le logement dispose d’une connexion internet pour la serrure connectée.",
       legal_acceptance_required: "Veuillez confirmer les informations et accepter les conditions pour continuer.",
       rate_limited: "Trop de tentatives. Réessayez dans une minute.",
-      checkout_not_configured: "Les demandes ne sont pas disponibles actuellement — rejoignez l’accès anticipé.",
+      checkout_not_configured: "Les demandes ne sont pas disponibles actuellement: rejoignez l’accès anticipé.",
       checkout_failed: "Impossible d’envoyer votre demande. Veuillez réessayer.",
       network: "Erreur réseau. Vérifiez votre connexion et réessayez.",
     },
   },
   consent: {
     message:
-      "Nous utilisons des cookies d'analyse pour comprendre l'utilisation de notre site. Si vous refusez, rien ne change — le site fonctionne exactement de la même façon.",
+      "Nous utilisons des cookies d'analyse pour comprendre l'utilisation de notre site. Si vous refusez, rien ne change: le site fonctionne exactement de la même façon.",
     accept: "Accepter",
     decline: "Refuser",
     privacy: "Politique de confidentialité",
@@ -475,7 +475,7 @@ const fr: DeepPartial<Dictionary> = {
     footerBody:
       "Laissez votre e-mail et nous vous préviendrons dès que nos formules de ménage seront disponibles.",
     confirmedTitle: "Inscription confirmée",
-    confirmedBody: "Merci d'avoir confirmé. Tout est prêt — nous vous contacterons au lancement.",
+    confirmedBody: "Merci d'avoir confirmé. Tout est prêt: nous vous contacterons au lancement.",
     unsubscribedTitle: "Vous êtes désabonné",
     unsubscribedBody: "Vous ne recevrez plus d'informations sur le lancement. Vous pouvez vous réinscrire à tout moment.",
     invalidTitle: "Lien expiré ou invalide",
@@ -509,7 +509,7 @@ const fr: DeepPartial<Dictionary> = {
       title: "Mission & Vision",
       description:
         "Dar Tahara associe des professionnels qualifiés, une technologie innovante et un service transparent pour redéfinir le ménage résidentiel au Maroc. Découvrez notre mission, notre vision, nos valeurs et nos engagements.",
-      ogAlt: "Dar Tahara — Mission & Vision",
+      ogAlt: "Dar Tahara: Mission & Vision",
     },
     breadcrumb: { home: "Accueil", current: "Mission & Vision", label: "Fil d’Ariane" },
     hero: {
@@ -710,7 +710,7 @@ const fr: DeepPartial<Dictionary> = {
       title: "Plus qu’un ménage",
       body: [
         "Dar Tahara construit une nouvelle référence pour le ménage à domicile au Maroc.",
-        "En associant des professionnels qualifiés, une technologie innovante et une attention sincère à nos clients, nous offrons plus qu’une maison propre — nous offrons la sérénité.",
+        "En associant des professionnels qualifiés, une technologie innovante et une attention sincère à nos clients, nous offrons plus qu’une maison propre: nous offrons la sérénité.",
       ],
       ctaPrimary: "Réservez votre Évaluation Initiale",
       ctaSecondary: "Découvrir nos services",
@@ -718,7 +718,7 @@ const fr: DeepPartial<Dictionary> = {
     teaser: {
       eyebrow: "Pourquoi Dar Tahara ?",
       title: "Plus qu’un ménage.",
-      body: "Des professionnels qualifiés, une technologie innovante et un service transparent — réunis pour redéfinir le ménage résidentiel au Maroc.",
+      body: "Des professionnels qualifiés, une technologie innovante et un service transparent: réunis pour redéfinir le ménage résidentiel au Maroc.",
       cta: "Lire notre mission & vision",
       points: [
         "Opérations pilotées par la technologie",

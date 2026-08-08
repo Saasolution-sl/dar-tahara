@@ -1,11 +1,11 @@
 /**
- * Dar Tahara — combined monthly statement for monthly-billed units.
+ * Dar Tahara, combined monthly statement for monthly-billed units.
  *
  * Stripe still invoices each monthly-billing-interval subscription
- * separately (unchanged) — this is a pure, portal-side aggregation layer
+ * separately (unchanged), this is a pure, portal-side aggregation layer
  * that groups a customer's per-unit invoices by calendar month so they see
  * one combined statement instead of one row per unit. Annually-billed
- * subscriptions are deliberately out of scope here — they stay as individual
+ * subscriptions are deliberately out of scope here, they stay as individual
  * invoices (see the invoices page, not this module).
  */
 
@@ -61,7 +61,7 @@ function existedByMonth(createdAt: string, monthKey: string): boolean {
 /**
  * Build one combined statement per calendar month that has at least one
  * monthly-billed invoice, with every monthly unit that existed by that month
- * represented as a line — units with no invoice that month appear as
+ * represented as a line, units with no invoice that month appear as
  * `onHold: true, amountCents: 0` (paused / not charged), never silently
  * omitted.
  */
@@ -108,13 +108,13 @@ export type LineDiscountBreakdown = {
  * per-frequency %) and a subscription-duration discount (the tier picked at
  * signup, persisted per subscription). This reconstructs both as separate,
  * disclosable amounts: reverses the frequency discount using pricing.ts's
- * current config (safe — those percentages are hardcoded, not admin-editable,
+ * current config (safe, those percentages are hardcoded, not admin-editable,
  * so they can't have silently drifted since the subscription was created),
  * then reads the duration discount straight back out of the gap between the
  * stored pre-duration price and what was actually charged (price-versioned
  * at signup, so it's correct even if admin-configured tiers change later).
  * A line with no recorded pre-duration price (legacy, no duration ever
- * chosen) contributes its charged amount with zero discount shown — never a
+ * chosen) contributes its charged amount with zero discount shown, never a
  * guessed breakdown. On-hold (unbilled) lines are excluded entirely.
  */
 export function buildLineDiscountBreakdowns(lines: StatementLine[]): LineDiscountBreakdown[] {

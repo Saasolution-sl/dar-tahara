@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Minimal admin utility (brief §28) to create + label trackable distribution
- * links and generate QR codes, backed by campaign_sources. Deliberately small —
+ * links and generate QR codes, backed by campaign_sources. Deliberately small :
  * it does not reproduce Mautic's contacts, campaigns, segments or analytics.
  */
 
@@ -105,7 +105,7 @@ export function CampaignSourcesClient() {
   }
 
   const input = "w-full rounded-xl border border-border bg-background px-3 py-2.5 text-sm outline-none focus:border-primary focus:ring-2 focus:ring-ring/40";
-  const fe = (k: string) => fieldErrors[k] ? <span className="text-xs text-red-600"> — {fieldErrors[k]}</span> : null;
+  const fe = (k: string) => fieldErrors[k] ? <span className="text-xs text-red-600">: {fieldErrors[k]}</span> : null;
 
   return (
     <main className="min-h-screen bg-secondary/30 p-4 sm:p-8">
@@ -166,12 +166,12 @@ export function CampaignSourcesClient() {
             </thead>
             <tbody>
               {sources.length === 0 ? (
-                <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">No sources yet — create one above.</td></tr>
+                <tr><td colSpan={6} className="px-4 py-8 text-center text-muted-foreground">No sources yet: create one above.</td></tr>
               ) : sources.map((s) => (
                 <tr key={s.id} className="border-b border-border/60">
                   <td className="px-4 py-3 font-medium">{s.internal_name}</td>
                   <td className="px-4 py-3 font-mono text-xs">{s.source_code}</td>
-                  <td className="px-4 py-3">{s.source_channel ?? "—"}</td>
+                  <td className="px-4 py-3">{s.source_channel ?? "Not available"}</td>
                   <td className="max-w-[280px] truncate px-4 py-3 text-xs text-muted-foreground" title={s.tracked_url}>
                     <Link2 className="mr-1 inline h-3 w-3" />{s.tracked_url.replace(/^https:\/\//, "")}
                   </td>
@@ -182,7 +182,7 @@ export function CampaignSourcesClient() {
                         <span className="text-xs text-muted-foreground"> · ~{s.unique_visitors.toLocaleString()} unique</span>
                       </span>
                     ) : (
-                      <span className="text-muted-foreground">—</span>
+                      <span className="text-muted-foreground">Not available</span>
                     )}
                   </td>
                   <td className="px-4 py-3">

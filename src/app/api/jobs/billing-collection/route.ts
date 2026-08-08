@@ -12,7 +12,7 @@ import type { Locale } from "@/i18n/config";
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
 
-/** How long before a final-settlement invoice's due date to send the one reminder email. Not policy-configurable (unlike the core windows) — a single sane default, same spirit as the rest of this job's fixed sweep cadence. */
+/** How long before a final-settlement invoice's due date to send the one reminder email. Not policy-configurable (unlike the core windows): a single sane default, same spirit as the rest of this job's fixed sweep cadence. */
 const SETTLEMENT_REMINDER_WINDOW_HOURS = 72;
 
 async function authorized(req: NextRequest): Promise<boolean> {
@@ -31,7 +31,7 @@ type DueLinkRow = {
 
 /**
  * Sweeps expired payment links and advances each unpaid invoice's
- * collection stage — this is the app's own dunning-notice lifecycle, not a
+ * collection stage: this is the app's own dunning-notice lifecycle, not a
  * second payment-retry scheduler (Stripe already retries the actual charge
  * on its own; the Stripe webhook reacts to that, see
  * `invoicePaymentFailed` in stripe/webhook/route.ts). Safe to run on any
@@ -112,7 +112,7 @@ export async function POST(req: NextRequest) {
     const dueMs = new Date(invoice.due_at).getTime();
 
     if (dueMs <= nowMs) {
-      // Past its resolution window — apply the configured unpaid-settlement policy.
+      // Past its resolution window: apply the configured unpaid-settlement policy.
       await serviceUpdate("early_termination_calculations", `id=eq.${calc.id}`, { status: "defaulted" });
       await serviceUpdate("invoices", `id=eq.${invoice.id}`, { status: "overdue" });
 
@@ -137,7 +137,7 @@ export async function POST(req: NextRequest) {
         await serviceUpdate("invoices", `id=eq.${invoice.id}`, { collection_stage: "escalation_eligible", escalation_eligible_at: new Date().toISOString() });
       } else {
         // 'continue_contract' (default) and 'manual_review' share the same
-        // safe mechanical outcome — the original contract stands and
+        // safe mechanical outcome: the original contract stands and
         // services stay suspended until resolved. 'manual_review' additionally
         // needs a human decision, which the admin invoices page surfaces
         // (escalation-eligible collection stage is not set here; there is no

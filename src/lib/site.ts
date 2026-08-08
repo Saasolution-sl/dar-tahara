@@ -1,5 +1,5 @@
 /**
- * Central site configuration — single source of truth for URLs, contact
+ * Central site configuration, single source of truth for URLs, contact
  * details and social links. Update here to change site-wide references.
  */
 import { defaultLocale, locales } from "@/i18n/config";
@@ -14,7 +14,7 @@ export const site = {
   siteUrl,
   defaultLocale,
   supportedLocales: locales,
-  defaultTitle: "Dar Tahara — Premium Home Care & Property Concierge",
+  defaultTitle: "Dar Tahara: Premium Home Care & Property Concierge",
   titleTemplate: `%s | ${siteName}`,
   defaultDescription,
   logoUrl: `${siteUrl}/icon.svg`,
@@ -58,7 +58,7 @@ export const pages = {
   services: "/services",
 } as const;
 
-/** In-page section anchors — shared by nav and section ids. */
+/** In-page section anchors, shared by nav and section ids. */
 export const sections = {
   why: "why",
   services: "services",

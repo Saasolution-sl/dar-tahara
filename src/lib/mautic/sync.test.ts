@@ -52,7 +52,7 @@ test("transient upsert failure on first attempt → retry_scheduled", async () =
   assert.equal(r.status, "retry_scheduled");
   assert.equal(r.retryable, true);
   assert.equal(r.failedStep, "upsert");
-  // Error is redacted — no PII, just the class + status.
+  // Error is redacted, no PII, just the class + status.
   assert.equal(r.error, "MauticApiError status=503");
 });
 

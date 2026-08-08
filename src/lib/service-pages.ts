@@ -155,7 +155,7 @@ export const servicePages: Record<ServicePageSlug, ServicePage> = {
     summary:
       "Dar Tahara can perform a standard maintenance check approximately once every three months, including practical items such as air conditioning checks.",
     intro:
-      "Maintenance checks are designed to catch obvious issues before they become expensive or inconvenient. They are not a replacement for licensed technical servicing, but they help owners keep an eye on the basics.",
+      "Maintenance checks catch obvious issues before they become expensive or inconvenient. They are not a replacement for licensed technical servicing, but they help owners keep an eye on the basics.",
     sections: [
       {
         title: "Quarterly standard check",

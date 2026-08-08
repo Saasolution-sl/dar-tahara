@@ -54,7 +54,7 @@ export function AssessmentBookingModal({
   sizeM2: number;
   frequency: FrequencyKey;
   overMax: boolean;
-  /** Chosen on the calculator before this modal opens — consciously selected, never re-picked here. */
+  /** Chosen on the calculator before this modal opens: consciously selected, never re-picked here. */
   durationMonths: DurationMonths | null;
   durationTiers: DurationTier[];
   monthlyEnabled: boolean;
@@ -290,7 +290,7 @@ export function AssessmentBookingModal({
                   ) : null}
                   <Row
                     label={b.summary.estMonthly}
-                    value={quote.estimatedMonthlyCents === null ? "—" : formatMoneyFromCents(quote.estimatedMonthlyCents, locale)}
+                    value={quote.estimatedMonthlyCents === null ? "Not available" : formatMoneyFromCents(quote.estimatedMonthlyCents, locale)}
                   />
                   {quote.minimumContractValueCents !== null ? (
                     <Row

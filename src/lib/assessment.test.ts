@@ -22,7 +22,7 @@ test("annual billing gives a five-percent discount", () => {
   assert.equal(quote.estimatedAnnualCents, 232_560);
   assert.equal(quote.annualSavingsCents, 12_240);
   assert.equal(quote.dueTodayCents, quote.assessmentPriceCents);
-  // No durationMonths supplied — pure backward-compatible default.
+  // No durationMonths supplied, pure backward-compatible default.
   assert.equal(quote.durationMonths, null);
   assert.equal(quote.durationDiscountPercent, 0);
   assert.equal(quote.priceBeforeDurationDiscountCents, null);
@@ -37,22 +37,22 @@ test("door-lock installation add-on adds 200 euro to due today", () => {
 });
 
 // Corrected 2026-07-30 (second correction): the anchor (12 months, the
-// largest discount) is the best REAL price on offer — its final price
+// largest discount) is the best REAL price on offer, its final price
 // equals the plain frequency-adjusted price exactly, and every shorter tier
 // genuinely costs more (matches the original 2026-07-28 real pricing).
 // `priceBeforeDurationDiscountCents` is reverse-derived from EACH tier's own
 // final price using that tier's own percentage, which lands on the SAME
-// number (the 0%-discount / no-commitment price) for every tier — so
+// number (the 0%-discount / no-commitment price) for every tier, so
 // `durationDiscountAmountCents` is always ≥ 0, a real discount at every
 // tier including the anchor, never a surcharge. See
 // subscription-duration.ts's doc comment.
 
-test("3-month (0% tier) charges the real 'no commitment' price — higher than the plain frequency-adjusted preview, with zero duration discount", () => {
-  // 100m² biweekly frequency-adjusted monthly is 20_400 cents (per the test above) —
+test("3-month (0% tier) charges the real 'no commitment' price, higher than the plain frequency-adjusted preview, with zero duration discount", () => {
+  // 100m² biweekly frequency-adjusted monthly is 20_400 cents (per the test above),
   // that's just the pre-duration PREVIEW; the real 3-month charge is higher.
   const threeMonth = calculateAssessmentQuote(100, "biweekly", false, false, 3);
   assert.equal(threeMonth.estimatedMonthlyCents, 24_000); // 20_400 / 0.85
-  assert.equal(threeMonth.priceBeforeDurationDiscountCents, 24_000); // 0% tier — before equals its own real price
+  assert.equal(threeMonth.priceBeforeDurationDiscountCents, 24_000); // 0% tier, before equals its own real price
   assert.equal(threeMonth.durationDiscountAmountCents, 0);
   assert.equal(threeMonth.minimumContractValueCents, 72_000); // 24_000 * 3
   assert.equal(threeMonth.pauseEligible, false);
@@ -68,7 +68,7 @@ test("a 6-month commitment is a real discount that still stacks correctly with t
   assert.equal(sixMonth.estimatedAnnualCents, expectedAnnual);
 });
 
-test("12-month (the anchor) is the best real price — unchanged from the plain frequency-adjusted price, with the largest disclosed discount", () => {
+test("12-month (the anchor) is the best real price, unchanged from the plain frequency-adjusted price, with the largest disclosed discount", () => {
   const quote = calculateAssessmentQuote(100, "biweekly", false, false, 12);
   assert.equal(quote.estimatedMonthlyCents, 20_400); // unchanged, the anchor
   assert.equal(quote.priceBeforeDurationDiscountCents, 24_000);
@@ -187,7 +187,7 @@ test("missing duration is rejected", () => {
   assert.deepEqual(result, { ok: false, error: "invalid_duration" });
 });
 
-test("a duration not offered by any enabled tier is rejected — server never trusts a client-sent duration blindly", () => {
+test("a duration not offered by any enabled tier is rejected, server never trusts a client-sent duration blindly", () => {
   const result = validateAssessmentBooking(baseBooking({ durationMonths: 7 }), new Date("2026-07-13T00:00:00Z"));
   assert.deepEqual(result, { ok: false, error: "invalid_duration" });
 });

@@ -58,7 +58,7 @@ test("search matches country name, calling code and ISO code", () => {
   assert.equal(searchCountries("zzzzzz", "en").length, 0);
 });
 
-test("initial country comes from a previous choice, else the locale — never IP", () => {
+test("initial country comes from a previous choice, else the locale, never IP", () => {
   assert.equal(defaultCountryFor("nl"), "NL");
   assert.equal(defaultCountryFor("fr"), "FR");
   assert.equal(defaultCountryFor("ar"), "MA");

@@ -1,5 +1,5 @@
 /**
- * Dar Tahara lead scoring — the field-based half of the model (brief §22).
+ * Dar Tahara lead scoring, the field-based half of the model (brief §22).
  *
  * Mautic's native "point actions" only fire on BEHAVIOUR (email opens, link
  * clicks, page returns); those live in Mautic. The rules below score a lead from
@@ -14,7 +14,7 @@
  */
 import type { LeadForSync } from "./types";
 
-/** Cities where service is launching/active — property here is high intent. */
+/** Cities where service is launching/active, property here is high intent. */
 export const LAUNCH_CITIES = [
   "tangier", "tetouan", "fnideq", "casablanca", "rabat", "marrakech",
 ];
@@ -60,7 +60,7 @@ export function computeLeadScore(
   if (lead.emailVerified) add("emailVerified", R.emailVerified);
   if (isPlausibleE164(lead.whatsappPhone)) add("validWhatsapp", R.validWhatsapp);
 
-  // "Property address completed" — we key on the summary city being present
+  // "Property address completed", we key on the summary city being present
   // (the exact address lives in Supabase; the sync only carries the city).
   if (lead.cleaningCity && lead.cleaningCity.trim()) {
     add("propertyAddressCompleted", R.propertyAddressCompleted);

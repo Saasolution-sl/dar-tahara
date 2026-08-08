@@ -5,7 +5,7 @@
  * Google's address_components are a loose, country-dependent bag: Morocco often
  * returns no postal_code, no street_number, and puts the district in any of
  * `neighborhood`, `sublocality` or `political`. So this module is defensive by
- * design — it extracts what exists, never invents, and reports the gaps so the
+ * design, it extracts what exists, never invents, and reports the gaps so the
  * UI can ask for exactly those and nothing more.
  */
 import { canonicalizeCity } from "@/lib/geo/moroccan-cities";
@@ -89,7 +89,7 @@ export function parsePlace(place: PlaceLike): StructuredAddress {
   };
 
   if (countryCode === "MA") {
-    // Try the locality first, then the district and region — Google sometimes
+    // Try the locality first, then the district and region, Google sometimes
     // returns only a sublocality for addresses inside a big city.
     const city =
       canonicalizeCity(localityName) ??
@@ -101,7 +101,7 @@ export function parsePlace(place: PlaceLike): StructuredAddress {
       address.regionId = city.regionId;
       address.regionName = city.regionName;
     } else if (localityName) {
-      // Recognised as Moroccan but outside the taxonomy — keep it as an
+      // Recognised as Moroccan but outside the taxonomy, keep it as an
       // unverified manual city for review rather than inventing a match.
       address.manualCityName = localityName;
     }
@@ -140,7 +140,7 @@ export function missingAddressFields(a: Partial<StructuredAddress>): MissingFiel
   };
 }
 
-/** True when the address has enough to submit — Google availability is irrelevant. */
+/** True when the address has enough to submit, Google availability is irrelevant. */
 export function isSubmittableAddress(a: Partial<StructuredAddress>): boolean {
   return missingAddressFields(a).required.length === 0;
 }

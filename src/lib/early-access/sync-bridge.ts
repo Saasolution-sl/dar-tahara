@@ -39,7 +39,7 @@ type LeadRow = {
  * Bridge Supabase → Mautic. Reads the freshly-persisted lead, syncs it to Mautic
  * via the tested sync layer, and writes the outcome (contact id + status) back
  * onto the lead so a failed sync can be reconciled later. Never throws to the
- * caller — the lead is already saved; sync is best-effort.
+ * caller, the lead is already saved; sync is best-effort.
  */
 export async function syncLeadAfterSubmit(
   leadId: string,
@@ -47,7 +47,7 @@ export async function syncLeadAfterSubmit(
   opts: { emailVerified: boolean },
 ): Promise<void> {
   const client = mauticFromEnv();
-  if (!client) return; // Mautic not configured — leave the lead `pending`.
+  if (!client) return; // Mautic not configured, leave the lead `pending`.
 
   const rows = await serviceSelect<LeadRow[]>(
     `marketing_leads?id=eq.${leadId}&select=*&limit=1`,

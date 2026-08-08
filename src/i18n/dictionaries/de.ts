@@ -1,13 +1,13 @@
 ﻿import type { DeepPartial } from "../types";
 import type { Dictionary } from "./en";
 
-/** German — complete translation. */
+/** German: complete translation. */
 const de: DeepPartial<Dictionary> = {
   meta: {
-    title: "Dar Tahara — Premium-Hauspflege & Immobilien-Concierge",
+    title: "Dar Tahara: Premium-Hauspflege & Immobilien-Concierge",
     description:
       "Dar Tahara ist ein Premium-Service für Hauspflege und Immobilien-Concierge in Marokko. Professionelle Reinigung, Inspektionen und Wartung, damit Sie stets in ein komfortables Zuhause zurückkehren.",
-    ogAlt: "Dar Tahara — Haus der Reinheit",
+    ogAlt: "Dar Tahara: Haus der Reinheit",
   },
   brand: {
     name: "Dar Tahara",
@@ -34,9 +34,9 @@ const de: DeepPartial<Dictionary> = {
   },
   hero: {
     eyebrow: "Hauspflege & Immobilien-Concierge",
-    title: "Ihr Zuhause verdient mehr als Reinigung — es verdient außergewöhnliche Pflege.",
+    title: "Ihr Zuhause verdient mehr als Reinigung: es verdient außergewöhnliche Pflege.",
     subtitle:
-      "Für Eigentümer, Expats und Ferienhausbesitzer in ganz Marokko. Wir reinigen, prüfen und pflegen Ihre Immobilie mit stiller Präzision — damit Sie zum Komfort zurückkehren, nie zur Sorge.",
+      "Für Eigentümer, Expats und Ferienhausbesitzer in ganz Marokko. Wir reinigen, prüfen und pflegen Ihre Immobilie mit stiller Präzision: damit Sie zum Komfort zurückkehren, nie zur Sorge.",
     ctaPrimary: "Ersteinschätzung buchen",
     ctaTertiary: "Mehr erfahren",
     stat1Value: "500+",
@@ -51,7 +51,7 @@ const de: DeepPartial<Dictionary> = {
     eyebrow: "Warum Dar Tahara",
     title: "Seelenfrieden, direkt an Ihre Tür geliefert.",
     subtitle:
-      "Dar Tahara bedeutet Haus der Reinheit. Wir sind kein Reinigungsunternehmen — wir sind die vertrauensvollen Hüter Ihres Zuhauses in Ihrer Abwesenheit und der Grund, warum sich bei Ihrer Rückkehr alles mühelos anfühlt.",
+      "Dar Tahara bedeutet Haus der Reinheit. Wir sind kein Reinigungsunternehmen: wir sind die vertrauensvollen Hüter Ihres Zuhauses in Ihrer Abwesenheit und der Grund, warum sich bei Ihrer Rückkehr alles mühelos anfühlt.",
     pillars: [
       {
         title: "Absolutes Vertrauen",
@@ -59,7 +59,7 @@ const de: DeepPartial<Dictionary> = {
       },
       {
         title: "Kompromisslose Qualität",
-        body: "Ein sorgfältiger Standard für jede Oberfläche, jedes Detail — geprüft, fotografiert und abgezeichnet.",
+        body: "Ein sorgfältiger Standard für jede Oberfläche, jedes Detail: geprüft, fotografiert und abgezeichnet.",
       },
       {
         title: "Mühelos für Sie",
@@ -75,7 +75,7 @@ const de: DeepPartial<Dictionary> = {
     eyebrow: "Was wir tun",
     title: "Vollständige Pflege für jede Ecke Ihres Zuhauses.",
     subtitle:
-      "Von einer einzigen makellosen Reinigung bis zur kompletten Verwaltung Ihres Ferienhauses — wählen Sie genau das, was Ihre Immobilie braucht.",
+      "Von einer einzigen makellosen Reinigung bis zur kompletten Verwaltung Ihres Ferienhauses: wählen Sie genau das, was Ihre Immobilie braucht.",
     items: [
       { title: "Premium-Reinigung", body: "Eine erlesene Reinigung von oben bis unten, abgestimmt auf edle Häuser und Oberflächen." },
       { title: "Wiederkehrende Reinigung", body: "Wöchentliche oder zweiwöchentliche Pflege, die Ihr Zuhause stets makellos hält." },
@@ -139,7 +139,7 @@ const de: DeepPartial<Dictionary> = {
     title: "Vertraut von Menschen, die ihre Zeit und ihr Zuhause schätzen.",
     items: [
       { title: "Menschen, die im Ausland leben", body: "Ihr marokkanisches Zuhause, makellos und bereit zwischen den Besuchen." },
-      { title: "Vielbeschäftigte Berufstätige", body: "Gewinnen Sie Ihre Abende und Wochenenden zurück — wir kümmern uns um den Rest." },
+      { title: "Vielbeschäftigte Berufstätige", body: "Gewinnen Sie Ihre Abende und Wochenenden zurück: wir kümmern uns um den Rest." },
       { title: "Familien", body: "Ein gesundes, makelloses Zuhause, damit Sie sich auf das Wesentliche konzentrieren können." },
       { title: "Ferienhausbesitzer", body: "Kommen Sie in ein Zuhause, in dem der Urlaub schon früh begonnen zu haben scheint." },
       { title: "Airbnb-Gastgeber", body: "Fünf-Sterne-Wechsel, Auffüllen und gästefertige Präsentation." },
@@ -196,7 +196,7 @@ const de: DeepPartial<Dictionary> = {
       },
       {
         q: "Können Sie mein Zuhause vor meiner Ankunft vorbereiten?",
-        a: "Ja. Teilen Sie uns Ihre Ankunftsdaten mit, und wir sorgen für frische Wäsche, ein makelloses Zuhause, eine angenehme Temperatur und alle gewünschten Essentials — bereit in dem Moment, in dem Sie eintreten.",
+        a: "Ja. Teilen Sie uns Ihre Ankunftsdaten mit, und wir sorgen für frische Wäsche, ein makelloses Zuhause, eine angenehme Temperatur und alle gewünschten Essentials: bereit in dem Moment, in dem Sie eintreten.",
       },
       {
         q: "Welche Städte bedienen Sie?",
@@ -254,7 +254,7 @@ const de: DeepPartial<Dictionary> = {
     eyebrow: "Transparente Preise",
     title: "Schätzen Sie Ihre monatliche Pflege.",
     subtitle:
-      "Bewegen Sie den Regler und wählen Sie einen Rhythmus. Ihre Schätzung aktualisiert sich sofort — keine Anmeldung, keine Überraschungen.",
+      "Bewegen Sie den Regler und wählen Sie einen Rhythmus. Ihre Schätzung aktualisiert sich sofort: keine Anmeldung, keine Überraschungen.",
     sizeLabel: "Wohnfläche",
     sizeUnit: "m²",
     sizeHelp: "Geben Sie einen Wert zwischen 20 und 250 m² ein oder schieben Sie.",
@@ -275,7 +275,7 @@ const de: DeepPartial<Dictionary> = {
       },
     },
     durationLabel: "Abo-Laufzeit",
-    durationHelp: "Wählen Sie, wie lange Sie sich binden möchten — längere Laufzeiten sparen mehr.",
+    durationHelp: "Wählen Sie, wie lange Sie sich binden möchten: längere Laufzeiten sparen mehr.",
     duration: {
       "3_month": { name: "3 Monate", tag: "Flexibler Start" },
       "6_month": { name: "6 Monate", tag: "5 % sparen" },
@@ -393,7 +393,7 @@ const de: DeepPartial<Dictionary> = {
       bedrooms: "Schlafzimmer",
       bathrooms: "Badezimmer",
       accessNotes: "Zugangshinweise (optional)",
-      accessNotesPlaceholder: "Parken, Schlüssel, Torcodes — alles, was wir wissen sollten",
+      accessNotesPlaceholder: "Parken, Schlüssel, Torcodes: alles, was wir wissen sollten",
       pets: "Es leben Haustiere in der Wohnung",
       petDetails: "Angaben zu Haustieren",
       petDetailsPlaceholder: "Art und Anzahl der Haustiere",
@@ -425,7 +425,7 @@ const de: DeepPartial<Dictionary> = {
     },
     legal: {
       accuracy:
-        "Ich bestätige, dass die obigen Angaben — Fläche, Schlafzimmer, Badezimmer, Haustiere, Rauchen und Zustand — korrekt sind.",
+        "Ich bestätige, dass die obigen Angaben: Fläche, Schlafzimmer, Badezimmer, Haustiere, Rauchen und Zustand: korrekt sind.",
       termsLink: "AGB",
       privacyLink: "Datenschutz",
       note: "Dar Tahara kann diese Angaben während der Bewertung prüfen und den laufenden Plan anpassen, wenn die Wohnung wesentlich abweicht.",
@@ -439,14 +439,14 @@ const de: DeepPartial<Dictionary> = {
       doorlock_internet_required: "Bitte bestätigen Sie, dass das Haus über Internet für das smarte Türschloss verfügt.",
       legal_acceptance_required: "Bitte bestätigen Sie die Angaben und akzeptieren Sie die Bedingungen.",
       rate_limited: "Zu viele Versuche. Bitte versuchen Sie es in einer Minute erneut.",
-      checkout_not_configured: "Anträge sind derzeit nicht verfügbar — melden Sie sich für Early Access an.",
+      checkout_not_configured: "Anträge sind derzeit nicht verfügbar: melden Sie sich für Early Access an.",
       checkout_failed: "Ihr Antrag konnte nicht gesendet werden. Bitte erneut versuchen.",
       network: "Netzwerkfehler. Bitte prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
     },
   },
   consent: {
     message:
-      "Wir verwenden Analyse-Cookies, um zu verstehen, wie unsere Website genutzt wird. Bei Ablehnung ändert sich nichts — die Website funktioniert genauso.",
+      "Wir verwenden Analyse-Cookies, um zu verstehen, wie unsere Website genutzt wird. Bei Ablehnung ändert sich nichts: die Website funktioniert genauso.",
     accept: "Akzeptieren",
     decline: "Ablehnen",
     privacy: "Datenschutz",
@@ -475,7 +475,7 @@ const de: DeepPartial<Dictionary> = {
     footerBody:
       "Hinterlassen Sie Ihre E-Mail und wir informieren Sie, sobald unsere Reinigungsabos verfügbar sind.",
     confirmedTitle: "Anmeldung bestätigt",
-    confirmedBody: "Danke für die Bestätigung. Alles bereit — wir melden uns zum Start.",
+    confirmedBody: "Danke für die Bestätigung. Alles bereit: wir melden uns zum Start.",
     unsubscribedTitle: "Sie wurden abgemeldet",
     unsubscribedBody: "Sie erhalten keine Start-Updates mehr. Sie können jederzeit wieder beitreten.",
     invalidTitle: "Link abgelaufen oder ungültig",
@@ -509,7 +509,7 @@ const de: DeepPartial<Dictionary> = {
       title: "Mission & Vision",
       description:
         "Dar Tahara verbindet qualifizierte Fachkräfte, innovative Technologie und transparenten Service, um die Wohnungsreinigung in Marokko neu zu definieren. Entdecken Sie unsere Mission, Vision, Werte und Versprechen.",
-      ogAlt: "Dar Tahara — Mission & Vision",
+      ogAlt: "Dar Tahara: Mission & Vision",
     },
     breadcrumb: { home: "Startseite", current: "Mission & Vision", label: "Navigationspfad" },
     hero: {
@@ -615,11 +615,11 @@ const de: DeepPartial<Dictionary> = {
         },
         {
           title: "Registrierung bei der CNSS",
-          body: "Mit dem Wachstum unseres Betriebs arbeiten wir darauf hin, berechtigte Beschäftigte beim marokkanischen Nationalen Sozialversicherungsfonds (Caisse Nationale de Sécurité Sociale — CNSS) anzumelden, im Einklang mit den gesetzlichen und arbeitsrechtlichen Anforderungen.",
+          body: "Mit dem Wachstum unseres Betriebs arbeiten wir darauf hin, berechtigte Beschäftigte beim marokkanischen Nationalen Sozialversicherungsfonds (Caisse Nationale de Sécurité Sociale: CNSS) anzumelden, im Einklang mit den gesetzlichen und arbeitsrechtlichen Anforderungen.",
         },
         {
           title: "Anwendbarer AMO-Krankenversicherungsschutz",
-          body: "Unser Umsetzungsziel umfasst den anwendbaren Schutz der obligatorischen Krankenversicherung (Assurance Maladie Obligatoire — AMO) für berechtigte Beschäftigte über das CNSS-System.",
+          body: "Unser Umsetzungsziel umfasst den anwendbaren Schutz der obligatorischen Krankenversicherung (Assurance Maladie Obligatoire: AMO) für berechtigte Beschäftigte über das CNSS-System.",
         },
         {
           title: "Klare Arbeitsbedingungen",
@@ -710,7 +710,7 @@ const de: DeepPartial<Dictionary> = {
       title: "Mehr als Reinigung",
       body: [
         "Dar Tahara schafft einen neuen Maßstab für die Wohnungsreinigung in Marokko.",
-        "Indem wir qualifizierte Fachkräfte, innovative Technologie und echte Fürsorge für unsere Kunden verbinden, liefern wir mehr als ein sauberes Zuhause — wir liefern Ruhe.",
+        "Indem wir qualifizierte Fachkräfte, innovative Technologie und echte Fürsorge für unsere Kunden verbinden, liefern wir mehr als ein sauberes Zuhause: wir liefern Ruhe.",
       ],
       ctaPrimary: "Buchen Sie Ihre Ersteinschätzung",
       ctaSecondary: "Unsere Leistungen entdecken",
@@ -718,7 +718,7 @@ const de: DeepPartial<Dictionary> = {
     teaser: {
       eyebrow: "Warum Dar Tahara?",
       title: "Mehr als Reinigung.",
-      body: "Qualifizierte Fachkräfte, innovative Technologie und transparenter Service — vereint, um die Wohnungsreinigung in Marokko neu zu definieren.",
+      body: "Qualifizierte Fachkräfte, innovative Technologie und transparenter Service: vereint, um die Wohnungsreinigung in Marokko neu zu definieren.",
       cta: "Unsere Mission & Vision lesen",
       points: [
         "Technologiegestützte Abläufe",

@@ -65,7 +65,7 @@ type PauseRequestRow = {
 };
 type SortedTableRow = InvoiceStatementTableRow & { sortKey: string };
 
-const DASH = "—";
+const DASH = "Not available";
 const STATEMENT_EXCLUDED_STATUSES = new Set([
   "included_in_settlement",
   "void",

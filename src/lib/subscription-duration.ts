@@ -1,5 +1,5 @@
 /**
- * Dar Tahara — subscription-duration pricing.
+ * Dar Tahara, subscription-duration pricing.
  *
  * A second, independent discount axis alongside the existing per-frequency
  * discount in pricing.ts: how long the customer commits to (3/6/9/12 months),
@@ -7,7 +7,7 @@
  * before the existing annual-billing prepay discount in assessment.ts (which
  * still stacks on top when billingInterval === "annual").
  *
- * Pure, no Supabase dependency — see subscription-duration-config.ts for the
+ * Pure, no Supabase dependency, see subscription-duration-config.ts for the
  * DB-backed admin configuration, kept in a separate file so this one stays
  * directly unit-testable (same split as pricing.ts vs. feature-flags.ts).
  */
@@ -68,7 +68,7 @@ export function findDurationTier(tiers: DurationTier[], months: number): Duratio
 /**
  * The tier the frequency-adjusted monthly price is already anchored to: the
  * longest/best-discounted enabled tier (today the 12-month, 15% tier). Its
- * price equals the plain frequency-adjusted price with no further change —
+ * price equals the plain frequency-adjusted price with no further change,
  * this is what a customer actually pays at the best tier, and what the real
  * per-tier price is reverse-derived from. Computed dynamically (not
  * hardcoded to "12 months") so it still makes sense if the admin-configured
@@ -82,13 +82,13 @@ export function findAnchorTier(tiers: DurationTier[]): DurationTier | null {
 
 export type DurationDiscountResult = {
   /**
-   * This tier's own implied list price — what it would cost with 0% duration
+   * This tier's own implied list price, what it would cost with 0% duration
    * discount (the same figure a 0%-tier customer actually pays). Constant
    * across every tier for a given frequency-adjusted price; NOT the same as
    * `frequencyAdjustedMonthlyCents` unless this tier IS the anchor.
    */
   priceBeforeDurationDiscountCents: number;
-  /** Amount saved vs. this tier's own implied list price — always ≥ 0, a real discount, never a surcharge. Zero only for a 0%-discount tier. */
+  /** Amount saved vs. this tier's own implied list price, always ≥ 0, a real discount, never a surcharge. Zero only for a 0%-discount tier. */
   durationDiscountAmountCents: number;
   discountedMonthlyCents: number;
   minimumContractValueCents: number;
@@ -96,7 +96,7 @@ export type DurationDiscountResult = {
 
 /**
  * Prices a duration tier relative to the anchor tier (the one with the
- * largest discountPercentage — today 12 months, 15%), which is defined to
+ * largest discountPercentage, today 12 months, 15%), which is defined to
  * cost exactly the frequency-adjusted price with no adjustment. Every other
  * tier's price is derived by applying the ratio between its own percentage
  * and the anchor's:
@@ -104,20 +104,20 @@ export type DurationDiscountResult = {
  *   tierPrice = frequencyAdjustedMonthlyPrice
  *                 × (1 − tier.discountPercentage) / (1 − anchorTier.discountPercentage)
  *
- * so shorter/less-discounted tiers genuinely cost more than the anchor — the
+ * so shorter/less-discounted tiers genuinely cost more than the anchor, the
  * anchor tier is the best real price on offer, exactly as marketed.
  *
  * For DISCLOSURE, `priceBeforeDurationDiscountCents` is NOT this tier's raw
- * input price — it's reverse-derived from this tier's OWN final price using
+ * input price, it's reverse-derived from this tier's OWN final price using
  * this tier's OWN percentage (`tierPrice / (1 − tier.discountPercentage)`).
  * This value is mathematically constant across every tier (it always equals
  * `frequencyAdjustedMonthlyPrice / (1 − anchorTier.discountPercentage)`,
  * independent of which tier you ask), so every tier's "before" figure is the
- * same number — the 0%-discount price — and `durationDiscountAmountCents`
+ * same number, the 0%-discount price, and `durationDiscountAmountCents`
  * (the gap between that and the tier's real price) is therefore always ≥ 0,
  * a genuine discount at every tier, never negative/a surcharge.
  *
- * Rounds only once, at the final tier price — never on an intermediate
+ * Rounds only once, at the final tier price, never on an intermediate
  * value, so the anchor tier's own price always comes back out exactly equal
  * to the input with zero rounding drift.
  */

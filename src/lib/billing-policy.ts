@@ -3,14 +3,14 @@ import "server-only";
 import { serviceSelect } from "@/lib/supabase-rpc";
 
 /**
- * DB-backed billing policy, with hardcoded defaults as a fallback — same
+ * DB-backed billing policy, with hardcoded defaults as a fallback, same
  * shape as feature-flags.ts's getFeatureFlags() and
  * subscription-duration-config.ts's getDurationTiers(). A thin DB round
  * trip with no logic of its own; the logic that consumes it
  * (billing-lifecycle.ts) is what's unit-tested.
  */
 
-/** `earlyTerminationPolicy.unpaidSettlementAction` — what happens when a final-settlement invoice goes unpaid past its window. */
+/** `earlyTerminationPolicy.unpaidSettlementAction`, what happens when a final-settlement invoice goes unpaid past its window. */
 export type UnpaidSettlementAction = "continue_contract" | "terminate_and_escalate" | "manual_review";
 
 export type BillingPolicy = {

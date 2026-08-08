@@ -17,7 +17,7 @@ import { FieldShell, TextInput } from "./fields";
 // same way AddressAutocomplete is used elsewhere in the form. It must NOT
 // render its own internal FieldShell around the search input: FieldShell
 // clones its direct child and stamps the field's `id` onto it, and here the
-// direct child would be the icon-positioning wrapper <div>, not the <input> —
+// direct child would be the icon-positioning wrapper <div>, not the <input> :
 // producing two DOM nodes sharing the same id (invalid HTML, and it breaks the
 // label's htmlFor association, since the label ends up pointing at the div).
 
@@ -32,7 +32,7 @@ export type CitySelectorCopy = {
 export type CitySelection = {
   cityId?: string;          // canonical id, or OTHER_CITY_ID, or undefined
   cityName?: string;        // resolved canonical/localized display name for storage
-  regionName?: string;      // canonical region — fills the "Province or region" box
+  regionName?: string;      // canonical region: fills the "Province or region" box
   manualName?: string;      // set only for the "not listed" path
 };
 
@@ -58,7 +58,7 @@ export function MoroccanCitySelector({
   manualName?: string;
   onChange: (sel: CitySelection) => void;
   copy: CitySelectorCopy;
-  /** Injected by the wrapping <FieldShell> via cloneElement — forwarded to the real input. */
+  /** Injected by the wrapping <FieldShell> via cloneElement: forwarded to the real input. */
   "aria-invalid"?: boolean;
   "aria-describedby"?: string;
 }) {
@@ -93,7 +93,7 @@ export function MoroccanCitySelector({
       cityId,
       cityName: city ? displayCityName(city, locale) : undefined,
       // The province belongs in the "Province or region" field, not in the
-      // dropdown label — selecting a city fills that box for the customer.
+      // dropdown label: selecting a city fills that box for the customer.
       regionName: city?.regionName,
     });
     setOpen(false);
@@ -110,7 +110,7 @@ export function MoroccanCitySelector({
     row.kind === "other" ? pickOther() : pickCity(row.id);
   }
 
-  // What the collapsed input shows when not actively searching. City only — the
+  // What the collapsed input shows when not actively searching. City only: the
   // province is shown in its own field below.
   const collapsedLabel = isOther
     ? copy.notListed

@@ -99,7 +99,7 @@ export function calculateAssessmentPriceCents(sizeM2: number, overMax = false): 
  * (this function, when a duration is selected) → the existing annual-billing
  * prepay discount stacks on top of the duration-discounted figure when
  * billingInterval is annual (that stacking happens where this quote's
- * `estimatedAnnualCents` is consumed alongside `billingInterval` — this
+ * `estimatedAnnualCents` is consumed alongside `billingInterval`, this
  * function always returns both the monthly and annual figures; the caller
  * picks the one that applies). One-time fees (assessment, door-lock
  * installation) are computed independently and never duration-discounted.
@@ -156,12 +156,12 @@ export type AnnualInvoiceBreakdown = {
 /**
  * Reconstructs a real annual invoice's full discount breakdown from an
  * annual-billed quote: reverses the frequency discount (pricing.ts's static
- * %, safe — not admin-editable) on top of the duration discount the quote
+ * %, safe, not admin-editable) on top of the duration discount the quote
  * already discloses, then adds the annual-prepay discount
  * (`annualSavingsCents`, already annual-scale) as its own line. Every
  * component reconciles exactly: subtotal − frequency − duration − annual =
  * total. Returns null when the quote has no duration selected (an annual
- * invoice always has a duration tier — this just guards the null case
+ * invoice always has a duration tier, this just guards the null case
  * `AssessmentQuote` allows).
  */
 export function buildAnnualInvoiceBreakdown(quote: AssessmentQuote, frequencyDiscountPercent: number): AnnualInvoiceBreakdown | null {
@@ -211,7 +211,7 @@ export function validateAssessmentBooking(
   const billingInterval = typeof b.billingInterval === "string" && BILLING.has(b.billingInterval as BillingInterval)
     ? (b.billingInterval as BillingInterval)
     : null;
-  // Never trust a client-sent discount % or price — only the duration in
+  // Never trust a client-sent discount % or price, only the duration in
   // months is accepted from the client, and it must match an *enabled* tier.
   const durationMonthsRaw = numberInRange(b.durationMonths, 3, 12);
   const durationTier = durationMonthsRaw !== null ? findDurationTier(durationTiers, durationMonthsRaw) : null;

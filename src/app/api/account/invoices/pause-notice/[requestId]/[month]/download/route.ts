@@ -70,8 +70,8 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ requ
 
   const noteLines = [
     isFirstMonth
-      ? `Your pause is now in effect for ${propertyLabel} — no cleaning visits or charges for this period.`
-      : `Your subscription remains paused for ${propertyLabel} this month — no charge.`,
+      ? `Your pause is now in effect for ${propertyLabel}: no cleaning visits or charges for this period.`
+      : `Your subscription remains paused for ${propertyLabel} this month: no charge.`,
     isLastMonth
       ? `This is the final paused month. Your subscription automatically resumes on ${resumeDate}, and regular billing continues from your next scheduled visit.`
       : null,
@@ -86,12 +86,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ requ
     logoPngBytes: await readLogoBytes(),
     from: { name: site.name, lines: [`${site.addressLocality}, Morocco`, site.email, site.phoneDisplay] },
     to: { name: customer.full_name, lines: [customer.email] },
-    items: [{ description: `${propertyLabel} — subscription paused (${pauseRequest.subscriptions.frequency})`, qty: 1, rate: 0 }],
+    items: [{ description: `${propertyLabel}: subscription paused (${pauseRequest.subscriptions.frequency})`, qty: 1, rate: 0 }],
     currency: "EUR",
     totals: [{ label: "Total", amount: money("EUR", 0), emphasis: true }],
     notes: noteLines.join(" "),
     terms: `This notice is issued subject to Dar Tahara's Terms & Conditions: ${site.url}/${customer.preferred_language}/terms`,
-    thanks: "Thank you for your patience — we look forward to caring for your home again soon.",
+    thanks: "Thank you for your patience: we look forward to caring for your home again soon.",
   });
 
   await serviceInsert("customer_activity", {

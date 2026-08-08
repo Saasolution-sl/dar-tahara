@@ -41,7 +41,7 @@ type Prediction = {
   prediction: GPlacePrediction;
 };
 
-/* Minimal shapes for the Google objects we touch — avoids pulling in the full
+/* Minimal shapes for the Google objects we touch: avoids pulling in the full
  * @types/google.maps dependency for four call sites. */
 
 function gmaps(): GMaps | null {
@@ -78,7 +78,7 @@ export function AddressAutocomplete({
   onSelect: (place: PlaceLike) => void;
   onManual: () => void;
   copy: AddressAutocompleteCopy;
-  /** ISO-3166 alpha-2, lowercased — restricts results (e.g. "ma"). */
+  /** ISO-3166 alpha-2, lowercased: restricts results (e.g. "ma"). */
   countryRestriction?: string;
   disabled?: boolean;
   className?: string;
@@ -97,7 +97,7 @@ export function AddressAutocomplete({
   const requestIdRef = React.useRef(0);
   const listId = `${id}-listbox`;
 
-  // Load the script lazily — only when this field is actually rendered.
+  // Load the script lazily: only when this field is actually rendered.
   React.useEffect(() => {
     if (!mapsEnabled()) return;
     let alive = true;
@@ -239,7 +239,7 @@ export function AddressAutocomplete({
         {busy ? copy.searching : ""}
       </span>
 
-      {/* Manual entry is always offered — never a dead end. */}
+      {/* Manual entry is always offered: never a dead end. */}
       <button
         type="button"
         onClick={onManual}

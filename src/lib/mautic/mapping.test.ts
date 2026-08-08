@@ -65,7 +65,7 @@ test("smart-lock interest maps to a field + segment tag, never a price", () => {
     smartLockCompatibilityStatus: "pending_review",
   });
   assert.equal(f.smart_lock_interest, "purchase_interested");
-  // Mautic truncates aliases at 25 chars — this MUST stay the short form or the
+  // Mautic truncates aliases at 25 chars, this MUST stay the short form or the
   // value is silently dropped on sync.
   assert.equal(f.smart_lock_compatibility, "pending_review");
   assert.ok(Object.keys(f).every((k) => k.length <= 25), "no Mautic alias may exceed 25 chars");

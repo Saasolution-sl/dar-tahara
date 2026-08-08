@@ -48,7 +48,7 @@ export function isSupportedCountry(value: string | undefined | null): value is C
 export function parsePhone(text: string, country?: CountryCode) {
   try {
     // The /core overload has no "no default country" form, so pass an options
-    // object when we don't have one — an already-international number still
+    // object when we don't have one, an already-international number still
     // parses, and a national one correctly fails instead of being guessed.
     return (country
       ? coreParse(text, country, metadata)

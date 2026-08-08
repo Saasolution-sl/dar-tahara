@@ -5,7 +5,7 @@ import { getDictionary } from "@/i18n/dictionaries";
 export const runtime = "nodejs";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
-export const alt = "Dar Tahara — House of Purity";
+export const alt = "Dar Tahara: House of Purity";
 
 /** Dynamically rendered Open Graph card, brand-styled and localized. */
 export default async function OpengraphImage({

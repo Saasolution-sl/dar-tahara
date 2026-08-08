@@ -8,7 +8,7 @@
  *  - the flag is derived arithmetically from the ISO code.
  *
  * The flag is presentation only. What we store as business data is the ISO
- * 3166-1 alpha-2 code, the calling code and the E.164 number — never the emoji.
+ * 3166-1 alpha-2 code, the calling code and the E.164 number, never the emoji.
  */
 import { getCountries, getCountryCallingCode, isSupportedCountry, type CountryCode } from "./lib";
 import type { Locale } from "@/i18n/config";
@@ -20,7 +20,7 @@ export type PhoneCountry = {
   callingCode: string;
   /** Localized country name, e.g. "Morocco" / "Maroc" / "المغرب". */
   name: string;
-  /** Emoji flag — display only, never stored. */
+  /** Emoji flag, display only, never stored. */
   flag: string;
 };
 
@@ -32,7 +32,7 @@ export type PhoneCountry = {
  * the only thing that renders consistently across platforms.
  *
  * These are served from flagcdn.com, so the images are a third-party request.
- * They are decorative only — no personal data is sent, but the visitor's IP is
+ * They are decorative only, no personal data is sent, but the visitor's IP is
  * visible to that host.
  */
 export function flagImageUrl(iso2: string, width: 20 | 40 | 80 = 40): string {
@@ -46,7 +46,7 @@ export function flagImageSrcSet(iso2: string): string {
 
 /**
  * Regional-indicator maths: "MA" → 🇲🇦. Retained for non-visual uses (it is
- * NOT used for display — see flagImageUrl for why).
+ * NOT used for display, see flagImageUrl for why).
  */
 export function flagEmoji(iso2: string): string {
   const code = iso2.toUpperCase();
@@ -58,7 +58,7 @@ export function flagEmoji(iso2: string): string {
   );
 }
 
-/** Countries the Moroccan diaspora most often dials from — floated to the top. */
+/** Countries the Moroccan diaspora most often dials from, floated to the top. */
 const PRIORITY: readonly string[] = ["MA", "FR", "ES", "NL", "BE", "DE", "GB", "IT", "US", "CA"];
 
 const cache = new Map<string, PhoneCountry[]>();
@@ -164,7 +164,7 @@ const LOCALE_DEFAULT_COUNTRY: Record<Locale, CountryCode> = {
 
 /**
  * Initial country: an explicit previous choice wins, then the site locale.
- * Deliberately NOT IP geolocation — an expat browsing from abroad still usually
+ * Deliberately NOT IP geolocation, an expat browsing from abroad still usually
  * wants their own number's country, and the customer can always change it.
  */
 export function defaultCountryFor(

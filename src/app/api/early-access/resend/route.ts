@@ -17,7 +17,7 @@ type LeadRow = { id: string; email: string; status: string; preferred_language: 
 /**
  * Resend the verification email. Deliberately enumeration-safe: the response is
  * identical whether or not the address exists, is already verified, or is
- * throttled — so this endpoint can't be used to probe who signed up.
+ * throttled: so this endpoint can't be used to probe who signed up.
  */
 export async function POST(req: NextRequest) {
   const ip = clientIpFromHeaders(req.headers);

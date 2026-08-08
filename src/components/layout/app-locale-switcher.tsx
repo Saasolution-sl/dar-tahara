@@ -9,7 +9,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Locale switcher for routes that aren't under the `/[locale]/...` segment
- * (the customer portal, the admin panel) — locale lives only in the
+ * (the customer portal, the admin panel): locale lives only in the
  * NEXT_LOCALE cookie there, so switching sets the cookie and asks the router
  * to re-fetch the current route's server payload instead of navigating.
  */

@@ -1,11 +1,11 @@
 /**
- * Digital smart-lock upsell — the SINGLE source of truth for the offer.
+ * Digital smart-lock upsell, the SINGLE source of truth for the offer.
  *
  * The form, review summary, backend persistence, Mautic mapping and analytics
  * all derive the price, currency and product code from here. Never hardcode the
  * value 200 anywhere else. Changing the price is a one-line change in this file.
  *
- * The offer is a PRODUCT INTEREST captured during early access — never a paid
+ * The offer is a PRODUCT INTEREST captured during early access, never a paid
  * order. No money is collected here; installation is always subject to a later
  * door/lock compatibility review.
  */
@@ -33,7 +33,7 @@ export const SMART_LOCK_INTERESTS = [
 ] as const;
 export type SmartLockInterest = (typeof SMART_LOCK_INTERESTS)[number];
 
-/** Whether the lock can actually be fitted — decided later, never at signup. */
+/** Whether the lock can actually be fitted, decided later, never at signup. */
 export const SMART_LOCK_COMPATIBILITY = [
   "not_checked",
   "pending_review",
@@ -61,7 +61,7 @@ export type SmartLockFollowupStatus = (typeof SMART_LOCK_FOLLOWUP_STATUSES)[numb
  * Format the offer price for display. Euro symbol + integer value in Latin
  * digits, so it stays "€200" and never reverses or converts under any locale
  * (including RTL Arabic). The euro currency and the value are preserved
- * everywhere — the offer is never shown in another currency.
+ * everywhere, the offer is never shown in another currency.
  */
 export function formatSmartLockPrice(): string {
   return `€${DIGITAL_SMART_LOCK_OFFER.price}`;

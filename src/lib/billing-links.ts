@@ -16,12 +16,12 @@ export type CreatedPaymentLink = { id: string; token: string; url: string; expir
 /**
  * Inserts a new payment_links row and returns its public redemption URL.
  * The Stripe Checkout Session itself is created lazily, only when the
- * customer actually clicks the link (see pay-link/[token]/route.ts) — this
+ * customer actually clicks the link (see pay-link/[token]/route.ts), this
  * function never talks to Stripe.
  *
  * `windowDaysOverride` lets a final-settlement link use its own resolution
  * window (policy.finalSettlementPaymentWindowDays, e.g. 14 days) instead of
- * the regular dunning window — the link's own expiry is then the same clock
+ * the regular dunning window, the link's own expiry is then the same clock
  * as the settlement's default deadline, not a separate, shorter one.
  */
 export async function createPaymentLinkRecord(

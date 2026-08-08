@@ -73,7 +73,7 @@ function BeforeAfter({
     <figure>
       <div className="group relative aspect-[4/3] w-full select-none overflow-hidden rounded-[1.5rem] border border-border shadow-soft">
         {/* After (base) */}
-        <Image src={after} alt={`${label} — ${afterLabel}`} fill sizes="(max-width:1024px) 100vw, 33vw" className="object-cover" />
+        <Image src={after} alt={`${label}: ${afterLabel}`} fill sizes="(max-width:1024px) 100vw, 33vw" className="object-cover" />
         <span className="absolute end-3 top-3 rounded-full bg-primary/85 px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-widest text-primary-foreground backdrop-blur-sm">
           {afterLabel}
         </span>
@@ -83,7 +83,7 @@ function BeforeAfter({
           className="absolute inset-0 overflow-hidden"
           style={{ clipPath: `inset(0 ${100 - value}% 0 0)` }}
         >
-          <Image src={before} alt={`${label} — ${beforeLabel}`} fill sizes="(max-width:1024px) 100vw, 33vw" className="object-cover" />
+          <Image src={before} alt={`${label}: ${beforeLabel}`} fill sizes="(max-width:1024px) 100vw, 33vw" className="object-cover" />
           <span className="absolute start-3 top-3 rounded-full bg-charcoal/70 px-2.5 py-1 text-[0.65rem] font-medium uppercase tracking-widest text-stone-50 backdrop-blur-sm">
             {beforeLabel}
           </span>

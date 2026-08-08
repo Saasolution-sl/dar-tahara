@@ -3,7 +3,7 @@ import "server-only";
 /**
  * Cloudflare Turnstile verification (preferred over image CAPTCHAs).
  * When TURNSTILE_SECRET_KEY is not configured, verification is skipped so the
- * form keeps working in development — enable it by setting the keys.
+ * form keeps working in development, enable it by setting the keys.
  */
 export async function verifyTurnstile(
   token: string | undefined | null,

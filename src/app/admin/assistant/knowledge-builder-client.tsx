@@ -201,7 +201,7 @@ function WebsiteKnowledgeEngine({
           ["Website changes", data.analytics.websiteChangesAwaitingReview],
           ["Failed pages", data.analytics.failedPages],
           ["Failed questions", data.analytics.failedQuestions],
-          ["Feedback score", data.analytics.feedbackScore == null ? "—" : `${data.analytics.feedbackScore}%`],
+          ["Feedback score", data.analytics.feedbackScore == null ? "Not available" : `${data.analytics.feedbackScore}%`],
           ["Knowledge coverage", `${data.analytics.knowledgeCoverage}%`],
         ].map(([label, value]) => <div key={String(label)} className="rounded-2xl border border-border bg-card p-4 shadow-soft"><p className="text-xs uppercase tracking-wide text-muted-foreground">{label}</p><p className="mt-2 text-3xl font-semibold">{value}</p></div>)}
       </div>

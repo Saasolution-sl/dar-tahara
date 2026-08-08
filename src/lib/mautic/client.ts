@@ -2,7 +2,7 @@
  * Mautic REST client.
  *
  * Deliberately dependency-injected: the constructor takes a `fetchImpl`, so every
- * network behaviour — success, 4xx, 5xx, 429, timeout — is exercised in tests
+ * network behaviour, success, 4xx, 5xx, 429, timeout, is exercised in tests
  * without touching the network. There is NO `import "server-only"` here so the
  * class stays testable; the credential-reading factory lives in ./env, which is
  * the server-only entry point used by route handlers.
@@ -67,7 +67,7 @@ export class MauticClient {
         cache: "no-store",
       });
     } catch (err) {
-      // Network error or abort (timeout) — always transient.
+      // Network error or abort (timeout), always transient.
       const isAbort = err instanceof Error && err.name === "AbortError";
       throw new MauticApiError(
         isAbort ? "Mautic request timed out" : "Mautic request failed",

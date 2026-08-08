@@ -475,7 +475,7 @@ export async function retrieveStripeSubscription(
 /**
  * One-off Checkout Session for paying a specific outstanding invoice via a
  * secure payment link. Created fresh at redemption time (never pre-created
- * and stored) — the `payment_links` row's own `expires_at` is the real
+ * and stored), the `payment_links` row's own `expires_at` is the real
  * 7-day authority; this session only needs to live long enough for one
  * checkout attempt. `success`/`cancel` land back on the (non-locale-prefixed)
  * customer portal, matching how `/account/*` routes are structured.
@@ -658,7 +658,7 @@ export type StripeSubscription = {
 
 /**
  * Suspends billing collection on an existing subscription until `resumesAt`,
- * using Stripe's native `pause_collection` — Stripe itself stops generating
+ * using Stripe's native `pause_collection`, Stripe itself stops generating
  * invoices and resumes automatically at that timestamp, no external cron
  * needed for the billing side. Callers must treat this as the source of
  * truth for whether billing actually stopped: only write our own
@@ -678,7 +678,7 @@ export async function pauseStripeSubscription(input: {
 }
 
 /**
- * Clears `pause_collection`, resuming billing immediately — used for an
+ * Clears `pause_collection`, resuming billing immediately, used for an
  * admin-initiated early resume. (A pause approved with a future `resumesAt`
  * resumes on its own via Stripe; this is only needed to resume BEFORE that.)
  */
@@ -733,7 +733,7 @@ async function stripeDelete<T>(path: string, idempotencyKey?: string): Promise<T
 }
 
 /**
- * Immediately, permanently cancels the real Stripe subscription — used once
+ * Immediately, permanently cancels the real Stripe subscription, used once
  * an early-termination settlement is fully resolved (paid, or zero owed).
  * Idempotent: cancelling an already-cancelled subscription just returns its
  * current (already-canceled) state rather than erroring, so a retried

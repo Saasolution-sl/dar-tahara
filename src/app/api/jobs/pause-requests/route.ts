@@ -22,7 +22,7 @@ type DueRow = {
 };
 
 /**
- * Stripe already stops/resumes billing on its own via `resumes_at` — this job
+ * Stripe already stops/resumes billing on its own via `resumes_at`: this job
  * only keeps our own `pause_requests.status` / `subscriptions.status` fields
  * in sync with the dates an admin approved, for requests approved ahead of
  * their start date.

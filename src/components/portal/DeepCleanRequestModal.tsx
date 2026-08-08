@@ -17,7 +17,7 @@ export function DeepCleanRequestButton({
   return (
     <>
       <button onClick={() => setOpen(true)} className={buttonVariants({ variant: "outline", size: "sm" })}>
-        {copy.requestButton} — {priceLabel}
+        {copy.requestButton}: {priceLabel}
       </button>
       {open ? (
         <DeepCleanRequestModal

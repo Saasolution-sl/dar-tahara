@@ -148,7 +148,7 @@ function PauseAction({
   copy: (typeof portalCopy)["en"]["pause"];
 }) {
   if (subscription.status !== "active") {
-    return <span className="text-sm text-muted-foreground">—</span>;
+    return <span className="text-sm text-muted-foreground">Not available</span>;
   }
   if (subscription.pause_used) {
     return (
@@ -188,7 +188,7 @@ function DeepCleanAction({
   locale: Locale;
 }) {
   if (subscription.status !== "active") {
-    return <span className="text-sm text-muted-foreground">—</span>;
+    return <span className="text-sm text-muted-foreground">Not available</span>;
   }
   const isFree =
     subscription.includesFreeDeepClean &&
@@ -230,7 +230,7 @@ function DeepCleanAction({
           : copy.usedMessage}
       </p>
     ) : (
-      <span className="text-sm text-muted-foreground">—</span>
+      <span className="text-sm text-muted-foreground">Not available</span>
     );
   }
 
@@ -303,7 +303,7 @@ function CancellationAction({
     !subscription.contract_duration_months ||
     subscription.status === "cancelled"
   ) {
-    return <span className="text-sm text-muted-foreground">—</span>;
+    return <span className="text-sm text-muted-foreground">Not available</span>;
   }
   if (subscription.billing_interval === "annual") {
     return (
@@ -327,7 +327,7 @@ function CancellationAction({
     );
   }
   if (subscription.cancellation_status === "settled") {
-    return <span className="text-sm text-muted-foreground">—</span>;
+    return <span className="text-sm text-muted-foreground">Not available</span>;
   }
   return (
     <CancellationButton

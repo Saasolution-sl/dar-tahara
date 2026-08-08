@@ -4,7 +4,7 @@ import type { Locale } from "@/i18n/config";
 /**
  * Double opt-in confirmation email. Sent via Resend when RESEND_API_KEY and
  * MAILING_FROM_EMAIL are configured; otherwise a no-op (the subscriber is
- * stored as unconfirmed and no email is sent — documented in the README).
+ * stored as unconfirmed and no email is sent, documented in the README).
  *
  * Content is localised to the subscriber's detected/selected language and every
  * message carries an unsubscribe link.

@@ -1,12 +1,12 @@
 /**
- * Canonical Moroccan cities — the SINGLE source of truth for standardized city
+ * Canonical Moroccan cities, the SINGLE source of truth for standardized city
  * data across the site (form selector, validation, storage, Mautic reporting).
  *
  * Each city has one stable `id` and one `canonicalName`; language variants and
  * common spellings are `aliases` so that "Tanger", "Tangier", "Tánger" and
  * "طنجة" all resolve to the same reporting value instead of fragmenting.
  *
- * `serviceAreaStatus` is BUSINESS configuration — operators should keep it in
+ * `serviceAreaStatus` is BUSINESS configuration, operators should keep it in
  * step with the real operational area (ideally sourced from the ops backend
  * later). A non-active status NEVER blocks an early-access registration; it only
  * drives messaging ("coming soon" / "waiting list") and segmentation.
@@ -212,7 +212,7 @@ function tokensFor(city: MoroccanCity): string[] {
 /**
  * Resolve a free-text name (any language/spelling) to a canonical city, so
  * "Tanger", "Tangier", "Tánger" and "طنجة" all map to the same record. Returns
- * undefined when nothing matches — the caller then treats it as a manual city.
+ * undefined when nothing matches, the caller then treats it as a manual city.
  */
 export function canonicalizeCity(input: string | undefined | null): MoroccanCity | undefined {
   if (!input || !input.trim()) return undefined;

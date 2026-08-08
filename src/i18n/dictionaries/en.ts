@@ -1,9 +1,9 @@
 ﻿const en = {
   meta: {
-    title: "Dar Tahara — Premium Home Care & Property Concierge",
+    title: "Dar Tahara: Premium Home Care & Property Concierge",
     description:
       "Dar Tahara is a premium home care and property concierge in Morocco. Professional cleaning, inspections and maintenance so you always arrive home to comfort.",
-    ogAlt: "Dar Tahara — House of Purity",
+    ogAlt: "Dar Tahara: House of Purity",
   },
   brand: {
     name: "Dar Tahara",
@@ -30,9 +30,9 @@
   },
   hero: {
     eyebrow: "Home care & property concierge",
-    title: "Your home deserves more than cleaning—it deserves exceptional care.",
+    title: "Your home deserves more than cleaning. It deserves exceptional care.",
     subtitle:
-      "For homeowners, expats and holiday-home owners across Morocco. We clean, inspect and maintain your property with quiet precision—so you return to comfort, never to worry.",
+      "For homeowners, expats and holiday-home owners across Morocco. We clean, inspect and maintain your property with quiet precision, so you return to comfort, never to worry.",
     ctaPrimary: "Book Initial Home Assessment",
     ctaTertiary: "Learn more",
     stat1Value: "500+",
@@ -47,7 +47,7 @@
     eyebrow: "Why Dar Tahara",
     title: "Peace of mind, delivered to your door.",
     subtitle:
-      "Dar Tahara means House of Purity. We are not a cleaning company—we are the trusted custodians of your home while you are away, and the reason it feels effortless when you return.",
+      "Dar Tahara means House of Purity. We are not a cleaning company. We are the trusted custodians of your home while you are away, and the reason everything feels ready when you return.",
     pillars: [
       {
         title: "Absolute trust",
@@ -55,11 +55,11 @@
       },
       {
         title: "Uncompromising quality",
-        body: "A meticulous standard applied to every surface, every detail—inspected, photographed and signed off.",
+        body: "A meticulous standard applied to every surface and detail, then inspected, photographed and signed off.",
       },
       {
         title: "Effortless for you",
-        body: "One point of contact, proactive updates and a home that is simply, quietly ready before you arrive.",
+        body: "One point of contact, proactive updates and a home that is quietly ready before you arrive.",
       },
       {
         title: "Complete discretion",
@@ -71,11 +71,11 @@
     eyebrow: "What we do",
     title: "Complete care for every corner of your home.",
     subtitle:
-      "From a single spotless clean to full vacation-home management—choose exactly what your property needs.",
+      "From a single spotless clean to full vacation-home management: choose exactly what your property needs.",
     items: [
       { title: "Premium Cleaning", body: "A refined, top-to-bottom clean tailored to fine homes and finishes." },
       { title: "Recurring Cleaning", body: "Weekly or bi-weekly upkeep that keeps your home consistently immaculate." },
-      { title: "Move In / Move Out", body: "A pristine handover, whether you are arriving, leaving or between tenants." },
+      { title: "Move In / Move Out", body: "A pristine handover for arrivals, departures and changes between tenants." },
       { title: "Property Inspections", body: "Scheduled walk-throughs with photo reports on the condition of your home." },
       { title: "Maintenance Checks", body: "Proactive checks on plumbing, appliances and safety before issues arise." },
       { title: "Key Holding", body: "Secure key-custody procedures with logged, approved access." },
@@ -125,10 +125,10 @@
     steps: [
       { title: "Book", body: "Tell us about your home and your rhythm in a two-minute request." },
       { title: "We visit", body: "A coordinator visits to understand your space and preferences." },
-      { title: "We clean", body: "Structured team training is designed to support our signature standard on every visit." },
+      { title: "We clean", body: "Our team trains to uphold our signature standard on every visit." },
       { title: "We inspect", body: "Every visit ends with a documented, photographed inspection." },
       { title: "You arrive", body: "Return to fresh linens, calm air and everything in its place." },
-      { title: "Enjoy", body: "Relax, reconnect and simply enjoy the comfort of home." },
+      { title: "Enjoy", body: "Relax, reconnect and enjoy the comfort of home." },
     ],
   },
   audiences: {
@@ -136,7 +136,7 @@
     title: "Trusted by people who value their time and their home.",
     items: [
       { title: "People living abroad", body: "Your Moroccan home, kept immaculate and ready between visits." },
-      { title: "Busy professionals", body: "Reclaim your evenings and weekends—we handle the rest." },
+      { title: "Busy professionals", body: "Reclaim your evenings and weekends. We handle the rest." },
       { title: "Families", body: "A healthy, spotless home so you can focus on what matters." },
       { title: "Holiday-home owners", body: "Arrive to a home that feels like the holiday started early." },
       { title: "Airbnb owners", body: "Five-star turnovers, restocking and guest-ready presentation." },
@@ -161,7 +161,7 @@
       },
       {
         quote:
-          "Our Airbnb reviews mention cleanliness in almost every comment now. Dar Tahara simply raised our standard.",
+          "Our Airbnb reviews mention cleanliness in almost every comment now. Dar Tahara raised our standard.",
         name: "Karim & Sofia",
         role: "Hosts, Casablanca",
       },
@@ -193,7 +193,7 @@
       },
       {
         q: "Can you prepare my home before I arrive?",
-        a: "Yes. Share your arrival details and we will ensure fresh linens, a spotless home, comfortable climate and any essentials you request—ready the moment you walk in.",
+        a: "Yes. Share your arrival details and we will ensure fresh linens, a spotless home, comfortable climate and any essentials you request, ready the moment you walk in.",
       },
       {
         q: "Which cities do you serve?",
@@ -251,7 +251,7 @@
     eyebrow: "Transparent pricing",
     title: "Estimate your monthly care.",
     subtitle:
-      "Move the slider and choose a rhythm. Your estimate updates instantly—no sign-up, no surprises.",
+      "Move the slider and choose a rhythm. Your estimate updates instantly: no sign-up, no surprises.",
     sizeLabel: "Property size",
     sizeUnit: "m²",
     sizeHelp: "Enter or slide between 20 and 250 m².",
@@ -272,7 +272,7 @@
       },
     },
     durationLabel: "Subscription duration",
-    durationHelp: "Choose how long you'd like to commit — longer terms save more.",
+    durationHelp: "Choose how long you'd like to commit. Longer terms save more.",
     duration: {
       "3_month": { name: "3 Months", tag: "Flexible Start" },
       "6_month": { name: "6 Months", tag: "Save 5%" },
@@ -390,7 +390,7 @@
       bedrooms: "Bedrooms",
       bathrooms: "Bathrooms",
       accessNotes: "Access notes (optional)",
-      accessNotesPlaceholder: "Parking, keys, gate codes — anything we should know",
+      accessNotesPlaceholder: "Parking, keys, gate codes, or anything we should know",
       pets: "There are pets in the home",
       petDetails: "Pet details",
       petDetailsPlaceholder: "Type and number of pets",
@@ -422,7 +422,7 @@
     },
     legal: {
       accuracy:
-        "I confirm the property information above — size, bedrooms, bathrooms, pets, smoking and condition — is accurate.",
+        "I confirm the property information above (size, bedrooms, bathrooms, pets, smoking and condition) is accurate.",
       termsLink: "Terms & Conditions",
       privacyLink: "Privacy Policy",
       note: "Dar Tahara may verify this information during the assessment and adjust the ongoing plan where the property materially differs.",
@@ -436,14 +436,14 @@
       doorlock_internet_required: "Please confirm that the home has an internet connection for the smart door lock.",
       legal_acceptance_required: "Please confirm the details and accept the terms to continue.",
       rate_limited: "Too many attempts. Please try again in a minute.",
-      checkout_not_configured: "Assessment applications are not available right now — please join early access.",
+      checkout_not_configured: "Assessment applications are not available right now. Please join early access.",
       checkout_failed: "We couldn't submit your application. Please try again.",
       network: "Network error. Please check your connection and try again.",
     },
   },
   consent: {
     message:
-      "We use analytics cookies to understand how our site is used. Decline and nothing changes — the site works exactly the same.",
+      "We use analytics cookies to understand how our site is used. Decline and nothing changes; the site works exactly the same.",
     accept: "Accept",
     decline: "Decline",
     privacy: "Privacy Policy",
@@ -472,7 +472,7 @@
     footerBody:
       "Leave your email and we'll let you know the moment our cleaning subscriptions become available.",
     confirmedTitle: "Subscription confirmed",
-    confirmedBody: "Thank you for confirming. You're all set—we'll be in touch when we go live.",
+    confirmedBody: "Thank you for confirming. You're all set. We'll be in touch when we go live.",
     unsubscribedTitle: "You've been unsubscribed",
     unsubscribedBody: "You will no longer receive launch updates. You can rejoin anytime.",
     invalidTitle: "Link expired or invalid",
@@ -506,7 +506,7 @@
       title: "Mission & Vision",
       description:
         "Dar Tahara combines professional people, innovative technology and transparent service to redefine residential cleaning in Morocco. Discover our mission, vision, values and promises.",
-      ogAlt: "Dar Tahara — Mission & Vision",
+      ogAlt: "Dar Tahara: Mission & Vision",
     },
     breadcrumb: {
       home: "Home",
@@ -617,11 +617,11 @@
         },
         {
           title: "CNSS registration",
-          body: "As our operations grow, we are working toward ensuring eligible employees are registered through Morocco’s National Social Security Fund (Caisse Nationale de Sécurité Sociale — CNSS), in accordance with legal and employment requirements.",
+          body: "As our operations grow, we are working toward ensuring eligible employees are registered through Morocco’s National Social Security Fund (Caisse Nationale de Sécurité Sociale, CNSS), in accordance with legal and employment requirements.",
         },
         {
           title: "Applicable AMO health coverage",
-          body: "Our implementation objective includes applicable Mandatory Health Insurance (Assurance Maladie Obligatoire — AMO) coverage for eligible employees through the CNSS system.",
+          body: "Our implementation objective includes applicable Mandatory Health Insurance (Assurance Maladie Obligatoire, AMO) coverage for eligible employees through the CNSS system.",
         },
         {
           title: "Clear working conditions",
@@ -721,7 +721,7 @@
       title: "More Than Cleaning",
       body: [
         "Dar Tahara is building a new standard for home cleaning in Morocco.",
-        "By combining skilled professionals, innovative technology, and genuine care for our customers, we deliver more than a clean home—we deliver peace of mind.",
+        "By combining skilled professionals, innovative technology, and genuine care for our customers, we deliver more than a clean home. We deliver peace of mind.",
       ],
       ctaPrimary: "Book Your Initial Home Assessment",
       ctaSecondary: "Discover Our Services",
@@ -729,7 +729,7 @@
     teaser: {
       eyebrow: "Why Dar Tahara?",
       title: "More than cleaning.",
-      body: "Professional people, innovative technology and transparent service—combined to redefine residential cleaning in Morocco.",
+      body: "Professional people, innovative technology and transparent service, combined to redefine residential cleaning in Morocco.",
       cta: "Read our mission & vision",
       points: [
         "Technology-driven operations",

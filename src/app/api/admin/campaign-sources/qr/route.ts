@@ -7,7 +7,7 @@ export const runtime = "nodejs";
 /**
  * Render a QR code (SVG) for a given URL. Admin only. SVG so it scales crisply
  * for print (flyers, events) and downloads as a small vector file. The URL must
- * be an https dartahara.com link — we don't render QR for arbitrary input.
+ * be an https dartahara.com link: we don't render QR for arbitrary input.
  */
 export async function GET(req: NextRequest) {
   if (!adminConfigured() || !(await isAdminAuthorized())) {

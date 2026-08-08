@@ -12,7 +12,7 @@ import { cn } from "@/lib/utils";
 
 /**
  * Cookie/analytics consent banner. Shown only when analytics is configured and
- * the visitor has not yet chosen. Declining is a first-class option — the site
+ * the visitor has not yet chosen. Declining is a first-class option: the site
  * is fully functional either way and nothing loads until "Accept".
  */
 export function ConsentBanner({

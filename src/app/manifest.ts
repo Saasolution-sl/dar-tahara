@@ -3,7 +3,7 @@ import { site } from "@/lib/site";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: "Dar Tahara — House of Purity",
+    name: "Dar Tahara: House of Purity",
     short_name: "Dar Tahara",
     description:
       "Premium home care & property concierge across Morocco. Always arrive home to comfort.",
