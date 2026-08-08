@@ -1,6 +1,10 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isLocale } from "@/i18n/config";
-import { answerAssistant } from "@/lib/assistant/service";
+import {
+  AI_ASSISTANT_DISABLED_CODE,
+  answerPublicAssistant,
+  isAssistantDisabledError,
+} from "@/lib/assistant/public-service";
 import { clientIpFromHeaders, rateLimit } from "@/lib/mailing-list";
 import { isSameOrigin } from "@/lib/request-security";
 
@@ -33,18 +37,29 @@ export async function POST(req: NextRequest) {
   }
 
   const locale = typeof body?.locale === "string" && isLocale(body.locale) ? body.locale : "en";
-  const reply = await answerAssistant({
-    channel: "website",
-    message,
-    locale,
-    conversationId: typeof body?.conversationId === "string" ? body.conversationId : null,
-    sessionId: typeof body?.sessionId === "string" ? body.sessionId : null,
-    sessionLanguage: typeof body?.sessionLanguage === "string" && isLocale(body.sessionLanguage) ? body.sessionLanguage : null,
-    selectedLanguage: typeof body?.selectedLanguage === "string" && isLocale(body.selectedLanguage) ? body.selectedLanguage : null,
-    selectedSuggestionId: typeof body?.selectedSuggestionId === "string" ? body.selectedSuggestionId.slice(0, 120) : null,
-    languageSelectionPending: body?.languageSelectionPending === true,
-    websitePath: typeof body?.websitePath === "string" ? body.websitePath : null,
-  });
+  let reply;
+  try {
+    reply = await answerPublicAssistant({
+      channel: "website",
+      message,
+      locale,
+      conversationId: typeof body?.conversationId === "string" ? body.conversationId : null,
+      sessionId: typeof body?.sessionId === "string" ? body.sessionId : null,
+      sessionLanguage: typeof body?.sessionLanguage === "string" && isLocale(body.sessionLanguage) ? body.sessionLanguage : null,
+      selectedLanguage: typeof body?.selectedLanguage === "string" && isLocale(body.selectedLanguage) ? body.selectedLanguage : null,
+      selectedSuggestionId: typeof body?.selectedSuggestionId === "string" ? body.selectedSuggestionId.slice(0, 120) : null,
+      languageSelectionPending: body?.languageSelectionPending === true,
+      websitePath: typeof body?.websitePath === "string" ? body.websitePath : null,
+    });
+  } catch (error) {
+    if (isAssistantDisabledError(error)) {
+      return NextResponse.json({ enabled: false, code: AI_ASSISTANT_DISABLED_CODE }, {
+        status: 503,
+        headers: { "Cache-Control": "no-store, max-age=0" },
+      });
+    }
+    throw error;
+  }
 
   return NextResponse.json({
     conversationId: reply.conversationId,

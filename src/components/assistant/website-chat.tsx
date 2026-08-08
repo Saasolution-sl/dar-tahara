@@ -8,6 +8,7 @@ import {
   clearSelectedAssistantLanguage,
   readSelectedAssistantLanguage,
 } from "@/lib/assistant/client-language";
+import { readAssistantAvailability } from "@/lib/assistant/availability-state";
 import { cn } from "@/lib/utils";
 
 type ChatCopy = {
@@ -56,6 +57,7 @@ function getSessionId() {
 }
 
 export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }) {
+  const [available, setAvailable] = React.useState(true);
   const [open, setOpen] = React.useState(false);
   const [conversationId, setConversationId] = React.useState<string | null>(null);
   const [sessionLanguage, setSessionLanguage] = React.useState<Locale | null>(null);
@@ -74,9 +76,42 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
   ]);
   const endRef = React.useRef<HTMLDivElement>(null);
 
+  const refreshAvailability = React.useCallback(async () => {
+    try {
+      const response = await fetch("/api/assistant/availability", { cache: "no-store" });
+      if (!response.ok) return true;
+      const enabled = readAssistantAvailability(await response.json());
+      if (enabled === null) return true;
+      setAvailable(enabled);
+      if (!enabled) {
+        setOpen(false);
+        setBusy(false);
+        setUnread(false);
+      }
+      return enabled;
+    } catch {
+      // Keep the last rendered state on transient availability-check failures.
+      // The message endpoint remains authoritative and fail-safe for AI usage.
+      return true;
+    }
+  }, []);
+
   React.useEffect(() => {
     endRef.current?.scrollIntoView({ block: "end" });
   }, [messages, suggestions, busy, open]);
+
+  React.useEffect(() => {
+    void refreshAvailability();
+    const interval = window.setInterval(() => void refreshAvailability(), 30_000);
+    const onVisibilityChange = () => {
+      if (document.visibilityState === "visible") void refreshAvailability();
+    };
+    document.addEventListener("visibilitychange", onVisibilityChange);
+    return () => {
+      window.clearInterval(interval);
+      document.removeEventListener("visibilitychange", onVisibilityChange);
+    };
+  }, [refreshAvailability]);
 
   React.useEffect(() => {
     const storedConversationId = window.localStorage.getItem("dar-tahara-assistant-conversation");
@@ -135,6 +170,15 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
           websitePath: window.location.pathname,
         }),
       });
+      if (res.status === 503) {
+        const enabled = readAssistantAvailability(await res.json().catch(() => null));
+        if (enabled === false) {
+          setAvailable(false);
+          setOpen(false);
+          setUnread(false);
+          return;
+        }
+      }
       if (!res.ok) throw new Error("assistant_failed");
       const data = (await res.json()) as {
         conversationId: string;
@@ -223,6 +267,8 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
 
   const activeLanguage = sessionLanguage || selectedLanguage || locale;
   const direction = activeLanguage === "ar" ? "rtl" : "ltr";
+
+  if (!available) return null;
 
   return (
     <div className="fixed bottom-4 right-4 z-50 sm:bottom-6 sm:right-6">
@@ -338,10 +384,11 @@ export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }
       ) : (
         <button
           type="button"
-          onClick={() => {
+          onClick={() => void refreshAvailability().then((enabled) => {
+            if (!enabled) return;
             setOpen(true);
             setUnread(false);
-          }}
+          })}
           className={cn(buttonVariants({ variant: "primary", size: "lg" }), "relative rounded-full shadow-lift")}
           aria-label={copy.open}
         >

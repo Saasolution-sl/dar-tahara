@@ -1,7 +1,7 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import { isLocale, type Locale } from "@/i18n/config";
-import { answerAssistant } from "@/lib/assistant/service";
+import { answerPublicAssistant, isAssistantDisabledError } from "@/lib/assistant/public-service";
 import {
   LANGUAGE_CLARIFICATION,
   languageLogMetadata,
@@ -555,18 +555,30 @@ async function processMessage(row: WebhookRow) {
   }
 
   const context = await recentContext(conversation.id, row.external_event_id);
-  const reply = await answerAssistant({
-    channel: "whatsapp",
-    message,
-    locale,
-    sessionLanguage: locale,
-    languageDecision,
-    conversationId: conversation.id,
-    customerName: contact.display_name,
-    contact: String(payload.senderHash || ""),
-    contextSummary: conversation.conversation_summary || context.summary,
-    conversationHistory: context.history,
-  });
+  let reply;
+  try {
+    reply = await answerPublicAssistant({
+      channel: "whatsapp",
+      message,
+      locale,
+      sessionLanguage: locale,
+      languageDecision,
+      conversationId: conversation.id,
+      customerName: contact.display_name,
+      contact: String(payload.senderHash || ""),
+      contextSummary: conversation.conversation_summary || context.summary,
+      conversationHistory: context.history,
+    });
+  } catch (error) {
+    if (!isAssistantDisabledError(error)) throw error;
+    await startEscalation(contact, conversation, {
+      required: true,
+      category: "manual_review",
+      reason: "assistant_disabled",
+      severity: "normal",
+    }, message, sender, locale, row.correlation_id);
+    return;
+  }
   await audit(conversation.id, row.correlation_id, "intent_classified", { intent: reply.intent, confidence: reply.confidence });
   if (reply.handoffRequired) {
     await startEscalation(contact, conversation, {
