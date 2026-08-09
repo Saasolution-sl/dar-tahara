@@ -204,21 +204,38 @@ export default async function InvoicesPage({
         (!selectedUnitId && !invoice.subscription_id)),
   );
 
-  const openSettlementInvoices = monthlySpecialInvoices.filter(
-    (invoice) =>
-      invoice.invoice_type === "early_termination_settlement" &&
-      (invoice.status === "open" || invoice.status === "overdue"),
+  // Any unpaid invoice can be settled, not just an early-termination one. A
+  // token is only offered when the link is still live, so the customer never
+  // clicks Pay now and lands on an "expired" redirect.
+  const nowIso = new Date().toISOString();
+  const payableInvoices = allInvoices.filter(
+    (invoice) => invoice.status === "open" || invoice.status === "overdue",
   );
-  const settlementPaymentLinks = Object.fromEntries(
+  const paymentTokens = Object.fromEntries(
     await Promise.all(
-      openSettlementInvoices.map(async (invoice) => {
-        const [paymentLink] = await serviceSelect<{ token: string }[]>(
-          `payment_links?invoice_id=eq.${invoice.id}&status=eq.active&order=created_at.desc&limit=1&select=token`,
-        );
-        return [invoice.id, paymentLink?.token] as const;
+      payableInvoices.map(async (invoice) => {
+        try {
+          const [paymentLink] = await serviceSelect<{ token: string }[]>(
+            `payment_links?invoice_id=eq.${invoice.id}&status=eq.active&expires_at=gt.${encodeURIComponent(nowIso)}&order=created_at.desc&limit=1&select=token`,
+          );
+          return [invoice.id, paymentLink?.token] as const;
+        } catch {
+          // Without service-role access locally the row simply falls back to
+          // its download action rather than failing the whole page.
+          return [invoice.id, undefined] as const;
+        }
       }),
     ),
   );
+
+  /** The live payment token for whichever invoice in this group is unpaid. */
+  function paymentHrefFor(invoices: InvoiceRow[]): string | undefined {
+    for (const invoice of invoices) {
+      const token = paymentTokens[invoice.id];
+      if (token) return `/api/account/invoices/pay-link/${token}`;
+    }
+    return undefined;
+  }
 
   const statementRows: SortedTableRow[] = statements.map((statement) => {
     const sourceInvoices = statementInvoices.filter(
@@ -248,12 +265,14 @@ export default async function InvoicesPage({
       downloadHref: `/api/account/invoices/statement/${statement.monthKey}/download${
         selectedUnitId ? `?unit=${encodeURIComponent(selectedUnitId)}` : ""
       }`,
+      // A statement aggregates a month of invoices; if any one of them is still
+      // unpaid, that month's row is what the customer needs to act on.
+      paymentHref: paymentHrefFor(sourceInvoices),
     };
   });
 
   const specialInvoiceRows: SortedTableRow[] = monthlySpecialInvoices.map((invoice) => {
     const month = invoiceMonth(invoice);
-    const paymentToken = settlementPaymentLinks[invoice.id];
     return {
       key: invoice.id,
       sortKey: invoice.created_at,
@@ -271,9 +290,7 @@ export default async function InvoicesPage({
         invoice.id,
       ),
       downloadHref: invoiceDownloadHref(invoice),
-      paymentHref: paymentToken
-        ? `/api/account/invoices/pay-link/${paymentToken}`
-        : undefined,
+      paymentHref: paymentHrefFor([invoice]),
     };
   });
 
@@ -330,6 +347,7 @@ export default async function InvoicesPage({
           invoice.id,
         ),
         downloadHref: invoiceDownloadHref(invoice),
+        paymentHref: paymentHrefFor([invoice]),
       };
     })
     .sort((left, right) => right.sortKey.localeCompare(left.sortKey))
@@ -393,18 +411,16 @@ export default async function InvoicesPage({
             <div className="flex-1">
               <h2 className="font-serif text-xl text-red-800">{ic.suspensionTitle}</h2>
               <p className="mt-1 text-sm text-red-700">{suspensionBody}</p>
-              <div className="mt-4">
-                {activePaymentLink ? (
-                  <Link
-                    href={`/api/account/invoices/pay-link/${activePaymentLink.token}`}
-                    className={buttonVariants({ variant: "primary", size: "sm" })}
-                  >
-                    {ic.payNow}
-                  </Link>
-                ) : (
-                  <p className="text-xs text-red-700">{ic.suspensionNoLinkNote}</p>
-                )}
-              </div>
+              {/*
+                No action here on purpose: paying happens on the unpaid row
+                below, so there is one obvious place to do it rather than two
+                competing buttons. This box explains the situation; the row
+                resolves it.
+              */}
+              <p className="mt-3 text-xs leading-5 text-red-700">{ic.suspensionTermsNote}</p>
+              {!activePaymentLink ? (
+                <p className="mt-2 text-xs text-red-700">{ic.suspensionNoLinkNote}</p>
+              ) : null}
             </div>
           </div>
         </section>

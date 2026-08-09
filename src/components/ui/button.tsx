@@ -11,6 +11,10 @@ const buttonVariants = cva(
           "bg-primary text-primary-foreground shadow-soft hover:shadow-lift hover:-translate-y-0.5",
         gold:
           "bg-accent text-accent-foreground shadow-soft hover:shadow-gold hover:-translate-y-0.5",
+        // Reserved for settling an overdue balance, so it reads in the same red
+        // register as the suspension notice rather than as a routine action.
+        danger:
+          "bg-red-700 text-white shadow-soft hover:bg-red-800 hover:shadow-lift hover:-translate-y-0.5",
         outline:
           "border border-border bg-transparent text-foreground hover:bg-secondary hover:border-foreground/20",
         ghost: "bg-transparent text-foreground hover:bg-secondary",
