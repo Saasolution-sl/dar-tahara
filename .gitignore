@@ -6,10 +6,13 @@
 *.pem
 .env
 .env*.local
-# Backups/copies of env files — `.env*.local` does NOT match `.env.local.bak`,
+# Backups/copies of env files. `.env*.local` does NOT match `.env.local.bak`,
 # so without this a saved copy of real credentials is committable.
 .env*.bak*
 .env.*.backup
+# ...and `.env.*.backup` does not match `.env.local.prod-backup` either, so
+# match any env file with "backup" anywhere in the name.
+.env*backup*
 !.env.example
 npm-debug.log*
 yarn-debug.log*
@@ -24,5 +27,7 @@ agentdb.rvf*
 # Local Codex/Ruflo runtime artifacts
 .codex-*.log
 .claude-flow/
+
+.vercel
 
 .vercel
