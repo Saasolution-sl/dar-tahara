@@ -14,6 +14,12 @@ import {
   type OverviewServiceBooking,
   type OverviewSubscription,
 } from "@/lib/account-overview";
+import {
+  appointmentDisplayState,
+  appointmentTiming,
+  isOnDay,
+  nextAppointment,
+} from "@/lib/appointment-state";
 import { requireCustomerPortal } from "@/lib/feature-flags";
 import { compactInvoiceReference } from "@/lib/invoice-reference";
 import { money, shortDate } from "@/lib/portal-format";
@@ -21,6 +27,37 @@ import { requireAuth } from "@/lib/portal-auth";
 import { getRequestLocale } from "@/lib/request-locale";
 import { createClient } from "@/lib/supabase/server";
 import { serviceSelect } from "@/lib/supabase-rpc";
+
+type NextAppointmentProperty = { id: string; address_line1: string; city: string };
+type NextAppointmentRow = {
+  id: string;
+  status: string;
+  service_window_start: string;
+  service_window_end: string;
+  scheduled_start: string | null;
+  scheduled_end: string | null;
+  property_id: string;
+  properties: NextAppointmentProperty[] | NextAppointmentProperty | null;
+};
+
+function propertyLabel(booking: NextAppointmentRow): string | null {
+  const property = Array.isArray(booking.properties)
+    ? booking.properties[0]
+    : booking.properties;
+  return property ? `${property.address_line1}, ${property.city}` : null;
+}
+
+/** "Mon 17 Aug, 09:00 – 11:30" for a booking with a confirmed slot. */
+function appointmentDateTime(start: string, end: string | null, locale: string) {
+  const date = new Intl.DateTimeFormat(locale, {
+    weekday: "short",
+    day: "numeric",
+    month: "short",
+  }).format(new Date(start));
+  const time = new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit" });
+  const window = end ? `${time.format(new Date(start))} – ${time.format(new Date(end))}` : time.format(new Date(start));
+  return `${date}, ${window}`;
+}
 
 function paymentDate(value: string, locale: string) {
   return new Intl.DateTimeFormat(locale, {
@@ -36,6 +73,7 @@ export default async function AccountPage() {
   const context = await requireAuth();
   const locale = await getRequestLocale();
   const c = portalCopy[locale].dashboard;
+  const ac = portalCopy[locale].appointments;
   const db = await createClient();
   const customerId =
     context.customerId || "00000000-0000-0000-0000-000000000000";
@@ -47,6 +85,7 @@ export default async function AccountPage() {
     invoices,
     serviceBookings,
     additionalServices,
+    appointmentBookings,
   ] = await Promise.all([
     db
       .from("customers")
@@ -88,6 +127,18 @@ export default async function AccountPage() {
       .eq("customer_id", customerId)
       .in("status", ["submitted", "under_review", "approved", "scheduled"])
       .order("requested_date", { ascending: true }),
+    // Separate from `serviceBookings` above on purpose: the Next-appointment
+    // tile needs the property and must include `in_progress` (a visit happening
+    // right now is the most relevant thing on the page), while
+    // selectUpcomingMaintenance's planning/confirmed-only input is left alone.
+    db
+      .from("service_bookings")
+      .select(
+        "id,status,service_window_start,service_window_end,scheduled_start,scheduled_end,property_id,properties(id,address_line1,city)",
+      )
+      .eq("customer_id", customerId)
+      .in("status", ["planning", "confirmed", "in_progress"])
+      .order("service_window_start", { ascending: true }),
   ]);
 
   const now = new Date();
@@ -108,6 +159,10 @@ export default async function AccountPage() {
   const outstanding = summarizeOutstandingInvoices(invoiceRows);
   const upcomingMaintenance = selectUpcomingMaintenance(
     (serviceBookings.data || []) as OverviewServiceBooking[],
+    now,
+  );
+  const nextVisit = nextAppointment(
+    (appointmentBookings.data || []) as NextAppointmentRow[],
     now,
   );
   const upcomingAdditionalService = selectUpcomingAdditionalService(
@@ -136,6 +191,51 @@ export default async function AccountPage() {
       </h1>
 
       <div className="mt-7 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        <PortalCard title={ac.nextTitle}>
+          {nextVisit ? (
+            <>
+              <div className="flex flex-wrap items-center gap-2">
+                <StatusBadge value={ac.states[appointmentDisplayState(nextVisit, now)]} />
+                {isOnDay(nextVisit, now) ? (
+                  <span className="inline-flex rounded-full bg-primary px-2.5 py-1 text-xs font-semibold text-primary-foreground">
+                    {ac.today}
+                  </span>
+                ) : null}
+              </div>
+              <p className="mt-3 font-serif text-2xl">
+                {nextVisit.scheduled_start
+                  ? appointmentDateTime(nextVisit.scheduled_start, nextVisit.scheduled_end, locale)
+                  : `${shortDate(nextVisit.service_window_start, locale)} – ${shortDate(
+                      nextVisit.service_window_end,
+                      locale,
+                    )}`}
+              </p>
+              {appointmentTiming(nextVisit) === "window" ? (
+                <p className="mt-1 text-sm text-muted-foreground">{ac.timeToBeConfirmed}</p>
+              ) : null}
+              <p className="mt-2 text-sm text-muted-foreground">
+                {propertyLabel(nextVisit) || c.property}
+              </p>
+              <Link
+                href="/account/appointments?view=agenda"
+                className={buttonVariants({ variant: "outline", size: "sm", className: "mt-4" })}
+              >
+                {ac.viewAgenda}
+              </Link>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-muted-foreground">{ac.emptyUpcoming}</p>
+              <Link
+                href="/account/appointments?view=agenda"
+                className={buttonVariants({ variant: "outline", size: "sm", className: "mt-4" })}
+              >
+                {ac.viewAgenda}
+              </Link>
+            </>
+          )}
+        </PortalCard>
+
         <PortalCard title={c.accountStatus}>
           <StatusBadge
             value={
