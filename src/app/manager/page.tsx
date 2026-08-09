@@ -1,2 +1,7 @@
-import { ManagerOperations } from "@/components/manager/ManagerOperations";
-export default function ManagerPage() { return <ManagerOperations />; }
+import { OperationsDashboard } from "@/components/dashboard/OperationsDashboard";
+import { requireRole } from "@/lib/portal-auth";
+
+export default async function ManagerPage() {
+  const context = await requireRole(["manager", "administrator"]);
+  return <OperationsDashboard context={context} />;
+}

@@ -10,11 +10,13 @@ export function StatusActionButton({
   activeLabel,
   inactiveLabel,
   onToggle,
+  failedLabel = "action_failed",
 }: {
   active: boolean;
   activeLabel: string;
   inactiveLabel: string;
   onToggle: () => Promise<Response>;
+  failedLabel?: string;
 }) {
   const router = useRouter();
   const [busy, setBusy] = React.useState(false);
@@ -27,7 +29,7 @@ export function StatusActionButton({
       const response = await onToggle();
       if (!response.ok) {
         const data = await response.json().catch(() => null);
-        setError(data?.error || "action_failed");
+        setError(data?.error || failedLabel);
         return;
       }
       router.refresh();
