@@ -15,6 +15,16 @@
  *    window with no completion far more often means the record has not been
  *    updated yet than that the visit did not happen, and telling a customer
  *    their cleaning was missed on that basis would be wrong.
+ * 3. Whether the subscription paying for it is suspended for non-payment. That
+ *    lives on `subscriptions`, not on the booking, so it is passed in:
+ *      - still to come  -> `suspended`, the visit is on hold
+ *      - window elapsed -> `forfeited`, the turn was lost and is not made up
+ *    A visit already `completed` or `cancelled` keeps that state: it was
+ *    settled before the suspension and rewriting history would be wrong.
+ *
+ * Every view derives state through this one function. When each page decided
+ * for itself, the same booking could read `confirmed` in one place and
+ * suspended in another.
  */
 
 export type BookingStatus =
@@ -30,7 +40,9 @@ export type AppointmentDisplayState =
   | "in_progress"
   | "completed"
   | "cancelled"
-  | "awaiting_update";
+  | "awaiting_update"
+  | "suspended"
+  | "forfeited";
 
 export type AppointmentTiming = "exact" | "window";
 
@@ -62,24 +74,46 @@ export function appointmentCalendarDate(booking: AppointmentBookingInput): strin
   return (booking.scheduled_start || booking.service_window_start).slice(0, 10);
 }
 
+export type AppointmentStateOptions = {
+  /** The subscription paying for this booking is suspended for non-payment. */
+  subscriptionSuspended?: boolean;
+};
+
 export function appointmentDisplayState(
   booking: AppointmentBookingInput,
   now: Date = new Date(),
+  options: AppointmentStateOptions = {},
 ): AppointmentDisplayState {
   const status = booking.status;
-  if (SETTLED.has(status)) return status as AppointmentDisplayState;
-  if (status === "in_progress") return "in_progress";
 
-  // planning / confirmed with a window that has fully elapsed
-  const windowEnd = new Date(`${booking.service_window_end}T23:59:59.999Z`);
-  if (windowEnd.getTime() < now.getTime()) return "awaiting_update";
+  // Settled first: a visit that already happened, or was called off, is not
+  // rewritten by a suspension that came afterwards.
+  if (SETTLED.has(status)) return status as AppointmentDisplayState;
+
+  const windowElapsed =
+    new Date(`${booking.service_window_end}T23:59:59.999Z`).getTime() < now.getTime();
+
+  if (options.subscriptionSuspended) {
+    return windowElapsed ? "forfeited" : "suspended";
+  }
+
+  if (status === "in_progress") return "in_progress";
+  if (windowElapsed) return "awaiting_update";
 
   return status === "confirmed" ? "confirmed" : "planning";
 }
 
-/** Upcoming = not settled and its window/slot has not passed. */
-export function isUpcoming(booking: AppointmentBookingInput, now: Date = new Date()): boolean {
-  const state = appointmentDisplayState(booking, now);
+/**
+ * Upcoming = still going to happen. A suspended visit is deliberately excluded:
+ * it is on hold, not scheduled, so counting it as upcoming would let the
+ * overview promise a visit that will not take place until the invoice is paid.
+ */
+export function isUpcoming(
+  booking: AppointmentBookingInput,
+  now: Date = new Date(),
+  options: AppointmentStateOptions = {},
+): boolean {
+  const state = appointmentDisplayState(booking, now, options);
   return state === "planning" || state === "confirmed" || state === "in_progress";
 }
 

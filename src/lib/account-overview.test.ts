@@ -2,11 +2,15 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import {
   countSubscriptions,
+  countSuspendedForPayment,
+  excludeSuspendedBookings,
+  isBlockedForPayment,
   selectCurrentMonthInvoice,
   selectNextPayment,
   selectUpcomingAdditionalService,
   selectUpcomingMaintenance,
   summarizeOutstandingInvoices,
+  suspendedSubscriptionIds,
   type OverviewInvoice,
   type OverviewSubscription,
 } from "./account-overview";
@@ -173,4 +177,111 @@ test("selects upcoming maintenance and additional service dates", () => {
     )?.id,
     "deep-clean",
   );
+});
+
+test("a subscription suspended for non-payment blocks scheduling", () => {
+  assert.equal(
+    isBlockedForPayment([
+      subscription({ id: "a" }),
+      subscription({ id: "b", operational_status: "suspended_for_non_payment" }),
+    ]),
+    true,
+  );
+});
+
+test("cancellation_pending does not block: paying would not clear it", () => {
+  assert.equal(
+    isBlockedForPayment([subscription({ operational_status: "cancellation_pending" })]),
+    false,
+  );
+});
+
+test("active subscriptions, a missing status, and no subscriptions are all unblocked", () => {
+  assert.equal(isBlockedForPayment([subscription({ operational_status: "active" })]), false);
+  assert.equal(isBlockedForPayment([subscription({})]), false);
+  assert.equal(isBlockedForPayment([subscription({ operational_status: null })]), false);
+  assert.equal(isBlockedForPayment([]), false);
+});
+
+test("a paused subscription is not blocked unless it is also suspended for non-payment", () => {
+  assert.equal(isBlockedForPayment([subscription({ status: "paused" })]), false);
+  assert.equal(
+    isBlockedForPayment([
+      subscription({ status: "paused", operational_status: "suspended_for_non_payment" }),
+    ]),
+    true,
+  );
+});
+
+test("counts how many subscriptions are suspended, not just whether any are", () => {
+  assert.equal(
+    countSuspendedForPayment([
+      subscription({ id: "a", operational_status: "suspended_for_non_payment" }),
+      subscription({ id: "b", operational_status: "suspended_for_non_payment" }),
+      subscription({ id: "c" }),
+      subscription({ id: "d", operational_status: "cancellation_pending" }),
+    ]),
+    2,
+  );
+  assert.equal(countSuspendedForPayment([subscription({})]), 0);
+  assert.equal(countSuspendedForPayment([]), 0);
+});
+
+test("bookings on a suspended subscription are dropped, the rest survive", () => {
+  const subscriptions = [
+    subscription({ id: "tangier", operational_status: "suspended_for_non_payment" }),
+    subscription({ id: "rabat" }),
+    subscription({ id: "casablanca", operational_status: "active" }),
+  ];
+  const bookings = [
+    { id: "a", subscription_id: "tangier" },
+    { id: "b", subscription_id: "rabat" },
+    { id: "c", subscription_id: "casablanca" },
+    { id: "d", subscription_id: "tangier" },
+  ];
+
+  assert.deepEqual(
+    excludeSuspendedBookings(bookings, subscriptions).map((booking) => booking.id),
+    ["b", "c"],
+  );
+});
+
+test("with nothing suspended every booking is kept", () => {
+  const bookings = [{ id: "a", subscription_id: "rabat" }];
+  assert.deepEqual(excludeSuspendedBookings(bookings, [subscription({ id: "rabat" })]), bookings);
+  assert.deepEqual(excludeSuspendedBookings(bookings, []), bookings);
+});
+
+test("a booking whose subscription is unknown is kept, not silently hidden", () => {
+  const bookings = [{ id: "orphan", subscription_id: "not-in-the-list" }];
+  assert.deepEqual(
+    excludeSuspendedBookings(bookings, [
+      subscription({ id: "tangier", operational_status: "suspended_for_non_payment" }),
+    ]),
+    bookings,
+  );
+});
+
+test("excludeSuspendedBookings does not mutate the caller's array", () => {
+  const bookings = [
+    { id: "a", subscription_id: "tangier" },
+    { id: "b", subscription_id: "rabat" },
+  ];
+  excludeSuspendedBookings(bookings, [
+    subscription({ id: "tangier", operational_status: "suspended_for_non_payment" }),
+  ]);
+  assert.equal(bookings.length, 2);
+});
+
+test("suspendedSubscriptionIds returns only the suspended ones", () => {
+  const ids = suspendedSubscriptionIds([
+    subscription({ id: "tangier", operational_status: "suspended_for_non_payment" }),
+    subscription({ id: "rabat" }),
+    subscription({ id: "casablanca", operational_status: "cancellation_pending" }),
+  ]);
+
+  assert.equal(ids.has("tangier"), true);
+  assert.equal(ids.has("rabat"), false);
+  assert.equal(ids.has("casablanca"), false);
+  assert.equal(ids.size, 1);
 });

@@ -146,3 +146,45 @@ test("sorting does not mutate the caller's array", () => {
   sortAppointments(input, "asc");
   assert.equal(input[0].service_window_start, "2026-09-14");
 });
+
+test("a suspended subscription puts a still-future visit on hold", () => {
+  const state = appointmentDisplayState(booking({ status: "confirmed" }), NOW, {
+    subscriptionSuspended: true,
+  });
+  assert.equal(state, "suspended");
+});
+
+test("a suspended subscription forfeits a visit whose window has passed", () => {
+  const state = appointmentDisplayState(
+    booking({ status: "confirmed", service_window_start: "2026-08-03", service_window_end: "2026-08-09" }),
+    NOW,
+    { subscriptionSuspended: true },
+  );
+  assert.equal(state, "forfeited");
+});
+
+test("suspension never rewrites a visit that was already completed or cancelled", () => {
+  const old = { service_window_start: "2026-01-05", service_window_end: "2026-01-11" };
+  assert.equal(
+    appointmentDisplayState(booking({ status: "completed", ...old }), NOW, { subscriptionSuspended: true }),
+    "completed",
+  );
+  assert.equal(
+    appointmentDisplayState(booking({ status: "cancelled", ...old }), NOW, { subscriptionSuspended: true }),
+    "cancelled",
+  );
+});
+
+test("an in-progress visit on a suspended subscription still reads as suspended", () => {
+  // The subscription is unpaid, so the portal must not imply work is underway.
+  const state = appointmentDisplayState(booking({ status: "in_progress" }), NOW, {
+    subscriptionSuspended: true,
+  });
+  assert.equal(state, "suspended");
+});
+
+test("suspended and forfeited visits are not counted as upcoming", () => {
+  const future = booking({ status: "confirmed" });
+  assert.equal(isUpcoming(future, NOW), true);
+  assert.equal(isUpcoming(future, NOW, { subscriptionSuspended: true }), false);
+});
