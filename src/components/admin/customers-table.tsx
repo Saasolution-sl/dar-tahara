@@ -3,10 +3,13 @@ import { CustomerStatusAction } from "@/components/admin/customer-status-action"
 import { OfficeAssignSelect } from "@/components/admin/office-assign-select";
 import { serviceSelect } from "@/lib/supabase-rpc";
 import { adminCopy } from "@/i18n/admin-copy";
+import { dashboardCopy } from "@/i18n/dashboard-copy";
 import { getRequestLocale } from "@/lib/request-locale";
 
 export async function CustomersTable({ officeIds, canAssignOffice = false }: { officeIds?: string[]; canAssignOffice?: boolean } = {}) {
-  const copy = adminCopy[await getRequestLocale()];
+  const locale = await getRequestLocale();
+  const copy = adminCopy[locale];
+  const dCopy = dashboardCopy[locale];
   const c = copy.tables.customers;
   if (officeIds && officeIds.length === 0) {
     return <AdminTable title={c.title} headers={c.headers} emptyLabel={copy.common.noRecords} rows={[]} />;
@@ -28,10 +31,10 @@ export async function CustomersTable({ officeIds, canAssignOffice = false }: { o
         r.email,
         r.status,
         r.created_at.slice(0, 10),
-        r.last_login_at?.slice(0, 10) || "—",
+        r.last_login_at?.slice(0, 10) || "Not available",
         <div key={r.id} className="flex flex-col gap-1">
-          <CustomerStatusAction id={r.id} status={r.status} />
-          {canAssignOffice ? <OfficeAssignSelect targetId={r.id} kind="customer" currentOfficeId={r.office_id} offices={offices} /> : null}
+          <CustomerStatusAction id={r.id} status={r.status} copy={dCopy.statusAction} />
+          {canAssignOffice ? <OfficeAssignSelect targetId={r.id} kind="customer" currentOfficeId={r.office_id} offices={offices} copy={dCopy.officeAssign} /> : null}
         </div>,
       ])}
     />

@@ -15,12 +15,13 @@ export type ProviderResult = {
 export function assistantProviderConfigured(): boolean {
   const groq = process.env.GROQ_API_KEY && process.env.GROQ_MODEL;
   const grok = process.env.GROK_ENABLED === "true" && process.env.GROK_API_KEY && process.env.GROK_MODEL;
+  const gemini = process.env.GEMINI_API_KEY && process.env.GEMINI_MODEL;
   const compatible =
     process.env.ASSISTANT_PROVIDER &&
     process.env.ASSISTANT_MODEL &&
     process.env.ASSISTANT_API_KEY &&
     process.env.ASSISTANT_API_BASE_URL;
-  return Boolean(compatible || groq || grok);
+  return Boolean(compatible || groq || grok || gemini);
 }
 
 export type ProviderMessage = { role: "system" | "user" | "assistant"; content: string };
@@ -94,11 +95,12 @@ export async function generateWithConfiguredProvider(
   const hasCompatible = Boolean(process.env.ASSISTANT_PROVIDER && process.env.ASSISTANT_API_KEY && process.env.ASSISTANT_MODEL && process.env.ASSISTANT_API_BASE_URL);
   const isGroq = !hasCompatible && Boolean(process.env.GROQ_API_KEY && process.env.GROQ_MODEL);
   const isGrok = !hasCompatible && !isGroq && process.env.GROK_ENABLED === "true" && Boolean(process.env.GROK_API_KEY && process.env.GROK_MODEL);
-  const baseUrl = isGroq ? "https://api.groq.com/openai/v1" : isGrok ? "https://api.x.ai/v1" : process.env.ASSISTANT_API_BASE_URL as string;
-  const apiKey = isGroq ? process.env.GROQ_API_KEY as string : isGrok ? process.env.GROK_API_KEY as string : process.env.ASSISTANT_API_KEY as string;
-  const model = isGroq ? process.env.GROQ_MODEL as string : isGrok ? process.env.GROK_MODEL as string : process.env.ASSISTANT_MODEL as string;
-  const providerName = isGroq ? "groq" : isGrok ? "grok" : process.env.ASSISTANT_PROVIDER as string;
-  const timeoutMs = Number((isGroq ? process.env.GROQ_TIMEOUT_MS : isGrok ? process.env.GROK_TIMEOUT_MS : process.env.ASSISTANT_TIMEOUT_MS) || 15_000);
+  const isGemini = !hasCompatible && !isGroq && !isGrok && Boolean(process.env.GEMINI_API_KEY && process.env.GEMINI_MODEL);
+  const baseUrl = isGroq ? "https://api.groq.com/openai/v1" : isGrok ? "https://api.x.ai/v1" : isGemini ? "https://generativelanguage.googleapis.com/v1beta/openai" : process.env.ASSISTANT_API_BASE_URL as string;
+  const apiKey = isGroq ? process.env.GROQ_API_KEY as string : isGrok ? process.env.GROK_API_KEY as string : isGemini ? process.env.GEMINI_API_KEY as string : process.env.ASSISTANT_API_KEY as string;
+  const model = isGroq ? process.env.GROQ_MODEL as string : isGrok ? process.env.GROK_MODEL as string : isGemini ? process.env.GEMINI_MODEL as string : process.env.ASSISTANT_MODEL as string;
+  const providerName = isGroq ? "groq" : isGrok ? "grok" : isGemini ? "gemini" : process.env.ASSISTANT_PROVIDER as string;
+  const timeoutMs = Number((isGroq ? process.env.GROQ_TIMEOUT_MS : isGrok ? process.env.GROK_TIMEOUT_MS : isGemini ? process.env.GEMINI_TIMEOUT_MS : process.env.ASSISTANT_TIMEOUT_MS) || 15_000);
   const temperature = Number(process.env.ASSISTANT_TEMPERATURE || 0.2);
   const started = Date.now();
   for (let attempt = 0; attempt < 3; attempt += 1) {
@@ -114,7 +116,10 @@ export async function generateWithConfiguredProvider(
       body: JSON.stringify({
         model,
         temperature,
-        max_tokens: Number((isGroq ? process.env.GROQ_MAX_TOKENS : isGrok ? process.env.GROK_MAX_TOKENS : process.env.ASSISTANT_MAX_TOKENS) || 600),
+        // gemini-flash-latest is a "thinking" model that spends part of the
+        // budget on internal reasoning before the visible answer, so it needs
+        // a much higher ceiling than the other providers' short JSON replies.
+        max_tokens: Number((isGroq ? process.env.GROQ_MAX_TOKENS : isGrok ? process.env.GROK_MAX_TOKENS : isGemini ? (process.env.GEMINI_MAX_TOKENS || 2000) : process.env.ASSISTANT_MAX_TOKENS) || 600),
         response_format: { type: "json_object" },
         messages: buildProviderMessages(input, retrieved),
       }),

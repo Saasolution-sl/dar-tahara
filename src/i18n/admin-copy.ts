@@ -2,7 +2,7 @@
 
 /**
  * Copy for the internal staff/administrator operations panel (`/admin/*`).
- * Separate from `portal-copy.ts` (the customer-facing account area) — the
+ * Separate from `portal-copy.ts` (the customer-facing account area): the
  * audiences and vocabulary differ enough that sharing one dictionary would
  * force awkward compromises in both.
  */
@@ -12,8 +12,9 @@ export type AdminCopy = {
     operations: string;
     signOut: string;
     nav: {
-      assessments: string; customers: string; properties: string; subscriptions: string;
+      dashboard: string; kpiBaseline: string; assessments: string; customers: string; properties: string; subscriptions: string;
       pauseRequests: string; deepCleanRequests: string; invoices: string; features: string; auditLog: string; assistant: string;
+      teamProfiles: string; offices: string;
     };
   };
   common: {
@@ -77,6 +78,7 @@ const en: AdminCopy = {
     operations: "Operations",
     signOut: "Sign out",
     nav: {
+      dashboard: "Dashboard", kpiBaseline: "KPI Baseline", teamProfiles: "Team profiles", offices: "Offices",
       assessments: "Assessments", customers: "Customers", properties: "Properties", subscriptions: "Subscriptions",
       pauseRequests: "Pause requests", deepCleanRequests: "Deep-clean requests", invoices: "Invoices", features: "Feature settings", auditLog: "Audit log", assistant: "Assistant",
     },
@@ -143,6 +145,7 @@ const nl: AdminCopy = {
     operations: "Beheer",
     signOut: "Uitloggen",
     nav: {
+      dashboard: "Dashboard", kpiBaseline: "KPI-basislijn", teamProfiles: "Teamprofielen", offices: "Vestigingen",
       assessments: "Beoordelingen", customers: "Klanten", properties: "Woningen", subscriptions: "Abonnementen",
       pauseRequests: "Pauzeverzoeken", deepCleanRequests: "Verzoeken voor grondige schoonmaak", invoices: "Facturen", features: "Functie-instellingen", auditLog: "Auditlogboek", assistant: "Assistent",
     },
@@ -209,6 +212,7 @@ const fr: AdminCopy = {
     operations: "Opérations",
     signOut: "Déconnexion",
     nav: {
+      dashboard: "Tableau de bord", kpiBaseline: "Indicateurs clés", teamProfiles: "Profils d'équipe", offices: "Agences",
       assessments: "Évaluations", customers: "Clients", properties: "Propriétés", subscriptions: "Abonnements",
       pauseRequests: "Demandes de pause", deepCleanRequests: "Demandes de nettoyage en profondeur", invoices: "Factures", features: "Paramètres des fonctionnalités", auditLog: "Journal d’audit", assistant: "Assistant",
     },
@@ -275,6 +279,7 @@ const ar: AdminCopy = {
     operations: "العمليات",
     signOut: "تسجيل الخروج",
     nav: {
+      dashboard: "لوحة التحكم", kpiBaseline: "مؤشرات الأداء الأساسية", teamProfiles: "ملفات الفريق", offices: "المكاتب",
       assessments: "التقييمات", customers: "العملاء", properties: "العقارات", subscriptions: "الاشتراكات",
       pauseRequests: "طلبات الإيقاف المؤقت", deepCleanRequests: "طلبات التنظيف العميق", invoices: "الفواتير", features: "إعدادات الميزات", auditLog: "سجل التدقيق", assistant: "المساعد",
     },
@@ -341,6 +346,7 @@ const es: AdminCopy = {
     operations: "Operaciones",
     signOut: "Cerrar sesión",
     nav: {
+      dashboard: "Panel", kpiBaseline: "Indicadores clave", teamProfiles: "Perfiles de equipo", offices: "Oficinas",
       assessments: "Evaluaciones", customers: "Clientes", properties: "Propiedades", subscriptions: "Suscripciones",
       pauseRequests: "Solicitudes de pausa", deepCleanRequests: "Solicitudes de limpieza profunda", invoices: "Facturas", features: "Configuración de funciones", auditLog: "Registro de auditoría", assistant: "Asistente",
     },
@@ -407,6 +413,7 @@ const de: AdminCopy = {
     operations: "Betrieb",
     signOut: "Abmelden",
     nav: {
+      dashboard: "Übersicht", kpiBaseline: "KPI-Basislinie", teamProfiles: "Teamprofile", offices: "Niederlassungen",
       assessments: "Bewertungen", customers: "Kunden", properties: "Immobilien", subscriptions: "Abonnements",
       pauseRequests: "Pausenanträge", deepCleanRequests: "Grundreinigungsanfragen", invoices: "Rechnungen", features: "Funktionseinstellungen", auditLog: "Prüfprotokoll", assistant: "Assistent",
     },
@@ -473,6 +480,7 @@ const pt: AdminCopy = {
     operations: "Operações",
     signOut: "Terminar sessão",
     nav: {
+      dashboard: "Painel", kpiBaseline: "Base de KPIs", teamProfiles: "Perfis de equipa", offices: "Escritórios",
       assessments: "Avaliações", customers: "Clientes", properties: "Propriedades", subscriptions: "Subscrições",
       pauseRequests: "Pedidos de pausa", deepCleanRequests: "Pedidos de limpeza profunda", invoices: "Faturas", features: "Definições de funcionalidades", auditLog: "Registo de auditoria", assistant: "Assistente",
     },

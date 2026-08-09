@@ -53,7 +53,7 @@ export function PricingCalculator({
   const [frequency, setFrequency] = React.useState<FrequencyKey>("biweekly");
   const [overMax, setOverMax] = React.useState(false);
   const [modalOpen, setModalOpen] = React.useState(false);
-  // No default duration — the customer must consciously select one.
+  // No default duration: the customer must consciously select one.
   const [duration, setDuration] = React.useState<DurationMonths | null>(null);
 
   const result = React.useMemo(
@@ -74,7 +74,7 @@ export function PricingCalculator({
     return { tier, ...applyDurationDiscount(monthlyCents, tier, durationTiers) };
   }, [result, duration, durationTiers]);
 
-  // Properties over the 250 m² slider ceiling are quoted personally — the user
+  // Properties over the 250 m² slider ceiling are quoted personally: the user
   // opts in via a toggle since the slider itself is capped at 250 m².
   const isCustom = overMax || size > CUSTOM_QUOTE_THRESHOLD_M2;
   const percent = ((size - SIZE_LIMITS.min) / (SIZE_LIMITS.max - SIZE_LIMITS.min)) * 100;
@@ -268,7 +268,9 @@ export function PricingCalculator({
                   {c.durationLabel}
                 </legend>
                 <p className="mt-1 text-xs text-muted-foreground">{c.durationHelp}</p>
-                <div className="mt-4 grid gap-3">
+                {/* Square tiles in one row rather than stacked cards: the same
+                    choice takes far less vertical space in the calculator. */}
+                <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-flow-col sm:auto-cols-fr sm:gap-3">
                   {enabledDurationTiers.map((tier) => {
                     const key = tier.code as DurationCode;
                     const meta = c.duration[key];
@@ -277,7 +279,7 @@ export function PricingCalculator({
                       <label
                         key={tier.code}
                         className={cn(
-                          "group relative flex cursor-pointer items-start gap-4 rounded-xl border p-4 transition-all duration-200",
+                          "group relative flex aspect-square cursor-pointer flex-col items-center justify-center gap-1 rounded-xl border p-2 text-center transition-all duration-200",
                           "focus-within:ring-2 focus-within:ring-ring",
                           selected
                             ? "border-primary bg-primary/[0.04] dark:bg-primary/[0.08]"
@@ -294,34 +296,37 @@ export function PricingCalculator({
                         />
                         <span
                           className={cn(
-                            "mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full border transition-colors",
-                            selected ? "border-primary bg-primary text-primary-foreground" : "border-border",
+                            "absolute right-1.5 top-1.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full border transition-colors",
+                            selected ? "border-primary bg-primary text-primary-foreground" : "border-border bg-card",
                           )}
                           aria-hidden
                         >
-                          {selected ? <Check className="h-3 w-3" /> : null}
+                          {selected ? <Check className="h-2.5 w-2.5" /> : null}
                         </span>
-                        <span className="flex-1">
-                          <span className="flex flex-wrap items-center gap-2">
-                            <span className="font-serif text-base text-foreground">{meta.name}</span>
-                            {tier.recommended ? (
-                              <span className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider text-accent">
-                                <Sparkles className="h-3 w-3" />
-                                {c.duration.bestValue}
-                              </span>
-                            ) : null}
-                            {tier.pauseEligible ? (
-                              <span className="inline-flex items-center rounded-full bg-secondary px-2 py-0.5 text-[0.65rem] font-semibold uppercase tracking-wider text-muted-foreground">
-                                {c.duration.pauseBenefit}
-                              </span>
-                            ) : null}
-                          </span>
-                          <span className="mt-0.5 flex flex-wrap items-center gap-x-3 gap-y-0.5 text-xs text-muted-foreground">
-                            <span className={tier.discountPercentage > 0 ? "font-medium text-accent" : ""}>
-                              {meta.tag}
-                            </span>
-                          </span>
+                        {tier.recommended ? (
+                          <Sparkles className="absolute left-1.5 top-1.5 h-3.5 w-3.5 text-accent" aria-hidden />
+                        ) : null}
+                        <span className="font-serif text-sm leading-tight text-foreground sm:text-base">
+                          {meta.name}
                         </span>
+                        <span
+                          className={cn(
+                            "text-[0.65rem] font-medium leading-tight sm:text-xs",
+                            tier.discountPercentage > 0 ? "text-accent" : "text-muted-foreground",
+                          )}
+                        >
+                          {meta.tag}
+                        </span>
+                        {tier.recommended ? (
+                          <span className="text-[0.55rem] font-semibold uppercase leading-none tracking-wider text-accent">
+                            {c.duration.bestValue}
+                          </span>
+                        ) : null}
+                        {tier.pauseEligible ? (
+                          <span className="text-[0.55rem] font-semibold uppercase leading-none tracking-wider text-muted-foreground">
+                            {c.duration.pauseBenefit}
+                          </span>
+                        ) : null}
                       </label>
                     );
                   })}

@@ -5,6 +5,8 @@ import type { ReactNode } from "react";
 import { usePathname } from "next/navigation";
 import { Logo } from "@/components/brand/logo";
 import { ThemeToggle } from "@/components/layout/theme-toggle";
+import { AppLocaleSwitcher } from "@/components/layout/app-locale-switcher";
+import type { Locale } from "@/i18n/config";
 import { cn } from "@/lib/utils";
 
 export function RoleWorkspaceShell({
@@ -12,11 +14,17 @@ export function RoleWorkspaceShell({
   email,
   links,
   children,
+  locale,
+  signOutLabel = "Sign out",
+  languageLabel = "Language",
 }: {
   title: string;
   email: string;
   links: Array<{ href: string; label: string }>;
   children: ReactNode;
+  locale: Locale;
+  signOutLabel?: string;
+  languageLabel?: string;
 }) {
   const pathname = usePathname();
   async function logout() {
@@ -29,9 +37,10 @@ export function RoleWorkspaceShell({
         <div className="container flex min-h-16 items-center justify-between gap-4">
           <Link href="/"><Logo variant="wordmark" /></Link>
           <div className="flex items-center gap-3">
+            <AppLocaleSwitcher locale={locale} label={languageLabel} />
             <ThemeToggle />
             <span className="hidden text-sm text-muted-foreground sm:block">{email}</span>
-            <button onClick={logout} className="text-sm font-medium text-primary hover:underline">Sign out</button>
+            <button onClick={logout} className="text-sm font-medium text-primary hover:underline">{signOutLabel}</button>
           </div>
         </div>
       </header>

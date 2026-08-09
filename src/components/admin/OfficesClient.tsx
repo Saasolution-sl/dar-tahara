@@ -2,11 +2,13 @@
 
 import * as React from "react";
 import { buttonVariants } from "@/components/ui/button";
+import type { DashboardCopy } from "@/i18n/dashboard-copy";
 
 type RegionalManager = { auth_user_id: string; full_name: string; email: string };
 type Office = { id: string; name: string; city: string | null; regionalManagers: Array<{ userId: string; name: string }> };
 
-export function OfficesClient() {
+export function OfficesClient({ copy }: { copy: DashboardCopy }) {
+  const o = copy.offices;
   const [offices, setOffices] = React.useState<Office[]>([]);
   const [regionalManagers, setRegionalManagers] = React.useState<RegionalManager[]>([]);
   const [loading, setLoading] = React.useState(true);
@@ -17,10 +19,10 @@ export function OfficesClient() {
     const response = await fetch("/api/admin/offices", { cache: "no-store" });
     const data = await response.json().catch(() => null);
     setLoading(false);
-    if (!response.ok) { setMessage(data?.error || "Offices could not be loaded."); return; }
+    if (!response.ok) { setMessage(data?.error || o.loadFailed); return; }
     setOffices(data.offices);
     setRegionalManagers(data.regionalManagers);
-  }, []);
+  }, [o.loadFailed]);
   React.useEffect(() => { void load(); }, [load]);
 
   async function createOffice(event: React.FormEvent<HTMLFormElement>) {
@@ -31,7 +33,7 @@ export function OfficesClient() {
       body: JSON.stringify({ name: form.get("name"), city: form.get("city") }),
     });
     const data = await response.json().catch(() => null);
-    if (!response.ok) { setMessage(data?.error || "Office could not be created."); return; }
+    if (!response.ok) { setMessage(data?.error || o.createFailed); return; }
     event.currentTarget.reset();
     await load();
   }
@@ -51,17 +53,17 @@ export function OfficesClient() {
 
   return (
     <section>
-      <p className="text-xs font-semibold uppercase tracking-[.18em] text-accent">Access management</p>
-      <h1 className="mt-2 font-serif text-3xl">Offices</h1>
-      <p className="mt-2 max-w-3xl text-sm text-muted-foreground">Create offices/branches and assign regional managers to oversee them. Invite a Regional manager profile from Team profiles first, then assign them here.</p>
+      <p className="text-xs font-semibold uppercase tracking-[.18em] text-accent">{copy.accessManagementEyebrow}</p>
+      <h1 className="mt-2 font-serif text-3xl">{o.title}</h1>
+      <p className="mt-2 max-w-3xl text-sm text-muted-foreground">{o.subtitle}</p>
 
       <form onSubmit={createOffice} className="mt-6 rounded-2xl border border-border bg-card p-5">
-        <h2 className="font-serif text-xl">Add an office</h2>
+        <h2 className="font-serif text-xl">{o.addOffice}</h2>
         <div className="mt-4 grid gap-4 sm:grid-cols-2">
-          <label className="text-sm font-medium">Name <span className="text-accent">*</span><input className="input mt-2" name="name" required /></label>
-          <label className="text-sm font-medium">City<input className="input mt-2" name="city" /></label>
+          <label className="text-sm font-medium">{o.name} <span className="text-accent">*</span><input className="input mt-2" name="name" required /></label>
+          <label className="text-sm font-medium">{o.city}<input className="input mt-2" name="city" /></label>
         </div>
-        <button className={`${buttonVariants({ variant: "primary", size: "md" })} mt-5`}>Create office</button>
+        <button className={`${buttonVariants({ variant: "primary", size: "md" })} mt-5`}>{o.create}</button>
         {message ? <p role="status" className="mt-3 text-sm text-muted-foreground">{message}</p> : null}
       </form>
 
@@ -71,22 +73,22 @@ export function OfficesClient() {
             <h2 className="font-serif text-xl">{office.name}</h2>
             {office.city ? <p className="text-sm text-muted-foreground">{office.city}</p> : null}
             <div className="mt-4">
-              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">Regional managers</p>
+              <p className="text-xs font-semibold uppercase tracking-wider text-muted-foreground">{o.regionalManagers}</p>
               <ul className="mt-2 space-y-1">
                 {office.regionalManagers.map((manager) => (
                   <li key={manager.userId} className="flex items-center justify-between gap-2 text-sm">
                     <span>{manager.name}</span>
-                    <button type="button" onClick={() => unassignManager(office.id, manager.userId)} className="text-xs text-red-600 hover:underline">Remove</button>
+                    <button type="button" onClick={() => unassignManager(office.id, manager.userId)} className="text-xs text-red-600 hover:underline">{o.remove}</button>
                   </li>
                 ))}
-                {!office.regionalManagers.length ? <li className="text-sm text-muted-foreground">None assigned</li> : null}
+                {!office.regionalManagers.length ? <li className="text-sm text-muted-foreground">{o.noneAssigned}</li> : null}
               </ul>
               <select
                 className="input mt-3"
                 defaultValue=""
                 onChange={(event) => { void assignManager(office.id, event.target.value); event.target.value = ""; }}
               >
-                <option value="" disabled>Assign a regional manager…</option>
+                <option value="" disabled>{o.assignPlaceholder}</option>
                 {regionalManagers.map((manager) => (
                   <option key={manager.auth_user_id} value={manager.auth_user_id}>{manager.full_name} ({manager.email})</option>
                 ))}
@@ -94,7 +96,7 @@ export function OfficesClient() {
             </div>
           </div>
         ))}
-        {!loading && !offices.length ? <p className="text-sm text-muted-foreground">No offices yet.</p> : null}
+        {!loading && !offices.length ? <p className="text-sm text-muted-foreground">{o.noOfficesYet}</p> : null}
       </div>
     </section>
   );

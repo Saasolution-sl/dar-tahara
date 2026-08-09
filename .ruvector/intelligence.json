@@ -1,0 +1,26 @@
+{
+  "patterns": {},
+  "memories": [],
+  "trajectories": [],
+  "errors": {},
+  "file_sequences": [],
+  "agents": {},
+  "edges": [],
+  "stats": {
+    "total_patterns": 0,
+    "total_memories": 0,
+    "total_trajectories": 0,
+    "total_errors": 0,
+    "session_count": 0,
+    "last_session": 0
+  },
+  "activeTrajectories": {
+    "traj_1786233448478_3e2h69ead": {
+      "id": "traj_1786233448478_3e2h69ead",
+      "context": "20260808235726-read-only-inspection-of-producti: Read-only inspection of production early-access form rendering and client integrations; do not enter data or submit.",
+      "agent": "browser-session",
+      "steps": [],
+      "startTime": 1786233448478
+    }
+  }
+}

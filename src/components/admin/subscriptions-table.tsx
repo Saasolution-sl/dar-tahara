@@ -3,12 +3,15 @@ import { SubscriptionStatusAction } from "@/components/admin/subscription-status
 import { serviceSelect } from "@/lib/supabase-rpc";
 import { money } from "@/lib/portal-format";
 import { adminCopy } from "@/i18n/admin-copy";
+import { dashboardCopy } from "@/i18n/dashboard-copy";
 import { getRequestLocale } from "@/lib/request-locale";
 
 const CANCELLATION_LABELS: Record<string, string> = { requested: "Requested", confirmed: "Confirmed", settled: "Settled", voided: "Voided" };
 
 export async function SubscriptionsTable({ officeIds }: { officeIds?: string[] } = {}) {
-  const copy = adminCopy[await getRequestLocale()];
+  const locale = await getRequestLocale();
+  const copy = adminCopy[locale];
+  const dCopy = dashboardCopy[locale];
   const c = copy.tables.subscriptions;
   if (officeIds && officeIds.length === 0) {
     return <AdminTable title={c.title} headers={c.headers} emptyLabel={copy.common.noRecords} rows={[]} />;
@@ -37,8 +40,8 @@ export async function SubscriptionsTable({ officeIds }: { officeIds?: string[] }
         r.frequency,
         r.billing_interval,
         money(r.billed_price_cents, r.currency),
-        r.cancellation_status ? (CANCELLATION_LABELS[r.cancellation_status] || r.cancellation_status) : "—",
-        <SubscriptionStatusAction key={r.id} id={r.id} operationalStatus={r.operational_status} />,
+        r.cancellation_status ? (CANCELLATION_LABELS[r.cancellation_status] || r.cancellation_status) : "Not available",
+        <SubscriptionStatusAction key={r.id} id={r.id} operationalStatus={r.operational_status} copy={dCopy.statusAction} />,
       ])}
     />
   );
