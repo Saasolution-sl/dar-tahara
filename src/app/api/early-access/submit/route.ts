@@ -11,6 +11,12 @@ import { isServiceRoleConfigured } from "@/lib/supabase-rpc";
 import { isLocale, defaultLocale, type Locale } from "@/i18n/config";
 import { hashIp } from "@/lib/early-access/request-meta";
 import { featureEnabled } from "@/lib/feature-flags";
+import {
+  completeSignupSession,
+  updateSessionMauticContactFromLead,
+  updateSignupSession,
+} from "@/lib/early-access/funnel-server";
+import { isOpaqueToken, isSessionId, type SessionCredentials } from "@/lib/early-access/funnel";
 
 export const runtime = "nodejs";
 
@@ -47,11 +53,13 @@ export async function POST(req: NextRequest) {
 
   const { ok, errors } = validateAll(body);
   if (!ok) {
+    await recordSubmitFailure(body, "validation_failed", 400, "server_validation");
     return NextResponse.json({ ok: false, error: "validation_failed", fields: errors }, { status: 400 });
   }
 
   const captcha = await verifyTurnstile(body.turnstileToken, ip);
   if (!captcha.success) {
+    await recordSubmitFailure(body, "captcha_failed", 400, "captcha");
     return NextResponse.json({ ok: false, error: "captcha_failed" }, { status: 400 });
   }
 
@@ -86,8 +94,13 @@ export async function POST(req: NextRequest) {
     verificationToken = result.verificationToken;
   } catch (e) {
     console.error("[early-access] persist failed:", redact(String(e), body.email));
+    await recordSubmitFailure(body, "server_error", 500, "persistence");
     return NextResponse.json({ ok: false, error: "server_error" }, { status: 500 });
   }
+
+  // The Supabase submission is the completion boundary. Funnel linkage is
+  // best-effort and can never turn a safely persisted lead into a failed form.
+  await completeSignupSession(sessionCredentials(body), leadId).catch(() => {});
 
   // ── From here the lead is SAFE. Everything below is best-effort. ──────────────
   const origin = new URL(req.url).origin;
@@ -105,11 +118,42 @@ export async function POST(req: NextRequest) {
   // reconation job (its mautic_sync_status was written by persistSubmission).
   try {
     await syncLeadAfterSubmit(leadId, body, { emailVerified: false });
+    await updateSessionMauticContactFromLead(leadId);
   } catch {
     console.error("[early-access] mautic sync step failed (queued for retry)");
   }
 
   return NextResponse.json({ ok: true, verificationSent });
+}
+
+function sessionCredentials(body: EarlyAccessPayload): SessionCredentials | undefined {
+  return isSessionId(body.signupSessionId) && isOpaqueToken(body.signupSessionToken)
+    ? { id: body.signupSessionId, token: body.signupSessionToken }
+    : undefined;
+}
+
+async function recordSubmitFailure(
+  body: EarlyAccessPayload,
+  errorCode: string,
+  httpStatus: number,
+  errorType: string,
+): Promise<void> {
+  const credentials = sessionCredentials(body);
+  if (!credentials) return;
+  await updateSignupSession({
+    credentials,
+    partialPayload: body,
+    currentStep: "review",
+    currentStepIndex: 6,
+    event: {
+      eventName: "early_access_api_error",
+      stepId: "review",
+      stepIndex: 6,
+      errorType,
+      errorCode,
+      metadata: { http_status: httpStatus },
+    },
+  }).catch(() => {});
 }
 
 /** First-touch either arrives echoed under first_* keys or falls back to last. */

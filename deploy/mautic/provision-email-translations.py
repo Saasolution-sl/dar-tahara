@@ -23,6 +23,8 @@ REFERRAL_CODE = "{contactfield=referral_code}"
 
 
 MASTER_CONFIG = {
+    "DT Â· Abandoned signup reminder 1": {"cta_contact_field": "ea_resume_url"},
+    "DT Â· Abandoned signup reminder 2": {"cta_contact_field": "ea_resume_url"},
     "DT · Verification reminder": {"cta_path": "early-access/success?status=pending"},
     "DT · Verification final reminder": {"cta_path": "early-access/success?status=pending"},
     "DT · Verified welcome": {"cta_path": "early-access", "referral": True},
@@ -37,6 +39,22 @@ MASTER_CONFIG = {
 
 # The formality and terminology mirror src/lib/early-access/email.ts.
 TRANSLATIONS = {
+    "DT Â· Abandoned signup reminder 1": {
+        "fr": {"subject": "Souhaitez-vous terminer votre demande Dar Tahara ?", "heading": "Votre demande d'accès anticipé est enregistrée", "paragraphs": [f"Bonjour {FIRSTNAME}, vous avez commencé une demande d'accès anticipé Dar Tahara sans la terminer.", "Vos réponses sont enregistrées. Vous pouvez reprendre là où vous vous êtes arrêté. Ce rappel ne confirme aucune réservation."], "cta": "Continuer ma demande", "note": "Ce rappel est facultatif et distinct de la newsletter."},
+        "ar": {"subject": "هل ترغب في إكمال طلب دار طهارة؟", "heading": "تم حفظ طلب الوصول المبكر", "paragraphs": [f"مرحبًا {FIRSTNAME}، بدأت طلب الوصول المبكر إلى دار طهارة ولم تكمله.", "تم حفظ إجاباتك ويمكنك المتابعة من حيث توقفت. هذا التذكير لا يؤكد أي حجز."], "cta": "متابعة طلبي", "note": "هذا التذكير اختياري ومنفصل عن النشرة البريدية."},
+        "nl": {"subject": "Wilt u uw Dar Tahara-aanvraag afmaken?", "heading": "Uw early-access-aanvraag is opgeslagen", "paragraphs": [f"Hallo {FIRSTNAME}, u bent een early-access-aanvraag bij Dar Tahara gestart maar hebt die niet afgemaakt.", "Uw antwoorden zijn opgeslagen. U kunt verdergaan waar u stopte. Deze herinnering bevestigt geen boeking."], "cta": "Doorgaan met mijn aanvraag", "note": "Deze optionele herinnering staat los van de nieuwsbrief."},
+        "es": {"subject": "¿Quieres terminar tu solicitud de Dar Tahara?", "heading": "Tu solicitud de acceso anticipado está guardada", "paragraphs": [f"Hola {FIRSTNAME}, empezaste una solicitud de acceso anticipado de Dar Tahara, pero no la terminaste.", "Tus respuestas están guardadas. Puedes continuar donde lo dejaste. Este recordatorio no confirma ninguna reserva."], "cta": "Continuar mi solicitud", "note": "Este recordatorio opcional es independiente del boletín."},
+        "de": {"subject": "Möchten Sie Ihre Dar-Tahara-Anfrage abschließen?", "heading": "Ihre Early-Access-Anfrage wurde gespeichert", "paragraphs": [f"Hallo {FIRSTNAME}, Sie haben eine Early-Access-Anfrage bei Dar Tahara begonnen, aber nicht abgeschlossen.", "Ihre Antworten sind gespeichert. Sie können dort fortfahren, wo Sie aufgehört haben. Diese Erinnerung bestätigt keine Buchung."], "cta": "Anfrage fortsetzen", "note": "Diese optionale Erinnerung ist vom Newsletter getrennt."},
+        "pt": {"subject": "Deseja concluir o seu pedido Dar Tahara?", "heading": "O seu pedido de acesso antecipado foi guardado", "paragraphs": [f"Olá {FIRSTNAME}, iniciou um pedido de acesso antecipado Dar Tahara, mas não o concluiu.", "As suas respostas estão guardadas. Pode continuar onde parou. Este lembrete não confirma qualquer reserva."], "cta": "Continuar o meu pedido", "note": "Este lembrete opcional é separado da newsletter."},
+    },
+    "DT Â· Abandoned signup reminder 2": {
+        "fr": {"subject": "Dernier rappel concernant votre demande enregistrée", "heading": "Un dernier rappel", "paragraphs": [f"Bonjour {FIRSTNAME}, voici le deuxième et dernier rappel concernant votre demande d'accès anticipé Dar Tahara.", "Vous pouvez reprendre votre demande enregistrée. Sans action de votre part, aucun autre rappel d'inscription incomplète ne sera envoyé."], "cta": "Terminer ma demande"},
+        "ar": {"subject": "التذكير الأخير بشأن طلب الوصول المحفوظ", "heading": "تذكير أخير", "paragraphs": [f"مرحبًا {FIRSTNAME}، هذا هو التذكير الثاني والأخير بشأن طلب الوصول المبكر إلى دار طهارة.", "يمكنك متابعة طلبك المحفوظ. إذا لم تتخذ أي إجراء فلن نرسل تذكيرًا آخر بشأن هذا الطلب غير المكتمل."], "cta": "إكمال طلبي"},
+        "nl": {"subject": "Laatste herinnering over uw opgeslagen aanvraag", "heading": "Een laatste herinnering", "paragraphs": [f"Hallo {FIRSTNAME}, dit is de tweede en laatste herinnering over uw early-access-aanvraag bij Dar Tahara.", "U kunt uw opgeslagen aanvraag hervatten. Zonder actie sturen we geen verdere herinnering over deze onafgemaakte aanvraag."], "cta": "Mijn aanvraag afmaken"},
+        "es": {"subject": "Último recordatorio sobre tu solicitud guardada", "heading": "Un último recordatorio", "paragraphs": [f"Hola {FIRSTNAME}, este es el segundo y último recordatorio sobre tu solicitud de acceso anticipado de Dar Tahara.", "Puedes retomar tu solicitud guardada. Si no haces nada, no enviaremos otro recordatorio sobre esta solicitud incompleta."], "cta": "Terminar mi solicitud"},
+        "de": {"subject": "Letzte Erinnerung zu Ihrer gespeicherten Anfrage", "heading": "Eine letzte Erinnerung", "paragraphs": [f"Hallo {FIRSTNAME}, dies ist die zweite und letzte Erinnerung zu Ihrer Early-Access-Anfrage bei Dar Tahara.", "Sie können Ihre gespeicherte Anfrage fortsetzen. Ohne weitere Aktion senden wir keine weitere Erinnerung zu dieser unvollständigen Anfrage."], "cta": "Anfrage abschließen"},
+        "pt": {"subject": "Último lembrete sobre o seu pedido guardado", "heading": "Um último lembrete", "paragraphs": [f"Olá {FIRSTNAME}, este é o segundo e último lembrete sobre o seu pedido de acesso antecipado Dar Tahara.", "Pode retomar o pedido guardado. Se não fizer nada, não enviaremos outro lembrete sobre este pedido incompleto."], "cta": "Concluir o meu pedido"},
+    },
     "DT · Verification reminder": {
         "fr": {
             "subject": f"Plus qu'une étape, {FIRSTNAME}",
@@ -623,6 +641,8 @@ def paragraph(text):
 
 
 def cta_url(locale, config):
+    if config.get("cta_contact_field"):
+        return "{contactfield=" + config["cta_contact_field"] + "}"
     if "cta_path" not in config:
         return None
     path = config["cta_path"]

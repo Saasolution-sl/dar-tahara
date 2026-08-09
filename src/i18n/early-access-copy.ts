@@ -92,8 +92,6 @@ export type EarlyAccessCopy = {
     useMyLocation: string;
     locating: string;
     locationDenied: string;
-    streetViewNote: string;
-    streetViewUnavailable: string;
     mapUnavailable: string;
     adjusted: string;
   };
@@ -111,6 +109,8 @@ export type EarlyAccessCopy = {
     authorized: string;
     privacy: string;
     operational: string;
+    reminder: string;
+    reminderHint: string;
     marketing: string;
     marketingHint: string;
   };
@@ -180,10 +180,10 @@ const en: EarlyAccessCopy = {
     companyName: "Company name", billingFirstName: "Billing first name", billingLastName: "Billing last name",
     billingAddressLine1: "Address line 1", billingAddressLine2: "Address line 2",
     billingBuildingNumber: "Building, apartment or unit number", billingUnit: "Apartment / unit",
-    addressSearch: "Address line", mapsHelp: "How do I get a Google Maps link?",
+    addressSearch: "Address line", mapsHelp: "How do I get a Google Maps link?", openInGoogleMaps: "Open in Google Maps",
     billingPostalCode: "Postal code", billingCity: "City", billingRegion: "State / province / region",
     billingCountry: "Country", taxId: "Tax / VAT number (optional)", invoiceEmail: "Invoice email",
-    invoiceEmailSameAsContact: "Same as my contact email", useBillingAsProperty: "Use billing address as property address",
+    invoiceEmailSameAsContact: "Same as my contact email",
     propertyName: "Property name or nickname", propertyAddressLine1: "Address line 1", propertyAddressLine2: "Address line 2",
     residenceName: "Residence or building name", propertyBuildingNumber: "Building, apartment, unit or villa number",
     propertyUnitNumber: "Apartment, unit or villa number", propertyFloor: "Floor", propertyPostalCode: "Postal code",
@@ -199,9 +199,9 @@ const en: EarlyAccessCopy = {
     thirdPartyDetails: "Access arrangement details", accessNotes: "Access notes (optional)",
   },
   hints: {
-    entryNotes: "Gate codes, which door, parking — anything that helps our team.",
+    entryNotes: "Gate codes, door details, parking, or anything that helps our team.",
     sizeM2: "A rough estimate is fine.",
-    googleMapsUrl: "Paste a Google Maps link to help us find it precisely.",
+    googleMapsUrl: "Filled in automatically from the pin above. Adjust the pin to update it, or paste your own link.",
     notBookingServices: "This helps us plan. It is not a confirmed appointment.",
   },
   options: {
@@ -224,7 +224,7 @@ const en: EarlyAccessCopy = {
     ack: "I understand that physical-key handling may involve an additional fee and separate key-handling conditions.",
   },
   thirdPartyNotice: "We can't reliably plan recurring cleaning around someone who must travel to open the property each time. A dependable access arrangement is required.",
-  digitalLockNotice: "Reliable digital access is preferred where available — it improves planning and access control.",
+  digitalLockNotice: "Reliable digital access is preferred where available. It improves planning and access control.",
   digitalLockInternetNotice: {
     title: "Internet connection required",
     body: "A stable internet connection at the property is required for the digital smart lock to work.",
@@ -240,14 +240,12 @@ const en: EarlyAccessCopy = {
     searching: "Searching…",
     noResults: "No matches. You can enter the address manually.",
     manualLink: "Enter the address manually",
-    unavailable: "Address search is unavailable — please type the address",
+    unavailable: "Address search is unavailable. Please type the address",
     pinTitle: "Place the pin at the correct property entrance",
     pinHelp: "Move the pin to the entrance our cleaning team should use.",
     useMyLocation: "Use my current location",
     locating: "Locating…",
     locationDenied: "We couldn't get your location. You can still search or move the pin on the map.",
-    streetViewNote: "Street View can help you confirm the correct street or building. Images may be unavailable or outdated.",
-    streetViewUnavailable: "Street View is not available for this location. Please confirm the property using the map pin.",
     mapUnavailable: "The map is unavailable right now. You can still enter the address manually and continue.",
     adjusted: "Pin position confirmed by you",
   },
@@ -258,8 +256,8 @@ const en: EarlyAccessCopy = {
     manualPlaceholder: "Type your city",
     status: {
       planned: "Coming soon to this area",
-      waiting_list: "Waiting list — we'll let you know when we launch here",
-      unsupported: "Not yet in our service area — you can still join early access",
+      waiting_list: "Waiting list: we'll let you know when we launch here",
+      unsupported: "Not yet in our service area. You can still join early access",
     },
   },
   smartLock: {
@@ -291,8 +289,10 @@ const en: EarlyAccessCopy = {
     authorized: "I confirm that I am authorized to request services for this property.",
     privacy: "I accept the privacy policy.",
     operational: "I agree to receive operational communication about my early-access request.",
+    reminder: "Email me up to two reminders if I leave this request unfinished.",
+    reminderHint: "Optional, only for this incomplete request. This is not newsletter consent.",
     marketing: "I would like to receive Dar Tahara news, offers, and marketing updates.",
-    marketingHint: "Optional — separate from the messages about your request. You can unsubscribe any time.",
+    marketingHint: "Optional and separate from messages about your request. You can unsubscribe any time.",
   },
   errors: {
     required: "This field is required.", invalid: "Please check this value.",
@@ -305,14 +305,14 @@ const en: EarlyAccessCopy = {
     select_one: "Please select at least one service.", validation_failed: "Please review the highlighted fields.",
     captcha_failed: "We couldn't verify you're human. Please try again.",
     rate_limited: "Too many attempts. Please wait a moment and try again.",
-    server_error: "Something went wrong on our side. Your details weren't lost — please try again shortly.",
+    server_error: "Something went wrong on our side. Your details weren't lost. Please try again shortly.",
     network: "Network problem. Please check your connection and try again.",
   },
   success: {
     verifiedTitle: "Your email is confirmed 🎉",
-    verifiedBody: "You're on the Dar Tahara early-access list. We'll contact you when service becomes available for your property. This is not a confirmed booking — it's your place in line.",
+    verifiedBody: "You're on the Dar Tahara early-access list. We'll contact you when service becomes available for your property. This is not a confirmed booking; it's your place in line.",
     alreadyTitle: "You're already confirmed",
-    pendingTitle: "Almost there — check your inbox",
+    pendingTitle: "Almost there: check your inbox",
     pendingBody: "We've sent a confirmation link to your email. Please click it to secure your place. If it hasn't arrived in a few minutes, check spam or resend below.",
     expiredTitle: "This link has expired",
     expiredBody: "For your security, verification links expire after 48 hours. Enter your email to get a fresh one.",
@@ -335,7 +335,7 @@ const en: EarlyAccessCopy = {
 
 const fr: EarlyAccessCopy = {
   meta: {
-    title: "Demander un accès anticipé — Dar Tahara au Maroc",
+    title: "Demander un accès anticipé: Dar Tahara au Maroc",
     description: "Enregistrez votre bien pour l'accès anticipé Dar Tahara : ménage premium et entretien de propriété au Maroc. Recevez les actualités du lancement et invitez vos proches.",
   },
   hero: {
@@ -374,10 +374,10 @@ const fr: EarlyAccessCopy = {
     companyName: "Nom de l'entreprise", billingFirstName: "Prénom (facturation)", billingLastName: "Nom (facturation)",
     billingAddressLine1: "Adresse ligne 1", billingAddressLine2: "Adresse ligne 2",
     billingBuildingNumber: "Numéro de bâtiment, d'appartement ou d'unité", billingUnit: "Appartement / unité",
-    addressSearch: "Adresse", mapsHelp: "Comment obtenir un lien Google Maps ?",
+    addressSearch: "Adresse", mapsHelp: "Comment obtenir un lien Google Maps ?", openInGoogleMaps: "Ouvrir dans Google Maps",
     billingPostalCode: "Code postal", billingCity: "Ville", billingRegion: "État / province / région",
     billingCountry: "Pays", taxId: "Numéro de TVA (facultatif)", invoiceEmail: "E-mail de facturation",
-    invoiceEmailSameAsContact: "Identique à mon e-mail de contact", useBillingAsProperty: "Utiliser l'adresse de facturation comme adresse du bien",
+    invoiceEmailSameAsContact: "Identique à mon e-mail de contact",
     propertyName: "Nom ou surnom du bien", propertyAddressLine1: "Adresse ligne 1", propertyAddressLine2: "Adresse ligne 2",
     residenceName: "Nom de la résidence ou du bâtiment", propertyBuildingNumber: "Numéro de bâtiment, d'appartement, d'unité ou de villa",
     propertyUnitNumber: "Numéro d'appartement, d'unité ou de villa", propertyFloor: "Étage", propertyPostalCode: "Code postal",
@@ -393,9 +393,9 @@ const fr: EarlyAccessCopy = {
     thirdPartyDetails: "Détails de l'arrangement d'accès", accessNotes: "Notes d'accès (facultatif)",
   },
   hints: {
-    entryNotes: "Codes de portail, quelle porte, stationnement — tout ce qui aide notre équipe.",
+    entryNotes: "Codes de portail, quelle porte, stationnement: tout ce qui aide notre équipe.",
     sizeM2: "Une estimation approximative suffit.",
-    googleMapsUrl: "Collez un lien Google Maps pour nous aider à le localiser précisément.",
+    googleMapsUrl: "Rempli automatiquement à partir du repère ci-dessus. Déplacez le repère pour le mettre à jour, ou collez votre propre lien.",
     notBookingServices: "Cela nous aide à planifier. Ce n'est pas un rendez-vous confirmé.",
   },
   options: {
@@ -418,7 +418,7 @@ const fr: EarlyAccessCopy = {
     ack: "Je comprends que la gestion d'une clé physique peut impliquer des frais supplémentaires et des conditions distinctes.",
   },
   thirdPartyNotice: "Nous ne pouvons pas planifier de façon fiable un ménage récurrent autour d'une personne devant se déplacer pour ouvrir le bien à chaque fois. Un accès fiable est requis.",
-  digitalLockNotice: "Un accès numérique fiable est préférable lorsqu'il est disponible — il améliore la planification et le contrôle d'accès.",
+  digitalLockNotice: "Un accès numérique fiable est préférable lorsqu'il est disponible: il améliore la planification et le contrôle d'accès.",
   digitalLockInternetNotice: {
     title: "Connexion internet requise",
     body: "Une connexion internet stable au niveau du bien est indispensable au fonctionnement de la serrure connectée.",
@@ -434,14 +434,12 @@ const fr: EarlyAccessCopy = {
     searching: "Recherche…",
     noResults: "Aucun résultat. Vous pouvez saisir l'adresse manuellement.",
     manualLink: "Saisir l'adresse manuellement",
-    unavailable: "La recherche d'adresse est indisponible — veuillez saisir l'adresse",
+    unavailable: "La recherche d'adresse est indisponible: veuillez saisir l'adresse",
     pinTitle: "Placez le repère à l'entrée exacte du bien",
     pinHelp: "Déplacez le repère vers l'entrée que notre équipe doit utiliser.",
     useMyLocation: "Utiliser ma position actuelle",
     locating: "Localisation…",
     locationDenied: "Nous n'avons pas pu obtenir votre position. Vous pouvez toujours rechercher ou déplacer le repère.",
-    streetViewNote: "Street View peut vous aider à confirmer la rue ou le bâtiment. Les images peuvent être indisponibles ou anciennes.",
-    streetViewUnavailable: "Street View n'est pas disponible ici. Veuillez confirmer le bien à l'aide du repère sur la carte.",
     mapUnavailable: "La carte est indisponible pour le moment. Vous pouvez saisir l'adresse manuellement et continuer.",
     adjusted: "Position du repère confirmée par vous",
   },
@@ -452,8 +450,8 @@ const fr: EarlyAccessCopy = {
     manualPlaceholder: "Saisissez votre ville",
     status: {
       planned: "Bientôt disponible dans cette zone",
-      waiting_list: "Liste d'attente — nous vous préviendrons de notre lancement ici",
-      unsupported: "Pas encore dans notre zone de service — vous pouvez tout de même rejoindre l'accès anticipé",
+      waiting_list: "Liste d'attente: nous vous préviendrons de notre lancement ici",
+      unsupported: "Pas encore dans notre zone de service: vous pouvez tout de même rejoindre l'accès anticipé",
     },
   },
   smartLock: {
@@ -485,8 +483,10 @@ const fr: EarlyAccessCopy = {
     authorized: "Je confirme être autorisé à demander des services pour ce bien.",
     privacy: "J'accepte la politique de confidentialité.",
     operational: "J'accepte de recevoir des communications opérationnelles concernant ma demande d'accès anticipé.",
+    reminder: "Envoyez-moi au maximum deux rappels si je ne termine pas cette demande.",
+    reminderHint: "Facultatif, uniquement pour cette demande incomplète. Ce n'est pas un consentement à la newsletter.",
     marketing: "Je souhaite recevoir les actualités, offres et nouveautés de Dar Tahara.",
-    marketingHint: "Facultatif — distinct des messages sur votre demande. Désinscription à tout moment.",
+    marketingHint: "Facultatif: distinct des messages sur votre demande. Désinscription à tout moment.",
   },
   errors: {
     required: "Ce champ est requis.", invalid: "Veuillez vérifier cette valeur.",
@@ -499,14 +499,14 @@ const fr: EarlyAccessCopy = {
     select_one: "Veuillez sélectionner au moins un service.", validation_failed: "Veuillez vérifier les champs indiqués.",
     captcha_failed: "Nous n'avons pas pu vérifier que vous êtes humain. Veuillez réessayer.",
     rate_limited: "Trop de tentatives. Veuillez patienter un instant et réessayer.",
-    server_error: "Un problème est survenu de notre côté. Vos informations ne sont pas perdues — veuillez réessayer sous peu.",
+    server_error: "Un problème est survenu de notre côté. Vos informations ne sont pas perdues: veuillez réessayer sous peu.",
     network: "Problème de réseau. Vérifiez votre connexion et réessayez.",
   },
   success: {
     verifiedTitle: "Votre e-mail est confirmé 🎉",
-    verifiedBody: "Vous êtes sur la liste d'accès anticipé Dar Tahara. Nous vous contacterons dès que le service sera disponible pour votre bien. Ce n'est pas une réservation confirmée — c'est votre place dans la file.",
+    verifiedBody: "Vous êtes sur la liste d'accès anticipé Dar Tahara. Nous vous contacterons dès que le service sera disponible pour votre bien. Ce n'est pas une réservation confirmée: c'est votre place dans la file.",
     alreadyTitle: "Vous êtes déjà confirmé",
-    pendingTitle: "Presque terminé — vérifiez votre boîte de réception",
+    pendingTitle: "Presque terminé: vérifiez votre boîte de réception",
     pendingBody: "Nous avons envoyé un lien de confirmation à votre e-mail. Cliquez dessus pour réserver votre place. S'il n'arrive pas d'ici quelques minutes, vérifiez les spams ou renvoyez-le ci-dessous.",
     expiredTitle: "Ce lien a expiré",
     expiredBody: "Pour votre sécurité, les liens de vérification expirent après 48 heures. Saisissez votre e-mail pour en recevoir un nouveau.",
@@ -529,7 +529,7 @@ const fr: EarlyAccessCopy = {
 
 const ar: EarlyAccessCopy = {
   meta: {
-    title: "اطلب الوصول المبكر — دار طهارة في المغرب",
+    title: "اطلب الوصول المبكر: دار طهارة في المغرب",
     description: "سجّل عقارك للوصول المبكر إلى دار طهارة: تنظيف منزلي راقٍ وعناية بالعقار في المغرب. استقبل مستجدات الإطلاق وادعُ العائلة والأصدقاء.",
   },
   hero: {
@@ -568,10 +568,10 @@ const ar: EarlyAccessCopy = {
     companyName: "اسم الشركة", billingFirstName: "الاسم الأول (الفوترة)", billingLastName: "اسم العائلة (الفوترة)",
     billingAddressLine1: "العنوان سطر 1", billingAddressLine2: "العنوان سطر 2",
     billingBuildingNumber: "رقم المبنى أو الشقة أو الوحدة", billingUnit: "شقة / وحدة",
-    addressSearch: "العنوان", mapsHelp: "كيف أحصل على رابط خرائط جوجل؟",
+    addressSearch: "العنوان", mapsHelp: "كيف أحصل على رابط خرائط جوجل؟", openInGoogleMaps: "افتح في خرائط جوجل",
     billingPostalCode: "الرمز البريدي", billingCity: "المدينة", billingRegion: "الولاية / الإقليم / المنطقة",
     billingCountry: "الدولة", taxId: "الرقم الضريبي (اختياري)", invoiceEmail: "بريد الفوترة",
-    invoiceEmailSameAsContact: "نفس بريدي للتواصل", useBillingAsProperty: "استخدام عنوان الفوترة كعنوان للعقار",
+    invoiceEmailSameAsContact: "نفس بريدي للتواصل",
     propertyName: "اسم العقار أو لقبه", propertyAddressLine1: "العنوان سطر 1", propertyAddressLine2: "العنوان سطر 2",
     residenceName: "اسم الإقامة أو المبنى", propertyBuildingNumber: "رقم المبنى أو الشقة أو الوحدة أو الفيلا",
     propertyUnitNumber: "رقم الشقة أو الوحدة أو الفيلا", propertyFloor: "الطابق", propertyPostalCode: "الرمز البريدي",
@@ -587,9 +587,9 @@ const ar: EarlyAccessCopy = {
     thirdPartyDetails: "تفاصيل ترتيب الوصول", accessNotes: "ملاحظات الوصول (اختياري)",
   },
   hints: {
-    entryNotes: "رموز البوابة، أي باب، موقف السيارات — أي شيء يساعد فريقنا.",
+    entryNotes: "رموز البوابة، أي باب، موقف السيارات: أي شيء يساعد فريقنا.",
     sizeM2: "التقدير التقريبي كافٍ.",
-    googleMapsUrl: "الصق رابط خرائط جوجل لمساعدتنا في تحديد الموقع بدقة.",
+    googleMapsUrl: "يُملأ تلقائيًا من العلامة أعلاه. اضبط العلامة لتحديثه، أو الصق رابطك الخاص.",
     notBookingServices: "هذا يساعدنا على التخطيط. ليس موعدًا مؤكدًا.",
   },
   options: {
@@ -612,7 +612,7 @@ const ar: EarlyAccessCopy = {
     ack: "أدرك أن التعامل مع المفتاح الفعلي قد يتضمن رسومًا إضافية وشروطًا منفصلة.",
   },
   thirdPartyNotice: "لا يمكننا التخطيط بشكل موثوق لتنظيف متكرر يعتمد على شخص يجب أن يتنقل لفتح العقار في كل مرة. يلزم ترتيب وصول موثوق.",
-  digitalLockNotice: "يُفضّل الوصول الرقمي الموثوق عند توفره — فهو يحسّن التخطيط والتحكم في الدخول.",
+  digitalLockNotice: "يُفضّل الوصول الرقمي الموثوق عند توفره: فهو يحسّن التخطيط والتحكم في الدخول.",
   digitalLockInternetNotice: {
     title: "اتصال إنترنت مطلوب",
     body: "يلزم توفر اتصال إنترنت مستقر في العقار لكي يعمل القفل الذكي الرقمي.",
@@ -628,14 +628,12 @@ const ar: EarlyAccessCopy = {
     searching: "جارٍ البحث…",
     noResults: "لا توجد نتائج. يمكنك إدخال العنوان يدويًا.",
     manualLink: "إدخال العنوان يدويًا",
-    unavailable: "البحث عن العناوين غير متاح — يرجى كتابة العنوان",
+    unavailable: "البحث عن العناوين غير متاح: يرجى كتابة العنوان",
     pinTitle: "ضع المؤشر عند مدخل العقار الصحيح",
     pinHelp: "حرّك المؤشر إلى المدخل الذي ينبغي لفريق التنظيف استخدامه.",
     useMyLocation: "استخدم موقعي الحالي",
     locating: "جارٍ تحديد الموقع…",
     locationDenied: "تعذّر تحديد موقعك. ما زال بإمكانك البحث أو تحريك المؤشر على الخريطة.",
-    streetViewNote: "يساعدك Street View على تأكيد الشارع أو المبنى الصحيح. قد تكون الصور غير متاحة أو قديمة.",
-    streetViewUnavailable: "Street View غير متاح لهذا الموقع. يرجى تأكيد العقار باستخدام مؤشر الخريطة.",
     mapUnavailable: "الخريطة غير متاحة حاليًا. يمكنك إدخال العنوان يدويًا والمتابعة.",
     adjusted: "تم تأكيد موضع المؤشر من قِبلك",
   },
@@ -646,8 +644,8 @@ const ar: EarlyAccessCopy = {
     manualPlaceholder: "اكتب اسم مدينتك",
     status: {
       planned: "قريبًا في هذه المنطقة",
-      waiting_list: "قائمة الانتظار — سنُعلمك عند إطلاقنا هنا",
-      unsupported: "ليست ضمن نطاق خدمتنا بعد — بإمكانك الانضمام إلى الوصول المبكر",
+      waiting_list: "قائمة الانتظار: سنُعلمك عند إطلاقنا هنا",
+      unsupported: "ليست ضمن نطاق خدمتنا بعد: بإمكانك الانضمام إلى الوصول المبكر",
     },
   },
   smartLock: {
@@ -679,8 +677,10 @@ const ar: EarlyAccessCopy = {
     authorized: "أؤكد أنني مخوّل بطلب الخدمات لهذا العقار.",
     privacy: "أوافق على سياسة الخصوصية.",
     operational: "أوافق على تلقّي رسائل تشغيلية بخصوص طلب الوصول المبكر.",
+    reminder: "أرسلوا لي تذكيرين بحد أقصى إذا لم أكمل هذا الطلب.",
+    reminderHint: "اختياري، ولهذا الطلب غير المكتمل فقط. هذه ليست موافقة على النشرة البريدية.",
     marketing: "أرغب في تلقّي أخبار وعروض ومستجدات دار طهارة.",
-    marketingHint: "اختياري — منفصل عن رسائل طلبك. يمكنك إلغاء الاشتراك في أي وقت.",
+    marketingHint: "اختياري: منفصل عن رسائل طلبك. يمكنك إلغاء الاشتراك في أي وقت.",
   },
   errors: {
     required: "هذا الحقل مطلوب.", invalid: "يرجى التحقق من هذه القيمة.",
@@ -693,14 +693,14 @@ const ar: EarlyAccessCopy = {
     select_one: "يرجى اختيار خدمة واحدة على الأقل.", validation_failed: "يرجى مراجعة الحقول المميزة.",
     captcha_failed: "تعذّر التحقق من أنك إنسان. يرجى المحاولة مرة أخرى.",
     rate_limited: "محاولات كثيرة. يرجى الانتظار قليلاً والمحاولة مجددًا.",
-    server_error: "حدث خطأ من جانبنا. لم تُفقد بياناتك — يرجى المحاولة بعد قليل.",
+    server_error: "حدث خطأ من جانبنا. لم تُفقد بياناتك: يرجى المحاولة بعد قليل.",
     network: "مشكلة في الشبكة. تحقق من اتصالك وحاول مجددًا.",
   },
   success: {
     verifiedTitle: "تم تأكيد بريدك الإلكتروني 🎉",
-    verifiedBody: "أنت الآن على قائمة الوصول المبكر لدار طهارة. سنتواصل معك عند توفّر الخدمة لعقارك. هذا ليس حجزًا مؤكدًا — إنه مكانك في القائمة.",
+    verifiedBody: "أنت الآن على قائمة الوصول المبكر لدار طهارة. سنتواصل معك عند توفّر الخدمة لعقارك. هذا ليس حجزًا مؤكدًا: إنه مكانك في القائمة.",
     alreadyTitle: "تم تأكيدك بالفعل",
-    pendingTitle: "اقتربت — تحقق من بريدك",
+    pendingTitle: "اقتربت: تحقق من بريدك",
     pendingBody: "أرسلنا رابط تأكيد إلى بريدك. اضغط عليه لتأكيد مكانك. إن لم يصل خلال دقائق، تحقق من البريد المزعج أو أعد الإرسال أدناه.",
     expiredTitle: "انتهت صلاحية هذا الرابط",
     expiredBody: "من أجل أمانك، تنتهي صلاحية روابط التحقق بعد 48 ساعة. أدخل بريدك للحصول على رابط جديد.",
@@ -723,7 +723,7 @@ const ar: EarlyAccessCopy = {
 
 const nl: EarlyAccessCopy = {
   meta: {
-    title: "Vraag early access aan — Dar Tahara woningverzorging in Marokko",
+    title: "Vraag early access aan: Dar Tahara woningverzorging in Marokko",
     description: "Registreer uw woning voor Dar Tahara early access: premium schoonmaak en woningverzorging in Marokko. Ontvang lanceringsupdates en nodig familie en vrienden uit.",
   },
   hero: {
@@ -762,10 +762,10 @@ const nl: EarlyAccessCopy = {
     companyName: "Bedrijfsnaam", billingFirstName: "Voornaam (facturering)", billingLastName: "Achternaam (facturering)",
     billingAddressLine1: "Adresregel 1", billingAddressLine2: "Adresregel 2",
     billingBuildingNumber: "Gebouw-, appartement- of unitnummer", billingUnit: "Appartement / unit",
-    addressSearch: "Adres", mapsHelp: "Hoe krijg ik een Google Maps-link?",
+    addressSearch: "Adres", mapsHelp: "Hoe krijg ik een Google Maps-link?", openInGoogleMaps: "Openen in Google Maps",
     billingPostalCode: "Postcode", billingCity: "Plaats", billingRegion: "Staat / provincie / regio",
     billingCountry: "Land", taxId: "Btw-nummer (optioneel)", invoiceEmail: "Factuur-e-mail",
-    invoiceEmailSameAsContact: "Zelfde als mijn contact-e-mail", useBillingAsProperty: "Factuuradres gebruiken als woningadres",
+    invoiceEmailSameAsContact: "Zelfde als mijn contact-e-mail",
     propertyName: "Naam of bijnaam van de woning", propertyAddressLine1: "Adresregel 1", propertyAddressLine2: "Adresregel 2",
     residenceName: "Naam van residentie of gebouw", propertyBuildingNumber: "Gebouw-, appartement-, unit- of villanummer",
     propertyUnitNumber: "Appartement-, unit- of villanummer", propertyFloor: "Verdieping", propertyPostalCode: "Postcode",
@@ -781,9 +781,9 @@ const nl: EarlyAccessCopy = {
     thirdPartyDetails: "Details toegangsregeling", accessNotes: "Toegangsnotities (optioneel)",
   },
   hints: {
-    entryNotes: "Toegangscodes, welke deur, parkeren — alles wat ons team helpt.",
+    entryNotes: "Toegangscodes, welke deur, parkeren: alles wat ons team helpt.",
     sizeM2: "Een ruwe schatting is prima.",
-    googleMapsUrl: "Plak een Google Maps-link zodat we het precies kunnen vinden.",
+    googleMapsUrl: "Automatisch ingevuld op basis van de pin hierboven. Verplaats de pin om bij te werken, of plak uw eigen link.",
     notBookingServices: "Dit helpt ons plannen. Het is geen bevestigde afspraak.",
   },
   options: {
@@ -806,7 +806,7 @@ const nl: EarlyAccessCopy = {
     ack: "Ik begrijp dat het beheer van een fysieke sleutel extra kosten en aparte voorwaarden met zich mee kan brengen.",
   },
   thirdPartyNotice: "We kunnen terugkerende schoonmaak niet betrouwbaar plannen rond iemand die telkens moet reizen om de woning te openen. Een betrouwbare toegangsregeling is vereist.",
-  digitalLockNotice: "Betrouwbare digitale toegang heeft de voorkeur waar beschikbaar — het verbetert de planning en toegangscontrole.",
+  digitalLockNotice: "Betrouwbare digitale toegang heeft de voorkeur waar beschikbaar: het verbetert de planning en toegangscontrole.",
   digitalLockInternetNotice: {
     title: "Internetverbinding vereist",
     body: "Een stabiele internetverbinding op het pand is vereist om het digitale smart lock te laten werken.",
@@ -822,14 +822,12 @@ const nl: EarlyAccessCopy = {
     searching: "Zoeken…",
     noResults: "Geen resultaten. U kunt het adres handmatig invoeren.",
     manualLink: "Adres handmatig invoeren",
-    unavailable: "Adres zoeken is niet beschikbaar — typ het adres",
+    unavailable: "Adres zoeken is niet beschikbaar: typ het adres",
     pinTitle: "Plaats de speld bij de juiste ingang van het pand",
     pinHelp: "Verplaats de speld naar de ingang die ons schoonmaakteam moet gebruiken.",
     useMyLocation: "Mijn huidige locatie gebruiken",
     locating: "Locatie bepalen…",
     locationDenied: "We konden uw locatie niet bepalen. U kunt nog steeds zoeken of de speld verplaatsen.",
-    streetViewNote: "Street View helpt u de juiste straat of het juiste gebouw te bevestigen. Beelden kunnen ontbreken of verouderd zijn.",
-    streetViewUnavailable: "Street View is niet beschikbaar voor deze locatie. Bevestig het pand met de speld op de kaart.",
     mapUnavailable: "De kaart is nu niet beschikbaar. U kunt het adres handmatig invoeren en doorgaan.",
     adjusted: "Speldpositie door u bevestigd",
   },
@@ -840,8 +838,8 @@ const nl: EarlyAccessCopy = {
     manualPlaceholder: "Typ uw stad",
     status: {
       planned: "Binnenkort beschikbaar in dit gebied",
-      waiting_list: "Wachtlijst — we laten het weten wanneer we hier van start gaan",
-      unsupported: "Nog niet in ons servicegebied — u kunt zich toch aanmelden voor early access",
+      waiting_list: "Wachtlijst: we laten het weten wanneer we hier van start gaan",
+      unsupported: "Nog niet in ons servicegebied: u kunt zich toch aanmelden voor early access",
     },
   },
   smartLock: {
@@ -873,8 +871,10 @@ const nl: EarlyAccessCopy = {
     authorized: "Ik bevestig dat ik gemachtigd ben om diensten voor deze woning aan te vragen.",
     privacy: "Ik accepteer het privacybeleid.",
     operational: "Ik ga akkoord met operationele communicatie over mijn early-access-aanvraag.",
+    reminder: "Stuur mij maximaal twee herinneringen als ik deze aanvraag niet afmaak.",
+    reminderHint: "Optioneel, alleen voor deze onafgemaakte aanvraag. Dit is geen nieuwsbrief toestemming.",
     marketing: "Ik wil nieuws, aanbiedingen en marketingupdates van Dar Tahara ontvangen.",
-    marketingHint: "Optioneel — los van de berichten over uw aanvraag. U kunt zich altijd uitschrijven.",
+    marketingHint: "Optioneel: los van de berichten over uw aanvraag. U kunt zich altijd uitschrijven.",
   },
   errors: {
     required: "Dit veld is verplicht.", invalid: "Controleer deze waarde.",
@@ -887,14 +887,14 @@ const nl: EarlyAccessCopy = {
     select_one: "Selecteer minstens één dienst.", validation_failed: "Controleer de gemarkeerde velden.",
     captcha_failed: "We konden niet verifiëren dat u een mens bent. Probeer het opnieuw.",
     rate_limited: "Te veel pogingen. Wacht even en probeer het opnieuw.",
-    server_error: "Er ging iets mis aan onze kant. Uw gegevens zijn niet verloren — probeer het zo opnieuw.",
+    server_error: "Er ging iets mis aan onze kant. Uw gegevens zijn niet verloren: probeer het zo opnieuw.",
     network: "Netwerkprobleem. Controleer uw verbinding en probeer opnieuw.",
   },
   success: {
     verifiedTitle: "Uw e-mail is bevestigd 🎉",
-    verifiedBody: "U staat op de Dar Tahara early-access-lijst. We nemen contact op zodra de dienst voor uw woning beschikbaar is. Dit is geen bevestigde boeking — het is uw plek in de rij.",
+    verifiedBody: "U staat op de Dar Tahara early-access-lijst. We nemen contact op zodra de dienst voor uw woning beschikbaar is. Dit is geen bevestigde boeking: het is uw plek in de rij.",
     alreadyTitle: "U bent al bevestigd",
-    pendingTitle: "Bijna klaar — controleer uw inbox",
+    pendingTitle: "Bijna klaar: controleer uw inbox",
     pendingBody: "We hebben een bevestigingslink naar uw e-mail gestuurd. Klik erop om uw plek te reserveren. Als hij niet binnen enkele minuten aankomt, controleer dan spam of verstuur hieronder opnieuw.",
     expiredTitle: "Deze link is verlopen",
     expiredBody: "Voor uw veiligheid verlopen verificatielinks na 48 uur. Voer uw e-mail in voor een nieuwe.",
@@ -917,7 +917,7 @@ const nl: EarlyAccessCopy = {
 
 const es: EarlyAccessCopy = {
   meta: {
-    title: "Solicita acceso anticipado — Dar Tahara cuidado del hogar en Marruecos",
+    title: "Solicita acceso anticipado: Dar Tahara cuidado del hogar en Marruecos",
     description: "Registra tu propiedad para el acceso anticipado de Dar Tahara: limpieza premium y cuidado de propiedades en Marruecos. Recibe novedades del lanzamiento e invita a familiares y amigos.",
   },
   hero: {
@@ -956,10 +956,10 @@ const es: EarlyAccessCopy = {
     companyName: "Nombre de la empresa", billingFirstName: "Nombre (facturación)", billingLastName: "Apellidos (facturación)",
     billingAddressLine1: "Dirección línea 1", billingAddressLine2: "Dirección línea 2",
     billingBuildingNumber: "Número de edificio, apartamento o unidad", billingUnit: "Apartamento / unidad",
-    addressSearch: "Dirección", mapsHelp: "¿Cómo obtengo un enlace de Google Maps?",
+    addressSearch: "Dirección", mapsHelp: "¿Cómo obtengo un enlace de Google Maps?", openInGoogleMaps: "Abrir en Google Maps",
     billingPostalCode: "Código postal", billingCity: "Ciudad", billingRegion: "Estado / provincia / región",
     billingCountry: "País", taxId: "Número de IVA (opcional)", invoiceEmail: "Correo de facturación",
-    invoiceEmailSameAsContact: "Igual que mi correo de contacto", useBillingAsProperty: "Usar dirección de facturación como dirección de la propiedad",
+    invoiceEmailSameAsContact: "Igual que mi correo de contacto",
     propertyName: "Nombre o apodo de la propiedad", propertyAddressLine1: "Dirección línea 1", propertyAddressLine2: "Dirección línea 2",
     residenceName: "Nombre de la residencia o edificio", propertyBuildingNumber: "Número de edificio, apartamento, unidad o villa",
     propertyUnitNumber: "Número de apartamento, unidad o villa", propertyFloor: "Piso", propertyPostalCode: "Código postal",
@@ -975,9 +975,9 @@ const es: EarlyAccessCopy = {
     thirdPartyDetails: "Detalles del acuerdo de acceso", accessNotes: "Notas de acceso (opcional)",
   },
   hints: {
-    entryNotes: "Códigos de acceso, qué puerta, aparcamiento — todo lo que ayude a nuestro equipo.",
+    entryNotes: "Códigos de acceso, qué puerta, aparcamiento: todo lo que ayude a nuestro equipo.",
     sizeM2: "Una estimación aproximada es suficiente.",
-    googleMapsUrl: "Pega un enlace de Google Maps para ayudarnos a ubicarla con precisión.",
+    googleMapsUrl: "Se rellena automáticamente a partir del pin de arriba. Ajusta el pin para actualizarlo, o pega tu propio enlace.",
     notBookingServices: "Esto nos ayuda a planificar. No es una cita confirmada.",
   },
   options: {
@@ -1000,7 +1000,7 @@ const es: EarlyAccessCopy = {
     ack: "Entiendo que la gestión de una llave física puede implicar una tarifa adicional y condiciones aparte.",
   },
   thirdPartyNotice: "No podemos planificar de forma fiable una limpieza recurrente en torno a alguien que deba desplazarse para abrir la propiedad cada vez. Se requiere un acuerdo de acceso fiable.",
-  digitalLockNotice: "Se prefiere un acceso digital fiable cuando está disponible — mejora la planificación y el control de acceso.",
+  digitalLockNotice: "Se prefiere un acceso digital fiable cuando está disponible: mejora la planificación y el control de acceso.",
   digitalLockInternetNotice: {
     title: "Conexión a internet necesaria",
     body: "Es imprescindible una conexión a internet estable en la propiedad para que la cerradura inteligente funcione.",
@@ -1022,8 +1022,6 @@ const es: EarlyAccessCopy = {
     useMyLocation: "Usar mi ubicación actual",
     locating: "Localizando…",
     locationDenied: "No pudimos obtener tu ubicación. Puedes seguir buscando o mover el marcador en el mapa.",
-    streetViewNote: "Street View puede ayudarte a confirmar la calle o el edificio. Las imágenes pueden no estar disponibles o estar desactualizadas.",
-    streetViewUnavailable: "Street View no está disponible para esta ubicación. Confirma la propiedad con el marcador del mapa.",
     mapUnavailable: "El mapa no está disponible ahora. Puedes introducir la dirección manualmente y continuar.",
     adjusted: "Posición del marcador confirmada por ti",
   },
@@ -1067,8 +1065,10 @@ const es: EarlyAccessCopy = {
     authorized: "Confirmo que estoy autorizado a solicitar servicios para esta propiedad.",
     privacy: "Acepto la política de privacidad.",
     operational: "Acepto recibir comunicaciones operativas sobre mi solicitud de acceso anticipado.",
+    reminder: "Envíame como máximo dos recordatorios si dejo esta solicitud sin terminar.",
+    reminderHint: "Opcional y solo para esta solicitud incompleta. No es consentimiento para el boletín.",
     marketing: "Deseo recibir noticias, ofertas y novedades de Dar Tahara.",
-    marketingHint: "Opcional — independiente de los mensajes sobre tu solicitud. Puedes darte de baja cuando quieras.",
+    marketingHint: "Opcional: independiente de los mensajes sobre tu solicitud. Puedes darte de baja cuando quieras.",
   },
   errors: {
     required: "Este campo es obligatorio.", invalid: "Revisa este valor.",
@@ -1081,14 +1081,14 @@ const es: EarlyAccessCopy = {
     select_one: "Selecciona al menos un servicio.", validation_failed: "Revisa los campos marcados.",
     captcha_failed: "No pudimos verificar que eres humano. Inténtalo de nuevo.",
     rate_limited: "Demasiados intentos. Espera un momento e inténtalo de nuevo.",
-    server_error: "Algo salió mal por nuestra parte. Tus datos no se han perdido — inténtalo de nuevo en breve.",
+    server_error: "Algo salió mal por nuestra parte. Tus datos no se han perdido: inténtalo de nuevo en breve.",
     network: "Problema de red. Comprueba tu conexión e inténtalo de nuevo.",
   },
   success: {
     verifiedTitle: "Tu correo está confirmado 🎉",
-    verifiedBody: "Estás en la lista de acceso anticipado de Dar Tahara. Te contactaremos cuando el servicio esté disponible para tu propiedad. No es una reserva confirmada — es tu lugar en la fila.",
+    verifiedBody: "Estás en la lista de acceso anticipado de Dar Tahara. Te contactaremos cuando el servicio esté disponible para tu propiedad. No es una reserva confirmada: es tu lugar en la fila.",
     alreadyTitle: "Ya estás confirmado",
-    pendingTitle: "Casi listo — revisa tu bandeja de entrada",
+    pendingTitle: "Casi listo: revisa tu bandeja de entrada",
     pendingBody: "Hemos enviado un enlace de confirmación a tu correo. Haz clic en él para asegurar tu lugar. Si no llega en unos minutos, revisa el spam o reenvíalo abajo.",
     expiredTitle: "Este enlace ha caducado",
     expiredBody: "Por tu seguridad, los enlaces de verificación caducan tras 48 horas. Introduce tu correo para recibir uno nuevo.",
@@ -1111,7 +1111,7 @@ const es: EarlyAccessCopy = {
 
 const de: EarlyAccessCopy = {
   meta: {
-    title: "Frühzugang anfragen — Dar Tahara Hausbetreuung in Marokko",
+    title: "Frühzugang anfragen: Dar Tahara Hausbetreuung in Marokko",
     description: "Registrieren Sie Ihre Immobilie für den Dar Tahara Frühzugang: Premium-Reinigung und Immobilienbetreuung in Marokko. Erhalten Sie Launch-Updates und laden Sie Familie und Freunde ein.",
   },
   hero: {
@@ -1150,10 +1150,10 @@ const de: EarlyAccessCopy = {
     companyName: "Firmenname", billingFirstName: "Vorname (Rechnung)", billingLastName: "Nachname (Rechnung)",
     billingAddressLine1: "Adresszeile 1", billingAddressLine2: "Adresszeile 2",
     billingBuildingNumber: "Gebäude-, Wohnungs- oder Einheitsnummer", billingUnit: "Wohnung / Einheit",
-    addressSearch: "Adresse", mapsHelp: "Wie erhalte ich einen Google-Maps-Link?",
+    addressSearch: "Adresse", mapsHelp: "Wie erhalte ich einen Google-Maps-Link?", openInGoogleMaps: "In Google Maps öffnen",
     billingPostalCode: "Postleitzahl", billingCity: "Stadt", billingRegion: "Bundesland / Provinz / Region",
     billingCountry: "Land", taxId: "USt-IdNr. (optional)", invoiceEmail: "Rechnungs-E-Mail",
-    invoiceEmailSameAsContact: "Wie meine Kontakt-E-Mail", useBillingAsProperty: "Rechnungsadresse als Immobilienadresse verwenden",
+    invoiceEmailSameAsContact: "Wie meine Kontakt-E-Mail",
     propertyName: "Name oder Spitzname der Immobilie", propertyAddressLine1: "Adresszeile 1", propertyAddressLine2: "Adresszeile 2",
     residenceName: "Name der Residenz oder des Gebäudes", propertyBuildingNumber: "Gebäude-, Wohnungs-, Einheits- oder Villanummer",
     propertyUnitNumber: "Wohnungs-, Einheits- oder Villennummer", propertyFloor: "Etage", propertyPostalCode: "Postleitzahl",
@@ -1169,9 +1169,9 @@ const de: EarlyAccessCopy = {
     thirdPartyDetails: "Details zur Zugangsregelung", accessNotes: "Zugangshinweise (optional)",
   },
   hints: {
-    entryNotes: "Torcodes, welche Tür, Parken — alles, was unserem Team hilft.",
+    entryNotes: "Torcodes, welche Tür, Parken: alles, was unserem Team hilft.",
     sizeM2: "Eine grobe Schätzung genügt.",
-    googleMapsUrl: "Fügen Sie einen Google-Maps-Link ein, damit wir es genau finden.",
+    googleMapsUrl: "Wird automatisch anhand des obigen Pins ausgefüllt. Passen Sie den Pin an, um es zu aktualisieren, oder fügen Sie Ihren eigenen Link ein.",
     notBookingServices: "Das hilft uns bei der Planung. Es ist kein bestätigter Termin.",
   },
   options: {
@@ -1194,7 +1194,7 @@ const de: EarlyAccessCopy = {
     ack: "Ich verstehe, dass die Handhabung eines physischen Schlüssels eine zusätzliche Gebühr und gesonderte Bedingungen umfassen kann.",
   },
   thirdPartyNotice: "Wir können eine wiederkehrende Reinigung nicht zuverlässig um jemanden herum planen, der jedes Mal anreisen muss, um die Immobilie zu öffnen. Eine zuverlässige Zugangsregelung ist erforderlich.",
-  digitalLockNotice: "Ein zuverlässiger digitaler Zugang wird bevorzugt, wo verfügbar — er verbessert Planung und Zugangskontrolle.",
+  digitalLockNotice: "Ein zuverlässiger digitaler Zugang wird bevorzugt, wo verfügbar: er verbessert Planung und Zugangskontrolle.",
   digitalLockInternetNotice: {
     title: "Internetverbindung erforderlich",
     body: "Eine stabile Internetverbindung in der Immobilie ist zwingend erforderlich, damit das digitale Smart Lock funktioniert.",
@@ -1210,14 +1210,12 @@ const de: EarlyAccessCopy = {
     searching: "Suche…",
     noResults: "Keine Treffer. Sie können die Adresse manuell eingeben.",
     manualLink: "Adresse manuell eingeben",
-    unavailable: "Die Adresssuche ist nicht verfügbar — bitte Adresse eintippen",
+    unavailable: "Die Adresssuche ist nicht verfügbar: bitte Adresse eintippen",
     pinTitle: "Setzen Sie die Markierung an den richtigen Eingang",
     pinHelp: "Verschieben Sie die Markierung zu dem Eingang, den unser Reinigungsteam nutzen soll.",
     useMyLocation: "Meinen aktuellen Standort verwenden",
     locating: "Standort wird ermittelt…",
     locationDenied: "Wir konnten Ihren Standort nicht ermitteln. Sie können weiterhin suchen oder die Markierung verschieben.",
-    streetViewNote: "Street View hilft Ihnen, die richtige Straße oder das richtige Gebäude zu bestätigen. Bilder können fehlen oder veraltet sein.",
-    streetViewUnavailable: "Street View ist für diesen Ort nicht verfügbar. Bitte bestätigen Sie die Immobilie über die Kartenmarkierung.",
     mapUnavailable: "Die Karte ist derzeit nicht verfügbar. Sie können die Adresse manuell eingeben und fortfahren.",
     adjusted: "Markierungsposition von Ihnen bestätigt",
   },
@@ -1228,8 +1226,8 @@ const de: EarlyAccessCopy = {
     manualPlaceholder: "Geben Sie Ihre Stadt ein",
     status: {
       planned: "Bald in diesem Gebiet verfügbar",
-      waiting_list: "Warteliste — wir informieren Sie, sobald wir hier starten",
-      unsupported: "Noch nicht in unserem Servicegebiet — Sie können sich dennoch für den Early Access anmelden",
+      waiting_list: "Warteliste: wir informieren Sie, sobald wir hier starten",
+      unsupported: "Noch nicht in unserem Servicegebiet: Sie können sich dennoch für den Early Access anmelden",
     },
   },
   smartLock: {
@@ -1261,8 +1259,10 @@ const de: EarlyAccessCopy = {
     authorized: "Ich bestätige, dass ich berechtigt bin, für diese Immobilie Leistungen anzufragen.",
     privacy: "Ich akzeptiere die Datenschutzrichtlinie.",
     operational: "Ich stimme zu, operative Mitteilungen zu meiner Frühzugangs-Anfrage zu erhalten.",
+    reminder: "Senden Sie mir höchstens zwei Erinnerungen, falls ich diese Anfrage nicht abschließe.",
+    reminderHint: "Optional und nur für diese unvollständige Anfrage. Dies ist keine Newsletter-Einwilligung.",
     marketing: "Ich möchte News, Angebote und Marketing-Updates von Dar Tahara erhalten.",
-    marketingHint: "Optional — getrennt von den Nachrichten zu Ihrer Anfrage. Sie können sich jederzeit abmelden.",
+    marketingHint: "Optional: getrennt von den Nachrichten zu Ihrer Anfrage. Sie können sich jederzeit abmelden.",
   },
   errors: {
     required: "Dieses Feld ist erforderlich.", invalid: "Bitte prüfen Sie diesen Wert.",
@@ -1275,14 +1275,14 @@ const de: EarlyAccessCopy = {
     select_one: "Bitte wählen Sie mindestens eine Leistung.", validation_failed: "Bitte überprüfen Sie die markierten Felder.",
     captcha_failed: "Wir konnten nicht bestätigen, dass Sie ein Mensch sind. Bitte versuchen Sie es erneut.",
     rate_limited: "Zu viele Versuche. Bitte warten Sie einen Moment und versuchen Sie es erneut.",
-    server_error: "Auf unserer Seite ist etwas schiefgelaufen. Ihre Daten sind nicht verloren — bitte versuchen Sie es gleich erneut.",
+    server_error: "Auf unserer Seite ist etwas schiefgelaufen. Ihre Daten sind nicht verloren: bitte versuchen Sie es gleich erneut.",
     network: "Netzwerkproblem. Bitte prüfen Sie Ihre Verbindung und versuchen Sie es erneut.",
   },
   success: {
     verifiedTitle: "Ihre E-Mail ist bestätigt 🎉",
-    verifiedBody: "Sie stehen auf der Dar Tahara Frühzugangs-Liste. Wir melden uns, sobald der Service für Ihre Immobilie verfügbar ist. Dies ist keine bestätigte Buchung — es ist Ihr Platz in der Warteschlange.",
+    verifiedBody: "Sie stehen auf der Dar Tahara Frühzugangs-Liste. Wir melden uns, sobald der Service für Ihre Immobilie verfügbar ist. Dies ist keine bestätigte Buchung: es ist Ihr Platz in der Warteschlange.",
     alreadyTitle: "Sie sind bereits bestätigt",
-    pendingTitle: "Fast geschafft — prüfen Sie Ihren Posteingang",
+    pendingTitle: "Fast geschafft: prüfen Sie Ihren Posteingang",
     pendingBody: "Wir haben einen Bestätigungslink an Ihre E-Mail gesendet. Klicken Sie darauf, um Ihren Platz zu sichern. Falls er nicht innerhalb weniger Minuten ankommt, prüfen Sie den Spam-Ordner oder senden Sie ihn unten erneut.",
     expiredTitle: "Dieser Link ist abgelaufen",
     expiredBody: "Zu Ihrer Sicherheit laufen Bestätigungslinks nach 48 Stunden ab. Geben Sie Ihre E-Mail ein, um einen neuen zu erhalten.",
@@ -1305,7 +1305,7 @@ const de: EarlyAccessCopy = {
 
 const pt: EarlyAccessCopy = {
   meta: {
-    title: "Solicite acesso antecipado — Dar Tahara cuidado do lar em Marrocos",
+    title: "Solicite acesso antecipado: Dar Tahara cuidado do lar em Marrocos",
     description: "Registe o seu imóvel para o acesso antecipado da Dar Tahara: limpeza premium e cuidado de imóveis em Marrocos. Receba novidades do lançamento e convide familiares e amigos.",
   },
   hero: {
@@ -1344,10 +1344,10 @@ const pt: EarlyAccessCopy = {
     companyName: "Nome da empresa", billingFirstName: "Nome (faturação)", billingLastName: "Apelido (faturação)",
     billingAddressLine1: "Morada linha 1", billingAddressLine2: "Morada linha 2",
     billingBuildingNumber: "Número do edifício, apartamento ou unidade", billingUnit: "Apartamento / unidade",
-    addressSearch: "Morada", mapsHelp: "Como obtenho uma ligação do Google Maps?",
+    addressSearch: "Morada", mapsHelp: "Como obtenho uma ligação do Google Maps?", openInGoogleMaps: "Abrir no Google Maps",
     billingPostalCode: "Código postal", billingCity: "Cidade", billingRegion: "Estado / província / região",
     billingCountry: "País", taxId: "Número de IVA (opcional)", invoiceEmail: "E-mail de faturação",
-    invoiceEmailSameAsContact: "Igual ao meu e-mail de contacto", useBillingAsProperty: "Usar a morada de faturação como morada do imóvel",
+    invoiceEmailSameAsContact: "Igual ao meu e-mail de contacto",
     propertyName: "Nome ou alcunha do imóvel", propertyAddressLine1: "Morada linha 1", propertyAddressLine2: "Morada linha 2",
     residenceName: "Nome da residência ou edifício", propertyBuildingNumber: "Número do edifício, apartamento, unidade ou vivenda",
     propertyUnitNumber: "Número de apartamento, unidade ou villa", propertyFloor: "Andar", propertyPostalCode: "Código postal",
@@ -1363,9 +1363,9 @@ const pt: EarlyAccessCopy = {
     thirdPartyDetails: "Detalhes do acordo de acesso", accessNotes: "Notas de acesso (opcional)",
   },
   hints: {
-    entryNotes: "Códigos de portão, que porta, estacionamento — tudo o que ajude a nossa equipa.",
+    entryNotes: "Códigos de portão, que porta, estacionamento: tudo o que ajude a nossa equipa.",
     sizeM2: "Uma estimativa aproximada serve.",
-    googleMapsUrl: "Cole uma ligação do Google Maps para o localizarmos com precisão.",
+    googleMapsUrl: "Preenchido automaticamente a partir do marcador acima. Ajuste o marcador para atualizar, ou cole a sua própria ligação.",
     notBookingServices: "Isto ajuda-nos a planear. Não é uma marcação confirmada.",
   },
   options: {
@@ -1388,7 +1388,7 @@ const pt: EarlyAccessCopy = {
     ack: "Compreendo que a gestão de uma chave física pode implicar uma taxa adicional e condições separadas.",
   },
   thirdPartyNotice: "Não conseguimos planear de forma fiável uma limpeza recorrente em torno de alguém que tenha de se deslocar para abrir o imóvel de cada vez. É necessário um acordo de acesso fiável.",
-  digitalLockNotice: "Um acesso digital fiável é preferível quando disponível — melhora o planeamento e o controlo de acesso.",
+  digitalLockNotice: "Um acesso digital fiável é preferível quando disponível: melhora o planeamento e o controlo de acesso.",
   digitalLockInternetNotice: {
     title: "Ligação à internet obrigatória",
     body: "É obrigatória uma ligação à internet estável no imóvel para que a fechadura inteligente digital funcione.",
@@ -1404,14 +1404,12 @@ const pt: EarlyAccessCopy = {
     searching: "A procurar…",
     noResults: "Sem resultados. Pode introduzir a morada manualmente.",
     manualLink: "Introduzir a morada manualmente",
-    unavailable: "A pesquisa de moradas não está disponível — escreva a morada",
+    unavailable: "A pesquisa de moradas não está disponível: escreva a morada",
     pinTitle: "Coloque o marcador na entrada correta do imóvel",
     pinHelp: "Mova o marcador para a entrada que a nossa equipa de limpeza deve usar.",
     useMyLocation: "Usar a minha localização atual",
     locating: "A localizar…",
     locationDenied: "Não conseguimos obter a sua localização. Pode continuar a pesquisar ou mover o marcador no mapa.",
-    streetViewNote: "O Street View ajuda a confirmar a rua ou o edifício correto. As imagens podem estar indisponíveis ou desatualizadas.",
-    streetViewUnavailable: "O Street View não está disponível para este local. Confirme o imóvel com o marcador do mapa.",
     mapUnavailable: "O mapa está indisponível de momento. Pode introduzir a morada manualmente e continuar.",
     adjusted: "Posição do marcador confirmada por si",
   },
@@ -1422,8 +1420,8 @@ const pt: EarlyAccessCopy = {
     manualPlaceholder: "Escreva a sua cidade",
     status: {
       planned: "Em breve nesta zona",
-      waiting_list: "Lista de espera — avisamos quando arrancarmos aqui",
-      unsupported: "Ainda não está na nossa zona de serviço — pode aderir ao acesso antecipado à mesma",
+      waiting_list: "Lista de espera: avisamos quando arrancarmos aqui",
+      unsupported: "Ainda não está na nossa zona de serviço: pode aderir ao acesso antecipado à mesma",
     },
   },
   smartLock: {
@@ -1455,8 +1453,10 @@ const pt: EarlyAccessCopy = {
     authorized: "Confirmo que estou autorizado a solicitar serviços para este imóvel.",
     privacy: "Aceito a política de privacidade.",
     operational: "Aceito receber comunicações operacionais sobre o meu pedido de acesso antecipado.",
+    reminder: "Envie-me no máximo dois lembretes se eu não concluir este pedido.",
+    reminderHint: "Opcional e apenas para este pedido incompleto. Não é consentimento para a newsletter.",
     marketing: "Desejo receber novidades, ofertas e atualizações de marketing da Dar Tahara.",
-    marketingHint: "Opcional — separado das mensagens sobre o seu pedido. Pode cancelar a subscrição a qualquer momento.",
+    marketingHint: "Opcional: separado das mensagens sobre o seu pedido. Pode cancelar a subscrição a qualquer momento.",
   },
   errors: {
     required: "Este campo é obrigatório.", invalid: "Verifique este valor.",
@@ -1469,14 +1469,14 @@ const pt: EarlyAccessCopy = {
     select_one: "Selecione pelo menos um serviço.", validation_failed: "Reveja os campos assinalados.",
     captcha_failed: "Não conseguimos verificar que é humano. Tente novamente.",
     rate_limited: "Demasiadas tentativas. Aguarde um momento e tente novamente.",
-    server_error: "Algo correu mal do nosso lado. Os seus dados não se perderam — tente novamente em breve.",
+    server_error: "Algo correu mal do nosso lado. Os seus dados não se perderam: tente novamente em breve.",
     network: "Problema de rede. Verifique a sua ligação e tente novamente.",
   },
   success: {
     verifiedTitle: "O seu e-mail está confirmado 🎉",
-    verifiedBody: "Está na lista de acesso antecipado da Dar Tahara. Entraremos em contacto quando o serviço estiver disponível para o seu imóvel. Não é uma reserva confirmada — é o seu lugar na fila.",
+    verifiedBody: "Está na lista de acesso antecipado da Dar Tahara. Entraremos em contacto quando o serviço estiver disponível para o seu imóvel. Não é uma reserva confirmada: é o seu lugar na fila.",
     alreadyTitle: "Já está confirmado",
-    pendingTitle: "Quase — verifique a sua caixa de entrada",
+    pendingTitle: "Quase: verifique a sua caixa de entrada",
     pendingBody: "Enviámos uma ligação de confirmação para o seu e-mail. Clique nela para garantir o seu lugar. Se não chegar em alguns minutos, verifique o spam ou reenvie abaixo.",
     expiredTitle: "Esta ligação expirou",
     expiredBody: "Para sua segurança, as ligações de verificação expiram após 48 horas. Introduza o seu e-mail para obter uma nova.",

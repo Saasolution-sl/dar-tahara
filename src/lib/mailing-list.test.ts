@@ -66,3 +66,12 @@ test("rateLimit allows a burst then blocks", () => {
   // After the window it resets.
   assert.equal(rateLimit(key, t0 + 61_000).allowed, true);
 });
+
+test("rateLimit supports a scoped higher-frequency policy", () => {
+  const key = `autosave-${Math.random()}`;
+  const t0 = Date.now();
+  for (let i = 0; i < 20; i++) {
+    assert.equal(rateLimit(key, t0, { windowMs: 60_000, max: 20 }).allowed, true);
+  }
+  assert.equal(rateLimit(key, t0, { windowMs: 60_000, max: 20 }).allowed, false);
+});

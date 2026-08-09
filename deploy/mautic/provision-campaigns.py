@@ -111,6 +111,8 @@ def main():
         "verified": segment_id("dt-ea-verified"),
         "high": segment_id("dt-high-intent"),
         "tangier": segment_id("dt-city-tangier"),
+        "abandoned1": segment_id("dt-ea-reminder-1"),
+        "abandoned2": segment_id("dt-ea-reminder-2"),
     }
     # Create the "Referrers: 1+ Verified" segment if missing.
     seg["referrers"] = segment_id("dt-referrers-1", create={
@@ -123,6 +125,16 @@ def main():
     })
 
     campaigns = [
+        build("DT Â· Abandoned Signup Reminder 1",
+              "Sends the first consented reminder after the app marks reminder count 1.",
+              seg["abandoned1"], [
+                  send(e("Abandoned signup reminder 1"), "Send first recovery reminder", "immediate", 1, "d", "new_1"),
+              ]),
+        build("DT Â· Abandoned Signup Reminder 2",
+              "Sends the final consented reminder after the app marks reminder count 2.",
+              seg["abandoned2"], [
+                  send(e("Abandoned signup reminder 2"), "Send final recovery reminder", "immediate", 1, "d", "new_1"),
+              ]),
         build("DT · Pending Verification",
               "Reminds unverified early-access leads to confirm their email.",
               seg["pending"], [

@@ -76,13 +76,17 @@ export function validateSubscribe(body: unknown): SubscribeValidation {
 const RATE_LIMIT = { windowMs: 60_000, max: 5 };
 const hits = new Map<string, { count: number; resetAt: number }>();
 
-export function rateLimit(key: string, now = Date.now()): { allowed: boolean; retryAfterMs: number } {
+export function rateLimit(
+  key: string,
+  now = Date.now(),
+  policy: { windowMs: number; max: number } = RATE_LIMIT,
+): { allowed: boolean; retryAfterMs: number } {
   const entry = hits.get(key);
   if (!entry || now > entry.resetAt) {
-    hits.set(key, { count: 1, resetAt: now + RATE_LIMIT.windowMs });
+    hits.set(key, { count: 1, resetAt: now + policy.windowMs });
     return { allowed: true, retryAfterMs: 0 };
   }
-  if (entry.count >= RATE_LIMIT.max) {
+  if (entry.count >= policy.max) {
     return { allowed: false, retryAfterMs: entry.resetAt - now };
   }
   entry.count += 1;

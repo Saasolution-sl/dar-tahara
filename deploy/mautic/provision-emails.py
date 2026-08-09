@@ -99,6 +99,28 @@ REF_LINK = "https://www.dartahara.com/en/early-access?ref={contactfield=referral
 # ── Email definitions ──────────────────────────────────────────────────────────
 EMAILS = [
     {
+        "name": "DT Â· Abandoned signup reminder 1",
+        "subject": "Would you like to finish your Dar Tahara request?",
+        "html": shell(
+            "Your Early Access request is saved",
+            p("Hi {contactfield=firstname}, you started a Dar Tahara Early Access request but did not finish it. Your saved answers are ready if you would like to continue.")
+            + p("If now is not the right time, no action is needed. This is a signup reminder, not confirmation of a booking."),
+            "Continue where I stopped", "{contactfield=ea_resume_url}",
+            note='What got in the way? <a href="{contactfield=ea_feedback_url}&amp;reason=too_long" style="color:#2f4a29;">Too long</a> Â· <a href="{contactfield=ea_feedback_url}&amp;reason=technical_problem" style="color:#2f4a29;">Technical problem</a> Â· <a href="{contactfield=ea_feedback_url}&amp;reason=not_ready" style="color:#2f4a29;">Not ready</a>. A short confirmation prevents email scanners from answering for you.',
+        ),
+    },
+    {
+        "name": "DT Â· Abandoned signup reminder 2",
+        "subject": "Last reminder about your saved Early Access request",
+        "html": shell(
+            "A final reminder about your saved request",
+            p("Hi {contactfield=firstname}, this is the second and final reminder about the Dar Tahara Early Access request you started.")
+            + p("You can continue from your saved step. If you do nothing, we will not send another abandoned-signup reminder."),
+            "Finish my request", "{contactfield=ea_resume_url}",
+            note='Prefer not to continue? <a href="{contactfield=ea_feedback_url}" style="color:#2f4a29;">Share optional feedback or stop reminders</a>.',
+        ),
+    },
+    {
         "name": "DT · Verification reminder",
         "subject": "One step left, {contactfield=firstname}",
         "html": shell(

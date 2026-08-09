@@ -87,7 +87,7 @@ test("buildAccessRow snapshots the €200 offer only on purchase interest, never
 
 // ── standardized Moroccan city ───────────────────────────────────────────────
 test("property step accepts a canonical city, a manual name, or waiting-list; OTHER needs a manual name", () => {
-  const base = { ...full(), useBillingAsProperty: false, propertyAddressLine1: "5 Rue Y" };
+  const base = { ...full(), propertyAddressLine1: "5 Rue Y" };
   // A standardized (even waiting-list) city passes and is never rejected.
   assert.deepEqual(validateStep("property_address", { ...base, propertyCity: "", propertyCityId: "agadir" }), {});
   // "Not listed" requires the manual name.
@@ -104,7 +104,7 @@ test("property step accepts a canonical city, a manual name, or waiting-list; OT
 });
 
 test("buildPropertyRow resolves a canonical city to name + region + service-area status", () => {
-  const row = buildPropertyRow("L", { ...full(), useBillingAsProperty: false, propertyCityId: "tangier", propertyCity: "typed junk" });
+  const row = buildPropertyRow("L", { ...full(), propertyCityId: "tangier", propertyCity: "typed junk" });
   assert.equal(row.city, "Tangier");            // canonical, not the typed value
   assert.equal(row.city_id, "tangier");
   assert.equal(row.region_id, "tanger_tetouan_al_hoceima");
@@ -115,7 +115,7 @@ test("buildPropertyRow resolves a canonical city to name + region + service-area
 
 test("buildPropertyRow keeps a 'not listed' city as an unverified manual name", () => {
   const row = buildPropertyRow("L", {
-    ...full(), useBillingAsProperty: false, propertyCityId: "__other__", propertyCityManualName: "Ifrane",
+    ...full(), propertyCityId: "__other__", propertyCityManualName: "Ifrane",
   });
   assert.equal(row.city, "Ifrane");
   assert.equal(row.city_id, "__other__");
@@ -169,11 +169,6 @@ test("property step requires authorization confirmation", () => {
     "authorization_required");
 });
 
-test("property address not required when copying billing", () => {
-  const p = { ...full(), useBillingAsProperty: true, propertyAddressLine1: "", propertyCity: "" };
-  assert.deepEqual(validateStep("property_address", p), {});
-});
-
 test("billing building/unit number is required", () => {
   assert.equal(
     validateStep("billing", { ...full(), billingBuildingNumber: "" }).billingBuildingNumber,
@@ -182,16 +177,14 @@ test("billing building/unit number is required", () => {
   assert.deepEqual(validateStep("billing", { ...full(), billingBuildingNumber: "12B" }), {});
 });
 
-test("property building/unit number is required unless copying billing", () => {
+test("property building/unit number is required", () => {
   assert.equal(
     validateStep("property_address", { ...full(), propertyBuildingNumber: "" }).propertyBuildingNumber,
     "required",
   );
-  const copying = { ...full(), useBillingAsProperty: true, propertyBuildingNumber: "", propertyAddressLine1: "", propertyCity: "" };
-  assert.equal(validateStep("property_address", copying).propertyBuildingNumber, undefined);
 });
 
-test("Google Maps link is mandatory, including when copying the billing address", () => {
+test("Google Maps link is mandatory", () => {
   assert.equal(
     validateStep("property_address", { ...full(), googleMapsUrl: "" }).googleMapsUrl,
     "required",
@@ -200,8 +193,6 @@ test("Google Maps link is mandatory, including when copying the billing address"
     validateStep("property_address", { ...full(), googleMapsUrl: "not a url" }).googleMapsUrl,
     "invalid_url",
   );
-  const copying = { ...full(), useBillingAsProperty: true, googleMapsUrl: "", propertyAddressLine1: "", propertyCity: "" };
-  assert.equal(validateStep("property_address", copying).googleMapsUrl, "required");
   assert.deepEqual(validateStep("property_address", { ...full(), googleMapsUrl: "https://maps.app.goo.gl/abc123" }), {});
 });
 
@@ -271,7 +262,7 @@ test("generateReferralCode is 8 chars in the safe alphabet", () => {
   assert.ok(isValidReferralCodeFormat(code));
 });
 test("referral code avoids ambiguous characters", () => {
-  // Deterministic RNG that would map to index 0 (A) — never 0/O/1/I.
+  // Deterministic RNG that would map to index 0 (A), never 0/O/1/I.
   const code = generateReferralCode(() => new Uint8Array(8));
   assert.ok(!/[01OI]/.test(code));
 });
@@ -305,12 +296,6 @@ test("buildLeadRow normalises email + phones + status pending", () => {
   assert.equal(row.status, "pending");
   assert.equal(row.residence_city, "Tangier");
   assert.equal(row.first_utm_source, "whatsapp");
-});
-test("buildPropertyRow copies billing only when Morocco + flag set", () => {
-  const copyMA = buildPropertyRow("L", { ...full(), useBillingAsProperty: true, billingCountry: "MA", billingCity: "Rabat", propertyCity: "" });
-  assert.equal(copyMA.city, "Rabat");
-  const noCopyBE = buildPropertyRow("L", { ...full(), useBillingAsProperty: true, billingCountry: "BE", billingCity: "Brussels", propertyCity: "Tangier" });
-  assert.equal(noCopyBE.city, "Tangier"); // billing outside MA → not copied
 });
 test("buildConsentRows separates operational from marketing", () => {
   const noMarketing = buildConsentRows("L", full(), {});
