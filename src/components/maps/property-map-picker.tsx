@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { MapPin, Crosshair, Loader2, EyeOff } from "lucide-react";
+import { MapPin, Crosshair, Loader2 } from "lucide-react";
 import { loadGoogleMaps, mapsEnabled, mapsMapId } from "@/lib/maps/config";
 import { isValidCoordinate, roundCoordinate, type LocationSource } from "@/lib/maps/types";
 import { cn } from "@/lib/utils";
@@ -12,8 +12,6 @@ export type MapPickerCopy = {
   useMyLocation: string;
   locating: string;
   locationDenied: string;
-  streetViewNote: string;
-  streetViewUnavailable: string;
   mapUnavailable: string;
   adjusted: string;
 };
@@ -33,36 +31,32 @@ type GMap = {
   addListener: (ev: string, cb: (e: { latLng?: { lat: () => number; lng: () => number } }) => void) => void;
 };
 type GMarker = { position: LatLngLiteral | null; map: GMap | null };
-type GPanorama = { setPosition: (p: LatLngLiteral) => void; setVisible: (v: boolean) => void };
-type GMapsNS = {
+type AdvancedMarker = GMarker & { addListener: (ev: string, cb: () => void) => void };
+/* Everything here comes from `google.maps.importLibrary()`, not the raw
+ * `google.maps` global: under `loading=async`, the global namespace is not
+ * guaranteed to be populated until the owning library has been imported. */
+type GMapsLib = {
   Map: new (el: HTMLElement, opts: Record<string, unknown>) => GMap;
-  marker: {
-    AdvancedMarkerElement: new (opts: Record<string, unknown>) => GMarker & {
-      addListener: (ev: string, cb: () => void) => void;
-    };
-  };
-  StreetViewService: new () => {
-    getPanorama: (
-      req: Record<string, unknown>,
-      cb: (data: unknown, status: string) => void,
-    ) => void;
-  };
-  StreetViewPanorama: new (el: HTMLElement, opts: Record<string, unknown>) => GPanorama;
-  StreetViewStatus: { OK: string };
+};
+type GMarkerLib = {
+  AdvancedMarkerElement: new (opts: Record<string, unknown>) => AdvancedMarker;
 };
 
-function ns(): GMapsNS | null {
-  const w = window as unknown as { google?: { maps?: GMapsNS } };
-  return w.google?.maps ?? null;
+function importLibrary<T>(name: string): Promise<T> {
+  const w = window as unknown as { google?: { maps?: { importLibrary?: (n: string) => Promise<T> } } };
+  const fn = w.google?.maps?.importLibrary;
+  if (!fn) return Promise.reject(new Error("maps_not_loaded"));
+  return fn(name);
 }
 
 const DEFAULT_ZOOM = 17;
 
 /**
- * Interactive property-location confirmation: a map with a draggable pin, and
- * Street View beside it (below it on mobile).
+ * Interactive property-location confirmation: a map with a draggable pin.
+ * Street View was removed: the imagery was frequently blank or mismatched
+ * for Moroccan addresses, and dropping it cuts a Maps API load per pin move.
  *
- * The pin — not the geocoded address — is the operational truth: it is where
+ * The pin: not the geocoded address: is the operational truth: it is where
  * the cleaning team should actually enter. Dragging or tapping moves it and
  * flags the location as customer-adjusted.
  *
@@ -89,17 +83,14 @@ export function PropertyMapPicker({
   const [adjusted, setAdjusted] = React.useState(false);
   const [locating, setLocating] = React.useState(false);
   const [geoDenied, setGeoDenied] = React.useState(false);
-  const [svState, setSvState] = React.useState<"idle" | "ok" | "none">("idle");
 
   const mapDivRef = React.useRef<HTMLDivElement>(null);
-  const svDivRef = React.useRef<HTMLDivElement>(null);
   const mapRef = React.useRef<GMap | null>(null);
-  const markerRef = React.useRef<(GMarker & { addListener: (e: string, cb: () => void) => void }) | null>(null);
-  const panoRef = React.useRef<GPanorama | null>(null);
+  const markerRef = React.useRef<AdvancedMarker | null>(null);
 
   const hasCoords = isValidCoordinate(latitude, longitude);
 
-  /** Publish a new confirmed position and refresh Street View for it. */
+  /** Publish a new confirmed position. */
   const commit = React.useCallback(
     (lat: number, lng: number, source: LocationSource, byCustomer: boolean) => {
       const rlat = roundCoordinate(lat);
@@ -111,54 +102,33 @@ export function PropertyMapPicker({
         pinAdjustedByCustomer: byCustomer,
         locationSource: source,
       });
-      updateStreetView(rlat, rlng);
       if (byCustomer) onRequestReverseGeocode?.(rlat, rlng);
     },
-    // updateStreetView is stable via refs; onConfirm/onRequest come from props.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
     [onConfirm, onRequestReverseGeocode],
   );
+  // `onConfirm` is typically an inline arrow at the call site, so `commit`'s
+  // identity changes on every parent render. The main effect below awaits
+  // `importLibrary()` for "maps"/"marker" (a real network fetch on first use)
+  // before constructing the map: if that effect depended on `commit`
+  // directly, an unrelated keystroke elsewhere in the same form step would
+  // tear it down mid-fetch (React runs the cleanup, `alive` flips false) and
+  // silently abort map construction, leaving the container permanently
+  // empty. Reading the latest commit through a ref lets the effect skip
+  // `commit` in its deps without ever calling a stale closure.
+  const commitRef = React.useRef(commit);
+  commitRef.current = commit;
 
-  /** Look for a nearby panorama; hide the pane cleanly when there is none. */
-  function updateStreetView(lat: number, lng: number) {
-    const m = ns();
-    if (!m || !svDivRef.current) return;
-    const svc = new m.StreetViewService();
-    svc.getPanorama({ location: { lat, lng }, radius: 60 }, (_data, status) => {
-      if (status !== m.StreetViewStatus.OK) {
-        setSvState("none");
-        panoRef.current?.setVisible(false);
-        return;
-      }
-      setSvState("ok");
-      if (!panoRef.current && svDivRef.current) {
-        panoRef.current = new m.StreetViewPanorama(svDivRef.current, {
-          position: { lat, lng },
-          pov: { heading: 0, pitch: 0 },
-          addressControl: false,
-          fullscreenControl: false,
-          motionTracking: false,
-          motionTrackingControl: false,
-        });
-      } else {
-        panoRef.current?.setPosition({ lat, lng });
-      }
-      panoRef.current?.setVisible(true);
-    });
-  }
-
-  // Initialise the map once coordinates exist — never before, so no Maps
+  // Initialise the map once coordinates exist: never before, so no Maps
   // request is made for a customer who hasn't chosen an address yet.
   React.useEffect(() => {
     if (!mapsEnabled() || !hasCoords || mapRef.current) return;
     let alive = true;
     loadGoogleMaps()
-      .then(() => {
+      .then(() => Promise.all([importLibrary<GMapsLib>("maps"), importLibrary<GMarkerLib>("marker")]))
+      .then(([mapsLib, markerLib]) => {
         if (!alive || !mapDivRef.current) return;
-        const m = ns();
-        if (!m) { setFailed(true); return; }
         const center = { lat: latitude as number, lng: longitude as number };
-        const map = new m.Map(mapDivRef.current, {
+        const map = new mapsLib.Map(mapDivRef.current, {
           center,
           zoom: DEFAULT_ZOOM,
           mapId: mapsMapId() || undefined,
@@ -171,7 +141,7 @@ export function PropertyMapPicker({
         });
         mapRef.current = map;
 
-        const marker = new m.marker.AdvancedMarkerElement({
+        const marker = new markerLib.AdvancedMarkerElement({
           map,
           position: center,
           gmpDraggable: true,
@@ -181,23 +151,24 @@ export function PropertyMapPicker({
 
         marker.addListener("dragend", () => {
           const p = marker.position as LatLngLiteral | null;
-          if (p) commit(p.lat, p.lng, "map_pin", true);
+          if (p) commitRef.current(p.lat, p.lng, "map_pin", true);
         });
         map.addListener("click", (e) => {
           const lat = e.latLng?.lat();
           const lng = e.latLng?.lng();
           if (typeof lat === "number" && typeof lng === "number") {
             marker.position = { lat, lng };
-            commit(lat, lng, "map_pin", true);
+            commitRef.current(lat, lng, "map_pin", true);
           }
         });
 
         setReady(true);
-        updateStreetView(center.lat, center.lng);
       })
       .catch(() => { if (alive) setFailed(true); });
     return () => { alive = false; };
-  }, [hasCoords, latitude, longitude, commit, copy.pinTitle]);
+    // `commit` is deliberately excluded: see commitRef above.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [hasCoords, latitude, longitude, copy.pinTitle]);
 
   // Recentre when a new address is chosen upstream.
   React.useEffect(() => {
@@ -205,10 +176,9 @@ export function PropertyMapPicker({
     const p = { lat: latitude as number, lng: longitude as number };
     mapRef.current?.setCenter(p);
     if (markerRef.current) markerRef.current.position = p;
-    updateStreetView(p.lat, p.lng);
   }, [latitude, longitude, ready, hasCoords]);
 
-  /** Browser geolocation — only ever on an explicit press. */
+  /** Browser geolocation: only ever on an explicit press. */
   function useMyLocation() {
     if (!("geolocation" in navigator)) { setGeoDenied(true); return; }
     setLocating(true);
@@ -241,26 +211,12 @@ export function PropertyMapPicker({
         <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{copy.pinHelp}</p>
       </div>
 
-      {/* Desktop: map | Street View. Mobile: stacked. */}
-      <div className="grid gap-3 lg:grid-cols-2">
-        <div
-          ref={mapDivRef}
-          role="application"
-          aria-label={copy.pinTitle}
-          className="h-64 w-full overflow-hidden rounded-2xl border border-border bg-secondary/40 sm:h-72"
-        />
-        <div className="relative h-64 w-full overflow-hidden rounded-2xl border border-border bg-secondary/40 sm:h-72">
-          <div ref={svDivRef} className={cn("h-full w-full", svState !== "ok" && "invisible")} />
-          {svState !== "ok" ? (
-            <div className="absolute inset-0 flex flex-col items-center justify-center gap-2 p-4 text-center">
-              <EyeOff className="h-5 w-5 text-muted-foreground" aria-hidden />
-              <p className="text-xs leading-relaxed text-muted-foreground">
-                {svState === "none" ? copy.streetViewUnavailable : ""}
-              </p>
-            </div>
-          ) : null}
-        </div>
-      </div>
+      <div
+        ref={mapDivRef}
+        role="application"
+        aria-label={copy.pinTitle}
+        className="h-64 w-full overflow-hidden rounded-2xl border border-border bg-secondary/40 sm:h-80"
+      />
 
       <div className="flex flex-wrap items-center gap-3">
         <button
@@ -285,8 +241,6 @@ export function PropertyMapPicker({
           {copy.locationDenied}
         </p>
       ) : null}
-
-      <p className="text-xs leading-relaxed text-muted-foreground">{copy.streetViewNote}</p>
     </div>
   );
 }

@@ -128,7 +128,16 @@ FIELDS=(
   "smart_lock_compatibility|Smart Lock Compatibility|select|professional|not_checked,pending_review,compatible,not_compatible"
 
   # Campaign / lifecycle
-  "early_access_status|Early Access Status|select|core|pending,verified,qualified,waitlisted,invited,customer"
+  "early_access_status|Early Access Status|select|core|pending,verified,qualified,waitlisted,invited,customer,abandoned,resumed,opted_out"
+  # Abandoned-signup automation. Aliases stay <=25 characters because Mautic
+  # silently truncates longer aliases and creates duplicates on later runs.
+  "ea_step|Early Access Last Step|select|core|contact,billing,property_address,property_info,services,access,review"
+  "ea_started_at|Early Access Started At|datetime|core"
+  "ea_last_activity|Early Access Last Activity|datetime|core"
+  "ea_abandoned_at|Early Access Abandoned At|datetime|core"
+  "ea_reminder_count|Early Access Reminder Count|number|core"
+  "ea_resume_url|Early Access Resume URL|url|core"
+  "ea_feedback_url|Early Access Feedback URL|url|core"
   "email_verified|Email Verified|boolean|core"
   "referral_code|Referral Code|text|core"
   "referred_by_code|Referred By Code|text|core"
@@ -226,6 +235,8 @@ done
 echo "==> tags"
 TAGS=(
   dar-tahara early-access early-access-2026
+  early-access-abandoned early-access-resumed early-access-opted-out
+  early-access-reminder-1-due early-access-reminder-2-due
   verified-lead unverified-lead qualified-lead waitlisted-lead
   source-whatsapp source-facebook source-instagram source-tiktok
   source-telegram source-email source-qr source-partner source-influencer
@@ -375,6 +386,8 @@ SEGMENTS=(
   "dt-ea-verified|Dar Tahara Early Access: Verified|[$(f_tag early-access),$(f_bool email_verified 1)]"
   "dt-ea-qualified|Dar Tahara Early Access: Qualified|[$(f_tag early-access),$(f_eq early_access_status qualified select)]"
   "dt-ea-waitlisted|Dar Tahara Early Access: Waitlisted|[$(f_tag early-access),$(f_eq early_access_status waitlisted select)]"
+  "dt-ea-reminder-1|Early Access: Abandoned Reminder 1|[$(f_eq early_access_status abandoned select),$(f_eq ea_reminder_count 1 number)]"
+  "dt-ea-reminder-2|Early Access: Abandoned Reminder 2|[$(f_eq early_access_status abandoned select),$(f_eq ea_reminder_count 2 number)]"
 
   # Residence city in Morocco
   "dt-res-tetouan|Residence City: Tetouan|[$(f_eq residence_city Tetouan)]"

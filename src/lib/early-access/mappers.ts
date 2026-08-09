@@ -1,6 +1,6 @@
 /**
  * Map a validated early-access payload into the row shapes each Supabase table
- * expects, and into the LeadForSync the Mautic layer consumes. Pure — no I/O.
+ * expects, and into the LeadForSync the Mautic layer consumes. Pure, no I/O.
  *
  * Address handling: billing and property are ALWAYS stored separately, even when
  * the visitor ticks "use billing as property" (brief §12). When that box is set
@@ -132,27 +132,23 @@ export function buildBillingRow(leadId: string, p: EarlyAccessPayload): Record<s
 }
 
 export function buildPropertyRow(leadId: string, p: EarlyAccessPayload): Record<string, unknown> {
-  // Copy billing → property only when asked AND billing is in Morocco.
-  const copy = Boolean(p.useBillingAsProperty && upper2(p.billingCountry) === "MA");
-  // Resolve the standardized city (skipped when copying a billing address, which
-  // may be a free-text foreign city rather than a taxonomy entry).
-  const rc = copy ? null : resolvePropertyCity(p, p.propertyCity);
+  const rc = resolvePropertyCity(p, p.propertyCity);
   return {
     lead_id: leadId,
     property_name: clean(p.propertyName, 120),
-    address_line_1: copy ? clean(p.billingAddressLine1) : clean(p.propertyAddressLine1),
-    address_line_2: copy ? clean(p.billingAddressLine2) : clean(p.propertyAddressLine2),
+    address_line_1: clean(p.propertyAddressLine1),
+    address_line_2: clean(p.propertyAddressLine2),
     residence_name: clean(p.residenceName, 120),
-    building_number: copy ? clean(p.billingBuildingNumber, 60) : clean(p.propertyBuildingNumber, 60),
-    unit_number: copy ? clean(p.billingUnit, 60) : clean(p.propertyUnitNumber, 60),
+    building_number: clean(p.propertyBuildingNumber, 60),
+    unit_number: clean(p.propertyUnitNumber, 60),
     floor: clean(p.propertyFloor, 40),
-    postal_code: copy ? clean(p.billingPostalCode, 20) : clean(p.propertyPostalCode, 20),
-    city: copy ? clean(p.billingCity, 120) : rc?.name,
+    postal_code: clean(p.propertyPostalCode, 20),
+    city: rc?.name,
     city_id: rc?.cityId,
     manual_city_name: rc?.manualName,
     region_id: rc?.regionId,
     service_area_status: rc?.serviceAreaStatus,
-    region: copy ? clean(p.billingRegion, 120) : (rc?.regionName ?? clean(p.propertyRegion, 120)),
+    region: rc?.regionName ?? clean(p.propertyRegion, 120),
     neighbourhood: clean(p.neighbourhood, 120),
     country_code: upper2(p.propertyCountry) ?? "MA",
     landmark: clean(p.landmark, 200),
@@ -220,7 +216,7 @@ export function buildAccessRow(
     access_notes: clean(p.accessNotes, 1000),
     // Smart-lock interest. Price/currency snapshot the offer that was shown, and
     // are stored ONLY when the customer expressed purchase interest. Interest is
-    // never a paid order — compatibility is always pending review at this stage.
+    // never a paid order, compatibility is always pending review at this stage.
     smart_lock_interest: interest,
     smart_lock_product_code: wantsOffer ? DIGITAL_SMART_LOCK_OFFER.productCode : undefined,
     smart_lock_offer_price: wantsOffer ? DIGITAL_SMART_LOCK_OFFER.price : undefined,
@@ -291,17 +287,9 @@ export function toLeadForSync(
     billingRecipientType: p.billingRecipientType ?? null,
     billingCountry: upper2(p.billingCountry) ?? null,
     billingCity: clean(p.billingCity, 120) ?? null,
-    cleaningCity: (() => {
-      if (p.useBillingAsProperty) return clean(p.billingCity, 120) ?? null;
-      return resolvePropertyCity(p, p.propertyCity).name ?? null;
-    })(),
-    cleaningRegion: (() => {
-      if (p.useBillingAsProperty) return clean(p.billingRegion, 120) ?? null;
-      return resolvePropertyCity(p, p.propertyCity).regionName ?? null;
-    })(),
-    cleaningServiceAreaStatus: p.useBillingAsProperty
-      ? null
-      : resolvePropertyCity(p, p.propertyCity).serviceAreaStatus ?? null,
+    cleaningCity: resolvePropertyCity(p, p.propertyCity).name ?? null,
+    cleaningRegion: resolvePropertyCity(p, p.propertyCity).regionName ?? null,
+    cleaningServiceAreaStatus: resolvePropertyCity(p, p.propertyCity).serviceAreaStatus ?? null,
     cleaningCountry: (upper2(p.propertyCountry) ?? "MA"),
     propertyType: p.propertyType ?? null,
     propertySizeRange: propertySizeRange(p.sizeM2) ?? null,

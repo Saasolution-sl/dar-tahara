@@ -1,5 +1,5 @@
 /**
- * Early-access form — shape, option vocabularies and validation.
+ * Early-access form, shape, option vocabularies and validation.
  *
  * Pure and framework-agnostic: the same module validates on the client (for UX)
  * and on the server (for trust). The server NEVER relies on the client having
@@ -10,7 +10,7 @@
 // ── Option vocabularies ────────────────────────────────────────────────────────
 export const CONTACT_METHODS = ["email", "whatsapp", "telephone"] as const;
 export const RECIPIENT_TYPES = ["private", "business"] as const;
-// City vocabulary is derived from the single canonical taxonomy — never a second
+// City vocabulary is derived from the single canonical taxonomy, never a second
 // hardcoded list. The form renders records; this name array stays for the legacy
 // free-text residence field and back-compatible validation.
 import { MOROCCAN_CITIES as MOROCCAN_CITY_RECORDS, OTHER_CITY_ID } from "@/lib/geo/moroccan-cities";
@@ -29,7 +29,7 @@ export const PROPERTY_CONDITIONS = [
 ] as const;
 export const FURNISHING_STATUSES = ["fully_furnished", "partially_furnished", "unfurnished"] as const;
 export const TRISTATE = ["yes", "no", "unknown"] as const;
-// Deliberately broad, max six choices — a long checklist made the step feel like
+// Deliberately broad, max six choices, a long checklist made the step feel like
 // work and depressed completion. Specifics are captured in serviceNotes instead.
 export const SERVICE_TYPES = [
   "standard_cleaning", "deep_cleaning", "rental_cleaning", "property_care", "other",
@@ -57,12 +57,12 @@ export type StepId = (typeof STEPS)[number];
 
 // ── Payload shape (what the client submits) ────────────────────────────────────
 export type EarlyAccessPayload = {
-  // Step 1 — contact
+  // Step 1, contact
   firstName: string;
   lastName: string;
   email: string;
-  phoneCountry?: string;         // ISO 3166-1 alpha-2, e.g. "MA" — the stored truth
-  countryCallingCode?: string;   // e.g. "+212" — derived from phoneCountry
+  phoneCountry?: string;         // ISO 3166-1 alpha-2, e.g. "MA", the stored truth
+  countryCallingCode?: string;   // e.g. "+212", derived from phoneCountry
   mobileNumber?: string;
   whatsappSameAsMobile?: boolean;
   whatsappNumber?: string;
@@ -70,7 +70,7 @@ export type EarlyAccessPayload = {
   preferredLanguage?: string;
   residenceCity?: string;        // Moroccan city name, including a custom "Other" value
 
-  // Step 2 — billing
+  // Step 2, billing
   billingRecipientType?: string;
   billingFirstName?: string;
   billingLastName?: string;
@@ -87,8 +87,7 @@ export type EarlyAccessPayload = {
   invoiceEmail?: string;
   invoiceEmailSameAsContact?: boolean;
 
-  // Step 3 — property address (Morocco)
-  useBillingAsProperty?: boolean;
+  // Step 3, property address (Morocco)
   propertyName?: string;
   propertyAddressLine1?: string;
   propertyAddressLine2?: string;
@@ -99,13 +98,13 @@ export type EarlyAccessPayload = {
   propertyPostalCode?: string;
   propertyCity?: string;             // resolved canonical (or manual) display name
   propertyCityId?: string;           // canonical taxonomy id, or OTHER_CITY_VALUE
-  propertyCityManualName?: string;   // when "my city is not listed" — unverified
+  propertyCityManualName?: string;   // when "my city is not listed", unverified
   propertyRegion?: string;
   neighbourhood?: string;
   propertyCountry?: string;      // defaults MA
   landmark?: string;
   googleMapsUrl?: string;
-  // Confirmed operational location — where the cleaning team should actually
+  // Confirmed operational location, where the cleaning team should actually
   // enter. This is the pin the customer confirmed, NOT the geocoded result.
   latitude?: number;
   longitude?: number;
@@ -127,7 +126,7 @@ export type EarlyAccessPayload = {
   entryNotes?: string;
   authorizedBySubmitter?: boolean;
 
-  // Step 4 — property info
+  // Step 4, property info
   propertyType?: string;
   sizeM2?: number;
   bedrooms?: number;
@@ -144,17 +143,17 @@ export type EarlyAccessPayload = {
   petsPresent?: boolean;
   smokingStatus?: string;
 
-  // Step 5 — services
+  // Step 5, services
   serviceTypes?: string[];
   desiredFrequency?: string;
   expectedStartPeriod?: string;
   preferredStartDate?: string;   // ISO date
   serviceNotes?: string;
 
-  // Step 6 — access
+  // Step 6, access
   accessMethod?: string;
   physicalKeyTermsAcknowledged?: boolean;
-  // Digital-lock access is conditional on the property having internet — the
+  // Digital-lock access is conditional on the property having internet, the
   // customer must actively confirm they understand this, since a missed visit
   // caused by a connectivity outage at the property is not grounds to waive
   // charges or cancel the subscription.
@@ -162,17 +161,20 @@ export type EarlyAccessPayload = {
   thirdPartyDetails?: string;
   accessNotes?: string;
 
-  // Step 6 — digital smart-lock upsell (product INTEREST, never a paid order)
+  // Step 6, digital smart-lock upsell (product INTEREST, never a paid order)
   smartLockInterest?: string;            // one of SMART_LOCK_INTERESTS
   existingLockBrand?: string;            // only when already_has_lock
   existingLockModel?: string;            // optional even then
 
-  // Step 7 — review & consent
+  // Step 7, review & consent
   confirmAccurate?: boolean;
   confirmAuthorized?: boolean;
   acceptPrivacy?: boolean;
   acceptOperationalComms?: boolean;
-  marketingConsent?: boolean;    // OPTIONAL — separate from operational
+  marketingConsent?: boolean;    // OPTIONAL, separate from operational
+  // Explicit permission for at most two incomplete-signup reminders. This is
+  // separate from, and never upgrades into, newsletter marketing consent.
+  abandonedReminderConsent?: boolean;
 
   // Hidden attribution + anti-spam (not user-entered)
   src?: string;
@@ -188,6 +190,10 @@ export type EarlyAccessPayload = {
   companyWebsite?: string;
   // Milliseconds the form was on screen before submit (bot heuristic).
   elapsedMs?: number;
+  // Opaque signup-session credentials. The server verifies the token hash
+  // before linking a final submission; neither value is persisted as lead PII.
+  signupSessionId?: string;
+  signupSessionToken?: string;
 };
 
 export type FieldErrors = Partial<Record<string, string>>;
@@ -244,20 +250,15 @@ export function validateStep(step: StepId, p: EarlyAccessPayload): FieldErrors {
       break;
 
     case "property_address":
-      // When copying billing, the property fields are filled from billing at
-      // submit time, so only require them when NOT copying.
-      if (!p.useBillingAsProperty) {
-        if (!nonEmpty(p.propertyAddressLine1)) e.propertyAddressLine1 = "required";
-        if (!nonEmpty(p.propertyBuildingNumber)) e.propertyBuildingNumber = "required";
-        // A standardized city OR a manual "not listed" name satisfies this; a
-        // waiting-list / not-yet-active area is NEVER rejected here.
-        const hasCity =
-          nonEmpty(p.propertyCityId) || nonEmpty(p.propertyCityManualName) || nonEmpty(p.propertyCity);
-        if (!hasCity) e.propertyCity = "required";
-        if (p.propertyCityId === OTHER_CITY_VALUE && !nonEmpty(p.propertyCityManualName))
-          e.propertyCityManualName = "required";
-      }
-      // Mandatory regardless of useBillingAsProperty — the field is always shown.
+      if (!nonEmpty(p.propertyAddressLine1)) e.propertyAddressLine1 = "required";
+      if (!nonEmpty(p.propertyBuildingNumber)) e.propertyBuildingNumber = "required";
+      // A standardized city OR a manual "not listed" name satisfies this; a
+      // waiting-list / not-yet-active area is NEVER rejected here.
+      const hasCity =
+        nonEmpty(p.propertyCityId) || nonEmpty(p.propertyCityManualName) || nonEmpty(p.propertyCity);
+      if (!hasCity) e.propertyCity = "required";
+      if (p.propertyCityId === OTHER_CITY_VALUE && !nonEmpty(p.propertyCityManualName))
+        e.propertyCityManualName = "required";
       if (!nonEmpty(p.googleMapsUrl)) e.googleMapsUrl = "required";
       else if (!/^https?:\/\//i.test(p.googleMapsUrl)) e.googleMapsUrl = "invalid_url";
       if (!p.authorizedBySubmitter) e.authorizedBySubmitter = "authorization_required";
@@ -285,8 +286,8 @@ export function validateStep(step: StepId, p: EarlyAccessPayload): FieldErrors {
         e.physicalKeyTermsAcknowledged = "acknowledgement_required";
       // Smart-lock upsell is only shown (and only asked) when the customer's
       // chosen access method is a digital lock. When shown, a choice is
-      // required (no preselected paid option), but ANY choice — including
-      // "not_interested" — lets the customer continue.
+      // required (no preselected paid option), but ANY choice, including
+      // "not_interested", lets the customer continue.
       if (p.accessMethod === "digital_lock") {
         if (!nonEmpty(p.smartLockInterest)) e.smartLockInterest = "smart_lock_choice_required";
         else if (!oneOf(SMART_LOCK_INTEREST_OPTIONS, p.smartLockInterest))
@@ -296,7 +297,7 @@ export function validateStep(step: StepId, p: EarlyAccessPayload): FieldErrors {
         else if (p.smartLockInterest === "already_has_lock" && !nonEmpty(p.existingLockBrand))
           e.existingLockBrand = "required";
         // The customer must actively confirm they understand the internet
-        // requirement — a missed visit caused by the property's own
+        // requirement, a missed visit caused by the property's own
         // connectivity outage is not grounds to waive charges or cancel.
         if (!p.digitalLockInternetAcknowledged)
           e.digitalLockInternetAcknowledged = "internet_acknowledgement_required";

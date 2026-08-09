@@ -184,3 +184,23 @@ export async function serviceUpdate<T = unknown>(
   });
   return parseResponse<T>(res, `update_${table}`);
 }
+
+/** Patch trusted rows without returning their potentially sensitive contents. */
+export async function serviceUpdateMinimal(
+  table: string,
+  filter: string,
+  body: Record<string, unknown>,
+): Promise<void> {
+  if (!URL || !SECRET_KEY) throw new Error("service_role_not_configured");
+  const res = await fetch(`${URL}/rest/v1/${table}?${filter}`, {
+    method: "PATCH",
+    headers: {
+      ...requestHeaders(SECRET_KEY),
+      "Content-Type": "application/json",
+      Prefer: "return=minimal",
+    },
+    body: JSON.stringify(body),
+    cache: "no-store",
+  });
+  await parseResponse<void>(res, `update_${table}`);
+}

@@ -1,0 +1,3 @@
+# Install as /etc/cron.d/dar-tahara-early-access (root:root, mode 0644).
+# The feature remains inert until EARLY_ACCESS_ABANDONED_REMINDERS_ENABLED=true.
+*/5 * * * * root docker exec dar-tahara-web sh -c 'wget -qO- --header="Authorization: Bearer $EARLY_ACCESS_JOB_SECRET" --header="Content-Type: application/json" --post-data="{}" http://127.0.0.1:3000/api/jobs/early-access >/dev/null'

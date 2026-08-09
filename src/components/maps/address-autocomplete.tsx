@@ -71,6 +71,7 @@ export function AddressAutocomplete({
   countryRestriction,
   disabled,
   className,
+  onProviderError,
 }: {
   id: string;
   value: string;
@@ -82,6 +83,7 @@ export function AddressAutocomplete({
   countryRestriction?: string;
   disabled?: boolean;
   className?: string;
+  onProviderError?: (code: "maps_load_error" | "maps_search_error" | "maps_selection_error") => void;
 }) {
   const [ready, setReady] = React.useState(false);
   const [failed, setFailed] = React.useState(!mapsEnabled());
@@ -96,6 +98,8 @@ export function AddressAutocomplete({
   const debounceRef = React.useRef<ReturnType<typeof setTimeout> | null>(null);
   const requestIdRef = React.useRef(0);
   const listId = `${id}-listbox`;
+  const providerErrorRef = React.useRef(onProviderError);
+  providerErrorRef.current = onProviderError;
 
   // Load the script lazily: only when this field is actually rendered.
   React.useEffect(() => {
@@ -105,12 +109,12 @@ export function AddressAutocomplete({
       .then(async () => {
         if (!alive) return;
         const m = gmaps();
-        if (!m) { setFailed(true); return; }
+        if (!m) { setFailed(true); providerErrorRef.current?.("maps_load_error"); return; }
         libraryRef.current = await m.importLibrary("places");
         if (!alive) return;
         setReady(true);
       })
-      .catch(() => { if (alive) setFailed(true); });
+      .catch(() => { if (alive) { setFailed(true); providerErrorRef.current?.("maps_load_error"); } });
     return () => { alive = false; };
   }, []);
 
@@ -167,6 +171,7 @@ export function AddressAutocomplete({
       setBusy(false);
       setItems([]);
       setFailed(true);
+      providerErrorRef.current?.("maps_search_error");
     }
   }
 
@@ -190,6 +195,7 @@ export function AddressAutocomplete({
     } catch {
       setFailed(true);
       setItems([]);
+      providerErrorRef.current?.("maps_selection_error");
     } finally {
       setBusy(false);
       // fetchFields concludes the billing session. The next lookup gets a new token.
