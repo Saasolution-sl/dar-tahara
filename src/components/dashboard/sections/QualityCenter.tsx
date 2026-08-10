@@ -12,10 +12,10 @@ export function QualityCenter({ data, copy }: { data: QualityCenterData; copy: D
     <section>
       <h2 className="font-serif text-2xl">{c.title}</h2>
       <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label={c.inspectionScore} value={data.avgInspectionScore} suffix="/100" />
-        <StatCard label={c.customerRating} value={data.avgCustomerRating} format="rating" suffix="★" />
-        <StatCard label={c.firstTimeRight} value={data.firstTimeRightPercent} suffix="%" />
-        <StatCard label={c.revisitRate} value={data.revisitPercent} suffix="%" tone={data.revisitPercent && data.revisitPercent > 10 ? "warning" : "default"} />
+        <StatCard label={c.inspectionScore} value={data.avgInspectionScore} suffix="/100" href="/admin/inspections" />
+        <StatCard label={c.customerRating} value={data.avgCustomerRating} format="rating" suffix="★" href="/admin/visits?rated=1" />
+        <StatCard label={c.firstTimeRight} value={data.firstTimeRightPercent} suffix="%" href="/admin/inspections" />
+        <StatCard label={c.revisitRate} value={data.revisitPercent} suffix="%" tone={data.revisitPercent && data.revisitPercent > 10 ? "warning" : "default"} href="/admin/visits?revisit=1" />
         <StatCard label={c.openComplaints} value={data.pendingComplaints} tone={data.pendingComplaints > 0 ? "warning" : "default"} href="/admin/complaints?status=pending" />
         <StatCard label={c.resolvedComplaints} value={data.resolvedComplaints} tone="success" href="/admin/complaints?status=resolved" />
         <StatCard label={c.recurringComplaints} value={data.recurringComplaints} tone={data.recurringComplaints > 0 ? "critical" : "default"} href="/admin/complaints?recurring=1" />

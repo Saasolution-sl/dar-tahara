@@ -13,12 +13,12 @@ export function FinancialDashboard({ data, copy }: { data: FinancialDashboardDat
     <section>
       <h2 className="font-serif text-2xl">{c.title}</h2>
       <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label={c.monthlyRevenue} value={data.monthlyRevenueCents} format="currency" trend={data.revenueGrowthPercent !== null ? { value: data.revenueGrowthPercent, label: c.vsLastMonth } : null} />
-        <StatCard label={c.mrr} value={data.mrrCents} format="currency" />
-        <StatCard label={c.outstandingPayments} value={data.outstandingPaymentsCents} format="currency" tone={data.outstandingPaymentsCents > 0 ? "warning" : "default"} />
-        <StatCard label={c.revenuePerEmployee} value={data.revenuePerEmployeeCents} format="currency" />
-        <StatCard label={c.revenuePerCustomer} value={data.revenuePerCustomerCents} format="currency" />
-        <StatCard label={c.projectedNextMonth} value={data.projectedNextMonthCents} format="currency" />
+        <StatCard label={c.monthlyRevenue} value={data.monthlyRevenueCents} format="currency" trend={data.revenueGrowthPercent !== null ? { value: data.revenueGrowthPercent, label: c.vsLastMonth } : null} href="/admin/invoices" />
+        <StatCard label={c.mrr} value={data.mrrCents} format="currency" href="/admin/subscriptions" />
+        <StatCard label={c.outstandingPayments} value={data.outstandingPaymentsCents} format="currency" tone={data.outstandingPaymentsCents > 0 ? "warning" : "default"} href="/admin/invoices" />
+        <StatCard label={c.revenuePerEmployee} value={data.revenuePerEmployeeCents} format="currency" href="/admin/team" />
+        <StatCard label={c.revenuePerCustomer} value={data.revenuePerCustomerCents} format="currency" href="/admin/customers" />
+        <StatCard label={c.projectedNextMonth} value={data.projectedNextMonthCents} format="currency" href="/admin/subscriptions" />
       </div>
 
       {data.revenuePerOffice.length > 0 ? (
