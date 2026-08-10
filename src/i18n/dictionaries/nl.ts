@@ -984,6 +984,17 @@ const nl: DeepPartial<Dictionary> = {
       ctaPrimary: "Meld u aan voor early access",
       ctaSecondary: "Lees onze missie & visie",
     },
+    teaser: {
+      eyebrow: "Mensen & Gemeenschap",
+      title: "Wie wij sturen, en wie wij in dienst nemen.",
+      body: "Iedere schoonmaker van Dar Tahara doorloopt onze screening voordat hij of zij alleen in uw huis werkt, en toegang tot de woning is gekoppeld aan de afspraak in plaats van permanent weggegeven. Hetzelfde model betaalt hen een maandsalaris met ziektekostendekking, in de stad waar zij wonen.",
+      cta: "Bekijk hoe wij werven en toegang beveiligen",
+      points: [
+        "Gescreende medewerkers",
+        "Toegang gekoppeld aan de afspraak",
+        "Stabiel lokaal werk",
+      ],
+    },
   },
   footer: {
     tagline: "Premium woningverzorging & vastgoedconciërge in heel Marokko.",

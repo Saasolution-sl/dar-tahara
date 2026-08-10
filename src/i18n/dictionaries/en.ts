@@ -999,6 +999,17 @@
       ctaPrimary: "Join Early Access",
       ctaSecondary: "Read our mission & vision",
     },
+    teaser: {
+      eyebrow: "People & Community",
+      title: "Who we send, and who we employ.",
+      body: "Every Dar Tahara cleaner completes our screening before working alone in your home, and property access is tied to the appointment rather than handed over permanently. The same model pays them a monthly salary with health coverage, in the city they live in.",
+      cta: "See how we hire and protect access",
+      points: [
+        "Screened personnel",
+        "Access tied to the appointment",
+        "Stable local employment",
+      ],
+    },
   },
   footer: {
     tagline: "Premium home care & property concierge across Morocco.",

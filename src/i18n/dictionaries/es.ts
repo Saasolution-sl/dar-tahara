@@ -988,6 +988,17 @@ const es: DeepPartial<Dictionary> = {
       ctaPrimary: "Únete al acceso anticipado",
       ctaSecondary: "Lee nuestra misión y visión",
     },
+    teaser: {
+      eyebrow: "Personas y Comunidad",
+      title: "A quién enviamos y a quién empleamos.",
+      body: "Cada limpiador de Dar Tahara supera nuestra verificación antes de trabajar solo en tu casa, y el acceso a la vivienda está ligado a la cita en lugar de cederse de forma permanente. El mismo modelo les paga un salario mensual con cobertura sanitaria, en la ciudad donde viven.",
+      cta: "Descubre cómo contratamos y protegemos el acceso",
+      points: [
+        "Personal verificado",
+        "Acceso ligado a la cita",
+        "Empleo local estable",
+      ],
+    },
   },
   footer: {
     tagline: "Cuidado del hogar y conserjería de propiedades premium en todo Marruecos.",

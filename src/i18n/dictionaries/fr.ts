@@ -988,6 +988,17 @@ const fr: DeepPartial<Dictionary> = {
       ctaPrimary: "Rejoindre l'accès anticipé",
       ctaSecondary: "Lire notre mission & vision",
     },
+    teaser: {
+      eyebrow: "Personnes & Communauté",
+      title: "Qui nous envoyons, et qui nous employons.",
+      body: "Chaque intervenant Dar Tahara achève notre procédure de vérification avant de travailler seul chez vous, et l'accès au logement est lié au rendez-vous plutôt que cédé de façon permanente. Le même modèle leur verse un salaire mensuel avec une couverture santé, dans la ville où ils vivent.",
+      cta: "Voir comment nous recrutons et sécurisons l'accès",
+      points: [
+        "Personnel vérifié",
+        "Accès lié au rendez-vous",
+        "Emploi local stable",
+      ],
+    },
   },
   footer: {
     tagline: "Conciergerie & entretien de résidence premium partout au Maroc.",

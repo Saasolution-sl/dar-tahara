@@ -988,6 +988,17 @@ const de: DeepPartial<Dictionary> = {
       ctaPrimary: "Early Access sichern",
       ctaSecondary: "Mission & Vision lesen",
     },
+    teaser: {
+      eyebrow: "Menschen & Gemeinschaft",
+      title: "Wen wir schicken, und wen wir anstellen.",
+      body: "Jede Reinigungskraft von Dar Tahara durchläuft unsere Überprüfung, bevor sie allein in Ihrem Zuhause arbeitet, und der Zugang zur Wohnung ist an den Termin gebunden statt dauerhaft übergeben. Dasselbe Modell zahlt ihnen ein Monatsgehalt mit Krankenversicherungsschutz, in der Stadt, in der sie leben.",
+      cta: "So stellen wir ein und sichern den Zugang",
+      points: [
+        "Geprüfte Mitarbeitende",
+        "Zugang an den Termin gebunden",
+        "Stabile lokale Beschäftigung",
+      ],
+    },
   },
   footer: {
     tagline: "Premium-Hauspflege & Immobilien-Concierge in ganz Marokko.",
