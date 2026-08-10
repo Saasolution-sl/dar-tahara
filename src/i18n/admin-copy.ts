@@ -64,6 +64,7 @@ export type AdminCopy = {
     properties: { title: string; headers: [string, string, string, string, string] };
     subscriptions: { title: string; headers: [string, string, string, string, string, string, string] };
     complaints: { title: string; headers: [string, string, string, string, string, string, string]; recurringYes: string };
+    employeesWorking: { title: string; headers: [string, string, string, string, string, string, string, string]; footnote: string };
   };
   features: {
     title: string; subtitle: string; enabled: string; disabled: string;
@@ -132,6 +133,7 @@ const en: AdminCopy = {
     properties: { title: "Properties", headers: ["Address", "City", "Customer", "Type", "Size"] },
     subscriptions: { title: "Subscriptions", headers: ["Customer", "Status", "Frequency", "Billing", "Amount", "Cancellation", "Actions"] },
     complaints: { title: "Complaints", headers: ["Date", "Customer", "Category", "Office", "Status", "Recurring", "Resolved"], recurringYes: "Yes" },
+    employeesWorking: { title: "Employees working", headers: ["Employee", "Number", "Office", "Status", "Avg cleaning", "Avg travel", "Visits", "Since"], footnote: "On shift means working or driving, matching the dashboard tile. Averages come from that employee's completed visits over the last 30 days." },
   },
   features: {
     title: "Feature settings", subtitle: "Database-controlled public and payment capabilities. Scheduled windows are evaluated on every server request.",
@@ -200,6 +202,7 @@ const nl: AdminCopy = {
     properties: { title: "Woningen", headers: ["Adres", "Stad", "Klant", "Type", "Grootte"] },
     subscriptions: { title: "Abonnementen", headers: ["Klant", "Status", "Frequentie", "Facturering", "Bedrag", "Opzegging", "Acties"] },
     complaints: { title: "Klachten", headers: ["Datum", "Klant", "Categorie", "Vestiging", "Status", "Terugkerend", "Opgelost"], recurringYes: "Ja" },
+    employeesWorking: { title: "Medewerkers aan het werk", headers: ["Medewerker", "Nummer", "Vestiging", "Status", "Gem. schoonmaak", "Gem. reistijd", "Bezoeken", "Sinds"], footnote: "Aan het werk betekent werkend of onderweg, gelijk aan de tegel op het dashboard. Gemiddelden komen uit de afgeronde bezoeken van de afgelopen 30 dagen." },
   },
   features: {
     title: "Functie-instellingen", subtitle: "Database-gestuurde publieke en betalingsfuncties. Geplande periodes worden bij elk serververzoek geëvalueerd.",
@@ -268,6 +271,7 @@ const fr: AdminCopy = {
     properties: { title: "Propriétés", headers: ["Adresse", "Ville", "Client", "Type", "Taille"] },
     subscriptions: { title: "Abonnements", headers: ["Client", "Statut", "Fréquence", "Facturation", "Montant", "Résiliation", "Actions"] },
     complaints: { title: "Réclamations", headers: ["Date", "Client", "Catégorie", "Agence", "Statut", "Récurrent", "Résolu"], recurringYes: "Oui" },
+    employeesWorking: { title: "Employés au travail", headers: ["Employé", "Numéro", "Agence", "Statut", "Nettoyage moy.", "Trajet moy.", "Visites", "Depuis"], footnote: "Au travail signifie en intervention ou en trajet, comme sur la tuile du tableau de bord. Les moyennes portent sur les visites terminées des 30 derniers jours." },
   },
   features: {
     title: "Paramètres des fonctionnalités", subtitle: "Fonctionnalités publiques et de paiement pilotées par la base de données. Les fenêtres planifiées sont évaluées à chaque requête serveur.",
@@ -336,6 +340,7 @@ const ar: AdminCopy = {
     properties: { title: "العقارات", headers: ["العنوان", "المدينة", "العميل", "النوع", "الحجم"] },
     subscriptions: { title: "الاشتراكات", headers: ["العميل", "الحالة", "التكرار", "الفوترة", "المبلغ", "الإلغاء", "الإجراءات"] },
     complaints: { title: "الشكاوى", headers: ["التاريخ", "العميل", "الفئة", "المكتب", "الحالة", "متكرر", "تم الحل"], recurringYes: "نعم" },
+    employeesWorking: { title: "الموظفون العاملون", headers: ["الموظف", "الرقم", "المكتب", "الحالة", "متوسط التنظيف", "متوسط التنقل", "الزيارات", "منذ"], footnote: "العمل يشمل التنفيذ والتنقل، مطابقًا لبطاقة لوحة المعلومات. المتوسطات محسوبة من الزيارات المكتملة خلال آخر 30 يومًا." },
   },
   features: {
     title: "إعدادات الميزات", subtitle: "ميزات عامة وميزات دفع تُدار من قاعدة البيانات. تُقيَّم الفترات المجدولة مع كل طلب للخادم.",
@@ -404,6 +409,7 @@ const es: AdminCopy = {
     properties: { title: "Propiedades", headers: ["Dirección", "Ciudad", "Cliente", "Tipo", "Tamaño"] },
     subscriptions: { title: "Suscripciones", headers: ["Cliente", "Estado", "Frecuencia", "Facturación", "Importe", "Cancelación", "Acciones"] },
     complaints: { title: "Reclamaciones", headers: ["Fecha", "Cliente", "Categoría", "Oficina", "Estado", "Recurrente", "Resuelta"], recurringYes: "Sí" },
+    employeesWorking: { title: "Empleados trabajando", headers: ["Empleado", "Número", "Oficina", "Estado", "Limpieza media", "Trayecto medio", "Visitas", "Desde"], footnote: "Trabajando incluye en servicio y en trayecto, igual que la tarjeta del panel. Las medias proceden de las visitas completadas en los últimos 30 días." },
   },
   features: {
     title: "Configuración de funciones", subtitle: "Funciones públicas y de pago controladas por la base de datos. Las ventanas programadas se evalúan en cada solicitud al servidor.",
@@ -472,6 +478,7 @@ const de: AdminCopy = {
     properties: { title: "Immobilien", headers: ["Adresse", "Stadt", "Kunde", "Typ", "Größe"] },
     subscriptions: { title: "Abonnements", headers: ["Kunde", "Status", "Häufigkeit", "Abrechnung", "Betrag", "Kündigung", "Aktionen"] },
     complaints: { title: "Beschwerden", headers: ["Datum", "Kunde", "Kategorie", "Niederlassung", "Status", "Wiederkehrend", "Gelöst"], recurringYes: "Ja" },
+    employeesWorking: { title: "Mitarbeitende im Einsatz", headers: ["Mitarbeiter", "Nummer", "Niederlassung", "Status", "Ø Reinigung", "Ø Fahrt", "Einsätze", "Seit"], footnote: "Im Einsatz umfasst arbeitend und unterwegs, wie die Kachel im Dashboard. Durchschnitte stammen aus den abgeschlossenen Einsätzen der letzten 30 Tage." },
   },
   features: {
     title: "Funktionseinstellungen", subtitle: "Datenbankgesteuerte öffentliche Funktionen und Zahlungsfunktionen. Geplante Zeitfenster werden bei jeder Serveranfrage ausgewertet.",
@@ -540,6 +547,7 @@ const pt: AdminCopy = {
     properties: { title: "Propriedades", headers: ["Morada", "Cidade", "Cliente", "Tipo", "Tamanho"] },
     subscriptions: { title: "Subscrições", headers: ["Cliente", "Estado", "Frequência", "Faturação", "Montante", "Cancelamento", "Ações"] },
     complaints: { title: "Reclamações", headers: ["Data", "Cliente", "Categoria", "Escritório", "Estado", "Recorrente", "Resolvida"], recurringYes: "Sim" },
+    employeesWorking: { title: "Funcionários a trabalhar", headers: ["Funcionário", "Número", "Escritório", "Estado", "Limpeza média", "Deslocação média", "Visitas", "Desde"], footnote: "A trabalhar inclui em serviço e em deslocação, tal como o cartão do painel. As médias vêm das visitas concluídas nos últimos 30 dias." },
   },
   features: {
     title: "Definições de funcionalidades", subtitle: "Funcionalidades públicas e de pagamento controladas pela base de dados. As janelas agendadas são avaliadas em cada pedido ao servidor.",
