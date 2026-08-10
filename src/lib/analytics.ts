@@ -15,9 +15,19 @@ export type AnalyticsEvent =
   | "language_changed"
   // Early-access funnel (coarse, non-identifying, never pass PII as props).
   | "early_access_page_view"
+  | "early_access_viewed"
+  | "early_access_started"
+  | "early_access_submitted"
   | "early_access_cta_clicked"
   | "early_access_form_started"
   | "early_access_form_submitted"
+  | "early_access_success"
+  | "early_access_error"
+  | "onboarding_offered"
+  | "onboarding_started"
+  | "onboarding_step_completed"
+  | "onboarding_abandoned"
+  | "onboarding_completed"
   // Address + map funnel. Coarse only, never a full address, coordinates,
   // phone number or email.
   | "billing_address_selected"

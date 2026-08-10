@@ -1,13 +1,13 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import { after } from "next/server";
 import { notFound } from "next/navigation";
-import { ArrowRight, CheckCircle2, Clock, ShieldCheck, Sparkles } from "lucide-react";
+import { CheckCircle2, ShieldCheck, Sparkles } from "lucide-react";
 import { isLocale, getDir, type Locale } from "@/i18n/config";
 import { getEarlyAccessCopy } from "@/i18n/early-access-copy";
-import { EarlyAccessForm } from "@/components/early-access/early-access-form";
+import { getEarlyAccessLeadCopy } from "@/i18n/early-access-lead-copy";
+import { EarlyAccessLeadForm } from "@/components/early-access/early-access-lead-form";
 import { Container } from "@/components/ui/section";
-import { pages, site } from "@/lib/site";
+import { site } from "@/lib/site";
 import {
   EARLY_ACCESS_ENGLISH_SOCIAL_COPY,
   EARLY_ACCESS_SOCIAL_IMAGE,
@@ -81,6 +81,7 @@ export default async function EarlyAccessPage({
   const query = await searchParams;
   after(await prepareEarlyAccessPageView(typedLocale, query));
   const copy = getEarlyAccessCopy(typedLocale);
+  const leadCopy = getEarlyAccessLeadCopy(typedLocale);
   const dir = getDir(typedLocale);
 
   return (
@@ -97,7 +98,7 @@ export default async function EarlyAccessPage({
                 {copy.hero.eyebrow}
               </span>
               <h1 className="mt-5 text-display-lg text-foreground sm:text-display-xl">{copy.hero.title}</h1>
-              <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">{copy.hero.body}</p>
+              <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">{leadCopy.intro}</p>
 
               <div className="mt-8 rounded-2xl border border-accent/25 bg-background/55 p-5 shadow-soft backdrop-blur-sm sm:p-6">
                 <p className="text-xs font-semibold uppercase tracking-[0.16em] text-accent">
@@ -111,13 +112,6 @@ export default async function EarlyAccessPage({
                     </li>
                   ))}
                 </ul>
-                <Link
-                  href={`/${typedLocale}${pages.missionVision}`}
-                  className="mt-5 inline-flex items-center gap-2 text-sm font-semibold text-primary transition-colors hover:text-accent"
-                >
-                  {copy.hero.missionLink}
-                  <ArrowRight className="h-4 w-4 rtl:rotate-180" aria-hidden />
-                </Link>
               </div>
 
               <div className="mt-5 space-y-3">
@@ -125,17 +119,13 @@ export default async function EarlyAccessPage({
                   <ShieldCheck className="mt-0.5 h-5 w-5 shrink-0 text-primary" />
                   {copy.hero.notBooking}
                 </p>
-                <p className="flex items-center gap-2 text-xs font-medium text-muted-foreground">
-                  <Clock className="h-4 w-4 text-accent" />
-                  {copy.hero.reassure}
-                </p>
               </div>
             </div>
 
             {/* Right: the form */}
             <div id="form" className="relative min-w-0">
               <div className="absolute -inset-4 -z-10 rounded-[2.5rem] bg-primary/[0.05] blur-xl" aria-hidden />
-              <EarlyAccessForm locale={typedLocale} copy={copy} />
+              <EarlyAccessLeadForm locale={typedLocale} copy={leadCopy} />
             </div>
           </div>
         </Container>

@@ -4,6 +4,7 @@ import {
   buildEarlyAccessReport,
   type ReportingEvent,
   type ReportingFeedback,
+  type ReportingLead,
   type ReportingSession,
 } from "@/lib/early-access/reporting";
 
@@ -13,6 +14,7 @@ const SESSION_FIELDS = [
   "id", "status", "email_present", "current_step", "current_step_index", "source_code",
   "utm_source", "referrer_host", "device_type", "browser", "operating_system", "locale", "started_at", "completed_at",
   "abandoned_at", "resumed_at", "reminder_count", "completed_after_reminder",
+  "early_access_registered_at", "onboarding_started_at", "onboarding_completed_at", "city",
 ].join(",");
 const EVENT_FIELDS = "signup_session_id,event_name,step_id,step_index,field_name,error_type,error_code,duration_ms";
 
@@ -46,12 +48,13 @@ export default async function AdminEarlyAccessPage({ searchParams }: {
   const params = await searchParams;
   const days = [7, 30, 90].includes(Number(params.days)) ? Number(params.days) : 30;
   const since = new Date(Date.now() - days * 86_400_000).toISOString();
-  const [sessions, events, feedback] = await Promise.all([
+  const [sessions, events, feedback, leads] = await Promise.all([
     serviceSelect<ReportingSession[]>(`early_access_signup_sessions?started_at=gte.${since}&select=${SESSION_FIELDS}&order=started_at.desc&limit=10000`),
     serviceSelect<ReportingEvent[]>(`early_access_funnel_events?occurred_at=gte.${since}&select=${EVENT_FIELDS}&order=occurred_at.asc&limit=50000`),
     serviceSelect<ReportingFeedback[]>(`early_access_abandonment_feedback?submitted_at=gte.${since}&select=reason&limit=10000`),
+    serviceSelect<ReportingLead[]>(`marketing_leads?submitted_at=gte.${since}&select=id,residence_city,mautic_sync_status,submitted_at&limit=10000`),
   ]);
-  const report = buildEarlyAccessReport(sessions, events, feedback);
+  const report = buildEarlyAccessReport(sessions, events, feedback, leads);
   const s = report.summary;
 
   return <div className="space-y-8">
@@ -63,8 +66,10 @@ export default async function AdminEarlyAccessPage({ searchParams }: {
     <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
       <Metric label="Sessions viewed" value={s.viewed} note={`${s.identified} email-associated · ${s.anonymous} anonymous`} />
       <Metric label="Started" value={s.started} note={`${pct(s.startRate)} of viewed sessions`} />
-      <Metric label="Completed" value={s.completed} note={`${pct(s.completionRate)} session conversion`} />
-      <Metric label="Abandoned eligible" value={s.abandoned} note={`${s.resumed} later resumed`} />
+      <Metric label="Early Access leads" value={s.registered} note={`${pct(s.registrationRate)} of viewed sessions`} />
+      <Metric label="Onboarding started" value={s.onboardingStarted} note={`${pct(s.onboardingStartRate)} of registered leads`} />
+      <Metric label="Onboarding completed" value={s.onboardingCompleted} note={`${pct(s.onboardingCompletionRate)} of onboarding starts`} />
+      <Metric label="Onboarding abandoned" value={s.abandoned} note={`${s.resumed} later resumed`} />
       <Metric label="Reminder 1 queued" value={s.reminder1} />
       <Metric label="Reminder 2 queued" value={s.reminder2} />
       <Metric label="Completed after reminder" value={s.completedAfterReminder} />
@@ -84,6 +89,8 @@ export default async function AdminEarlyAccessPage({ searchParams }: {
       <Breakdown title="Browser" rows={report.browsers} />
       <Breakdown title="Operating system" rows={report.operatingSystems} />
       <Breakdown title="Locale" rows={report.locales} />
+      <Breakdown title="Early Access city" rows={report.cities} />
+      <Breakdown title="Mautic synchronization" rows={report.mauticSyncStatuses} />
       <Breakdown title="Validation friction" rows={report.errorFields} />
       <Breakdown title="API and Maps failures" rows={report.apiErrors} />
       <Breakdown title="Likely abandonment category" rows={report.abandonmentCategories} />

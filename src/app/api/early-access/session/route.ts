@@ -72,6 +72,7 @@ export async function PATCH(req: NextRequest) {
       highestCompletedStep: body.highestCompletedStep,
       clientRevision: body.clientRevision,
       event: body.event,
+      onboardingStarted: body.onboardingStarted,
     });
     return NextResponse.json(result, {
       status: result.ok ? 200 : 404,

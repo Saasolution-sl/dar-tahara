@@ -25,7 +25,7 @@ const baseTime = Date.parse("2026-08-09T12:00:00.000Z");
 
 function candidate(overrides: Partial<ReminderCandidate> = {}): ReminderCandidate {
   return {
-    status: "in_progress",
+    status: "onboarding_started",
     email_present: true,
     reminder_consent: true,
     reminder_count: 0,

@@ -3,6 +3,9 @@ import { STEPS, isValidEmail, normalizeEmail, type EarlyAccessPayload, type Step
 export const FUNNEL_EVENTS = [
   "early_access_viewed",
   "early_access_started",
+  "early_access_submitted",
+  "early_access_success",
+  "early_access_error",
   "early_access_step_viewed",
   "early_access_step_completed",
   "early_access_field_focused",
@@ -13,11 +16,20 @@ export const FUNNEL_EVENTS = [
   "early_access_resumed",
   "early_access_completed",
   "early_access_feedback_submitted",
+  "onboarding_offered",
+  "onboarding_started",
+  "onboarding_step_viewed",
+  "onboarding_step_completed",
+  "onboarding_abandoned",
+  "onboarding_completed",
 ] as const;
 
 export type FunnelEventName = (typeof FUNNEL_EVENTS)[number];
 export type SignupSessionStatus =
   | "in_progress"
+  | "early_access_registered"
+  | "onboarding_started"
+  | "onboarding_completed"
   | "completed"
   | "abandoned_eligible"
   | "reminder_sent"
@@ -266,7 +278,9 @@ export type ReminderCandidate = {
 };
 
 export function shouldMarkAbandoned(row: ReminderCandidate, now: number, config: AbandonmentConfig): boolean {
-  if (!(row.status === "in_progress" || row.status === "resumed")) return false;
+  // Joining the list is already a successful conversion. Abandonment only
+  // begins after the visitor explicitly opens the optional detailed onboarding.
+  if (!(row.status === "onboarding_started" || row.status === "resumed")) return false;
   if (row.completed_at || row.opted_out_at || !row.email_present || !row.reminder_consent) return false;
   return now - Date.parse(row.last_activity_at) >= config.inactivityMinutes * 60_000;
 }
@@ -291,6 +305,6 @@ export function likelyAbandonmentCategory(events: Array<{ event_name: string; er
   if (events.some((event) => event.event_name === "early_access_api_error")) return "technical_failure";
   const validationCount = events.filter((event) => event.event_name === "early_access_validation_error").length;
   if (validationCount >= 2) return "validation_friction";
-  if (events.some((event) => event.event_name === "early_access_started")) return "voluntary_leave";
+  if (events.some((event) => ["onboarding_started", "early_access_started"].includes(event.event_name))) return "voluntary_leave";
   return "unknown";
 }

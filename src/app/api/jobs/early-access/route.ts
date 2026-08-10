@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from "next/server";
 import { isAdminAuthorized } from "@/lib/admin-auth";
 import { purgeStaleSignupSessionPii, runEarlyAccessAbandonmentJob } from "@/lib/early-access/abandonment";
 import { secureTokenEqual } from "@/lib/whatsapp/security";
+import { reconcilePendingMauticLeads } from "@/lib/early-access/sync-bridge";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -16,14 +17,15 @@ async function authorized(req: NextRequest): Promise<boolean> {
 export async function POST(req: NextRequest) {
   if (!(await authorized(req))) return NextResponse.json({ error: "unauthorized" }, { status: 401 });
   const result = await runEarlyAccessAbandonmentJob();
+  const mautic = await reconcilePendingMauticLeads().catch(() => ({ attempted: 0, failures: 1 }));
   let retentionOk = true;
   try {
     await purgeStaleSignupSessionPii();
   } catch {
     retentionOk = false;
   }
-  return NextResponse.json({ ok: result.failures === 0 && retentionOk, retentionOk, ...result }, {
-    status: result.failures > 0 || !retentionOk ? 207 : 200,
+  return NextResponse.json({ ok: result.failures === 0 && mautic.failures === 0 && retentionOk, retentionOk, mautic, ...result }, {
+    status: result.failures > 0 || mautic.failures > 0 || !retentionOk ? 207 : 200,
     headers: { "Cache-Control": "no-store" },
   });
 }

@@ -164,16 +164,16 @@ export async function runEarlyAccessAbandonmentJob(): Promise<AbandonmentRunResu
     now: () => Date.now(),
     config,
     loadCandidates: () => serviceSelect<AbandonmentRow[]>(
-      `early_access_signup_sessions?status=in.(in_progress,resumed,abandoned_eligible,reminder_sent)&select=${CANDIDATE_SELECT}&order=last_activity_at.asc&limit=250`,
+      `early_access_signup_sessions?status=in.(onboarding_started,resumed,abandoned_eligible,reminder_sent)&select=${CANDIDATE_SELECT}&order=last_activity_at.asc&limit=250`,
     ),
     markAbandoned: async (row, at) => {
       await serviceUpdate(
         "early_access_signup_sessions",
-        `id=eq.${row.id}&status=in.(in_progress,resumed)&completed_at=is.null&opted_out_at=is.null`,
+        `id=eq.${row.id}&status=in.(onboarding_started,resumed)&completed_at=is.null&opted_out_at=is.null`,
         { status: "abandoned_eligible", abandoned_at: at },
       );
       await recordFunnelEvent(row.id, {
-        eventName: "early_access_abandoned",
+        eventName: "onboarding_abandoned",
         idempotencyKey: "session:abandoned",
         stepId: row.current_step,
         stepIndex: row.current_step_index,
@@ -244,9 +244,9 @@ export async function runEarlyAccessAbandonmentJob(): Promise<AbandonmentRunResu
           `early_access_signup_sessions?id=eq.${row.id}&select=status&limit=1`,
         ).catch(() => [] as Array<{ status: string }>);
         const status = current[0]?.status;
-        if (status === "completed" || status === "opted_out") {
+        if (status === "completed" || status === "onboarding_completed" || status === "opted_out") {
           await client.editContact(contactId, {
-            early_access_status: status === "completed" ? "pending" : "opted_out",
+            early_access_status: status === "completed" || status === "onboarding_completed" ? "pending" : "opted_out",
           }).catch(() => null);
         }
         return false;
