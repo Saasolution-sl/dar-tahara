@@ -4,6 +4,14 @@ import { isValidEmail, normalizeEmail } from "./schema";
 export const EARLY_ACCESS_CONSENT_VERSION = "early-access-marketing-v1";
 export const EARLY_ACCESS_SOURCE = "early_access";
 
+/**
+ * Consents the Early Access form collects, in one place because they are
+ * written by the database function and asserted by its test. The displayed
+ * wording covers marketing *and* incomplete-onboarding reminders, so both are
+ * recorded separately in the audit trail rather than as a single blanket yes.
+ */
+export const EARLY_ACCESS_CONSENT_TYPES = ["marketing", "onboarding_reminder"] as const;
+
 export type EarlyAccessLeadPayload = {
   firstName: string;
   email: string;
