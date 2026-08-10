@@ -63,6 +63,7 @@ export type AdminCopy = {
     customers: { title: string; headers: [string, string, string, string, string, string] };
     properties: { title: string; headers: [string, string, string, string, string] };
     subscriptions: { title: string; headers: [string, string, string, string, string, string, string] };
+    complaints: { title: string; headers: [string, string, string, string, string, string, string]; recurringYes: string };
   };
   features: {
     title: string; subtitle: string; enabled: string; disabled: string;
@@ -130,6 +131,7 @@ const en: AdminCopy = {
     customers: { title: "Customers", headers: ["Customer", "Email", "Status", "Created", "Last login", "Actions"] },
     properties: { title: "Properties", headers: ["Address", "City", "Customer", "Type", "Size"] },
     subscriptions: { title: "Subscriptions", headers: ["Customer", "Status", "Frequency", "Billing", "Amount", "Cancellation", "Actions"] },
+    complaints: { title: "Complaints", headers: ["Date", "Customer", "Category", "Office", "Status", "Recurring", "Resolved"], recurringYes: "Yes" },
   },
   features: {
     title: "Feature settings", subtitle: "Database-controlled public and payment capabilities. Scheduled windows are evaluated on every server request.",
@@ -197,6 +199,7 @@ const nl: AdminCopy = {
     customers: { title: "Klanten", headers: ["Klant", "E-mail", "Status", "Aangemaakt", "Laatste login", "Acties"] },
     properties: { title: "Woningen", headers: ["Adres", "Stad", "Klant", "Type", "Grootte"] },
     subscriptions: { title: "Abonnementen", headers: ["Klant", "Status", "Frequentie", "Facturering", "Bedrag", "Opzegging", "Acties"] },
+    complaints: { title: "Klachten", headers: ["Datum", "Klant", "Categorie", "Vestiging", "Status", "Terugkerend", "Opgelost"], recurringYes: "Ja" },
   },
   features: {
     title: "Functie-instellingen", subtitle: "Database-gestuurde publieke en betalingsfuncties. Geplande periodes worden bij elk serververzoek geëvalueerd.",
@@ -264,6 +267,7 @@ const fr: AdminCopy = {
     customers: { title: "Clients", headers: ["Client", "E-mail", "Statut", "Créé le", "Dernière connexion", "Actions"] },
     properties: { title: "Propriétés", headers: ["Adresse", "Ville", "Client", "Type", "Taille"] },
     subscriptions: { title: "Abonnements", headers: ["Client", "Statut", "Fréquence", "Facturation", "Montant", "Résiliation", "Actions"] },
+    complaints: { title: "Réclamations", headers: ["Date", "Client", "Catégorie", "Agence", "Statut", "Récurrent", "Résolu"], recurringYes: "Oui" },
   },
   features: {
     title: "Paramètres des fonctionnalités", subtitle: "Fonctionnalités publiques et de paiement pilotées par la base de données. Les fenêtres planifiées sont évaluées à chaque requête serveur.",
@@ -331,6 +335,7 @@ const ar: AdminCopy = {
     customers: { title: "العملاء", headers: ["العميل", "البريد الإلكتروني", "الحالة", "تاريخ الإنشاء", "آخر تسجيل دخول", "الإجراءات"] },
     properties: { title: "العقارات", headers: ["العنوان", "المدينة", "العميل", "النوع", "الحجم"] },
     subscriptions: { title: "الاشتراكات", headers: ["العميل", "الحالة", "التكرار", "الفوترة", "المبلغ", "الإلغاء", "الإجراءات"] },
+    complaints: { title: "الشكاوى", headers: ["التاريخ", "العميل", "الفئة", "المكتب", "الحالة", "متكرر", "تم الحل"], recurringYes: "نعم" },
   },
   features: {
     title: "إعدادات الميزات", subtitle: "ميزات عامة وميزات دفع تُدار من قاعدة البيانات. تُقيَّم الفترات المجدولة مع كل طلب للخادم.",
@@ -398,6 +403,7 @@ const es: AdminCopy = {
     customers: { title: "Clientes", headers: ["Cliente", "Correo", "Estado", "Creado", "Último acceso", "Acciones"] },
     properties: { title: "Propiedades", headers: ["Dirección", "Ciudad", "Cliente", "Tipo", "Tamaño"] },
     subscriptions: { title: "Suscripciones", headers: ["Cliente", "Estado", "Frecuencia", "Facturación", "Importe", "Cancelación", "Acciones"] },
+    complaints: { title: "Reclamaciones", headers: ["Fecha", "Cliente", "Categoría", "Oficina", "Estado", "Recurrente", "Resuelta"], recurringYes: "Sí" },
   },
   features: {
     title: "Configuración de funciones", subtitle: "Funciones públicas y de pago controladas por la base de datos. Las ventanas programadas se evalúan en cada solicitud al servidor.",
@@ -465,6 +471,7 @@ const de: AdminCopy = {
     customers: { title: "Kunden", headers: ["Kunde", "E-Mail", "Status", "Erstellt", "Letzte Anmeldung", "Aktionen"] },
     properties: { title: "Immobilien", headers: ["Adresse", "Stadt", "Kunde", "Typ", "Größe"] },
     subscriptions: { title: "Abonnements", headers: ["Kunde", "Status", "Häufigkeit", "Abrechnung", "Betrag", "Kündigung", "Aktionen"] },
+    complaints: { title: "Beschwerden", headers: ["Datum", "Kunde", "Kategorie", "Niederlassung", "Status", "Wiederkehrend", "Gelöst"], recurringYes: "Ja" },
   },
   features: {
     title: "Funktionseinstellungen", subtitle: "Datenbankgesteuerte öffentliche Funktionen und Zahlungsfunktionen. Geplante Zeitfenster werden bei jeder Serveranfrage ausgewertet.",
@@ -532,6 +539,7 @@ const pt: AdminCopy = {
     customers: { title: "Clientes", headers: ["Cliente", "E-mail", "Estado", "Criado", "Último início de sessão", "Ações"] },
     properties: { title: "Propriedades", headers: ["Morada", "Cidade", "Cliente", "Tipo", "Tamanho"] },
     subscriptions: { title: "Subscrições", headers: ["Cliente", "Estado", "Frequência", "Faturação", "Montante", "Cancelamento", "Ações"] },
+    complaints: { title: "Reclamações", headers: ["Data", "Cliente", "Categoria", "Escritório", "Estado", "Recorrente", "Resolvida"], recurringYes: "Sim" },
   },
   features: {
     title: "Definições de funcionalidades", subtitle: "Funcionalidades públicas e de pagamento controladas pela base de dados. As janelas agendadas são avaliadas em cada pedido ao servidor.",
