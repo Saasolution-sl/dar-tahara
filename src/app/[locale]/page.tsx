@@ -11,6 +11,7 @@ import { HowItWorks } from "@/components/sections/how-it-works";
 import { Audiences } from "@/components/sections/audiences";
 import { Testimonials } from "@/components/sections/testimonials";
 import { MissionTeaser } from "@/components/sections/mission-teaser";
+import { PeopleTeaser } from "@/components/sections/people-teaser";
 import { Gallery } from "@/components/sections/gallery";
 import { Faq } from "@/components/sections/faq";
 import { Cta } from "@/components/sections/cta";
@@ -45,6 +46,7 @@ export default async function HomePage({
       <Audiences dict={dict} />
       <Testimonials dict={dict} />
       <MissionTeaser locale={typedLocale} dict={dict} />
+      <PeopleTeaser locale={typedLocale} dict={dict} />
       <Gallery dict={dict} />
       <Faq dict={dict} />
       {features.earlyAccessEnabled ? <LaunchSignup locale={typedLocale} dict={dict} /> : null}

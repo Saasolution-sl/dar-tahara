@@ -7,8 +7,6 @@ import { getDictionary } from "@/i18n/dictionaries";
 import { pages, site } from "@/lib/site";
 import { buildLocalizedMetadata } from "@/lib/seo";
 
-const description = "How Dar Tahara collects, uses and safeguards personal data.";
-
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
@@ -17,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     locale,
     path: pages.privacy,
     title: dict.footer.privacy,
-    description,
+    description: dict.legal.privacyMeta,
   });
 }
 
@@ -28,10 +26,11 @@ export default async function PrivacyPage({ params }: { params: Promise<{ locale
   const dict = await getDictionary(typedLocale);
 
   return <>
-    <PageStructuredData locale={typedLocale} path={pages.privacy} name={dict.footer.privacy} description={description} />
+    <PageStructuredData locale={typedLocale} path={pages.privacy} name={dict.footer.privacy} description={dict.legal.privacyMeta} />
     <LegalPage
-      title="Privacy Policy"
-      updated="Effective 13 July 2026"
+      title={dict.legal.privacyTitle}
+      updated={dict.legal.privacyUpdated}
+      bindingLanguageNotice={typedLocale === "en" ? undefined : dict.legal.bindingLanguageNotice}
       breadcrumbs={[
         { label: dict.missionVision.breadcrumb.home, href: `/${typedLocale}` },
         { label: dict.footer.privacy, href: `/${typedLocale}${pages.privacy}` },

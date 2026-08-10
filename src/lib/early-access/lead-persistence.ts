@@ -1,22 +1,16 @@
 import "server-only";
 
-import { serviceInsert, serviceSelect, serviceUpdate } from "@/lib/supabase-rpc";
+import { serviceRpc } from "@/lib/supabase-rpc";
 import { buildLeadRow } from "./mappers";
 import { generateVerificationToken, hashToken, tokenExpiry } from "./token";
 import type { Attribution } from "./attribution";
 import type { EarlyAccessPayload } from "./schema";
 import {
+  EARLY_ACCESS_CONSENT_TYPES,
   EARLY_ACCESS_CONSENT_VERSION,
   EARLY_ACCESS_SOURCE,
   type EarlyAccessLeadPayload,
 } from "./lead-schema";
-
-type LeadRow = {
-  id: string;
-  status: string;
-  normalized_email: string;
-  referral_code: string | null;
-};
 
 export function leadPayloadForExistingOnboarding(
   input: EarlyAccessLeadPayload,
@@ -60,49 +54,40 @@ export async function persistEarlyAccessLead(
 }> {
   const onboardingPayload = leadPayloadForExistingOnboarding(input, normalized);
   const leadRow = buildLeadRow(onboardingPayload, context.attribution);
-  const existing = await serviceSelect<LeadRow[]>(
-    `marketing_leads?normalized_email=eq.${encodeURIComponent(normalized.email)}&select=id,status,normalized_email,referral_code&limit=1`,
-  ).catch(() => [] as LeadRow[]);
 
-  let lead: LeadRow;
-  if (existing.length) {
-    const prior = existing[0];
-    const patch = { ...leadRow };
-    for (const key of Object.keys(patch)) {
-      if (key.startsWith("first_") || patch[key] === undefined) delete patch[key];
-    }
-    if (prior.status !== "pending") delete patch.status;
-    const updated = await serviceUpdate<LeadRow[]>("marketing_leads", `id=eq.${prior.id}`, patch);
-    lead = updated[0] ?? prior;
-  } else {
-    const inserted = await serviceInsert<LeadRow[]>("marketing_leads", leadRow);
-    lead = inserted[0];
-  }
-  if (!lead) throw new Error("early_access_lead_persist_failed");
+  // Generated here rather than in SQL: only the hash is ever stored, and the
+  // plaintext has to be returned to the caller to be emailed. If the lead turns
+  // out to be verified already the function stores nothing and this is dropped.
+  const verificationToken = generateVerificationToken();
 
-  const consentCommon = {
-    lead_id: lead.id,
-    granted: true,
-    policy_version: EARLY_ACCESS_CONSENT_VERSION,
-    locale: context.locale ?? input.locale ?? "en",
-    source: EARLY_ACCESS_SOURCE,
-    request_metadata: context.requestMetadata ?? null,
+  // One call, one transaction. Previously this was three PostgREST requests -
+  // lead, consents, token - so a failure after the first left a lead recorded
+  // with no consent behind it and no way to verify. `undefined` is stripped
+  // because it is not valid JSON and the function treats a supplied key as an
+  // instruction to write that column.
+  const result = await serviceRpc<{ lead_id: string; already_verified: boolean } | null>(
+    "persist_early_access_lead",
+    {
+      p_lead: Object.fromEntries(Object.entries(leadRow).filter(([, value]) => value !== undefined)),
+      p_consent: {
+        granted: true,
+        policy_version: EARLY_ACCESS_CONSENT_VERSION,
+        locale: context.locale ?? input.locale ?? "en",
+        source: EARLY_ACCESS_SOURCE,
+        request_metadata: context.requestMetadata ?? null,
+      },
+      p_consent_types: EARLY_ACCESS_CONSENT_TYPES,
+      p_token_hash: await hashToken(verificationToken),
+      p_token_expires_at: tokenExpiry(),
+    },
+  );
+
+  if (!result?.lead_id) throw new Error("early_access_lead_persist_failed");
+
+  return {
+    leadId: result.lead_id,
+    verificationToken: result.already_verified ? undefined : verificationToken,
+    alreadyVerified: result.already_verified,
+    onboardingPayload,
   };
-  await serviceInsert("lead_consents", [
-    { ...consentCommon, consent_type: "marketing" },
-    { ...consentCommon, consent_type: "onboarding_reminder" },
-  ]);
-
-  const alreadyVerified = lead.status !== "pending";
-  let verificationToken: string | undefined;
-  if (!alreadyVerified) {
-    verificationToken = generateVerificationToken();
-    await serviceInsert("email_verification_tokens", {
-      lead_id: lead.id,
-      token_hash: await hashToken(verificationToken),
-      expires_at: tokenExpiry(),
-    });
-  }
-
-  return { leadId: lead.id, verificationToken, alreadyVerified, onboardingPayload };
 }

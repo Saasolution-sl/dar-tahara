@@ -9,5 +9,6 @@ development, but they are required for a polished production launch.
 | `apple-icon.png` | 180×180 | iOS home-screen icon. |
 | `og.jpg` *(optional)* | 1200×630 | Static social share image. Not required because a branded Open Graph card is generated automatically at `/[locale]/opengraph-image`. |
 | `images/social/dar-tahara-early-access-v1.jpg` | 1200×630 | Versioned Open Graph and X preview for every localized Early Access route. |
+| `images/people-community/dar-tahara-people-community-v1.jpg` | 1472×920 (16:10) | Hero photograph for the People & Community page. Own photography rather than stock, because the page argues these are screened, salaried professionals. Bump the `-vN` suffix when replacing it so caches turn over. |
 
 The favicon is generated from `src/app/icon.svg` (a dome-arch mark echoing the logo), so no action is needed.

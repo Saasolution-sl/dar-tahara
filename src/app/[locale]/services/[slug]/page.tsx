@@ -3,7 +3,8 @@ import { notFound } from "next/navigation";
 import { ArrowLeft, CheckCircle2, MessageCircle } from "lucide-react";
 import { isLocale, type Locale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n/dictionaries";
-import { servicePageSlugs, servicePages, isServicePageSlug } from "@/lib/service-pages";
+import { servicePageSlugs, isServicePageSlug } from "@/lib/service-pages";
+import { getServicePage } from "@/i18n/service-pages-copy";
 import { sections, whatsappLink } from "@/lib/site";
 import { buildLocalizedMetadata } from "@/lib/seo";
 import { Container } from "@/components/ui/section";
@@ -22,7 +23,7 @@ export async function generateMetadata({
 }) {
   const { locale, slug } = await params;
   if (!isLocale(locale) || !isServicePageSlug(slug)) return {};
-  const page = servicePages[slug];
+  const page = getServicePage(locale, slug);
   return buildLocalizedMetadata({
     locale,
     path: `/services/${slug}`,
@@ -41,7 +42,7 @@ export default async function ServiceDetailPage({
 
   const typedLocale = locale as Locale;
   const dict = await getDictionary(typedLocale);
-  const page = servicePages[slug];
+  const page = getServicePage(typedLocale, slug);
   const base = `/${typedLocale}`;
 
   return (

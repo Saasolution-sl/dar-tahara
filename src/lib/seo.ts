@@ -1,6 +1,12 @@
 import type { Metadata } from "next";
 import { localeMeta, locales, type Locale } from "@/i18n/config";
 import { site } from "@/lib/site";
+import { servicePageSlugs, servicePages } from "@/lib/service-pages";
+
+/** The real service catalogue, so schema can never drift from the pages. */
+function catalogueServices() {
+  return servicePageSlugs.map((slug) => ({ slug, name: servicePages[slug].eyebrow }));
+}
 
 export type JsonLdObject = Record<string, unknown>;
 
@@ -144,6 +150,18 @@ export function serializeJsonLd(value: unknown): string {
     .replace(/\u2029/g, "\\u2029");
 }
 
+/**
+ * The Dar Tahara business entity.
+ *
+ * Every property here is derived from `site` config or the real service
+ * catalogue. Deliberately absent: `aggregateRating`, `review`, `priceRange`,
+ * `openingHours`, `geo` and a street address. None of those are verifiable
+ * from the codebase, and inventing them would be fabricated business data in
+ * the one place search engines treat as declarative fact.
+ *
+ * Stays `ProfessionalService` rather than a narrower LocalBusiness subtype
+ * because there is no verified physical storefront to attach.
+ */
 export function organizationSchema(): JsonLdObject {
   return {
     "@type": "ProfessionalService",
@@ -153,8 +171,14 @@ export function organizationSchema(): JsonLdObject {
     logo: { "@type": "ImageObject", url: site.logoUrl },
     image: site.defaultSocialImage,
     description: site.defaultDescription,
+    slogan: site.slogan,
     email: site.contactEmail,
     telephone: site.telephone,
+    address: {
+      "@type": "PostalAddress",
+      addressLocality: site.addressLocality,
+      addressCountry: site.addressCountry,
+    },
     areaServed: [
       { "@type": "Country", name: "Morocco" },
       ...site.serviceAreas.map((name) => ({ "@type": "City", name })),
@@ -166,6 +190,18 @@ export function organizationSchema(): JsonLdObject {
       email: site.contactEmail,
       telephone: site.telephone,
       availableLanguage: [...site.supportedLocales],
+    },
+    hasOfferCatalog: {
+      "@type": "OfferCatalog",
+      name: "Dar Tahara home care services",
+      itemListElement: catalogueServices().map((service) => ({
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: service.name,
+          url: localizedUrl(site.defaultLocale, `/services/${service.slug}`),
+        },
+      })),
     },
     sameAs: Object.values(site.socials),
   };

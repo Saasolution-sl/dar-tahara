@@ -18,6 +18,7 @@ const es: DeepPartial<Dictionary> = {
     about: "Nosotros",
     missionVision: "Misión y Visión",
     peopleCommunity: "Personas y Comunidad",
+    serviceAreas: "Zonas de servicio",
     why: "Por qué Dar Tahara",
     services: "Servicios",
     plans: "Planes",
@@ -747,7 +748,7 @@ const es: DeepPartial<Dictionary> = {
         "En Dar Tahara creemos que un servicio de limpieza profesional debe hacer más que dejar una casa limpia. Combinamos el cuidado profesional del hogar con empleo local estable, condiciones de trabajo justas y un servicio diseñado en torno a la confianza.",
       ctaPrimary: "Únete al acceso anticipado",
       ctaSecondary: "Lee nuestra misión y visión",
-      imageAlt: "Una profesional de limpieza de Dar Tahara prepara una vivienda marroquí",
+      imageAlt: "Una profesional de limpieza de Dar Tahara con uniforme limpia una ventana en una vivienda marroquí",
       highlights: ["Equipos locales", "Personal verificado", "Acceso ligado a la cita"],
     },
     employment: {
@@ -988,6 +989,83 @@ const es: DeepPartial<Dictionary> = {
       ctaPrimary: "Únete al acceso anticipado",
       ctaSecondary: "Lee nuestra misión y visión",
     },
+    teaser: {
+      eyebrow: "Personas y Comunidad",
+      title: "A quién enviamos y a quién empleamos.",
+      body: "Cada limpiador de Dar Tahara supera nuestra verificación antes de trabajar solo en tu casa, y el acceso a la vivienda está ligado a la cita en lugar de cederse de forma permanente. El mismo modelo les paga un salario mensual con cobertura sanitaria, en la ciudad donde viven.",
+      cta: "Descubre cómo contratamos y protegemos el acceso",
+      points: [
+        "Personal verificado",
+        "Acceso ligado a la cita",
+        "Empleo local estable",
+      ],
+    },
+  },
+  legal: {
+    termsTitle: "Términos del servicio",
+    privacyTitle: "Política de privacidad",
+    termsUpdated: "En vigor el 24 de julio de 2026",
+    privacyUpdated: "En vigor el 13 de julio de 2026",
+    termsMeta: "Términos que rigen las evaluaciones de vivienda y las suscripciones de Dar Tahara.",
+    privacyMeta: "Cómo Dar Tahara recoge, utiliza y protege los datos personales.",
+    bindingLanguageNotice:
+      "Este documento es una traducción del original en inglés. La versión en inglés es el texto jurídicamente vinculante. Si un pasaje traducido difiere de la versión en inglés en significado o efecto, prevalece la versión en inglés.",
+  },
+  serviceAreas: {
+    meta: {
+      title: "Zonas de servicio en Marruecos",
+      description:
+        "Dónde opera Dar Tahara en Marruecos. Zonas activas, próximas aperturas y cobertura prevista, ciudad por ciudad y con el estado actual de cada una.",
+      ogAlt: "Zonas de servicio de Dar Tahara en Marruecos",
+    },
+    breadcrumb: { home: "Inicio", current: "Zonas de servicio", label: "Ruta de navegación" },
+    hero: {
+      eyebrow: "Zonas de servicio",
+      title: "Dónde opera Dar Tahara en Marruecos",
+      subtitle:
+        "Dar Tahara se despliega zona a zona en lugar de reclamar cobertura nacional desde el primer día. Cada ciudad de abajo muestra su estado actual, para que veas exactamente dónde el servicio está activo, dónde abrimos próximamente y dónde sigue en fase de plan.",
+      ctaPrimary: "Únete al acceso anticipado",
+      ctaSecondary: "Ver nuestros servicios",
+    },
+    status: {
+      available: {
+        label: "Zonas activas",
+        note: "Dar Tahara está construyendo activamente su servicio aquí. La disponibilidad para una dirección concreta se confirma en la evaluación inicial de la vivienda.",
+      },
+      expanding: {
+        label: "Próxima apertura",
+        note: "Expansión a corto plazo alrededor de nuestras zonas activas. Únete al acceso anticipado para que te contactemos cuando abra tu ciudad.",
+      },
+      planned: {
+        label: "Cobertura prevista",
+        note: "Ciudades que queremos atender a medida que Dar Tahara crece. Todavía no hay servicio en estas zonas.",
+      },
+    },
+    regionLabel: "Región",
+    coverageTitle: "Cobertura por región",
+    coverageNote:
+      "Agrupamos las ciudades por región administrativa, porque nuestros equipos se forman localmente y una región abre en conjunto, no ciudad por ciudad.",
+    disclaimer:
+      "Esta página describe dónde opera y pretende operar Dar Tahara. No constituye una oferta de servicio en ninguna ciudad concreta. La cobertura, los plazos y la disponibilidad para una vivienda concreta se confirman directamente con Dar Tahara.",
+    cta: {
+      title: "¿No ves tu ciudad?",
+      body: "El acceso anticipado nos dice dónde está la demanda. Las ciudades con más registros son las que abrimos primero, así que registrarte sube realmente tu zona en la lista.",
+      button: "Únete al acceso anticipado",
+    },
+    faq: [
+      {
+        q: "¿Qué ciudades atiende Dar Tahara?",
+        a: "Las zonas activas de Dar Tahara son Tánger, Tetuán, Casablanca y Mequinez. Otras ciudades marroquíes aparecen en esta página como de próxima apertura o previstas. Confirma la disponibilidad para tu dirección antes de contar con una zona de servicio.",
+      },
+      {
+        q: "¿Opera Dar Tahara en todo Marruecos?",
+        a: "Todavía no. Dar Tahara opera en Marruecos y se expande ciudad por ciudad en lugar de reclamar cobertura nacional. Cada ciudad de esta página indica si está activa, si abre próximamente o si sigue prevista.",
+      },
+      {
+        q: "¿Cómo se abre una ciudad nueva?",
+        a: "Dar Tahara contrata a su equipo de limpieza localmente, en la ciudad y su entorno, antes de abrir allí. Los registros de acceso anticipado muestran dónde se concentra la demanda, y así decidimos el orden de apertura de las ciudades.",
+      },
+    ],
   },
   footer: {
     tagline: "Cuidado del hogar y conserjería de propiedades premium en todo Marruecos.",

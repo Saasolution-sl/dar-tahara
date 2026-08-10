@@ -18,6 +18,7 @@ const fr: DeepPartial<Dictionary> = {
     about: "À propos",
     missionVision: "Mission & Vision",
     peopleCommunity: "Personnes & Communauté",
+    serviceAreas: "Zones desservies",
     why: "Pourquoi Dar Tahara",
     services: "Services",
     plans: "Formules",
@@ -747,7 +748,7 @@ const fr: DeepPartial<Dictionary> = {
         "Chez Dar Tahara, nous pensons qu'un service de nettoyage professionnel doit faire plus que laisser un logement propre. Nous associons l'entretien professionnel du domicile à un emploi local stable, à des conditions de travail équitables et à un service conçu autour de la confiance.",
       ctaPrimary: "Rejoindre l'accès anticipé",
       ctaSecondary: "Lire notre mission & vision",
-      imageAlt: "Une professionnelle du nettoyage Dar Tahara prépare un logement marocain",
+      imageAlt: "Une professionnelle du nettoyage Dar Tahara en tenue de travail nettoie une fenêtre dans un logement marocain",
       highlights: ["Équipes locales", "Personnel vérifié", "Accès lié au rendez-vous"],
     },
     employment: {
@@ -988,6 +989,83 @@ const fr: DeepPartial<Dictionary> = {
       ctaPrimary: "Rejoindre l'accès anticipé",
       ctaSecondary: "Lire notre mission & vision",
     },
+    teaser: {
+      eyebrow: "Personnes & Communauté",
+      title: "Qui nous envoyons, et qui nous employons.",
+      body: "Chaque intervenant Dar Tahara achève notre procédure de vérification avant de travailler seul chez vous, et l'accès au logement est lié au rendez-vous plutôt que cédé de façon permanente. Le même modèle leur verse un salaire mensuel avec une couverture santé, dans la ville où ils vivent.",
+      cta: "Voir comment nous recrutons et sécurisons l'accès",
+      points: [
+        "Personnel vérifié",
+        "Accès lié au rendez-vous",
+        "Emploi local stable",
+      ],
+    },
+  },
+  legal: {
+    termsTitle: "Conditions générales de service",
+    privacyTitle: "Politique de confidentialité",
+    termsUpdated: "En vigueur le 24 juillet 2026",
+    privacyUpdated: "En vigueur le 13 juillet 2026",
+    termsMeta: "Conditions régissant les évaluations de logement et les abonnements Dar Tahara.",
+    privacyMeta: "Comment Dar Tahara collecte, utilise et protège les données personnelles.",
+    bindingLanguageNotice:
+      "Ce document est une traduction de l'original anglais. La version anglaise est le texte juridiquement contraignant. En cas de divergence de sens ou d'effet entre un passage traduit et la version anglaise, la version anglaise prévaut.",
+  },
+  serviceAreas: {
+    meta: {
+      title: "Zones desservies au Maroc",
+      description:
+        "Où Dar Tahara opère au Maroc. Zones actives, ouvertures prochaines et couverture planifiée, ville par ville, avec le statut actuel de chacune.",
+      ogAlt: "Zones desservies par Dar Tahara au Maroc",
+    },
+    breadcrumb: { home: "Accueil", current: "Zones desservies", label: "Fil d'Ariane" },
+    hero: {
+      eyebrow: "Zones desservies",
+      title: "Où Dar Tahara opère au Maroc",
+      subtitle:
+        "Dar Tahara se déploie zone par zone plutôt que de revendiquer une couverture nationale dès le premier jour. Chaque ville ci-dessous affiche son statut actuel : vous voyez précisément où le service est actif, où il ouvre prochainement et où il reste au stade du projet.",
+      ctaPrimary: "Rejoindre l'accès anticipé",
+      ctaSecondary: "Voir nos services",
+    },
+    status: {
+      available: {
+        label: "Zones actives",
+        note: "Dar Tahara y développe activement son service. La disponibilité pour une adresse précise est confirmée lors de l'évaluation initiale du logement.",
+      },
+      expanding: {
+        label: "Ouverture prochaine",
+        note: "Extension à court terme autour de nos zones actives. Rejoignez l'accès anticipé pour être contacté dès l'ouverture de votre ville.",
+      },
+      planned: {
+        label: "Couverture planifiée",
+        note: "Villes que nous prévoyons de desservir à mesure que Dar Tahara se développe. Aucun service n'y est encore proposé.",
+      },
+    },
+    regionLabel: "Région",
+    coverageTitle: "Couverture par région",
+    coverageNote:
+      "Nous regroupons les villes par région administrative, car nos équipes se constituent localement et une région ouvre par grappe plutôt que ville par ville.",
+    disclaimer:
+      "Cette page décrit où Dar Tahara opère et compte opérer. Elle ne constitue pas une offre de service dans une ville donnée. La couverture, le calendrier et la disponibilité pour un bien précis se confirment directement auprès de Dar Tahara.",
+    cta: {
+      title: "Votre ville n'apparaît pas ?",
+      body: "L'accès anticipé nous indique où se trouve la demande. Les villes qui comptent le plus d'inscriptions sont celles que nous ouvrons en premier : s'inscrire fait réellement remonter votre zone dans la liste.",
+      button: "Rejoindre l'accès anticipé",
+    },
+    faq: [
+      {
+        q: "Quelles villes Dar Tahara dessert-elle ?",
+        a: "Les zones actives de Dar Tahara sont Tanger, Tétouan, Casablanca et Meknès. Les autres villes marocaines figurent sur cette page comme ouvrant prochainement ou planifiées. Confirmez la disponibilité pour votre adresse avant de vous fier à une zone desservie.",
+      },
+      {
+        q: "Dar Tahara couvre-t-elle tout le Maroc ?",
+        a: "Pas encore. Dar Tahara opère au Maroc et se déploie ville par ville plutôt que de revendiquer une couverture nationale. Chaque ville de cette page indique si elle est active, en ouverture prochaine ou encore planifiée.",
+      },
+      {
+        q: "Comment une nouvelle ville ouvre-t-elle ?",
+        a: "Dar Tahara recrute son équipe d'entretien localement, dans la ville et ses environs, avant d'y ouvrir. Les inscriptions à l'accès anticipé montrent où la demande se concentre : c'est ainsi que nous décidons de l'ordre d'ouverture des villes.",
+      },
+    ],
   },
   footer: {
     tagline: "Conciergerie & entretien de résidence premium partout au Maroc.",
