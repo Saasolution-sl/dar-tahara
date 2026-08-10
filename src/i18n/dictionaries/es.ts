@@ -17,6 +17,7 @@ const es: DeepPartial<Dictionary> = {
   nav: {
     about: "Nosotros",
     missionVision: "Misión y Visión",
+    peopleCommunity: "Personas y Comunidad",
     why: "Por qué Dar Tahara",
     services: "Servicios",
     plans: "Planes",
@@ -725,6 +726,267 @@ const es: DeepPartial<Dictionary> = {
         "Precios transparentes por suscripción",
         "Compromiso con la formación estructurada del equipo",
       ],
+    },
+  },
+  peopleCommunity: {
+    meta: {
+      title: "Personas y Comunidad",
+      description:
+        "Descubre cómo Dar Tahara combina la limpieza profesional del hogar, la verificación de sus empleados, el acceso controlado a la vivienda y el empleo local estable en Marruecos.",
+      ogAlt: "Dar Tahara: Personas y Comunidad",
+    },
+    breadcrumb: {
+      home: "Inicio",
+      current: "Personas y Comunidad",
+      label: "Ruta de navegación",
+    },
+    hero: {
+      eyebrow: "Personas y Comunidad",
+      title: "Hogares limpios. Comunidades apoyadas.",
+      subtitle:
+        "En Dar Tahara creemos que un servicio de limpieza profesional debe hacer más que dejar una casa limpia. Combinamos el cuidado profesional del hogar con empleo local estable, condiciones de trabajo justas y un servicio diseñado en torno a la confianza.",
+      ctaPrimary: "Únete al acceso anticipado",
+      ctaSecondary: "Lee nuestra misión y visión",
+      imageAlt: "Una profesional de limpieza de Dar Tahara prepara una vivienda marroquí",
+      highlights: ["Equipos locales", "Personal verificado", "Acceso ligado a la cita"],
+    },
+    employment: {
+      eyebrow: "Empleo local",
+      title: "Personas del lugar al servicio de su comunidad",
+      lead: "Dar Tahara aspira a formar sus equipos de limpieza en las ciudades y zonas circundantes donde operamos. Siempre que es posible, los empleados trabajan dentro de su área operativa local, cerca de las viviendas que cuidan.",
+      items: [
+        {
+          title: "Empleo dentro de la propia comunidad",
+          body: "Cuando Dar Tahara abre en una ciudad, miramos primero a esa ciudad y a su entorno para formar el equipo que la atenderá.",
+        },
+        {
+          title: "Un trabajo más previsible",
+          body: "Las suscripciones recurrentes generan citas recurrentes, lo que nos permite planificar los horarios con antelación en lugar de ofrecer trabajos sueltos e irregulares.",
+        },
+        {
+          title: "Menos desplazamientos innecesarios",
+          body: "Asignar a los empleados dentro de su área operativa local, cuando es posible, reduce los trayectos largos y les devuelve parte de su día.",
+        },
+        {
+          title: "Equipos locales estables",
+          body: "Los equipos que conocen su ciudad y sus barrios construyen familiaridad, constancia y una responsabilidad real hacia los clientes a los que atienden.",
+        },
+        {
+          title: "Un crecimiento que crea empleo local",
+          body: "Cada cliente recurrente adicional en una ciudad añade horas de limpieza en esa misma ciudad, y esas horas son las que crean puestos locales adicionales.",
+        },
+      ],
+      flow: {
+        title: "Cómo el crecimiento se convierte en empleo local",
+        steps: [
+          "Más clientes",
+          "Más citas de limpieza recurrentes",
+          "Más empleos locales estables",
+        ],
+        note: "Este es el mecanismo que sostiene nuestro modelo de empleo: una demanda previsible es lo que hace posible un empleo previsible.",
+      },
+      customerNote:
+        "Al elegir Dar Tahara obtienes un servicio de limpieza profesional y seguro y, al mismo tiempo, apoyas el empleo local estable en la zona donde vives.",
+      disclaimer:
+        "La contratación y la asignación locales se aplican siempre que sea operativamente posible dentro de cada área de actividad. Dar Tahara no garantiza que cada empleado resida a una distancia determinada de cada vivienda de cliente.",
+    },
+    stability: {
+      eyebrow: "Empleo justo",
+      title: "Un empleo debe aportar estabilidad",
+      lead: "Dar Tahara quiere ofrecer algo más que trabajo de limpieza ocasional. Nuestros empleados reciben un salario mensual justo y cobertura sanitaria, lo que contribuye a una mayor estabilidad financiera y al acceso a la atención sanitaria esencial.",
+      items: [
+        {
+          title: "Un salario mensual justo",
+          body: "El empleo se construye sobre un salario mensual fijo y no sobre pagos en efectivo inciertos, tarea por tarea.",
+        },
+        {
+          title: "Cobertura sanitaria",
+          body: "Nuestro modelo de empleo incluye la cobertura aplicable del Seguro Obligatorio de Enfermedad (AMO) para los empleados elegibles a través del sistema marroquí de la CNSS.",
+        },
+        {
+          title: "Trabajo programado y previsible",
+          body: "Las citas recurrentes se planifican con antelación, de modo que los empleados conocen su horario en lugar de esperar a que aparezca trabajo.",
+        },
+        {
+          title: "Incorporación profesional",
+          body: "Cada miembro del equipo conoce nuestros estándares, procedimientos y equipos antes de trabajar de forma independiente en la casa de un cliente.",
+        },
+        {
+          title: "Un entorno de trabajo estructurado",
+          body: "Responsabilidades claras, condiciones de trabajo definidas, equipamiento adecuado y un coordinador al que acudir.",
+        },
+      ],
+      objective:
+        "Nuestro objetivo es sencillo: un empleo lo bastante estable para cubrir las necesidades básicas, con acceso a cobertura sanitaria. Nuestros empleados son profesionales que prestan un servicio profesional, y se les remunera como tales.",
+      disclaimer:
+        "El salario, los beneficios y la cobertura se aplican según el puesto, la situación laboral, la elegibilidad, la fase operativa y la legislación marroquí aplicable.",
+    },
+    screening: {
+      eyebrow: "Confianza del cliente",
+      title: "Personas en las que puedes confiar dentro de tu casa",
+      lead: "Dejar entrar a alguien en una vivienda privada exige confianza. Por eso Dar Tahara exige que el personal de limpieza supere con éxito el proceso de verificación de la empresa antes de estar autorizado a trabajar de forma independiente en las viviendas de los clientes.",
+      steps: [
+        {
+          title: "Verificación de identidad",
+          body: "Comprobamos la identidad de cada candidato con documentos de identificación oficiales.",
+        },
+        {
+          title: "Verificación de antecedentes laborales",
+          body: "Cuando procede, se verifican los empleos anteriores y las referencias antes de que el candidato continúe.",
+        },
+        {
+          title: "Incorporación en Dar Tahara",
+          body: "Los candidatos completan nuestro programa de incorporación sobre procedimientos, equipos, privacidad y conducta dentro de la casa del cliente.",
+        },
+        {
+          title: "Estándares profesionales",
+          body: "Cada empleado trabaja conforme a un estándar documentado de limpieza, comunicación y respeto por la casa y la privacidad del cliente.",
+        },
+        {
+          title: "Autorización antes del acceso",
+          body: "El acceso a la vivienda solo se habilita una vez completados con éxito la verificación y la incorporación.",
+        },
+      ],
+      criminalRecordLabel: "Documento oficial de verificación",
+      criminalRecordDocument: "Certificado de Antecedentes Penales",
+      criminalRecordBody:
+        "Como parte de nuestro proceso de verificación, cada candidato debe aportar un Certificado de Antecedentes Penales válido. El documento forma parte obligatoria de los requisitos de verificación de Dar Tahara, que el candidato debe cumplir con éxito antes de quedar autorizado a trabajar de forma independiente en las viviendas de los clientes.",
+      criminalRecordPrivacy:
+        "El documento se trata de forma confidencial como parte del expediente personal del empleado. Nunca se comparte con los clientes, y estos no pueden consultarlo ni descargarlo.",
+      authorization:
+        "Solo el personal que supera con éxito el proceso de verificación e incorporación exigido puede quedar autorizado a trabajar en las casas de los clientes.",
+    },
+    access: {
+      eyebrow: "Acceso controlado a la vivienda",
+      title: "La verificación es solo la primera capa de seguridad",
+      lead: "Dar Tahara combina la verificación de sus empleados con la tecnología. Para los clientes que utilizan una solución de cerradura inteligente compatible de Dar Tahara, el personal de limpieza no recibe acceso permanente e ilimitado a la vivienda. El acceso está vinculado a la propia cita de limpieza.",
+      statement: "Sin cita activa no hay acceso autorizado.",
+      steps: [
+        {
+          title: "Una cita programada",
+          body: "El cliente tiene una cita de limpieza en la agenda.",
+        },
+        {
+          title: "Un empleado autorizado",
+          body: "Se asigna a esa cita un empleado verificado y autorizado.",
+        },
+        {
+          title: "Acceso para la franja de servicio",
+          body: "El acceso a la vivienda se habilita para la franja horaria de servicio correspondiente.",
+        },
+        {
+          title: "Acceso durante el periodo autorizado",
+          body: "El empleado utiliza su método de acceso asignado dentro de ese periodo.",
+        },
+        {
+          title: "Restringido fuera de la franja",
+          body: "Fuera del periodo autorizado, ese acceso queda restringido.",
+        },
+        {
+          title: "La actividad queda registrada",
+          body: "La actividad de acceso se registra asociada a la cita a la que corresponde.",
+        },
+        {
+          title: "Visible para el cliente",
+          body: "El cliente puede consultar los registros de cerradura y acceso relativos a su vivienda.",
+        },
+      ],
+      availabilityNote:
+        "Este modelo de acceso se aplica a viviendas con una solución de cerradura inteligente compatible de Dar Tahara y se está introduciendo junto con nuestro programa de acceso anticipado, por lo que todavía no está activo en todas las viviendas. La instalación es opcional y está sujeta a una revisión de compatibilidad de la puerta y la cerradura. Las viviendas sin cerradura inteligente compatible siguen utilizando los acuerdos de gestión de llaves pactados.",
+    },
+    transparency: {
+      eyebrow: "Transparencia de acceso",
+      title: "Sabe cuándo se accedió a tu vivienda",
+      body: "Dar Tahara combina el acceso controlado a la vivienda con registros transparentes. Los clientes que utilizan nuestra solución de cerradura inteligente compatible pueden consultar los registros de acceso pertinentes, lo que aporta transparencia adicional sobre cuándo se accedió a su vivienda.",
+      points: [
+        {
+          title: "Cuándo se produjo el acceso",
+          body: "La fecha y la hora en que se accedió a tu vivienda.",
+        },
+        {
+          title: "A qué cita correspondía",
+          body: "La cita de limpieza programada con la que se relaciona el acceso.",
+        },
+        {
+          title: "Si ocurrió dentro de la franja de servicio",
+          body: "La confirmación de que el acceso tuvo lugar dentro del periodo autorizado.",
+        },
+      ],
+      privacyNote:
+        "Los registros de acceso muestran lo relevante para tu vivienda y tus citas. No son una herramienta de vigilancia de empleados concretos, y los datos personales del personal nunca se exponen a los clientes.",
+      availabilityNote:
+        "Los registros de acceso se ofrecen para viviendas con una solución de cerradura inteligente compatible de Dar Tahara y estarán disponibles a medida que esa solución se implante. Las viviendas sin cerradura inteligente compatible no generan estos registros.",
+    },
+    trust: {
+      eyebrow: "Nuestro compromiso",
+      title: "Personal verificado. Acceso programado. Registros transparentes.",
+      body: "Cuando confías a alguien el acceso a tu casa, creemos que mereces algo más que una promesa. Dar Tahara combina la verificación de sus empleados, el acceso controlado a la vivienda y unos registros de acceso transparentes para crear un servicio profesional diseñado en torno a la seguridad y la responsabilidad.",
+      pillars: [
+        {
+          title: "Personal verificado",
+          body: "Nadie trabaja de forma independiente en la casa de un cliente antes de completar nuestra verificación e incorporación.",
+        },
+        {
+          title: "Acceso programado",
+          body: "El acceso está ligado a una cita real y a una franja de servicio definida; nunca se cede de forma permanente.",
+        },
+        {
+          title: "Registros transparentes",
+          body: "Puedes consultar la actividad de acceso que corresponde a tu propia vivienda.",
+        },
+      ],
+    },
+    impact: {
+      eyebrow: "Un modelo, tres resultados",
+      title: "Servicio profesional. Empleo responsable. Comunidades locales más fuertes.",
+      subtitle:
+        "No son dos historias separadas. Una empresa que trata a su gente como profesionales es la misma empresa en la que puedes confiar dentro de tu casa.",
+      groups: [
+        {
+          title: "Para el cliente",
+          items: [
+            "Limpieza profesional",
+            "Personal verificado",
+            "Acceso controlado a la vivienda",
+            "Mayor transparencia",
+          ],
+        },
+        {
+          title: "Para el empleado",
+          items: [
+            "Empleo estable",
+            "Un salario mensual justo",
+            "Cobertura sanitaria",
+            "Un entorno de trabajo profesional",
+          ],
+        },
+        {
+          title: "Para la comunidad",
+          items: [
+            "Oportunidades de empleo local",
+            "Actividad económica local",
+            "Competencias y formación profesionales",
+            "Empleos creados a medida que Dar Tahara crece",
+          ],
+        },
+      ],
+      chain: [
+        "Servicio profesional",
+        "Empleo responsable",
+        "Comunidades locales más fuertes",
+      ],
+    },
+    closing: {
+      eyebrow: "Por qué importa",
+      title: "Estándares profesionales. Impacto humano.",
+      body: [
+        "Para nuestros clientes, Dar Tahara significa un servicio de limpieza profesional construido sobre la fiabilidad, la seguridad y la transparencia.",
+        "Para nuestros empleados, significa la oportunidad de un trabajo estable, ingresos previsibles y cobertura sanitaria.",
+        "Para las comunidades a las que servimos, significa que el crecimiento de Dar Tahara puede crear empleo directamente en la propia zona.",
+      ],
+      statement: "Un hogar más limpio. Un servicio más seguro. Una comunidad local más fuerte.",
+      ctaPrimary: "Únete al acceso anticipado",
+      ctaSecondary: "Lee nuestra misión y visión",
     },
   },
   footer: {

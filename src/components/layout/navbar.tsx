@@ -71,6 +71,7 @@ export function Navbar({
   // keeps the same width in long-label locales (nl/de) instead of overflowing.
   const aboutLinks = [
     { href: `${base}${pages.missionVision}`, label: dict.missionVision },
+    { href: `${base}${pages.peopleCommunity}`, label: dict.peopleCommunity },
     { href: `${base}#${sections.why}`, label: dict.why },
   ];
 

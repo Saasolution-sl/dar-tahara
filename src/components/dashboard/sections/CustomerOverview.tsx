@@ -12,13 +12,13 @@ export function CustomerOverview({ data, copy }: { data: CustomerOverviewData; c
     <section>
       <h2 className="font-serif text-2xl">{c.title}</h2>
       <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label={c.active} value={data.activeCustomers} />
-        <StatCard label={c.new30d} value={data.newCustomers30d} tone="success" />
-        <StatCard label={c.lost30d} value={data.lostCustomers30d} tone={data.lostCustomers30d > 0 ? "critical" : "default"} />
-        <StatCard label={c.retention} value={data.retentionPercent} suffix="%" />
-        <StatCard label={c.waitingList} value={data.waitingList} />
-        <StatCard label={c.avgRevenuePerCustomer} value={data.averageRevenuePerCustomerCents} format="currency" />
-        <StatCard label={c.ltv} value={data.customerLifetimeValueCents} format="currency" />
+        <StatCard label={c.active} value={data.activeCustomers} href="/admin/customers" />
+        <StatCard label={c.new30d} value={data.newCustomers30d} tone="success" href="/admin/customers" />
+        <StatCard label={c.lost30d} value={data.lostCustomers30d} tone={data.lostCustomers30d > 0 ? "critical" : "default"} href="/admin/subscriptions" />
+        <StatCard label={c.retention} value={data.retentionPercent} suffix="%" href="/admin/subscriptions" />
+        <StatCard label={c.waitingList} value={data.waitingList} href="/admin/customers" />
+        <StatCard label={c.avgRevenuePerCustomer} value={data.averageRevenuePerCustomerCents} format="currency" href="/admin/invoices" />
+        <StatCard label={c.ltv} value={data.customerLifetimeValueCents} format="currency" href="/admin/customers" />
       </div>
 
       {data.subscriptionTypeBreakdown.length > 0 ? (

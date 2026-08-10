@@ -64,6 +64,12 @@ export type AdminCopy = {
     properties: { title: string; headers: [string, string, string, string, string] };
     subscriptions: { title: string; headers: [string, string, string, string, string, string, string] };
     complaints: { title: string; headers: [string, string, string, string, string, string, string]; recurringYes: string };
+    employeesWorking: { title: string; headers: [string, string, string, string, string, string, string, string]; footnote: string };
+    liveOperations: { title: string; headers: [string, string, string, string, string, string, string, string, string]; showing: string; footnote: string };
+    visits: { title: string; headers: [string, string, string, string, string, string, string, string, string]; revisitYes: string };
+    inspections: { title: string; headers: [string, string, string, string, string, string]; ftrYes: string; ftrNo: string; footnote: string };
+    inventory: { title: string; headers: [string, string, string, string, string, string]; lowStockBadge: string };
+    restockRequests: { title: string; headers: [string, string, string, string, string] };
   };
   features: {
     title: string; subtitle: string; enabled: string; disabled: string;
@@ -132,6 +138,12 @@ const en: AdminCopy = {
     properties: { title: "Properties", headers: ["Address", "City", "Customer", "Type", "Size"] },
     subscriptions: { title: "Subscriptions", headers: ["Customer", "Status", "Frequency", "Billing", "Amount", "Cancellation", "Actions"] },
     complaints: { title: "Complaints", headers: ["Date", "Customer", "Category", "Office", "Status", "Recurring", "Resolved"], recurringYes: "Yes" },
+    employeesWorking: { title: "Employees working", headers: ["Employee", "Number", "Office", "Status", "Avg cleaning", "Avg travel", "Visits", "Since"], footnote: "On shift means working or driving, matching the dashboard tile. Averages come from that employee's completed visits over the last 30 days." },
+    liveOperations: { title: "Live operations", headers: ["Employee", "Number", "Office", "Status", "Current customer", "Address", "Expected end", "Next job", "Updated"], showing: "Showing status:", footnote: "Live staff status, the same records the Live operations board shows. By default this excludes finished, sick and offline: they are on the roster but not on a job. Add ?status=all to include them." },
+    visits: { title: "Service visits", headers: ["Date", "Customer", "Employee", "Office", "Status", "Cleaning", "Travel", "Rating", "Revisit"], revisitYes: "Yes" },
+    inspections: { title: "Quality inspections", headers: ["Date", "Customer", "Inspector", "Score", "First time right", "Notes"], ftrYes: "Yes", ftrNo: "No", footnote: "Showing the last 30 days, the window the dashboard averages over. Add ?all=1 for the full history." },
+    inventory: { title: "Inventory", headers: ["Item", "Category", "Office", "In stock", "Reorder at", "Low"], lowStockBadge: "Low" },
+    restockRequests: { title: "Restock requests", headers: ["Date", "Item", "Quantity", "Office", "Status"] },
   },
   features: {
     title: "Feature settings", subtitle: "Database-controlled public and payment capabilities. Scheduled windows are evaluated on every server request.",
@@ -200,6 +212,12 @@ const nl: AdminCopy = {
     properties: { title: "Woningen", headers: ["Adres", "Stad", "Klant", "Type", "Grootte"] },
     subscriptions: { title: "Abonnementen", headers: ["Klant", "Status", "Frequentie", "Facturering", "Bedrag", "Opzegging", "Acties"] },
     complaints: { title: "Klachten", headers: ["Datum", "Klant", "Categorie", "Vestiging", "Status", "Terugkerend", "Opgelost"], recurringYes: "Ja" },
+    employeesWorking: { title: "Medewerkers aan het werk", headers: ["Medewerker", "Nummer", "Vestiging", "Status", "Gem. schoonmaak", "Gem. reistijd", "Bezoeken", "Sinds"], footnote: "Aan het werk betekent werkend of onderweg, gelijk aan de tegel op het dashboard. Gemiddelden komen uit de afgeronde bezoeken van de afgelopen 30 dagen." },
+    liveOperations: { title: "Live operaties", headers: ["Medewerker", "Nummer", "Vestiging", "Status", "Huidige klant", "Adres", "Verwacht einde", "Volgende opdracht", "Bijgewerkt"], showing: "Toont status:", footnote: "Actuele personeelsstatus, dezelfde records als op het Live operaties-bord. Standaard zonder klaar, ziek en offline: zij staan wel op de lijst maar zijn niet op een opdracht. Gebruik ?status=all om ze mee te nemen." },
+    visits: { title: "Servicebezoeken", headers: ["Datum", "Klant", "Medewerker", "Vestiging", "Status", "Schoonmaak", "Reistijd", "Beoordeling", "Herbezoek"], revisitYes: "Ja" },
+    inspections: { title: "Kwaliteitsinspecties", headers: ["Datum", "Klant", "Inspecteur", "Score", "In één keer goed", "Notities"], ftrYes: "Ja", ftrNo: "Nee", footnote: "Toont de laatste 30 dagen, dezelfde periode als het dashboard. Gebruik ?all=1 voor de volledige historie." },
+    inventory: { title: "Voorraad", headers: ["Artikel", "Categorie", "Vestiging", "Op voorraad", "Bestelpunt", "Laag"], lowStockBadge: "Laag" },
+    restockRequests: { title: "Bestelaanvragen", headers: ["Datum", "Artikel", "Aantal", "Vestiging", "Status"] },
   },
   features: {
     title: "Functie-instellingen", subtitle: "Database-gestuurde publieke en betalingsfuncties. Geplande periodes worden bij elk serververzoek geëvalueerd.",
@@ -268,6 +286,12 @@ const fr: AdminCopy = {
     properties: { title: "Propriétés", headers: ["Adresse", "Ville", "Client", "Type", "Taille"] },
     subscriptions: { title: "Abonnements", headers: ["Client", "Statut", "Fréquence", "Facturation", "Montant", "Résiliation", "Actions"] },
     complaints: { title: "Réclamations", headers: ["Date", "Client", "Catégorie", "Agence", "Statut", "Récurrent", "Résolu"], recurringYes: "Oui" },
+    employeesWorking: { title: "Employés au travail", headers: ["Employé", "Numéro", "Agence", "Statut", "Nettoyage moy.", "Trajet moy.", "Visites", "Depuis"], footnote: "Au travail signifie en intervention ou en trajet, comme sur la tuile du tableau de bord. Les moyennes portent sur les visites terminées des 30 derniers jours." },
+    liveOperations: { title: "Opérations en direct", headers: ["Employé", "Numéro", "Agence", "Statut", "Client actuel", "Adresse", "Fin prévue", "Prochaine mission", "Mis à jour"], showing: "Statut affiché :", footnote: "Statut du personnel en direct, les mêmes enregistrements que le tableau Opérations en direct. Par défaut hors terminé, malade et hors ligne : ils figurent au planning mais ne sont pas en mission. Ajoutez ?status=all pour les inclure." },
+    visits: { title: "Visites de service", headers: ["Date", "Client", "Employé", "Agence", "Statut", "Nettoyage", "Trajet", "Note", "Revisite"], revisitYes: "Oui" },
+    inspections: { title: "Inspections qualité", headers: ["Date", "Client", "Inspecteur", "Score", "Bon du premier coup", "Notes"], ftrYes: "Oui", ftrNo: "Non", footnote: "Affiche les 30 derniers jours, la période moyennée par le tableau de bord. Ajoutez ?all=1 pour tout l'historique." },
+    inventory: { title: "Stock", headers: ["Article", "Catégorie", "Agence", "En stock", "Seuil", "Bas"], lowStockBadge: "Bas" },
+    restockRequests: { title: "Demandes de réapprovisionnement", headers: ["Date", "Article", "Quantité", "Agence", "Statut"] },
   },
   features: {
     title: "Paramètres des fonctionnalités", subtitle: "Fonctionnalités publiques et de paiement pilotées par la base de données. Les fenêtres planifiées sont évaluées à chaque requête serveur.",
@@ -336,6 +360,12 @@ const ar: AdminCopy = {
     properties: { title: "العقارات", headers: ["العنوان", "المدينة", "العميل", "النوع", "الحجم"] },
     subscriptions: { title: "الاشتراكات", headers: ["العميل", "الحالة", "التكرار", "الفوترة", "المبلغ", "الإلغاء", "الإجراءات"] },
     complaints: { title: "الشكاوى", headers: ["التاريخ", "العميل", "الفئة", "المكتب", "الحالة", "متكرر", "تم الحل"], recurringYes: "نعم" },
+    employeesWorking: { title: "الموظفون العاملون", headers: ["الموظف", "الرقم", "المكتب", "الحالة", "متوسط التنظيف", "متوسط التنقل", "الزيارات", "منذ"], footnote: "العمل يشمل التنفيذ والتنقل، مطابقًا لبطاقة لوحة المعلومات. المتوسطات محسوبة من الزيارات المكتملة خلال آخر 30 يومًا." },
+    liveOperations: { title: "العمليات المباشرة", headers: ["الموظف", "الرقم", "المكتب", "الحالة", "العميل الحالي", "العنوان", "الانتهاء المتوقع", "المهمة التالية", "آخر تحديث"], showing: "الحالة المعروضة:", footnote: "الحالة المباشرة للموظفين، وهي نفس السجلات التي تعرضها لوحة العمليات المباشرة. تستثني افتراضيًا: منتهٍ ومريض وغير متصل، فهم ضمن الجدول لكن ليسوا في مهمة. أضف ‎?status=all‎ لتضمينهم." },
+    visits: { title: "زيارات الخدمة", headers: ["التاريخ", "العميل", "الموظف", "المكتب", "الحالة", "التنظيف", "التنقل", "التقييم", "إعادة زيارة"], revisitYes: "نعم" },
+    inspections: { title: "عمليات فحص الجودة", headers: ["التاريخ", "العميل", "المفتش", "الدرجة", "صحيح من أول مرة", "ملاحظات"], ftrYes: "نعم", ftrNo: "لا", footnote: "يعرض آخر 30 يومًا، وهي الفترة التي تحسب عليها لوحة المعلومات المتوسط. أضف ‎?all=1‎ لكل السجل." },
+    inventory: { title: "المخزون", headers: ["الصنف", "الفئة", "المكتب", "المتوفر", "حد إعادة الطلب", "منخفض"], lowStockBadge: "منخفض" },
+    restockRequests: { title: "طلبات إعادة التزويد", headers: ["التاريخ", "الصنف", "الكمية", "المكتب", "الحالة"] },
   },
   features: {
     title: "إعدادات الميزات", subtitle: "ميزات عامة وميزات دفع تُدار من قاعدة البيانات. تُقيَّم الفترات المجدولة مع كل طلب للخادم.",
@@ -404,6 +434,12 @@ const es: AdminCopy = {
     properties: { title: "Propiedades", headers: ["Dirección", "Ciudad", "Cliente", "Tipo", "Tamaño"] },
     subscriptions: { title: "Suscripciones", headers: ["Cliente", "Estado", "Frecuencia", "Facturación", "Importe", "Cancelación", "Acciones"] },
     complaints: { title: "Reclamaciones", headers: ["Fecha", "Cliente", "Categoría", "Oficina", "Estado", "Recurrente", "Resuelta"], recurringYes: "Sí" },
+    employeesWorking: { title: "Empleados trabajando", headers: ["Empleado", "Número", "Oficina", "Estado", "Limpieza media", "Trayecto medio", "Visitas", "Desde"], footnote: "Trabajando incluye en servicio y en trayecto, igual que la tarjeta del panel. Las medias proceden de las visitas completadas en los últimos 30 días." },
+    liveOperations: { title: "Operaciones en vivo", headers: ["Empleado", "Número", "Oficina", "Estado", "Cliente actual", "Dirección", "Fin previsto", "Siguiente trabajo", "Actualizado"], showing: "Estado mostrado:", footnote: "Estado del personal en vivo, los mismos registros que muestra el panel de Operaciones en vivo. Por defecto excluye terminado, enfermo y desconectado: están en la plantilla pero no en un trabajo. Añada ?status=all para incluirlos." },
+    visits: { title: "Visitas de servicio", headers: ["Fecha", "Cliente", "Empleado", "Oficina", "Estado", "Limpieza", "Trayecto", "Valoración", "Revisita"], revisitYes: "Sí" },
+    inspections: { title: "Inspecciones de calidad", headers: ["Fecha", "Cliente", "Inspector", "Puntuación", "Bien a la primera", "Notas"], ftrYes: "Sí", ftrNo: "No", footnote: "Muestra los últimos 30 días, el periodo que promedia el panel. Añada ?all=1 para el historial completo." },
+    inventory: { title: "Inventario", headers: ["Artículo", "Categoría", "Oficina", "En stock", "Punto de pedido", "Bajo"], lowStockBadge: "Bajo" },
+    restockRequests: { title: "Solicitudes de reposición", headers: ["Fecha", "Artículo", "Cantidad", "Oficina", "Estado"] },
   },
   features: {
     title: "Configuración de funciones", subtitle: "Funciones públicas y de pago controladas por la base de datos. Las ventanas programadas se evalúan en cada solicitud al servidor.",
@@ -472,6 +508,12 @@ const de: AdminCopy = {
     properties: { title: "Immobilien", headers: ["Adresse", "Stadt", "Kunde", "Typ", "Größe"] },
     subscriptions: { title: "Abonnements", headers: ["Kunde", "Status", "Häufigkeit", "Abrechnung", "Betrag", "Kündigung", "Aktionen"] },
     complaints: { title: "Beschwerden", headers: ["Datum", "Kunde", "Kategorie", "Niederlassung", "Status", "Wiederkehrend", "Gelöst"], recurringYes: "Ja" },
+    employeesWorking: { title: "Mitarbeitende im Einsatz", headers: ["Mitarbeiter", "Nummer", "Niederlassung", "Status", "Ø Reinigung", "Ø Fahrt", "Einsätze", "Seit"], footnote: "Im Einsatz umfasst arbeitend und unterwegs, wie die Kachel im Dashboard. Durchschnitte stammen aus den abgeschlossenen Einsätzen der letzten 30 Tage." },
+    liveOperations: { title: "Live-Einsätze", headers: ["Mitarbeiter", "Nummer", "Niederlassung", "Status", "Aktueller Kunde", "Adresse", "Voraussichtliches Ende", "Nächster Einsatz", "Aktualisiert"], showing: "Angezeigter Status:", footnote: "Live-Status der Mitarbeitenden, dieselben Datensätze wie auf der Live-Einsatztafel. Standardmäßig ohne fertig, krank und offline: sie stehen im Dienstplan, sind aber nicht im Einsatz. Mit ?status=all einbeziehen." },
+    visits: { title: "Serviceeinsätze", headers: ["Datum", "Kunde", "Mitarbeiter", "Niederlassung", "Status", "Reinigung", "Fahrt", "Bewertung", "Nachbesuch"], revisitYes: "Ja" },
+    inspections: { title: "Qualitätsprüfungen", headers: ["Datum", "Kunde", "Prüfer", "Punktzahl", "Auf Anhieb richtig", "Notizen"], ftrYes: "Ja", ftrNo: "Nein", footnote: "Zeigt die letzten 30 Tage, den Zeitraum des Dashboard-Durchschnitts. Mit ?all=1 die vollständige Historie." },
+    inventory: { title: "Bestand", headers: ["Artikel", "Kategorie", "Niederlassung", "Bestand", "Meldebestand", "Niedrig"], lowStockBadge: "Niedrig" },
+    restockRequests: { title: "Nachbestellungen", headers: ["Datum", "Artikel", "Menge", "Niederlassung", "Status"] },
   },
   features: {
     title: "Funktionseinstellungen", subtitle: "Datenbankgesteuerte öffentliche Funktionen und Zahlungsfunktionen. Geplante Zeitfenster werden bei jeder Serveranfrage ausgewertet.",
@@ -540,6 +582,12 @@ const pt: AdminCopy = {
     properties: { title: "Propriedades", headers: ["Morada", "Cidade", "Cliente", "Tipo", "Tamanho"] },
     subscriptions: { title: "Subscrições", headers: ["Cliente", "Estado", "Frequência", "Faturação", "Montante", "Cancelamento", "Ações"] },
     complaints: { title: "Reclamações", headers: ["Data", "Cliente", "Categoria", "Escritório", "Estado", "Recorrente", "Resolvida"], recurringYes: "Sim" },
+    employeesWorking: { title: "Funcionários a trabalhar", headers: ["Funcionário", "Número", "Escritório", "Estado", "Limpeza média", "Deslocação média", "Visitas", "Desde"], footnote: "A trabalhar inclui em serviço e em deslocação, tal como o cartão do painel. As médias vêm das visitas concluídas nos últimos 30 dias." },
+    liveOperations: { title: "Operações ao vivo", headers: ["Funcionário", "Número", "Escritório", "Estado", "Cliente atual", "Morada", "Fim previsto", "Próximo trabalho", "Atualizado"], showing: "Estado apresentado:", footnote: "Estado da equipa ao vivo, os mesmos registos que o painel de Operações ao vivo mostra. Por omissão exclui terminado, doente e offline: constam da escala mas não estão em serviço. Use ?status=all para os incluir." },
+    visits: { title: "Visitas de serviço", headers: ["Data", "Cliente", "Funcionário", "Escritório", "Estado", "Limpeza", "Deslocação", "Avaliação", "Revisita"], revisitYes: "Sim" },
+    inspections: { title: "Inspeções de qualidade", headers: ["Data", "Cliente", "Inspetor", "Pontuação", "Certo à primeira", "Notas"], ftrYes: "Sim", ftrNo: "Não", footnote: "Mostra os últimos 30 dias, o período em que o painel calcula a média. Use ?all=1 para o histórico completo." },
+    inventory: { title: "Inventário", headers: ["Artigo", "Categoria", "Escritório", "Em stock", "Ponto de encomenda", "Baixo"], lowStockBadge: "Baixo" },
+    restockRequests: { title: "Pedidos de reposição", headers: ["Data", "Artigo", "Quantidade", "Escritório", "Estado"] },
   },
   features: {
     title: "Definições de funcionalidades", subtitle: "Funcionalidades públicas e de pagamento controladas pela base de dados. As janelas agendadas são avaliadas em cada pedido ao servidor.",

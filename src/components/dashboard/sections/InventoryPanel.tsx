@@ -9,9 +9,9 @@ export function InventoryPanel({ data, copy }: { data: InventoryOverview; copy: 
     <section>
       <h2 className="font-serif text-2xl">{c.title}</h2>
       <div className="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
-        <StatCard label={c.trackedItems} value={data.items.length} />
-        <StatCard label={c.lowStock} value={data.lowStockCount} tone={data.lowStockCount > 0 ? "warning" : "default"} />
-        <StatCard label={c.pendingRestocks} value={data.pendingRestockRequests} />
+        <StatCard label={c.trackedItems} value={data.items.length} href="/admin/inventory" />
+        <StatCard label={c.lowStock} value={data.lowStockCount} tone={data.lowStockCount > 0 ? "warning" : "default"} href="/admin/inventory?low=1" />
+        <StatCard label={c.pendingRestocks} value={data.pendingRestockRequests} href="/admin/inventory?restock=pending" />
       </div>
 
       {data.items.length > 0 ? (

@@ -30,6 +30,7 @@ ${serviceLinks}
 
 - [Home](${home})
 - [Mission and vision](${localizedUrl("en", pages.missionVision)})
+- [People and community: local employment, employee screening and property access](${localizedUrl("en", pages.peopleCommunity)})
 - [Services](${home}#${sections.services})
 - [Plans and pricing information](${home}#${sections.plans})
 - [Pricing calculator](${home}#${sections.calculator})
