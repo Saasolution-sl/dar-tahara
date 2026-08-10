@@ -42,6 +42,10 @@ export type SignupSessionRow = {
   started_at: string;
   last_activity_at: string;
   completed_at: string | null;
+  early_access_registered_at?: string | null;
+  onboarding_started_at?: string | null;
+  onboarding_completed_at?: string | null;
+  city?: string | null;
   abandoned_at: string | null;
   resumed_at: string | null;
   opted_out_at: string | null;
@@ -62,7 +66,8 @@ const SESSION_SELECT = [
   "current_step", "current_step_index", "highest_completed_step",
   "client_revision",
   "partial_payload", "locale", "started_at", "last_activity_at",
-  "completed_at", "abandoned_at", "resumed_at", "opted_out_at",
+  "completed_at", "early_access_registered_at", "onboarding_started_at",
+  "onboarding_completed_at", "city", "abandoned_at", "resumed_at", "opted_out_at",
   "reminder_count", "reminder_1_queued_at", "reminder_2_queued_at",
   "reminder_claimed_at", "reminder_claimed_number",
   "resume_token_hash", "resume_token_expires_at", "feedback_token_hash",
@@ -128,7 +133,7 @@ export async function createOrRestoreSignupSession(input: {
   clientRevision: number;
 }> {
   const existing = await verifiedSignupSession(input.credentials);
-  if (existing && existing.status !== "completed" && existing.status !== "opted_out") {
+  if (existing && !["completed", "onboarding_completed", "opted_out"].includes(existing.status)) {
     const resumed = existing.status === "abandoned_eligible" || existing.status === "reminder_sent";
     if (resumed) {
       const now = new Date().toISOString();
@@ -198,9 +203,10 @@ export async function updateSignupSession(input: {
   highestCompletedStep?: unknown;
   clientRevision?: unknown;
   event?: unknown;
+  onboardingStarted?: unknown;
 }): Promise<{ ok: boolean; resumed: boolean }> {
   const session = await verifiedSignupSession(input.credentials);
-  if (!session || session.status === "completed" || session.status === "opted_out") {
+  if (!session || ["completed", "onboarding_completed", "opted_out"].includes(session.status)) {
     return { ok: false, resumed: false };
   }
 
@@ -222,10 +228,11 @@ export async function updateSignupSession(input: {
   const clientRevision = Number.isSafeInteger(proposedRevision) && proposedRevision >= 0
     ? proposedRevision
     : session.client_revision + 1;
+  const startingOnboarding = input.onboardingStarted === true && Boolean(session.early_access_registered_at);
 
   await serviceUpdate(
     "early_access_signup_sessions",
-    `id=eq.${session.id}&client_revision=lt.${clientRevision}&status=in.(in_progress,resumed,abandoned_eligible,reminder_sent)&completed_at=is.null&opted_out_at=is.null`,
+    `id=eq.${session.id}&client_revision=lt.${clientRevision}&status=in.(in_progress,early_access_registered,onboarding_started,resumed,abandoned_eligible,reminder_sent)&completed_at=is.null&opted_out_at=is.null`,
     {
     partial_payload: partial,
     email: association.email ?? null,
@@ -238,6 +245,10 @@ export async function updateSignupSession(input: {
     client_revision: clientRevision,
     last_activity_at: now,
     ...(resumed ? { status: "resumed", resumed_at: now } : {}),
+    ...(startingOnboarding ? {
+      status: "onboarding_started",
+      onboarding_started_at: session.onboarding_started_at ?? now,
+    } : {}),
     },
   );
 
@@ -277,6 +288,57 @@ export async function recordFunnelEvent(sessionId: string, raw: FunnelEventInput
   }
 }
 
+/**
+ * Link the safely persisted first-stage lead to its opaque session without
+ * closing that session. The same credentials can then restore the optional
+ * seven-step onboarding with no PII in browser storage.
+ */
+export async function registerEarlyAccessSession(
+  credentials: SessionCredentials | null | undefined,
+  leadId: string,
+  city: string,
+  payload: EarlyAccessPayload,
+): Promise<void> {
+  const session = await verifiedSignupSession(credentials);
+  if (!session || ["completed", "onboarding_completed", "opted_out"].includes(session.status)) return;
+  const now = new Date().toISOString();
+  const partial = sanitizePartialPayload(payload);
+  const association = emailAssociation(partial);
+  await serviceUpdate("early_access_signup_sessions", `id=eq.${session.id}`, {
+    lead_id: leadId,
+    status: "early_access_registered",
+    city,
+    early_access_registered_at: session.early_access_registered_at ?? now,
+    email: association.email ?? null,
+    normalized_email: association.normalizedEmail ?? null,
+    email_present: association.emailPresent,
+    reminder_consent: association.reminderConsent,
+    partial_payload: partial,
+    current_step: "contact",
+    current_step_index: 0,
+    last_activity_at: now,
+  });
+  await recordFunnelEvent(session.id, {
+    eventName: "early_access_submitted",
+    idempotencyKey: "lead:submitted",
+    stepId: "contact",
+    stepIndex: 0,
+  });
+  await recordFunnelEvent(session.id, {
+    eventName: "early_access_success",
+    idempotencyKey: "lead:success",
+    stepId: "contact",
+    stepIndex: 0,
+    totalDurationMs: Date.now() - Date.parse(session.started_at),
+  });
+  await recordFunnelEvent(session.id, {
+    eventName: "onboarding_offered",
+    idempotencyKey: "onboarding:offered",
+    stepId: "contact",
+    stepIndex: 0,
+  });
+}
+
 export async function completeSignupSession(
   credentials: SessionCredentials | null | undefined,
   leadId: string,
@@ -285,9 +347,12 @@ export async function completeSignupSession(
   if (!session || session.status === "opted_out") return;
   const now = new Date().toISOString();
   await serviceUpdate("early_access_signup_sessions", `id=eq.${session.id}`, {
-    status: "completed",
+    status: "onboarding_completed",
     lead_id: leadId,
     completed_at: now,
+    early_access_registered_at: session.early_access_registered_at ?? now,
+    onboarding_started_at: session.onboarding_started_at ?? now,
+    onboarding_completed_at: now,
     last_activity_at: now,
     completed_after_reminder: session.reminder_count > 0,
     partial_payload: {},
@@ -297,6 +362,13 @@ export async function completeSignupSession(
     feedback_token_expires_at: null,
     reminder_claimed_at: null,
     reminder_claimed_number: null,
+  });
+  await recordFunnelEvent(session.id, {
+    eventName: "onboarding_completed",
+    idempotencyKey: "onboarding:completed",
+    stepId: "review",
+    stepIndex: 6,
+    totalDurationMs: Date.now() - Date.parse(session.onboarding_started_at ?? session.started_at),
   });
   await recordFunnelEvent(session.id, {
     eventName: "early_access_completed",
@@ -325,7 +397,7 @@ export async function signupSessionByResumeToken(token: string): Promise<SignupS
   ).catch(() => [] as SignupSessionRow[]);
   const row = rows[0];
   if (!row || !isActiveTokenExpiry(row.resume_token_expires_at)) return null;
-  if (row.status === "completed" || row.status === "opted_out") return null;
+  if (["completed", "onboarding_completed", "opted_out"].includes(row.status)) return null;
   return row;
 }
 
@@ -370,6 +442,6 @@ export async function signupSessionByFeedbackToken(token: string): Promise<Signu
   ).catch(() => [] as SignupSessionRow[]);
   const row = rows[0];
   if (!row || !isActiveTokenExpiry(row.feedback_token_expires_at)) return null;
-  if (row.status === "completed") return null;
+  if (["completed", "onboarding_completed"].includes(row.status)) return null;
   return row;
 }

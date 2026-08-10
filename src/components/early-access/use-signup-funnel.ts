@@ -95,6 +95,7 @@ export function useSignupFunnel(params: {
   payload: EarlyAccessPayload;
   stepIndex: number;
   onRestore: (restore: Restore) => void;
+  phase?: "early_access" | "onboarding";
 }) {
   const [credentials, setCredentials] = React.useState<SessionCredentials | null>(null);
   const payloadRef = React.useRef(params.payload);
@@ -107,6 +108,7 @@ export function useSignupFunnel(params: {
   const focusedRef = React.useRef(new Set<string>());
   const completedFieldRef = React.useRef(new Set<string>());
   const clientRevisionRef = React.useRef(0);
+  const onboardingStartedRef = React.useRef(false);
 
   payloadRef.current = params.payload;
   stepIndexRef.current = params.stepIndex;
@@ -206,11 +208,11 @@ export function useSignupFunnel(params: {
     if (!credentials || !initializedRef.current) return;
     stepEnteredAtRef.current = Date.now();
     void postUpdate(credentials, {
-      eventName: "early_access_step_viewed",
+      eventName: params.phase === "onboarding" ? "onboarding_step_viewed" : "early_access_step_viewed",
       stepId: STEPS[params.stepIndex],
       stepIndex: params.stepIndex,
     });
-  }, [credentials, params.stepIndex, postUpdate]);
+  }, [credentials, params.phase, params.stepIndex, postUpdate]);
 
   const markStarted = React.useCallback(() => {
     if (!credentials || startedRef.current) return;
@@ -254,14 +256,14 @@ export function useSignupFunnel(params: {
     if (!credentials) return;
     highestCompletedRef.current = Math.max(highestCompletedRef.current, stepIndex);
     void postUpdate(credentials, {
-      eventName: "early_access_step_completed",
+      eventName: params.phase === "onboarding" ? "onboarding_step_completed" : "early_access_step_completed",
       idempotencyKey: `step-completed:${step}`,
       stepId: step,
       stepIndex,
       durationMs: Date.now() - stepEnteredAtRef.current,
       totalDurationMs: Date.now() - attemptStartedAtRef.current,
     }, { highestCompletedStep: highestCompletedRef.current });
-  }, [credentials, postUpdate]);
+  }, [credentials, params.phase, postUpdate]);
 
   const validationErrors = React.useCallback((step: StepId, stepIndex: number, errors: FieldErrors) => {
     if (!credentials) return;
@@ -291,6 +293,17 @@ export function useSignupFunnel(params: {
     });
   }, [credentials, postUpdate]);
 
+  const startOnboarding = React.useCallback(() => {
+    if (!credentials || onboardingStartedRef.current) return;
+    onboardingStartedRef.current = true;
+    void postUpdate(credentials, {
+      eventName: "onboarding_started",
+      idempotencyKey: "onboarding:started",
+      stepId: STEPS[stepIndexRef.current],
+      stepIndex: stepIndexRef.current,
+    }, { onboardingStarted: true });
+  }, [credentials, postUpdate]);
+
   const clear = React.useCallback(() => {
     try { window.sessionStorage.removeItem(SESSION_STORAGE_KEY); } catch { /* storage blocked */ }
     setCredentials(null);
@@ -304,6 +317,7 @@ export function useSignupFunnel(params: {
     stepCompleted,
     validationErrors,
     apiError,
+    startOnboarding,
     clear,
   };
 }

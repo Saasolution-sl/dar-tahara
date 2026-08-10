@@ -16,6 +16,10 @@ export type ReportingSession = {
   locale?: string | null;
   started_at: string;
   completed_at: string | null;
+  early_access_registered_at?: string | null;
+  onboarding_started_at?: string | null;
+  onboarding_completed_at?: string | null;
+  city?: string | null;
   abandoned_at: string | null;
   resumed_at: string | null;
   reminder_count: number;
@@ -34,6 +38,12 @@ export type ReportingEvent = {
 };
 
 export type ReportingFeedback = { reason: string };
+export type ReportingLead = {
+  id: string;
+  residence_city: string | null;
+  mautic_sync_status: string;
+  submitted_at: string | null;
+};
 
 type CountRow = { label: string; count: number };
 
@@ -62,10 +72,17 @@ export function buildEarlyAccessReport(
   sessions: ReportingSession[],
   events: ReportingEvent[],
   feedback: ReportingFeedback[],
+  leads: ReportingLead[] = [],
 ) {
   const viewed = uniqueSessions(events, "early_access_viewed") || sessions.length;
   const started = uniqueSessions(events, "early_access_started");
-  const completed = sessions.filter((session) => session.status === "completed").length;
+  const registered = sessions.filter((session) => Boolean(session.early_access_registered_at)
+    || ["early_access_registered", "onboarding_started", "onboarding_completed", "completed"].includes(session.status)).length;
+  const onboardingStarted = sessions.filter((session) => Boolean(session.onboarding_started_at)
+    || ["onboarding_started", "onboarding_completed", "completed"].includes(session.status)).length;
+  const onboardingCompleted = sessions.filter((session) => Boolean(session.onboarding_completed_at)
+    || ["onboarding_completed", "completed"].includes(session.status)).length;
+  const completed = onboardingCompleted;
   const abandoned = sessions.filter((session) => ["abandoned_eligible", "reminder_sent"].includes(session.status)).length;
   const resumed = sessions.filter((session) => Boolean(session.resumed_at)).length;
   const identified = sessions.filter((session) => session.email_present).length;
@@ -80,9 +97,9 @@ export function buildEarlyAccessReport(
   });
 
   const steps = STEPS.map((stepId, stepIndex) => {
-    const enteredIds = new Set(events.filter((event) => event.event_name === "early_access_step_viewed" && event.step_id === stepId).map((event) => event.signup_session_id));
-    const completedIds = new Set(events.filter((event) => event.event_name === "early_access_step_completed" && event.step_id === stepId).map((event) => event.signup_session_id));
-    const durations = events.filter((event) => event.event_name === "early_access_step_completed" && event.step_id === stepId && event.duration_ms !== null).map((event) => event.duration_ms as number);
+    const enteredIds = new Set(events.filter((event) => ["onboarding_step_viewed", "early_access_step_viewed"].includes(event.event_name) && event.step_id === stepId).map((event) => event.signup_session_id));
+    const completedIds = new Set(events.filter((event) => ["onboarding_step_completed", "early_access_step_completed"].includes(event.event_name) && event.step_id === stepId).map((event) => event.signup_session_id));
+    const durations = events.filter((event) => ["onboarding_step_completed", "early_access_step_completed"].includes(event.event_name) && event.step_id === stepId && event.duration_ms !== null).map((event) => event.duration_ms as number);
     const errors = events.filter((event) => event.event_name === "early_access_validation_error" && event.step_id === stepId).length;
     const medianDuration = median(durations);
     return {
@@ -103,9 +120,13 @@ export function buildEarlyAccessReport(
 
   return {
     summary: {
-      viewed, started, completed, abandoned, resumed, identified, anonymous: Math.max(0, viewed - identified),
+      viewed, started, registered, onboardingStarted, onboardingCompleted, completed, abandoned, resumed,
+      identified, anonymous: Math.max(0, viewed - identified),
       optedOut, reminder1, reminder2, completedAfterReminder,
       startRate: viewed ? started / viewed : 0,
+      registrationRate: viewed ? registered / viewed : 0,
+      onboardingStartRate: registered ? onboardingStarted / registered : 0,
+      onboardingCompletionRate: onboardingStarted ? onboardingCompleted / onboardingStarted : 0,
       completionRate: viewed ? completed / viewed : 0,
       averageCompletionMinutes: completionMinutes.length
         ? completionMinutes.reduce((sum, value) => sum + value, 0) / completionMinutes.length : null,
@@ -117,6 +138,11 @@ export function buildEarlyAccessReport(
     browsers: countBy(sessions, (session) => session.browser || "unknown"),
     operatingSystems: countBy(sessions, (session) => session.operating_system || "unknown"),
     locales: countBy(sessions, (session) => session.locale || "unknown"),
+    cities: countBy(
+      sessions.filter((session) => Boolean(session.early_access_registered_at || session.city)),
+      (session) => session.city || "unknown",
+    ),
+    mauticSyncStatuses: countBy(leads, (lead) => lead.mautic_sync_status || "unknown"),
     errorFields: countBy(
       events.filter((event) => event.event_name === "early_access_validation_error"),
       (event) => event.field_name || event.error_type || "unknown",

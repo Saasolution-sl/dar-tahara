@@ -69,6 +69,7 @@ export function EarlyAccessForm({ locale, copy }: { locale: Locale; copy: EarlyA
   const startTimeRef = React.useRef<number>(Date.now());
   const firstTouchRef = React.useRef<Attribution | undefined>(undefined);
   const topRef = React.useRef<HTMLDivElement>(null);
+  const onboardingTrackedRef = React.useRef(false);
 
   const restoreSession = React.useCallback((restore: {
     partialPayload: Partial<EarlyAccessPayload>;
@@ -77,7 +78,15 @@ export function EarlyAccessForm({ locale, copy }: { locale: Locale; copy: EarlyA
     setP((previous) => ({ ...previous, ...restore.partialPayload, locale }));
     setStepIndex(Math.max(0, Math.min(STEPS.length - 1, restore.currentStepIndex)));
   }, [locale]);
-  const funnel = useSignupFunnel({ locale, payload: p, stepIndex, onRestore: restoreSession });
+  const funnel = useSignupFunnel({ locale, payload: p, stepIndex, onRestore: restoreSession, phase: "onboarding" });
+  const { credentials: funnelCredentials, startOnboarding } = funnel;
+
+  React.useEffect(() => {
+    if (!funnelCredentials || onboardingTrackedRef.current) return;
+    onboardingTrackedRef.current = true;
+    startOnboarding();
+    track("onboarding_started", {});
+  }, [funnelCredentials, startOnboarding]);
 
   const step: StepId = STEPS[stepIndex];
   const total = STEPS.length;
@@ -173,7 +182,7 @@ export function EarlyAccessForm({ locale, copy }: { locale: Locale; copy: EarlyA
       const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string; fields?: FieldErrors; verificationSent?: boolean };
       if (res.ok && data.ok) {
         funnel.stepCompleted("review", stepIndex);
-        track("early_access_form_submitted", {});
+        track("onboarding_completed", {});
         funnel.clear();
         setSubmitted({ verificationSent: Boolean(data.verificationSent) });
         scrollTop();

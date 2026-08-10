@@ -49,6 +49,8 @@ export function MoroccanCitySelector({
   manualName,
   onChange,
   copy,
+  allowUnlisted = true,
+  manualError,
   "aria-invalid": ariaInvalid,
   "aria-describedby": ariaDescribedBy,
 }: {
@@ -58,6 +60,9 @@ export function MoroccanCitySelector({
   manualName?: string;
   onChange: (sel: CitySelection) => void;
   copy: CitySelectorCopy;
+  /** Enable the final Other option and its conditional manual-city field. */
+  allowUnlisted?: boolean;
+  manualError?: string;
   /** Injected by the wrapping <FieldShell> via cloneElement: forwarded to the real input. */
   "aria-invalid"?: boolean;
   "aria-describedby"?: string;
@@ -75,7 +80,7 @@ export function MoroccanCitySelector({
   const cities = React.useMemo(() => searchCities(query, locale), [query, locale]);
   const rows: Array<{ kind: "city"; id: string } | { kind: "other" }> = [
     ...cities.map((c) => ({ kind: "city" as const, id: c.id })),
-    { kind: "other" as const },
+    ...(allowUnlisted ? [{ kind: "other" as const }] : []),
   ];
 
   React.useEffect(() => {
@@ -180,18 +185,20 @@ export function MoroccanCitySelector({
               ) : null}
             </li>
           ))}
-          <li
-            role="option"
-            aria-selected={active === cities.length}
-            onMouseEnter={() => setActive(cities.length)}
-            onClick={pickOther}
-            className={cn(
-              "mt-1 cursor-pointer rounded-lg border-t border-border px-3 py-2 text-sm text-primary",
-              active === cities.length ? "bg-secondary" : "hover:bg-secondary/60",
-            )}
-          >
-            {copy.notListed}
-          </li>
+          {allowUnlisted ? (
+            <li
+              role="option"
+              aria-selected={active === cities.length}
+              onMouseEnter={() => setActive(cities.length)}
+              onClick={pickOther}
+              className={cn(
+                "mt-1 cursor-pointer rounded-lg border-t border-border px-3 py-2 text-sm text-primary",
+                active === cities.length ? "bg-secondary" : "hover:bg-secondary/60",
+              )}
+            >
+              {copy.notListed}
+            </li>
+          ) : null}
         </ul>
       ) : null}
 
@@ -202,9 +209,9 @@ export function MoroccanCitySelector({
         </p>
       ) : null}
 
-      {isOther ? (
+      {allowUnlisted && isOther ? (
         <div className="mt-3">
-          <FieldShell id={`${id}-manual`} label={copy.manualLabel} required>
+          <FieldShell id={`${id}-manual`} label={copy.manualLabel} required error={manualError}>
             <TextInput
               value={manualName ?? ""}
               placeholder={copy.manualPlaceholder}

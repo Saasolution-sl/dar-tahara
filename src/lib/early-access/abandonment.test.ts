@@ -16,7 +16,7 @@ function row(overrides: Partial<SignupSessionRow> = {}) {
   return {
     id: "11111111-1111-4111-8111-111111111111", client_token_hash: "hash", lead_id: null,
     mautic_contact_id: null, email: "lead@example.com", normalized_email: "lead@example.com",
-    email_present: true, reminder_consent: true, status: "in_progress" as const,
+    email_present: true, reminder_consent: true, status: "onboarding_started" as const,
     current_step: "billing" as const, current_step_index: 1, highest_completed_step: 0,
     client_revision: 0,
     partial_payload: {}, locale: "en", started_at: new Date(now - 4 * 3_600_000).toISOString(),
