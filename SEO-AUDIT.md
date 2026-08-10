@@ -108,7 +108,33 @@ Service pages are on the thin side but each carries genuinely distinct content �
 
 ## Local SEO
 
-**No city landing pages were created. This is a deliberate decision, and it is the one place where two parts of the brief pull against each other.**
+### `/service-areas` — the city reference (added)
+
+A single substantial page at `/{locale}/service-areas` lists **39 Moroccan cities across 11 administrative regions**, each carrying an explicit status:
+
+| Status | Count | Meaning |
+|---|---|---|
+| **Live focus areas** | 4 | Tangier, Tetouan, Casablanca, Meknes — mirrors `site.serviceAreas` |
+| **Opening next** | 9 | Near-term expansion around existing areas |
+| **Planned coverage** | 26 | Stated intent. *"There is no service in these areas yet."* |
+
+City names are **localized for Arabic** (طنجة, تطوان, الدار البيضاء…) rather than left as Latin script in an RTL page. The page carries `WebPage` + `FAQPage` schema answering "Which cities does Dar Tahara serve?", "Does Dar Tahara operate across all of Morocco?" and "How does a new city open?" — the exact phrasing of the queries this should surface for.
+
+A test asserts that **no city can be marked `available` unless it also appears in `site.serviceAreas`**, so the page can never drift into claiming coverage the rest of the site does not.
+
+### Why one page and not 39
+
+**A sitemap can only contain URLs that return 200**, so "cities in the sitemap" necessarily means city pages must exist. Thirty-nine near-identical "cleaning in ${city}" pages for a service that cannot be booked in 35 of them is the doorway-page pattern Google demotes, and it is exactly what brief §8 ("do NOT generate dozens of low-quality doorway pages") and §22 ("must not appear as though services are available where they have not launched") both forbid.
+
+The `moroccan-cities.ts` module is deliberately **not** a page generator. When a city genuinely launches: flip its status to `available`, and only then give it its own page with real local content — local team, neighbourhoods, actual pricing.
+
+### Deliberately NOT changed
+
+Organization `areaServed` still lists **only Morocco plus the four live focus areas**. That is the property a search engine reads as a service-coverage claim; listing 39 cities there would assert coverage the business does not have. The planned cities stay descriptive prose on the page, where a status label travels with them.
+
+### The original tension
+
+**No per-city landing pages were created. This is a deliberate decision, and it is the one place where two parts of the brief pull against each other.**
 
 Brief §8 asks for `/cleaning-services/tetouan/` style pages. Brief §22 says SEO must not make the site appear as though services are available in locations that have not launched. Dar Tahara is **running an early-access programme** — the `initial_assessment_booking_enabled` feature flag defaults to **off**, with a fallback CTA pointing at early access.
 
@@ -146,11 +172,23 @@ Translations are **written, not transliterated**. The Moroccan coastal-humidity 
 
 A test now asserts each service has **≥6 distinct titles across the 7 locales**, so this cannot silently regress.
 
+### Legal pages — prevailing-language clause (added)
+
+The owner authorised translating the legal documents **provided the English text remains binding**. That clause is now implemented, and it is what makes translating safe at all.
+
+Translated legal pages now open with a prominent notice, above the document rather than buried beneath it:
+
+> *"This document is a translation of the English original. The English version is the legally binding text. If a translated passage differs from the English version in meaning or effect, the English version prevails."*
+
+Translated into all 6 non-English locales. **The English page does not display it** — the original is not a translation of itself. A test asserts both halves of that: every locale has a substantive notice, and no non-English notice is left as the untranslated English fallback.
+
+Also localized in the same pass: `termsTitle`, `privacyTitle`, effective dates, and the meta descriptions — which **clears the last remaining duplicate-description finding** (previously 7× identical on each legal document).
+
 ### Outstanding
 
-**Terms and Privacy bodies are hardcoded English JSX** and render identically under all 7 locales (14 URLs). I did **not** translate them: brief §"Working Method" lists *change legal wording* as requiring owner review, and translated terms of service carry real legal consequence.
+**The legal document bodies remain English prose** under all 7 locales. The prevailing-language clause now protects that position legally and tells the reader plainly what they are looking at, so the risk the owner raised — *"the user cannot say I thought it was like this"* — is addressed.
 
-This is less harmful than it sounds — hreflang correctly clusters them as alternates, so Google will not treat them as duplicate-content spam. But non-English customers are reading English legal terms. **Owner decision: commission legal translation, or state explicitly that English governs.** Their meta descriptions should be localized as part of that same work.
+Translating the ~21 sections of Terms and Privacy into 6 languages is a substantial piece of legal-translation work in its own right and is the natural next step; the structure to receive it (`dict.legal.*`) now exists.
 
 ---
 

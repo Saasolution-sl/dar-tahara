@@ -55,6 +55,7 @@ export function whatsappLink(message: string = site.whatsappMessage) {
 export const pages = {
   missionVision: "/missionandvision",
   peopleCommunity: "/people-community",
+  serviceAreas: "/service-areas",
   privacy: "/privacy",
   terms: "/terms",
   earlyAccess: "/early-access",

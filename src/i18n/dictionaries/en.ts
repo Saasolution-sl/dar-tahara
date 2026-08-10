@@ -14,6 +14,7 @@
     about: "About",
     missionVision: "Mission & Vision",
     peopleCommunity: "People & Community",
+    serviceAreas: "Service Areas",
     why: "Why Dar Tahara",
     services: "Services",
     plans: "Plans",
@@ -1010,6 +1011,76 @@
         "Stable local employment",
       ],
     },
+  },
+  legal: {
+    termsTitle: "Terms of Service",
+    privacyTitle: "Privacy Policy",
+    termsUpdated: "Effective 24 July 2026",
+    privacyUpdated: "Effective 13 July 2026",
+    termsMeta: "Terms governing Dar Tahara home assessments and subscriptions.",
+    privacyMeta: "How Dar Tahara collects, uses and safeguards personal data.",
+    /**
+     * Prevailing-language clause. Rendered on translated versions only, so the
+     * English original never tells the reader it is a translation of itself.
+     */
+    bindingLanguageNotice:
+      "This document is a translation of the English original. The English version is the legally binding text. If a translated passage differs from the English version in meaning or effect, the English version prevails.",
+  },
+  serviceAreas: {
+    meta: {
+      title: "Service Areas in Morocco",
+      description:
+        "Where Dar Tahara operates in Morocco. Live focus areas, near-term expansion and planned coverage, listed city by city with the current status of each.",
+      ogAlt: "Dar Tahara service areas across Morocco",
+    },
+    breadcrumb: { home: "Home", current: "Service Areas", label: "Breadcrumb" },
+    hero: {
+      eyebrow: "Service Areas",
+      title: "Where Dar Tahara Operates in Morocco",
+      subtitle:
+        "Dar Tahara is rolling out area by area rather than claiming national coverage on day one. Every city below carries its current status, so you can see exactly where the service is live, where it is opening next, and where it is still planned.",
+      ctaPrimary: "Join Early Access",
+      ctaSecondary: "See our services",
+    },
+    status: {
+      available: {
+        label: "Live focus areas",
+        note: "Dar Tahara is actively building its service here. Availability for a specific address is confirmed at the Initial Home Assessment.",
+      },
+      expanding: {
+        label: "Opening next",
+        note: "Near-term expansion around our existing focus areas. Join early access to be contacted when your city opens.",
+      },
+      planned: {
+        label: "Planned coverage",
+        note: "Cities we intend to serve as Dar Tahara grows. There is no service in these areas yet.",
+      },
+    },
+    regionLabel: "Region",
+    coverageTitle: "Coverage by region",
+    coverageNote:
+      "Grouping cities by administrative region, since our teams are built locally and a region opens as a cluster rather than one city at a time.",
+    disclaimer:
+      "This page describes where Dar Tahara operates and intends to operate. It is not an offer of service in any specific city. Coverage, timing and availability for a specific property are confirmed directly with Dar Tahara.",
+    cta: {
+      title: "Do not see your city?",
+      body: "Early access tells us where demand is. The cities with the most registrations are the cities we open first, so registering genuinely moves your area up the list.",
+      button: "Join Early Access",
+    },
+    faq: [
+      {
+        q: "Which cities does Dar Tahara serve?",
+        a: "Dar Tahara's live focus areas are Tangier, Tetouan, Casablanca and Meknes. Other Moroccan cities are listed on this page as either opening next or planned. Confirm availability for your address before relying on a service area.",
+      },
+      {
+        q: "Does Dar Tahara operate across all of Morocco?",
+        a: "Not yet. Dar Tahara operates in Morocco and is expanding city by city rather than claiming national coverage. Each city on this page shows whether it is live, opening next, or still planned.",
+      },
+      {
+        q: "How does a new city open?",
+        a: "Dar Tahara recruits its cleaning team locally, from the city and its surrounding area, before opening there. Early-access registrations show where demand is concentrated, which is how we decide the order in which cities open.",
+      },
+    ],
   },
   footer: {
     tagline: "Premium home care & property concierge across Morocco.",

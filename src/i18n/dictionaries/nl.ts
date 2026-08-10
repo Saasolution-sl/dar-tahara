@@ -18,6 +18,7 @@ const nl: DeepPartial<Dictionary> = {
     about: "Over ons",
     missionVision: "Missie & Visie",
     peopleCommunity: "Mensen & Gemeenschap",
+    serviceAreas: "Werkgebieden",
     why: "Waarom Dar Tahara",
     services: "Diensten",
     plans: "Abonnementen",
@@ -995,6 +996,72 @@ const nl: DeepPartial<Dictionary> = {
         "Stabiel lokaal werk",
       ],
     },
+  },
+  legal: {
+    termsTitle: "Algemene voorwaarden",
+    privacyTitle: "Privacyverklaring",
+    termsUpdated: "Van kracht op 24 juli 2026",
+    privacyUpdated: "Van kracht op 13 juli 2026",
+    termsMeta: "Voorwaarden voor woninginspecties en abonnementen van Dar Tahara.",
+    privacyMeta: "Hoe Dar Tahara persoonsgegevens verzamelt, gebruikt en beschermt.",
+    bindingLanguageNotice:
+      "Dit document is een vertaling van het Engelse origineel. De Engelse versie is de juridisch bindende tekst. Wijkt een vertaalde passage qua betekenis of gevolg af van de Engelse versie, dan prevaleert de Engelse versie.",
+  },
+  serviceAreas: {
+    meta: {
+      title: "Werkgebieden in Marokko",
+      description:
+        "Waar Dar Tahara actief is in Marokko. Actieve kerngebieden, uitbreiding op korte termijn en geplande dekking, stad voor stad met de actuele status.",
+      ogAlt: "Werkgebieden van Dar Tahara in Marokko",
+    },
+    breadcrumb: { home: "Home", current: "Werkgebieden", label: "Kruimelpad" },
+    hero: {
+      eyebrow: "Werkgebieden",
+      title: "Waar Dar Tahara actief is in Marokko",
+      subtitle:
+        "Dar Tahara breidt gebied voor gebied uit in plaats van vanaf dag één landelijke dekking te claimen. Bij elke stad hieronder staat de actuele status, zodat u precies ziet waar de dienst actief is, waar wij binnenkort opengaan en waar het nog bij plannen blijft.",
+      ctaPrimary: "Meld u aan voor early access",
+      ctaSecondary: "Bekijk onze diensten",
+    },
+    status: {
+      available: {
+        label: "Actieve kerngebieden",
+        note: "Dar Tahara bouwt hier actief aan de dienstverlening. Beschikbaarheid voor een specifiek adres wordt bevestigd bij de eerste woninginspectie.",
+      },
+      expanding: {
+        label: "Binnenkort open",
+        note: "Uitbreiding op korte termijn rond onze bestaande kerngebieden. Meld u aan voor early access om bericht te krijgen zodra uw stad opengaat.",
+      },
+      planned: {
+        label: "Geplande dekking",
+        note: "Steden die wij willen bedienen naarmate Dar Tahara groeit. Hier is nog geen dienstverlening.",
+      },
+    },
+    regionLabel: "Regio",
+    coverageTitle: "Dekking per regio",
+    coverageNote:
+      "Wij groeperen steden per bestuurlijke regio, omdat onze teams lokaal worden opgebouwd en een regio als geheel opengaat in plaats van stad voor stad.",
+    disclaimer:
+      "Deze pagina beschrijft waar Dar Tahara actief is en actief wil worden. Zij vormt geen aanbod van dienstverlening in een specifieke stad. Dekking, timing en beschikbaarheid voor een specifieke woning worden rechtstreeks met Dar Tahara bevestigd.",
+    cta: {
+      title: "Staat uw stad er niet bij?",
+      body: "Early access laat ons zien waar de vraag zit. De steden met de meeste aanmeldingen gaan als eerste open, dus aanmelden zet uw gebied echt hoger op de lijst.",
+      button: "Meld u aan voor early access",
+    },
+    faq: [
+      {
+        q: "Welke steden bedient Dar Tahara?",
+        a: "De actieve kerngebieden van Dar Tahara zijn Tanger, Tetouan, Casablanca en Meknes. Andere Marokkaanse steden staan op deze pagina als binnenkort open of gepland. Bevestig de beschikbaarheid voor uw adres voordat u op een werkgebied vertrouwt.",
+      },
+      {
+        q: "Is Dar Tahara in heel Marokko actief?",
+        a: "Nog niet. Dar Tahara is actief in Marokko en breidt stad voor stad uit in plaats van landelijke dekking te claimen. Bij elke stad op deze pagina staat of die actief, binnenkort open of nog gepland is.",
+      },
+      {
+        q: "Hoe gaat een nieuwe stad open?",
+        a: "Dar Tahara werft het schoonmaakteam lokaal, in de stad en de omliggende omgeving, voordat wij daar opengaan. Aanmeldingen voor early access laten zien waar de vraag geconcentreerd is, en zo bepalen wij de volgorde waarin steden opengaan.",
+      },
+    ],
   },
   footer: {
     tagline: "Premium woningverzorging & vastgoedconciërge in heel Marokko.",

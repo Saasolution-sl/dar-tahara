@@ -122,6 +122,48 @@ test("llms.txt qualifies availability instead of implying the service is live ev
   assert.match(body, /does not publish customer reviews or ratings/);
 });
 
+test("every Moroccan city carries a status, and only the live focus areas are 'available'", async () => {
+  const { MOROCCAN_CITIES, citiesByStatus } = await import("@/lib/moroccan-cities");
+  const { site } = await import("@/lib/site");
+
+  for (const city of MOROCCAN_CITIES) {
+    assert.ok(city.name && city.nameAr && city.region, `${city.name} is incomplete`);
+    assert.ok(["available", "expanding", "planned"].includes(city.status));
+  }
+  // A city marked available but absent from site.serviceAreas would be a
+  // coverage claim the rest of the site does not make.
+  const available = citiesByStatus("available").map((c) => c.name).sort();
+  assert.deepEqual(available, [...site.serviceAreas].sort());
+  assert.ok(citiesByStatus("planned").length > 0);
+  assert.equal(new Set(MOROCCAN_CITIES.map((c) => c.name)).size, MOROCCAN_CITIES.length);
+});
+
+test("service-areas page is indexable in every locale and llms.txt separates live from planned", async () => {
+  const { buildLlmsText } = await import("@/lib/llms");
+  assert.ok(indexableLocalizedPaths.includes(pages.serviceAreas));
+  assert.equal(sitemap().filter((e) => e.url.endsWith(pages.serviceAreas)).length, locales.length);
+
+  const body = buildLlmsText();
+  assert.match(body, /Live focus areas:/);
+  assert.match(body, /Planned, with no service yet:/);
+  assert.match(body, /does not have national coverage/);
+});
+
+test("translated legal pages carry a prevailing-language clause; English does not", async () => {
+  const { getDictionary } = await import("@/i18n/dictionaries");
+  for (const locale of locales) {
+    const dict = await getDictionary(locale);
+    const notice = dict.legal.bindingLanguageNotice;
+    assert.ok(notice.length > 60, `${locale} notice is too short to be meaningful`);
+    if (locale !== "en") {
+      // Must be translated, not left as the English fallback.
+      const en = await getDictionary("en");
+      assert.notEqual(notice, en.legal.bindingLanguageNotice, `${locale} notice is untranslated`);
+    }
+    assert.ok(dict.legal.termsTitle.length > 0 && dict.legal.privacyTitle.length > 0);
+  }
+});
+
 test("llms.txt returns plain text with official pages and verification guidance", async () => {
   const response = getLlms();
   assert.equal(response.status, 200);

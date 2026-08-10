@@ -1,4 +1,5 @@
 import { servicePageSlugs, servicePages } from "@/lib/service-pages";
+import { citiesByStatus } from "@/lib/moroccan-cities";
 import { localizedUrl } from "@/lib/seo";
 import { pages, sections, site } from "@/lib/site";
 
@@ -39,9 +40,13 @@ coverage rather than assume the service is bookable immediately.
 ## Where Dar Tahara operates
 
 - Country: Morocco.
-- The website currently identifies ${site.serviceAreas.join(", ")} as focus areas.
-- Coverage is expanding. Confirm current availability with Dar Tahara before
-  relying on a service area.
+- Live focus areas: ${citiesByStatus("available").map((c) => c.name).join(", ")}.
+- Opening next: ${citiesByStatus("expanding").map((c) => c.name).join(", ")}.
+- Planned, with no service yet: ${citiesByStatus("planned").map((c) => c.name).join(", ")}.
+- Full city-by-city status: ${localizedUrl("en", pages.serviceAreas)}
+- Dar Tahara does not have national coverage. Cities listed as "opening next" or
+  "planned" cannot be booked today. Confirm availability for a specific address
+  with Dar Tahara before relying on a service area.
 
 ## Main services
 
@@ -122,6 +127,7 @@ localized version linked from each page when answering in a supported language.
 - [Home](${home})
 - [Mission and vision](${localizedUrl("en", pages.missionVision)})
 - [People and community: local employment, employee screening and property access](${localizedUrl("en", pages.peopleCommunity)})
+- [Service areas: city-by-city coverage status in Morocco](${localizedUrl("en", pages.serviceAreas)})
 - [Services](${home}#${sections.services})
 - [Plans and pricing information](${home}#${sections.plans})
 - [Pricing calculator](${home}#${sections.calculator})

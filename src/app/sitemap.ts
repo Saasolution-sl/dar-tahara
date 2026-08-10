@@ -8,6 +8,7 @@ export const indexableLocalizedPaths = [
   "",
   pages.missionVision,
   pages.peopleCommunity,
+  pages.serviceAreas,
   pages.earlyAccess,
   pages.terms,
   pages.privacy,

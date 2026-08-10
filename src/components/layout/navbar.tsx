@@ -72,6 +72,7 @@ export function Navbar({
   const aboutLinks = [
     { href: `${base}${pages.missionVision}`, label: dict.missionVision },
     { href: `${base}${pages.peopleCommunity}`, label: dict.peopleCommunity },
+    { href: `${base}${pages.serviceAreas}`, label: dict.serviceAreas },
     { href: `${base}#${sections.why}`, label: dict.why },
   ];
 

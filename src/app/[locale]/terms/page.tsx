@@ -7,8 +7,6 @@ import { SERVICE_POLICY_COPY } from "@/lib/service-policy";
 import { pages, site } from "@/lib/site";
 import { buildLocalizedMetadata } from "@/lib/seo";
 
-const description = "Terms governing Dar Tahara home assessments and subscriptions.";
-
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
@@ -17,7 +15,7 @@ export async function generateMetadata({ params }: { params: Promise<{ locale: s
     locale,
     path: pages.terms,
     title: dict.footer.terms,
-    description,
+    description: dict.legal.termsMeta,
   });
 }
 
@@ -28,10 +26,12 @@ export default async function TermsPage({ params }: { params: Promise<{ locale: 
   const dict = await getDictionary(locale);
 
   return <>
-    <PageStructuredData locale={locale} path={pages.terms} name={dict.footer.terms} description={description} />
+    <PageStructuredData locale={locale} path={pages.terms} name={dict.footer.terms} description={dict.legal.termsMeta} />
     <LegalPage
-      title="Terms of Service"
-      updated="Effective 24 July 2026"
+      title={dict.legal.termsTitle}
+      updated={dict.legal.termsUpdated}
+      // English is the original, so it is never labelled a translation of itself.
+      bindingLanguageNotice={locale === "en" ? undefined : dict.legal.bindingLanguageNotice}
       breadcrumbs={[
         { label: dict.missionVision.breadcrumb.home, href: `/${locale}` },
         { label: dict.footer.terms, href: `/${locale}${pages.terms}` },
