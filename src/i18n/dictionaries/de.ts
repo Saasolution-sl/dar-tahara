@@ -747,7 +747,7 @@ const de: DeepPartial<Dictionary> = {
         "Bei Dar Tahara sind wir überzeugt: Ein professioneller Reinigungsservice sollte mehr leisten, als ein Zuhause sauber zu hinterlassen. Wir verbinden professionelle Hauspflege mit stabiler lokaler Beschäftigung, fairen Arbeitsbedingungen und einem Service, der auf Vertrauen aufgebaut ist.",
       ctaPrimary: "Early Access sichern",
       ctaSecondary: "Mission & Vision lesen",
-      imageAlt: "Eine Reinigungskraft von Dar Tahara bereitet ein marokkanisches Zuhause vor",
+      imageAlt: "Eine Reinigungskraft von Dar Tahara in Arbeitskleidung reinigt ein Fenster in einem marokkanischen Zuhause",
       highlights: ["Lokale Teams", "Geprüfte Mitarbeitende", "Zugang nur zum Termin"],
     },
     employment: {

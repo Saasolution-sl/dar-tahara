@@ -747,7 +747,7 @@ const fr: DeepPartial<Dictionary> = {
         "Chez Dar Tahara, nous pensons qu'un service de nettoyage professionnel doit faire plus que laisser un logement propre. Nous associons l'entretien professionnel du domicile à un emploi local stable, à des conditions de travail équitables et à un service conçu autour de la confiance.",
       ctaPrimary: "Rejoindre l'accès anticipé",
       ctaSecondary: "Lire notre mission & vision",
-      imageAlt: "Une professionnelle du nettoyage Dar Tahara prépare un logement marocain",
+      imageAlt: "Une professionnelle du nettoyage Dar Tahara en tenue de travail nettoie une fenêtre dans un logement marocain",
       highlights: ["Équipes locales", "Personnel vérifié", "Accès lié au rendez-vous"],
     },
     employment: {

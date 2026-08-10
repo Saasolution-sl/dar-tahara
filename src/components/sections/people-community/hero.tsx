@@ -89,8 +89,15 @@ export function PeopleCommunityHero({
           <div className="lg:col-span-6">
             <Reveal delay={0.1}>
               <div className="relative aspect-[4/3] w-full overflow-hidden rounded-[2rem] shadow-lift sm:aspect-[16/10]">
+                {/*
+                  Own photography, not stock. On a page arguing that these are
+                  screened, salaried professionals, a borrowed stock image would
+                  undercut the claim it sits next to. Source is 16:10, matching
+                  the container at sm and above, so object-cover only crops on
+                  mobile, where the subject sits left of centre and survives it.
+                */}
                 <Image
-                  src="https://images.unsplash.com/photo-1581578731548-c64695cc6952?auto=format&fit=crop&w=1400&q=80"
+                  src="/images/people-community/dar-tahara-people-community-v1.jpg"
                   alt={copy.hero.imageAlt}
                   fill
                   priority

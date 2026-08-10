@@ -758,7 +758,7 @@
         "At Dar Tahara, we believe a professional cleaning service should do more than leave a home clean. We combine professional home care with stable local employment, fair working conditions and a service designed around trust.",
       ctaPrimary: "Join Early Access",
       ctaSecondary: "Read our mission & vision",
-      imageAlt: "A Dar Tahara cleaning professional preparing a Moroccan home",
+      imageAlt: "A Dar Tahara cleaning professional in branded uniform cleaning a window in a Moroccan home",
       highlights: ["Local teams", "Screened personnel", "Appointment-based access"],
     },
     employment: {

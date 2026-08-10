@@ -743,7 +743,7 @@ const nl: DeepPartial<Dictionary> = {
         "Bij Dar Tahara geloven wij dat een professionele schoonmaakdienst meer moet doen dan een huis schoon achterlaten. Wij combineren professionele woningverzorging met stabiel lokaal werk, eerlijke arbeidsvoorwaarden en een dienstverlening die is opgebouwd rond vertrouwen.",
       ctaPrimary: "Meld u aan voor early access",
       ctaSecondary: "Lees onze missie & visie",
-      imageAlt: "Een schoonmaakprofessional van Dar Tahara maakt een Marokkaanse woning gereed",
+      imageAlt: "Een schoonmaakprofessional van Dar Tahara in bedrijfskleding maakt een raam schoon in een Marokkaanse woning",
       highlights: ["Lokale teams", "Gescreende medewerkers", "Toegang per afspraak"],
     },
     employment: {
