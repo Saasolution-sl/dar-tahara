@@ -1,9 +1,12 @@
 import Link from "next/link";
 import { buttonVariants } from "@/components/ui/button";
 import { PortalCard, StatusBadge } from "@/components/portal/portal-shell";
-import { portalCopy } from "@/i18n/portal-copy";
+import { portalCopy, type PortalCopy } from "@/i18n/portal-copy";
 import {
   countSubscriptions,
+  countSuspendedForPayment,
+  excludeSuspendedBookings,
+  isBlockedForPayment,
   selectCurrentMonthInvoice,
   selectNextPayment,
   selectUpcomingAdditionalService,
@@ -26,7 +29,6 @@ import { money, shortDate } from "@/lib/portal-format";
 import { requireAuth } from "@/lib/portal-auth";
 import { getRequestLocale } from "@/lib/request-locale";
 import { createClient } from "@/lib/supabase/server";
-import { serviceSelect } from "@/lib/supabase-rpc";
 
 type NextAppointmentProperty = { id: string; address_line1: string; city: string };
 type NextAppointmentRow = {
@@ -37,8 +39,21 @@ type NextAppointmentRow = {
   scheduled_start: string | null;
   scheduled_end: string | null;
   property_id: string;
+  subscription_id: string;
   properties: NextAppointmentProperty[] | NextAppointmentProperty | null;
 };
+
+/** A subscription row plus the property it serves, for naming it to the customer. */
+type SubscriptionWithProperty = OverviewSubscription & {
+  properties?: NextAppointmentProperty[] | NextAppointmentProperty | null;
+};
+
+function subscriptionPropertyLabel(subscription: SubscriptionWithProperty): string | null {
+  const property = Array.isArray(subscription.properties)
+    ? subscription.properties[0]
+    : subscription.properties;
+  return property ? `${property.address_line1}, ${property.city}` : null;
+}
 
 function propertyLabel(booking: NextAppointmentRow): string | null {
   const property = Array.isArray(booking.properties)
@@ -57,6 +72,43 @@ function appointmentDateTime(start: string, end: string | null, locale: string) 
   const time = new Intl.DateTimeFormat(locale, { hour: "2-digit", minute: "2-digit" });
   const window = end ? `${time.format(new Date(start))} – ${time.format(new Date(end))}` : time.format(new Date(start));
   return `${date}, ${window}`;
+}
+
+/**
+ * The tile's footer. While a subscription is suspended for non-payment there is
+ * no point sending the customer to an agenda that cannot move, so the agenda
+ * link is replaced by the action that unblocks them.
+ *
+ * It goes to the invoices page rather than straight into Stripe: the customer
+ * should see what is owed, for which period, before a payment form opens. The
+ * unpaid row there carries its own Pay now button.
+ */
+function AppointmentTileAction({
+  blocked,
+  copy,
+}: {
+  blocked: boolean;
+  copy: PortalCopy["appointments"];
+}) {
+  if (!blocked) {
+    return (
+      <Link
+        href="/account/appointments?view=agenda"
+        className={buttonVariants({ variant: "outline", size: "sm", className: "mt-4" })}
+      >
+        {copy.viewAgenda}
+      </Link>
+    );
+  }
+  return (
+    <>
+      {/* Explanation only. Paying happens on the Account status tile, which
+          carries the balance the payment settles. */}
+      <p className="mt-4 rounded-xl bg-red-500/10 p-3 text-sm text-red-700 dark:text-red-400">
+        {copy.blockedNote}
+      </p>
+    </>
+  );
 }
 
 function paymentDate(value: string, locale: string) {
@@ -99,7 +151,7 @@ export default async function AccountPage() {
     db
       .from("subscriptions")
       .select(
-        "id,status,billing_interval,billed_price_cents,currency,current_period_end,first_payment_scheduled_for,renewal_payment_due_at",
+        "id,status,billing_interval,billed_price_cents,currency,current_period_end,first_payment_scheduled_for,renewal_payment_due_at,operational_status,properties(address_line1,city)",
       )
       .eq("customer_id", customerId)
       .order("created_at", { ascending: false }),
@@ -134,7 +186,7 @@ export default async function AccountPage() {
     db
       .from("service_bookings")
       .select(
-        "id,status,service_window_start,service_window_end,scheduled_start,scheduled_end,property_id,properties(id,address_line1,city)",
+        "id,status,service_window_start,service_window_end,scheduled_start,scheduled_end,property_id,subscription_id,properties(id,address_line1,city)",
       )
       .eq("customer_id", customerId)
       .in("status", ["planning", "confirmed", "in_progress"])
@@ -161,27 +213,23 @@ export default async function AccountPage() {
     (serviceBookings.data || []) as OverviewServiceBooking[],
     now,
   );
+  const suspendedSubscriptions = (subscriptionRows as SubscriptionWithProperty[]).filter(
+    (subscription) => subscription.operational_status === "suspended_for_non_payment",
+  );
+  const suspendedCount = countSuspendedForPayment(subscriptionRows);
+  const blockedForPayment = isBlockedForPayment(subscriptionRows);
+
   const nextVisit = nextAppointment(
-    (appointmentBookings.data || []) as NextAppointmentRow[],
+    excludeSuspendedBookings(
+      (appointmentBookings.data || []) as NextAppointmentRow[],
+      subscriptionRows,
+    ),
     now,
   );
   const upcomingAdditionalService = selectUpcomingAdditionalService(
     (additionalServices.data || []) as OverviewAdditionalService[],
     now,
   );
-
-  let activePaymentToken: string | undefined;
-  if (outstanding.paymentInvoice) {
-    try {
-      const [paymentLink] = await serviceSelect<{ token: string }[]>(
-        `payment_links?invoice_id=eq.${outstanding.paymentInvoice.id}&status=eq.active&expires_at=gt.${encodeURIComponent(now.toISOString())}&order=created_at.desc&select=token&limit=1`,
-      );
-      activePaymentToken = paymentLink?.token;
-    } catch {
-      // The invoices page remains the safe fallback when no active link exists
-      // or service-role access is not configured in a local environment.
-    }
-  }
 
   return (
     <div>
@@ -191,6 +239,33 @@ export default async function AccountPage() {
       </h1>
 
       <div className="mt-7 grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+        {/*
+          Named per property, not just counted. With several properties the
+          customer's first question is which one is affected, and an address
+          answers that where "1 subscription" does not.
+        */}
+        {suspendedSubscriptions.length ? (
+          <PortalCard title={c.suspendedTitle}>
+            <p className="text-sm font-semibold text-red-700 dark:text-red-400">
+              {(suspendedCount === 1 ? c.subscriptionSuspended : c.subscriptionsSuspended).replace(
+                "{count}",
+                String(suspendedCount),
+              )}
+            </p>
+            <ul className="mt-3 space-y-2">
+              {suspendedSubscriptions.map((subscription) => (
+                <li
+                  key={subscription.id}
+                  className="rounded-xl bg-red-500/10 px-3 py-2 text-sm text-red-700 dark:text-red-400"
+                >
+                  {subscriptionPropertyLabel(subscription) || c.subscription}
+                </li>
+              ))}
+            </ul>
+            <p className="mt-3 text-sm text-muted-foreground">{c.othersContinue}</p>
+          </PortalCard>
+        ) : null}
+
         <PortalCard title={ac.nextTitle}>
           {nextVisit ? (
             <>
@@ -216,32 +291,53 @@ export default async function AccountPage() {
               <p className="mt-2 text-sm text-muted-foreground">
                 {propertyLabel(nextVisit) || c.property}
               </p>
-              <Link
-                href="/account/appointments?view=agenda"
-                className={buttonVariants({ variant: "outline", size: "sm", className: "mt-4" })}
-              >
-                {ac.viewAgenda}
-              </Link>
+              {/* Only claim scheduling is on hold when nothing is actually
+                  running. With one property suspended and two still active,
+                  the note would contradict the appointment shown above it. */}
+              <AppointmentTileAction blocked={blockedForPayment && !nextVisit} copy={ac} />
             </>
           ) : (
             <>
               <p className="text-sm text-muted-foreground">{ac.emptyUpcoming}</p>
-              <Link
-                href="/account/appointments?view=agenda"
-                className={buttonVariants({ variant: "outline", size: "sm", className: "mt-4" })}
-              >
-                {ac.viewAgenda}
-              </Link>
+              {/* Only claim scheduling is on hold when nothing is actually
+                  running. With one property suspended and two still active,
+                  the note would contradict the appointment shown above it. */}
+              <AppointmentTileAction blocked={blockedForPayment && !nextVisit} copy={ac} />
             </>
           )}
         </PortalCard>
 
+        {/*
+          Status, what is wrong, what is owed, and the way to fix it, in one
+          place. Splitting the balance into its own tile meant the amount and
+          the reason for it sat apart, and the customer had to join them up.
+        */}
         <PortalCard title={c.accountStatus}>
           <StatusBadge
             value={
               customer.data?.status || context.customerStatus || "applicant"
             }
           />
+
+          <div className="mt-4 border-t border-border pt-4">
+            <p className="text-sm text-muted-foreground">{c.balance}</p>
+            <p className="mt-0.5 font-serif text-3xl">
+              {money(outstanding.totalCents, outstanding.currency, locale)}
+            </p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {outstanding.count
+                ? `${outstanding.count} ${c.outstandingInvoices.toLocaleLowerCase(locale)}`
+                : c.noOutstandingBalance}
+            </p>
+            {outstanding.count > 0 ? (
+              <Link
+                href="/account/invoices"
+                className={buttonVariants({ variant: "danger", size: "sm", className: "mt-4" })}
+              >
+                {c.payNow}
+              </Link>
+            ) : null}
+          </div>
         </PortalCard>
 
         <PortalCard title={c.propertiesTotal}>
@@ -393,30 +489,6 @@ export default async function AccountPage() {
           )}
         </PortalCard>
 
-        <PortalCard title={c.balance}>
-          <p className="font-serif text-3xl">
-            {money(outstanding.totalCents, outstanding.currency, locale)}
-          </p>
-          <p className="mt-2 text-sm text-muted-foreground">
-            {outstanding.count
-              ? `${outstanding.count} ${c.outstandingInvoices.toLocaleLowerCase(
-                  locale,
-                )}`
-              : c.noOutstandingBalance}
-          </p>
-          {outstanding.count > 0 ? (
-            <Link
-              href={
-                activePaymentToken
-                  ? `/api/account/invoices/pay-link/${activePaymentToken}`
-                  : "/account/invoices"
-              }
-              className={buttonVariants({ size: "sm", className: "mt-4" })}
-            >
-              {activePaymentToken ? c.payNow : c.viewInvoices}
-            </Link>
-          ) : null}
-        </PortalCard>
       </div>
     </div>
   );

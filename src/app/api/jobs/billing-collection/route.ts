@@ -15,8 +15,22 @@ export const dynamic = "force-dynamic";
 /** How long before a final-settlement invoice's due date to send the one reminder email. Not policy-configurable (unlike the core windows): a single sane default, same spirit as the rest of this job's fixed sweep cadence. */
 const SETTLEMENT_REMINDER_WINDOW_HOURS = 72;
 
+/**
+ * An admin triggering it by hand, a dedicated job secret, or the platform cron.
+ *
+ * The CRON_SECRET fallback matters: Vercel calls scheduled routes with
+ * `Authorization: Bearer $CRON_SECRET` and nothing else. Without it, adding
+ * this job to vercel.json produces a silent 401 every night - the schedule
+ * looks configured while no dunning ever runs. Same shape as
+ * /api/jobs/hospitality-support-sync, which is scheduled and works.
+ */
 async function authorized(req: NextRequest): Promise<boolean> {
-  return (await isAdminAuthorized()) || secureTokenEqual(req.headers.get("authorization")?.replace(/^Bearer\s+/i, "") || null, process.env.BILLING_COLLECTION_JOB_SECRET);
+  const bearer = req.headers.get("authorization")?.replace(/^Bearer\s+/i, "") || null;
+  return (
+    (await isAdminAuthorized()) ||
+    secureTokenEqual(bearer, process.env.BILLING_COLLECTION_JOB_SECRET) ||
+    secureTokenEqual(bearer, process.env.CRON_SECRET)
+  );
 }
 
 type DueLinkRow = {

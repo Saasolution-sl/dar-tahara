@@ -13,6 +13,10 @@ import {
   sortAppointments,
   type AppointmentDisplayState,
 } from "@/lib/appointment-state";
+import {
+  suspendedSubscriptionIds,
+  type OverviewSubscription,
+} from "@/lib/account-overview";
 import { requireCustomerPortal } from "@/lib/feature-flags";
 import { requireAuth } from "@/lib/portal-auth";
 import { getRequestLocale } from "@/lib/request-locale";
@@ -28,6 +32,7 @@ type BookingRow = {
   scheduled_end: string | null;
   assigned_staff_id: string | null;
   property_id: string;
+  subscription_id: string;
   properties: PropertyRow[] | PropertyRow | null;
 };
 
@@ -38,6 +43,8 @@ const ALL_STATES: AppointmentDisplayState[] = [
   "completed",
   "cancelled",
   "awaiting_update",
+  "suspended",
+  "forfeited",
 ];
 
 function firstProperty(properties: PropertyRow[] | PropertyRow | null | undefined) {
@@ -102,15 +109,27 @@ export default async function AppointmentsPage({
 
   // RLS (`service_bookings_read_own`) already scopes this to the signed-in
   // customer; the explicit filter keeps the intent visible and the index used.
-  const { data } = await db
-    .from("service_bookings")
-    .select(
-      "id,status,service_window_start,service_window_end,scheduled_start,scheduled_end,assigned_staff_id,property_id,properties(id,address_line1,city)",
-    )
-    .eq("customer_id", customerId)
-    .order("service_window_start", { ascending: true });
+  const [{ data }, { data: subscriptionData }] = await Promise.all([
+    db
+      .from("service_bookings")
+      .select(
+        "id,status,service_window_start,service_window_end,scheduled_start,scheduled_end,assigned_staff_id,property_id,subscription_id,properties(id,address_line1,city)",
+      )
+      .eq("customer_id", customerId)
+      .order("service_window_start", { ascending: true }),
+    // Needed only to mark which visits belong to a suspended subscription; the
+    // visits themselves stay listed, because the customer needs to see exactly
+    // which ones are affected.
+    db
+      .from("subscriptions")
+      .select("id,status,billing_interval,billed_price_cents,currency,current_period_end,first_payment_scheduled_for,renewal_payment_due_at,operational_status")
+      .eq("customer_id", customerId),
+  ]);
 
   const bookings = (data || []) as BookingRow[];
+  const suspendedIds = suspendedSubscriptionIds(
+    (subscriptionData || []) as OverviewSubscription[],
+  );
   const params = await searchParams;
   const now = new Date();
 
@@ -152,17 +171,27 @@ export default async function AppointmentsPage({
 
   const visible = bookings.filter((booking) => {
     if (selectedProperty && booking.property_id !== selectedProperty) return false;
-    if (selectedState && appointmentDisplayState(booking, now) !== selectedState) return false;
+    if (
+      selectedState &&
+      appointmentDisplayState(booking, now, {
+        subscriptionSuspended: suspendedIds.has(booking.subscription_id),
+      }) !== selectedState
+    )
+      return false;
     return true;
   });
 
-  const rows: AppointmentRow[] = sortAppointments(visible, view === "agenda" ? "desc" : "asc").map(
+  // Always soonest-first; the agenda view reverses its own "past" section so
+  // that Upcoming leads with the next visit and Past leads with the most recent.
+  const rows: AppointmentRow[] = sortAppointments(visible, "asc").map(
     (booking) => {
       const timing = appointmentTiming(booking);
       const calendarDate = appointmentCalendarDate(booking);
       return {
         id: booking.id,
-        state: appointmentDisplayState(booking, now),
+        state: appointmentDisplayState(booking, now, {
+          subscriptionSuspended: suspendedIds.has(booking.subscription_id),
+        }),
         timing,
         calendarDate,
         dateLabel: dateFormat.format(new Date(`${calendarDate}T00:00:00Z`)),
@@ -175,7 +204,9 @@ export default async function AppointmentsPage({
         propertyId: booking.property_id,
         propertyLabel: propertyLabelOf(booking),
         employeeNumber: null,
-        upcoming: isUpcoming(booking, now),
+        upcoming: isUpcoming(booking, now, {
+          subscriptionSuspended: suspendedIds.has(booking.subscription_id),
+        }),
       };
     },
   );
@@ -204,6 +235,7 @@ export default async function AppointmentsPage({
       properties={properties}
       selectedProperty={selectedProperty}
       selectedState={selectedState}
+      totalCount={bookings.length}
       view={view}
       monthLabel={monthLabel}
       previousMonth={shiftMonth(monthAnchor, -1)}

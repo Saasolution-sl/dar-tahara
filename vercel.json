@@ -11,6 +11,10 @@
     {
       "path": "/api/jobs/hospitality-support-sync",
       "schedule": "17 3 * * *"
+    },
+    {
+      "path": "/api/jobs/billing-collection",
+      "schedule": "0 8 * * *"
     }
   ]
 }

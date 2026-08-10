@@ -69,19 +69,28 @@ export function InvoiceStatementTable({ title, emptyMessage, rows, labels }: Pro
                   <td className="p-4 whitespace-nowrap">{row.date}</td>
                   <td className="p-4 whitespace-nowrap">{row.due}</td>
                   <td className="p-4 font-medium tabular-nums">{row.reference}</td>
+                  {/*
+                    An unpaid row offers Pay now *instead of* Download. Settling
+                    the invoice is the only thing that matters on that row, and
+                    stacking a secondary action beside it just competes with it.
+                    Download returns once the row is paid.
+                  */}
                   <td className="p-4">
-                    <div className="flex flex-col items-stretch gap-2">
-                      {row.paymentHref ? (
-                        <Link href={row.paymentHref} className={buttonVariants({ variant: "primary", size: "sm" })}>
-                          {labels.payNow}
-                        </Link>
-                      ) : null}
-                      {row.downloadHref ? (
-                        <Link href={row.downloadHref} className={buttonVariants({ variant: "outline", size: "sm" })}>
-                          {labels.download}
-                        </Link>
-                      ) : null}
-                    </div>
+                    {row.paymentHref ? (
+                      <Link
+                        href={row.paymentHref}
+                        className={buttonVariants({ variant: "danger", size: "sm", className: "w-full" })}
+                      >
+                        {labels.payNow}
+                      </Link>
+                    ) : row.downloadHref ? (
+                      <Link
+                        href={row.downloadHref}
+                        className={buttonVariants({ variant: "outline", size: "sm", className: "w-full" })}
+                      >
+                        {labels.download}
+                      </Link>
+                    ) : null}
                   </td>
                 </tr>
               ))}

@@ -32,6 +32,8 @@ type Props = {
   properties: AppointmentPropertyOption[];
   selectedProperty: string | null;
   selectedState: string | null;
+  /** Unfiltered booking count, so "no appointments" and "filters match none" stay distinguishable. */
+  totalCount: number;
   view: "month" | "agenda";
   monthLabel: string;
   previousMonth: string;
@@ -50,7 +52,14 @@ const STATE_TONE: Record<AppointmentDisplayState, string> = {
   completed: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
   cancelled: "bg-muted text-muted-foreground",
   awaiting_update: "bg-orange-500/15 text-orange-700 dark:text-orange-400",
+  suspended: "bg-red-500/15 text-red-700 dark:text-red-400",
+  forfeited: "bg-red-500/15 text-red-700 dark:text-red-400",
 };
+
+/** States caused by an unpaid subscription, which share the red treatment. */
+function isBlocked(state: AppointmentDisplayState): boolean {
+  return state === "suspended" || state === "forfeited";
+}
 
 function StateBadge({ state, copy }: { state: AppointmentDisplayState; copy: PortalCopy }) {
   return (
@@ -71,6 +80,7 @@ export function AppointmentsView({
   properties,
   selectedProperty,
   selectedState,
+  totalCount,
   view,
   monthLabel,
   previousMonth,
@@ -99,8 +109,10 @@ export function AppointmentsView({
   for (const row of rows) {
     byDate.set(row.calendarDate, [...(byDate.get(row.calendarDate) || []), row]);
   }
+  // `rows` arrive soonest-first. Upcoming reads naturally that way (the next
+  // visit at the top); past reads better newest-first, so it is reversed.
   const upcoming = rows.filter((row) => row.upcoming);
-  const past = rows.filter((row) => !row.upcoming);
+  const past = rows.filter((row) => !row.upcoming).reverse();
 
   return (
     <div>
@@ -167,7 +179,7 @@ export function AppointmentsView({
         </div>
       </div>
 
-      {rows.length === 0 ? (
+      {totalCount === 0 ? (
         <div className="mt-7">
           <PortalCard title={ac.title}>
             <p className="text-sm text-muted-foreground">{ac.empty}</p>
@@ -175,7 +187,13 @@ export function AppointmentsView({
         </div>
       ) : null}
 
-      {rows.length > 0 && view === "month" ? (
+      {/*
+        Rendered whenever the customer has any appointments at all, even if the
+        current filters match none. Gating these on the *filtered* count made
+        the month/agenda toggle silently do nothing on an empty result, which
+        reads as a broken control rather than an empty list.
+      */}
+      {totalCount > 0 && view === "month" ? (
         <section className="mt-7">
           <div className="flex items-center justify-between gap-3">
             <h2 className="font-serif text-xl">{monthLabel}</h2>
@@ -226,7 +244,12 @@ export function AppointmentsView({
                     <Link
                       key={row.id}
                       href={`/account/appointments/${row.id}`}
-                      className="block rounded-lg bg-secondary px-1.5 py-1 text-[11px] leading-tight text-foreground transition-colors hover:bg-primary hover:text-primary-foreground"
+                      className={cn(
+                        "block rounded-lg px-1.5 py-1 text-[11px] leading-tight transition-colors",
+                        isBlocked(row.state)
+                          ? "border border-red-500/30 bg-red-500/10 text-red-700 hover:bg-red-500/20 dark:text-red-400"
+                          : "bg-secondary text-foreground hover:bg-primary hover:text-primary-foreground",
+                      )}
                       aria-label={`${row.propertyLabel} — ${ac.states[row.state]}`}
                     >
                       {row.timeLabel || ac.timeToBeConfirmed}
@@ -243,7 +266,7 @@ export function AppointmentsView({
         </section>
       ) : null}
 
-      {rows.length > 0 && view === "agenda" ? (
+      {totalCount > 0 && view === "agenda" ? (
         <div className="mt-7 space-y-8">
           <section>
             <h2 className="font-serif text-xl">{ac.upcoming}</h2>
@@ -277,20 +300,36 @@ function AgendaList({ copy, rows }: { copy: PortalCopy; rows: AppointmentRow[] }
     <ul className="space-y-3">
       {rows.map((row) => (
         <li key={row.id}>
+          {/* Same red panel as the suspension notice on the invoices page, so a
+              visit affected by an unpaid subscription is recognisable at a
+              glance in either view. */}
           <Link
             href={`/account/appointments/${row.id}`}
             className={cn(
-              "block rounded-2xl border border-border bg-card p-4 shadow-soft transition-colors hover:border-primary/40",
+              "block rounded-2xl border p-4 shadow-soft transition-colors",
+              isBlocked(row.state)
+                ? "border-red-500/30 bg-red-500/5 hover:border-red-500/50"
+                : "border-border bg-card hover:border-primary/40",
               row.state === "cancelled" && "opacity-70",
             )}
           >
             <div className="flex flex-wrap items-baseline justify-between gap-2">
-              <span className="font-medium">
+              <span className={cn("font-medium", isBlocked(row.state) && "text-red-800 dark:text-red-400")}>
                 {row.timing === "exact" ? `${row.dateLabel} · ${row.timeLabel}` : row.windowLabel}
               </span>
+              {/* Suspension is now part of the state itself, so the badge needs
+                  no special case: an unpaid subscription can never render
+                  "Confirmed" beside a visit that will not happen. */}
               <StateBadge state={row.state} copy={copy} />
             </div>
-            <p className="mt-1 text-sm text-muted-foreground">{row.propertyLabel}</p>
+            <p
+              className={cn(
+                "mt-1 text-sm",
+                isBlocked(row.state) ? "text-red-700 dark:text-red-400" : "text-muted-foreground",
+              )}
+            >
+              {row.propertyLabel}
+            </p>
             {row.timing === "window" ? (
               <p className="mt-1 text-xs text-muted-foreground">{ac.timeToBeConfirmed}</p>
             ) : null}

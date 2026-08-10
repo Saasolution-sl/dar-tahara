@@ -7,6 +7,13 @@ export type OverviewSubscription = {
   current_period_end: string | null;
   first_payment_scheduled_for: string | null;
   renewal_payment_due_at: string | null;
+  /**
+   * 'active' | 'suspended_for_non_payment' | 'cancellation_pending'. Optional
+   * because the existing selectors here never needed it and their fixtures do
+   * not set it; the overview page selects it to decide whether scheduling is
+   * blocked on an unpaid invoice.
+   */
+  operational_status?: string | null;
 };
 
 export type OverviewInvoice = {
@@ -217,6 +224,62 @@ export function summarizeOutstandingInvoices(invoices: OverviewInvoice[]) {
     currency,
     paymentInvoice: sameCurrency[0]?.invoice || null,
   };
+}
+
+/**
+ * Whether scheduling is blocked on money the customer still owes.
+ *
+ * Only `suspended_for_non_payment` counts. `cancellation_pending` is also a
+ * non-active operational state, but paying does not clear it, so offering a
+ * "pay now" action there would send the customer down a dead end.
+ *
+ * `operational_status` is optional on the type (older fixtures predate the
+ * column), and a missing value is treated as not blocked - the safe direction,
+ * since a false positive would hide a customer's appointments behind a payment
+ * demand they may not owe.
+ */
+export function countSuspendedForPayment(subscriptions: OverviewSubscription[]): number {
+  return subscriptions.filter(
+    (subscription) => subscription.operational_status === "suspended_for_non_payment",
+  ).length;
+}
+
+export function isBlockedForPayment(subscriptions: OverviewSubscription[]): boolean {
+  return countSuspendedForPayment(subscriptions) > 0;
+}
+
+/**
+ * Drops the bookings belonging to subscriptions suspended for non-payment.
+ *
+ * Suspension is per subscription, not per account: a customer with three
+ * properties and one unpaid invoice still has two being cleaned, and the
+ * overview must keep showing those. A booking whose subscription is not in the
+ * list at all is kept rather than dropped - hiding a real appointment because
+ * its subscription could not be matched would be the worse failure.
+ */
+export function excludeSuspendedBookings<T extends { subscription_id: string }>(
+  bookings: T[],
+  subscriptions: OverviewSubscription[],
+): T[] {
+  const suspended = suspendedSubscriptionIds(subscriptions);
+  return bookings.filter((booking) => !suspended.has(booking.subscription_id));
+}
+
+/**
+ * Ids of the subscriptions suspended for non-payment.
+ *
+ * The overview uses this to drop those bookings; the appointments calendar uses
+ * it to mark them instead, since there the customer needs to see which visits
+ * are affected rather than have them disappear.
+ */
+export function suspendedSubscriptionIds(
+  subscriptions: OverviewSubscription[],
+): ReadonlySet<string> {
+  return new Set(
+    subscriptions
+      .filter((subscription) => subscription.operational_status === "suspended_for_non_payment")
+      .map((subscription) => subscription.id),
+  );
 }
 
 export function selectUpcomingMaintenance(

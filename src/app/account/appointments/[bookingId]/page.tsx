@@ -7,6 +7,10 @@ import {
   appointmentTiming,
   type AppointmentDisplayState,
 } from "@/lib/appointment-state";
+import {
+  suspendedSubscriptionIds,
+  type OverviewSubscription,
+} from "@/lib/account-overview";
 import { requireCustomerPortal } from "@/lib/feature-flags";
 import { requireAuth } from "@/lib/portal-auth";
 import { getRequestLocale } from "@/lib/request-locale";
@@ -23,6 +27,7 @@ type BookingRow = {
   scheduled_end: string | null;
   assigned_staff_id: string | null;
   property_id: string;
+  subscription_id: string;
   properties: PropertyRow[] | PropertyRow | null;
 };
 
@@ -33,6 +38,8 @@ const STATE_TONE: Record<AppointmentDisplayState, string> = {
   completed: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-400",
   cancelled: "bg-muted text-muted-foreground",
   awaiting_update: "bg-orange-500/15 text-orange-700 dark:text-orange-400",
+  suspended: "bg-red-500/15 text-red-700 dark:text-red-400",
+  forfeited: "bg-red-500/15 text-red-700 dark:text-red-400",
 };
 
 function Field({ label, value }: { label: string; value: string }) {
@@ -63,7 +70,7 @@ export default async function AppointmentDetailPage({
   const { data } = await db
     .from("service_bookings")
     .select(
-      "id,status,service_window_start,service_window_end,scheduled_start,scheduled_end,assigned_staff_id,property_id,properties(id,address_line1,city)",
+      "id,status,service_window_start,service_window_end,scheduled_start,scheduled_end,assigned_staff_id,property_id,subscription_id,properties(id,address_line1,city)",
     )
     .eq("id", bookingId)
     .eq("customer_id", customerId)
@@ -82,7 +89,18 @@ export default async function AppointmentDetailPage({
       ).data?.employee_number || null
     : null;
 
-  const state = appointmentDisplayState(booking);
+  // Same derivation the calendar uses, so a visit cannot read one way in the
+  // list and another when opened.
+  const { data: subscriptionData } = await db
+    .from("subscriptions")
+    .select("id,status,billing_interval,billed_price_cents,currency,current_period_end,first_payment_scheduled_for,renewal_payment_due_at,operational_status")
+    .eq("customer_id", customerId);
+  const subscriptionSuspended = suspendedSubscriptionIds(
+    (subscriptionData || []) as OverviewSubscription[],
+  ).has(booking.subscription_id);
+
+  const state = appointmentDisplayState(booking, new Date(), { subscriptionSuspended });
+  const blocked = state === "suspended" || state === "forfeited";
   const timing = appointmentTiming(booking);
   const property = Array.isArray(booking.properties)
     ? booking.properties[0]
@@ -134,6 +152,16 @@ export default async function AppointmentDetailPage({
       </div>
 
       <div className="mt-7 space-y-5">
+        {/* Same red panel as the invoices page's suspension notice, so a visit
+            opened from a red row does not arrive looking ordinary. */}
+        {blocked ? (
+          <section className="rounded-2xl border border-red-500/30 bg-red-500/5 p-5">
+            <p className="text-sm text-red-700 dark:text-red-400">
+              {state === "forfeited" ? ac.forfeitedNote : ac.blockedNote}
+            </p>
+          </section>
+        ) : null}
+
         <PortalCard title={ac.details}>
           <dl className="grid gap-4 sm:grid-cols-2">
             <Field label={ac.reference} value={booking.id.slice(0, 8).toUpperCase()} />
