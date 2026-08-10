@@ -2,6 +2,7 @@ import "server-only";
 
 import { serviceSelect } from "@/lib/supabase-rpc";
 import { officeFilter, type DashboardScope } from "@/lib/dashboard/scope";
+import { LIVE_STATUSES, countLiveStatuses, type LiveStatusCounts } from "@/lib/dashboard/liveStatus";
 
 export type LiveOpsRow = {
   staffId: string;
@@ -22,6 +23,20 @@ type LiveStatusRow = {
   staff_members: { full_name: string; employee_number: string } | null;
 };
 
+/**
+ * How many staff sit in each live status, for the "right now" tiles.
+ *
+ * Deliberately the same table and the same office filter the board uses, so
+ * the Working tile and the number of Working cards on the board can never
+ * disagree.
+ */
+export async function getLiveStatusCounts(scope: DashboardScope): Promise<LiveStatusCounts> {
+  const rows = await serviceSelect<Array<{ status: string }>>(
+    `staff_live_status?select=status${officeFilter(scope)}`,
+  );
+  return countLiveStatuses(rows);
+}
+
 type VisitRow = {
   id: string;
   scheduled_start: string;
@@ -33,10 +48,25 @@ type VisitRow = {
   properties: { address_line1: string; city: string } | null;
 };
 
-export async function getLiveOperationsBoard(scope: DashboardScope): Promise<LiveOpsRow[]> {
+/**
+ * The Live operations board.
+ *
+ * Only genuinely live people appear: the default `statuses` excludes `finished`,
+ * `sick` and `offline`, who are on the roster but not on a job. Without this
+ * filter the board listed everyone who had ever clocked in today, which is why
+ * it showed 16 cards under a tile that said 7.
+ *
+ * Pass `statuses` to drill into one bucket - that is how the "right now" tiles
+ * link through to exactly the rows they counted.
+ */
+export async function getLiveOperationsBoard(
+  scope: DashboardScope,
+  statuses: readonly string[] = LIVE_STATUSES,
+): Promise<LiveOpsRow[]> {
   const filter = officeFilter(scope);
+  const statusFilter = statuses.length ? `&status=in.(${statuses.join(",")})` : "";
   const liveRows = await serviceSelect<LiveStatusRow[]>(
-    `staff_live_status?select=staff_id,status,current_visit_id,next_visit_id,staff_members(full_name,employee_number)${filter}&order=updated_at.desc`,
+    `staff_live_status?select=staff_id,status,current_visit_id,next_visit_id,staff_members(full_name,employee_number)${filter}${statusFilter}&order=updated_at.desc`,
   );
 
   const visitIds = [...new Set(liveRows.flatMap((row) => [row.current_visit_id, row.next_visit_id]).filter((id): id is string => Boolean(id)))];

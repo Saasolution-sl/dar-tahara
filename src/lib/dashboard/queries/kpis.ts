@@ -4,17 +4,23 @@ import { serviceSelect } from "@/lib/supabase-rpc";
 import { officeFilter, embeddedOfficeFilter, type DashboardScope } from "@/lib/dashboard/scope";
 import { startOfTodayIso, endOfTodayIso, daysAgoIso } from "@/lib/dashboard/dateRange";
 import { average } from "@/lib/dashboard/math";
+import { countLiveStatuses, type LiveStatusCounts } from "@/lib/dashboard/liveStatus";
 
 export type TopKpis = {
+  /**
+   * Right now, from `staff_live_status` - the same rows the Live operations
+   * board renders. `live.working` is the Working tile, `live.finished` is the
+   * Finished tile, and `live.live` equals the number of cards on the board.
+   */
+  live: LiveStatusCounts;
+  /** Today's plan, from `service_visits`. A different question, so a different group. */
   todaysVisits: number;
   completedToday: number;
-  runningNow: number;
   delayedToday: number;
   cancelledToday: number;
   avgCustomerRating: number | null;
   avgCleaningMinutes: number | null;
   avgTravelMinutes: number | null;
-  employeesWorking: number;
   openComplaints: number;
   qualityScore: number | null;
 };
@@ -39,15 +45,14 @@ export async function getTopKpis(scope: DashboardScope): Promise<TopKpis> {
   ]);
 
   return {
+    live: countLiveStatuses(staffLive),
     todaysVisits: visitsToday.length,
     completedToday: visitsToday.filter((v) => v.status === "completed").length,
-    runningNow: visitsToday.filter((v) => v.status === "working" || v.status === "driving").length,
     delayedToday: visitsToday.filter((v) => v.status === "delayed").length,
     cancelledToday: visitsToday.filter((v) => v.status === "cancelled").length,
     avgCustomerRating: average(ratedVisits.map((v) => v.customer_rating)),
     avgCleaningMinutes: average(visitsToday.map((v) => v.cleaning_minutes).filter((v): v is number => v !== null)),
     avgTravelMinutes: average(visitsToday.map((v) => v.travel_minutes).filter((v): v is number => v !== null)),
-    employeesWorking: staffLive.filter((s) => s.status === "working" || s.status === "driving").length,
     openComplaints: complaints.length,
     qualityScore: average(inspections.map((i) => i.score)),
   };
