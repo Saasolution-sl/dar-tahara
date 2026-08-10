@@ -208,6 +208,15 @@ export function CampaignSourcesClient() {
           <div className="w-full max-w-sm rounded-2xl bg-card p-6 text-center shadow-lift" onClick={(e) => e.stopPropagation()}>
             <h3 className="text-lg font-semibold">{qr.internal_name}</h3>
             <p className="mt-1 font-mono text-xs text-muted-foreground">{qr.source_code}</p>
+            {/*
+              Deliberately a plain <img>. The endpoint returns image/svg+xml,
+              and next/image will not optimise SVG without dangerouslyAllowSVG,
+              which relaxes SVG handling for the whole app to gain nothing on an
+              already-vector file of a couple of kB. It also renders in a
+              click-opened modal behind admin auth, so it is never the LCP
+              element the rule is guarding against.
+            */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
             <img alt="QR code" className="mx-auto mt-4 h-64 w-64" src={`/api/admin/campaign-sources/qr?url=${encodeURIComponent(qr.tracked_url)}`} />
             <div className="mt-4 flex justify-center gap-2">
               <a href={`/api/admin/campaign-sources/qr?download=1&url=${encodeURIComponent(qr.tracked_url)}`}
