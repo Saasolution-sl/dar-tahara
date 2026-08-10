@@ -7,6 +7,7 @@ import { pages } from "@/lib/site";
 export const indexableLocalizedPaths = [
   "",
   pages.missionVision,
+  pages.peopleCommunity,
   pages.earlyAccess,
   pages.terms,
   pages.privacy,

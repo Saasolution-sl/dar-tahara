@@ -13,6 +13,7 @@
   nav: {
     about: "About",
     missionVision: "Mission & Vision",
+    peopleCommunity: "People & Community",
     why: "Why Dar Tahara",
     services: "Services",
     plans: "Plans",
@@ -736,6 +737,267 @@
         "Transparent, subscription-based pricing",
         "Commitment to structured team training",
       ],
+    },
+  },
+  peopleCommunity: {
+    meta: {
+      title: "People & Community",
+      description:
+        "Discover how Dar Tahara combines professional home cleaning, employee screening, controlled property access and stable local employment in Morocco.",
+      ogAlt: "Dar Tahara: People & Community",
+    },
+    breadcrumb: {
+      home: "Home",
+      current: "People & Community",
+      label: "Breadcrumb",
+    },
+    hero: {
+      eyebrow: "People & Community",
+      title: "Cleaning Homes. Supporting Communities.",
+      subtitle:
+        "At Dar Tahara, we believe a professional cleaning service should do more than leave a home clean. We combine professional home care with stable local employment, fair working conditions and a service designed around trust.",
+      ctaPrimary: "Join Early Access",
+      ctaSecondary: "Read our mission & vision",
+      imageAlt: "A Dar Tahara cleaning professional preparing a Moroccan home",
+      highlights: ["Local teams", "Screened personnel", "Appointment-based access"],
+    },
+    employment: {
+      eyebrow: "Local employment",
+      title: "Local People Serving Local Communities",
+      lead: "Dar Tahara aims to recruit its cleaning teams from the cities and surrounding areas in which we operate. Where possible, employees work within their local operating area, close to the homes they care for.",
+      items: [
+        {
+          title: "Employment within local communities",
+          body: "When Dar Tahara opens in a city, we look first to that city and the surrounding areas to build the team that will serve it.",
+        },
+        {
+          title: "More predictable employment",
+          body: "Recurring subscriptions create recurring appointments, which lets us plan schedules ahead instead of offering irregular, one-off work.",
+        },
+        {
+          title: "Less unnecessary travel",
+          body: "Assigning employees within their local operating area, where possible, reduces long commutes and gives people more of their day back.",
+        },
+        {
+          title: "Dedicated local teams",
+          body: "Teams that know their city and its neighbourhoods build familiarity, consistency and genuine accountability toward the customers they serve.",
+        },
+        {
+          title: "Growth that creates local jobs",
+          body: "Every additional recurring customer in a city adds cleaning hours in that city, and cleaning hours are what create additional local positions.",
+        },
+      ],
+      flow: {
+        title: "How growth becomes local employment",
+        steps: [
+          "More customers",
+          "More recurring cleaning appointments",
+          "More stable local jobs",
+        ],
+        note: "This is the mechanism behind our employment model: predictable demand is what makes predictable employment possible.",
+      },
+      customerNote:
+        "By choosing Dar Tahara, you receive a professional and secure cleaning service while supporting stable local employment in the area where you live.",
+      disclaimer:
+        "Local recruitment and local assignment are applied where operationally possible within each operating area. Dar Tahara does not guarantee that every employee lives within a specific distance of every customer property.",
+    },
+    stability: {
+      eyebrow: "Fair employment",
+      title: "A Job Should Provide Stability",
+      lead: "Dar Tahara aims to provide more than occasional cleaning work. Our employees receive a fair monthly salary and health coverage, helping provide greater financial stability and access to essential healthcare.",
+      items: [
+        {
+          title: "A fair monthly salary",
+          body: "Employment is built around a fixed monthly salary rather than uncertain, task-by-task cash payments.",
+        },
+        {
+          title: "Health coverage",
+          body: "Our employment model includes applicable Mandatory Health Insurance (AMO) coverage for eligible employees through Morocco's CNSS system.",
+        },
+        {
+          title: "Predictable scheduled work",
+          body: "Recurring appointments are planned in advance, so employees know their schedule instead of waiting for work to appear.",
+        },
+        {
+          title: "Professional onboarding",
+          body: "Every team member is introduced to our standards, procedures and equipment before working independently in a customer's home.",
+        },
+        {
+          title: "A structured working environment",
+          body: "Clear responsibilities, defined working conditions, appropriate equipment and a coordinator to turn to.",
+        },
+      ],
+      objective:
+        "Our objective is straightforward: employment stable enough for basic needs to be met, with access to healthcare coverage. Our employees are professionals delivering a professional service, and they are paid for it as professionals.",
+      disclaimer:
+        "Salary, benefits and coverage are applied according to role, employment status, eligibility, operational stage and applicable Moroccan law.",
+    },
+    screening: {
+      eyebrow: "Customer trust",
+      title: "People You Can Trust in Your Home",
+      lead: "Allowing somebody into a private home requires trust. Dar Tahara therefore requires cleaning personnel to successfully complete the company's screening and verification process before being authorized to work independently in customer properties.",
+      steps: [
+        {
+          title: "Identity verification",
+          body: "We verify the identity of every candidate against official identification documents.",
+        },
+        {
+          title: "Background and employment verification",
+          body: "Where applicable, previous employment and references are verified before a candidate proceeds.",
+        },
+        {
+          title: "Dar Tahara onboarding",
+          body: "Candidates complete our onboarding programme covering procedures, equipment, privacy and conduct inside a customer's home.",
+        },
+        {
+          title: "Professional standards",
+          body: "Every employee works to a documented standard for cleaning, communication and respect for the customer's home and privacy.",
+        },
+        {
+          title: "Authorization before access",
+          body: "Property access is enabled only once screening and onboarding have been successfully completed.",
+        },
+      ],
+      criminalRecordLabel: "Official screening document",
+      criminalRecordDocument: "Criminal Record Certificate",
+      criminalRecordBody:
+        "As part of our screening process, every candidate must provide a valid Criminal Record Certificate. The document forms a required part of Dar Tahara's screening requirements, which a candidate must successfully complete before being authorized to work independently in customer properties.",
+      criminalRecordPrivacy:
+        "The document is handled confidentially as part of the employee's personnel record. It is never shared with customers, and customers cannot view or download it.",
+      authorization:
+        "Only personnel who successfully complete the required screening and onboarding process may be authorized to work in customer homes.",
+    },
+    access: {
+      eyebrow: "Controlled property access",
+      title: "Screening Is Only the First Layer of Security",
+      lead: "Dar Tahara combines employee screening with technology. For customers using a compatible Dar Tahara smart-lock solution, cleaning personnel do not receive unrestricted, permanent access to a property. Access is linked to the cleaning appointment itself.",
+      statement: "No active appointment means no authorized access.",
+      steps: [
+        {
+          title: "A scheduled appointment",
+          body: "The customer has a cleaning appointment in the schedule.",
+        },
+        {
+          title: "An authorized employee",
+          body: "A screened, authorized employee is assigned to that appointment.",
+        },
+        {
+          title: "Access for the service window",
+          body: "Property access is enabled for the relevant service time window.",
+        },
+        {
+          title: "Access during the authorized period",
+          body: "The employee uses their assigned access method within that period.",
+        },
+        {
+          title: "Restricted outside the window",
+          body: "Outside the authorized period, that access is restricted.",
+        },
+        {
+          title: "Activity is logged",
+          body: "Access activity is recorded against the appointment it belongs to.",
+        },
+        {
+          title: "Visible to the customer",
+          body: "The customer can review the relevant lock and access records for their property.",
+        },
+      ],
+      availabilityNote:
+        "This access model applies to properties with a compatible Dar Tahara smart-lock solution and is being introduced together with our early-access programme, so it is not yet active in every home. Installation is optional and subject to a door and lock compatibility review. Homes without a compatible smart lock continue to use the agreed key-handling arrangements.",
+    },
+    transparency: {
+      eyebrow: "Access transparency",
+      title: "Know When Your Home Was Accessed",
+      body: "Dar Tahara combines controlled property access with transparent access records. Customers using our supported smart-lock solution can review relevant access logs, providing additional transparency about when their property was accessed.",
+      points: [
+        {
+          title: "When access happened",
+          body: "The date and time your property was accessed.",
+        },
+        {
+          title: "Which appointment it belonged to",
+          body: "The scheduled cleaning appointment the access relates to.",
+        },
+        {
+          title: "Whether it fell inside the service window",
+          body: "Confirmation that access took place within the authorized period.",
+        },
+      ],
+      privacyNote:
+        "Access records show what is relevant to your property and your appointments. They are not a monitoring tool aimed at individual employees, and private employee records are never exposed to customers.",
+      availabilityNote:
+        "Access records are provided for properties with a compatible Dar Tahara smart-lock solution and become available as that solution is rolled out. Homes without a compatible smart lock do not produce these records.",
+    },
+    trust: {
+      eyebrow: "Our commitment",
+      title: "Screened Personnel. Scheduled Access. Transparent Access Records.",
+      body: "When you trust someone with access to your home, we believe you deserve more than a promise. Dar Tahara combines employee screening, controlled property access and transparent access records to create a professional service designed around security and accountability.",
+      pillars: [
+        {
+          title: "Screened personnel",
+          body: "Nobody works independently in a customer's home before completing our screening and onboarding.",
+        },
+        {
+          title: "Scheduled access",
+          body: "Access is tied to a real appointment and a defined service window, never handed over permanently.",
+        },
+        {
+          title: "Transparent records",
+          body: "You can review the access activity that relates to your own property.",
+        },
+      ],
+    },
+    impact: {
+      eyebrow: "One model, three outcomes",
+      title: "Professional service. Responsible employment. Stronger local communities.",
+      subtitle:
+        "These are not two separate stories. A company that treats its people as professionals is the same company you can trust inside your home.",
+      groups: [
+        {
+          title: "For the customer",
+          items: [
+            "Professional cleaning",
+            "Screened personnel",
+            "Controlled property access",
+            "Greater transparency",
+          ],
+        },
+        {
+          title: "For the employee",
+          items: [
+            "Stable employment",
+            "A fair monthly salary",
+            "Health coverage",
+            "A professional working environment",
+          ],
+        },
+        {
+          title: "For the community",
+          items: [
+            "Local employment opportunities",
+            "Local economic activity",
+            "Professional skills and training",
+            "Jobs created as Dar Tahara expands",
+          ],
+        },
+      ],
+      chain: [
+        "Professional service",
+        "Responsible employment",
+        "Stronger local communities",
+      ],
+    },
+    closing: {
+      eyebrow: "Why it matters",
+      title: "Professional Standards. Human Impact.",
+      body: [
+        "For our customers, Dar Tahara means a professional cleaning service built around reliability, security and transparency.",
+        "For our employees, it means the opportunity for stable work, predictable income and health coverage.",
+        "For the communities we serve, it means that the growth of Dar Tahara can create employment directly within the local area.",
+      ],
+      statement: "A cleaner home. A safer service. A stronger local community.",
+      ctaPrimary: "Join Early Access",
+      ctaSecondary: "Read our mission & vision",
     },
   },
   footer: {

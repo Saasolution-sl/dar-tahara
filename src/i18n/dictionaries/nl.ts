@@ -17,6 +17,7 @@ const nl: DeepPartial<Dictionary> = {
   nav: {
     about: "Over ons",
     missionVision: "Missie & Visie",
+    peopleCommunity: "Mensen & Gemeenschap",
     why: "Waarom Dar Tahara",
     services: "Diensten",
     plans: "Abonnementen",
@@ -721,6 +722,267 @@ const nl: DeepPartial<Dictionary> = {
         "Transparante prijzen op abonnementsbasis",
         "Inzet voor gestructureerde teamtraining",
       ],
+    },
+  },
+  peopleCommunity: {
+    meta: {
+      title: "Mensen & Gemeenschap",
+      description:
+        "Ontdek hoe Dar Tahara professionele woningreiniging, screening van medewerkers, gecontroleerde toegang tot de woning en stabiel lokaal werk in Marokko combineert.",
+      ogAlt: "Dar Tahara: Mensen & Gemeenschap",
+    },
+    breadcrumb: {
+      home: "Home",
+      current: "Mensen & Gemeenschap",
+      label: "Kruimelpad",
+    },
+    hero: {
+      eyebrow: "Mensen & Gemeenschap",
+      title: "Schone huizen. Sterkere gemeenschappen.",
+      subtitle:
+        "Bij Dar Tahara geloven wij dat een professionele schoonmaakdienst meer moet doen dan een huis schoon achterlaten. Wij combineren professionele woningverzorging met stabiel lokaal werk, eerlijke arbeidsvoorwaarden en een dienstverlening die is opgebouwd rond vertrouwen.",
+      ctaPrimary: "Meld u aan voor early access",
+      ctaSecondary: "Lees onze missie & visie",
+      imageAlt: "Een schoonmaakprofessional van Dar Tahara maakt een Marokkaanse woning gereed",
+      highlights: ["Lokale teams", "Gescreende medewerkers", "Toegang per afspraak"],
+    },
+    employment: {
+      eyebrow: "Lokale werkgelegenheid",
+      title: "Lokale mensen voor lokale gemeenschappen",
+      lead: "Dar Tahara wil zijn schoonmaakteams werven in de steden en omliggende gebieden waarin wij actief zijn. Waar mogelijk werken medewerkers binnen hun eigen lokale werkgebied, dicht bij de woningen die zij verzorgen.",
+      items: [
+        {
+          title: "Werk binnen de eigen gemeenschap",
+          body: "Wanneer Dar Tahara in een stad van start gaat, kijken wij eerst naar die stad en de omliggende gebieden om het team samen te stellen dat er gaat werken.",
+        },
+        {
+          title: "Meer voorspelbaar werk",
+          body: "Doorlopende abonnementen leveren terugkerende afspraken op. Daardoor kunnen wij roosters vooruit plannen in plaats van onregelmatig los werk aan te bieden.",
+        },
+        {
+          title: "Minder onnodige reistijd",
+          body: "Medewerkers waar mogelijk binnen hun eigen werkgebied inzetten beperkt lange reistijden en geeft mensen meer van hun dag terug.",
+        },
+        {
+          title: "Vaste lokale teams",
+          body: "Teams die hun stad en de wijken kennen, bouwen vertrouwdheid, continuïteit en echte betrokkenheid op bij de klanten die zij bedienen.",
+        },
+        {
+          title: "Groei die lokale banen oplevert",
+          body: "Elke extra vaste klant in een stad betekent extra schoonmaakuren in diezelfde stad, en die uren zorgen voor extra lokale arbeidsplaatsen.",
+        },
+      ],
+      flow: {
+        title: "Hoe groei lokale werkgelegenheid wordt",
+        steps: [
+          "Meer klanten",
+          "Meer terugkerende schoonmaakafspraken",
+          "Meer stabiele lokale banen",
+        ],
+        note: "Dit is het mechanisme achter ons arbeidsmodel: voorspelbare vraag maakt voorspelbaar werk mogelijk.",
+      },
+      customerNote:
+        "Door voor Dar Tahara te kiezen krijgt u een professionele en veilige schoonmaakdienst en ondersteunt u tegelijk stabiel lokaal werk in de omgeving waar u woont.",
+      disclaimer:
+        "Lokale werving en lokale inzet worden toegepast waar dat operationeel mogelijk is binnen elk werkgebied. Dar Tahara garandeert niet dat elke medewerker binnen een bepaalde afstand van elke klantwoning woont.",
+    },
+    stability: {
+      eyebrow: "Eerlijk werkgeverschap",
+      title: "Een baan hoort stabiliteit te geven",
+      lead: "Dar Tahara wil meer bieden dan incidenteel schoonmaakwerk. Onze medewerkers ontvangen een eerlijk maandsalaris en ziektekostendekking, wat bijdraagt aan meer financiële stabiliteit en toegang tot essentiële zorg.",
+      items: [
+        {
+          title: "Een eerlijk maandsalaris",
+          body: "Het dienstverband is opgebouwd rond een vast maandsalaris in plaats van onzekere contante betalingen per klus.",
+        },
+        {
+          title: "Ziektekostendekking",
+          body: "Ons arbeidsmodel omvat de toepasselijke verplichte ziektekostenverzekering (AMO) voor in aanmerking komende medewerkers via het Marokkaanse CNSS-stelsel.",
+        },
+        {
+          title: "Voorspelbaar ingeroosterd werk",
+          body: "Terugkerende afspraken worden vooruit gepland, zodat medewerkers hun rooster kennen in plaats van te wachten tot er werk komt.",
+        },
+        {
+          title: "Professionele inwerking",
+          body: "Elke medewerker maakt kennis met onze standaarden, procedures en materialen voordat hij of zij zelfstandig in een klantwoning werkt.",
+        },
+        {
+          title: "Een gestructureerde werkomgeving",
+          body: "Duidelijke verantwoordelijkheden, vastgelegde arbeidsvoorwaarden, passend materieel en een coördinator om op terug te vallen.",
+        },
+      ],
+      objective:
+        "Onze doelstelling is eenvoudig: werk dat stabiel genoeg is om in de basisbehoeften te voorzien, met toegang tot ziektekostendekking. Onze medewerkers zijn professionals die een professionele dienst leveren, en zij worden daar ook als professional voor betaald.",
+      disclaimer:
+        "Salaris, secundaire voorwaarden en dekking worden toegepast op basis van functie, dienstverband, aanspraak, operationele fase en de toepasselijke Marokkaanse wetgeving.",
+    },
+    screening: {
+      eyebrow: "Vertrouwen van de klant",
+      title: "Mensen die u in uw huis kunt vertrouwen",
+      lead: "Iemand toelaten in een privéwoning vraagt om vertrouwen. Daarom moeten schoonmaakmedewerkers van Dar Tahara de screenings- en verificatieprocedure van het bedrijf met succes doorlopen voordat zij bevoegd zijn om zelfstandig in klantwoningen te werken.",
+      steps: [
+        {
+          title: "Identiteitscontrole",
+          body: "Wij controleren de identiteit van elke kandidaat aan de hand van officiële identiteitsdocumenten.",
+        },
+        {
+          title: "Achtergrond- en arbeidsverificatie",
+          body: "Waar van toepassing worden eerdere dienstverbanden en referenties geverifieerd voordat een kandidaat verdergaat.",
+        },
+        {
+          title: "Inwerkprogramma van Dar Tahara",
+          body: "Kandidaten doorlopen ons inwerkprogramma over procedures, materialen, privacy en gedrag binnen de woning van een klant.",
+        },
+        {
+          title: "Professionele standaarden",
+          body: "Elke medewerker werkt volgens een vastgelegde standaard voor schoonmaak, communicatie en respect voor de woning en de privacy van de klant.",
+        },
+        {
+          title: "Autorisatie vóór toegang",
+          body: "Toegang tot de woning wordt pas ingeschakeld nadat screening en inwerking met succes zijn afgerond.",
+        },
+      ],
+      criminalRecordLabel: "Officieel screeningsdocument",
+      criminalRecordDocument: "Verklaring Omtrent het Gedrag (VOG)",
+      criminalRecordBody:
+        "Als onderdeel van onze screening moet iedere kandidaat een geldige Verklaring Omtrent het Gedrag (VOG) aanleveren. Het document is een vast onderdeel van de screeningsvereisten van Dar Tahara, die een kandidaat met succes moet doorlopen voordat hij of zij bevoegd is om zelfstandig in klantwoningen te werken.",
+      criminalRecordPrivacy:
+        "Het document wordt vertrouwelijk behandeld als onderdeel van het personeelsdossier. Het wordt nooit met klanten gedeeld en klanten kunnen het niet inzien of downloaden.",
+      authorization:
+        "Alleen medewerkers die de vereiste screening en inwerking met succes doorlopen, kunnen worden geautoriseerd om in klantwoningen te werken.",
+    },
+    access: {
+      eyebrow: "Gecontroleerde toegang tot de woning",
+      title: "Screening is slechts de eerste beveiligingslaag",
+      lead: "Dar Tahara combineert de screening van medewerkers met technologie. Voor klanten met een compatibele slimme slot-oplossing van Dar Tahara krijgen schoonmaakmedewerkers geen onbeperkte, permanente toegang tot de woning. De toegang is gekoppeld aan de schoonmaakafspraak zelf.",
+      statement: "Geen actieve afspraak betekent geen geautoriseerde toegang.",
+      steps: [
+        {
+          title: "Een ingeplande afspraak",
+          body: "De klant heeft een schoonmaakafspraak in het rooster staan.",
+        },
+        {
+          title: "Een geautoriseerde medewerker",
+          body: "Een gescreende, geautoriseerde medewerker wordt aan die afspraak toegewezen.",
+        },
+        {
+          title: "Toegang voor het servicevenster",
+          body: "Toegang tot de woning wordt ingeschakeld voor het betreffende tijdvenster van de dienst.",
+        },
+        {
+          title: "Toegang tijdens de toegestane periode",
+          body: "De medewerker gebruikt de toegewezen toegangsmethode binnen die periode.",
+        },
+        {
+          title: "Beperkt buiten het venster",
+          body: "Buiten de toegestane periode is die toegang beperkt.",
+        },
+        {
+          title: "Activiteit wordt vastgelegd",
+          body: "Toegangsactiviteit wordt geregistreerd bij de afspraak waar zij bij hoort.",
+        },
+        {
+          title: "Zichtbaar voor de klant",
+          body: "De klant kan de relevante slot- en toegangsregistraties van de eigen woning inzien.",
+        },
+      ],
+      availabilityNote:
+        "Dit toegangsmodel geldt voor woningen met een compatibele slimme slot-oplossing van Dar Tahara en wordt samen met ons early-accessprogramma geïntroduceerd; het is dus nog niet in elke woning actief. Installatie is optioneel en onder voorbehoud van een compatibiliteitscontrole van deur en slot. Woningen zonder compatibel slim slot blijven gebruikmaken van de afgesproken sleutelafspraken.",
+    },
+    transparency: {
+      eyebrow: "Transparante toegang",
+      title: "Weet wanneer uw woning is betreden",
+      body: "Dar Tahara combineert gecontroleerde toegang tot de woning met transparante registraties. Klanten die gebruikmaken van onze ondersteunde slimme slot-oplossing kunnen de relevante toegangsregistraties inzien, wat extra inzicht geeft in wanneer hun woning is betreden.",
+      points: [
+        {
+          title: "Wanneer de toegang plaatsvond",
+          body: "De datum en het tijdstip waarop uw woning is betreden.",
+        },
+        {
+          title: "Bij welke afspraak het hoorde",
+          body: "De ingeplande schoonmaakafspraak waarop de toegang betrekking heeft.",
+        },
+        {
+          title: "Of het binnen het servicevenster viel",
+          body: "Bevestiging dat de toegang binnen de toegestane periode plaatsvond.",
+        },
+      ],
+      privacyNote:
+        "Toegangsregistraties tonen wat relevant is voor uw woning en uw afspraken. Zij zijn geen controlemiddel gericht op individuele medewerkers, en persoonlijke personeelsgegevens worden nooit aan klanten getoond.",
+      availabilityNote:
+        "Toegangsregistraties zijn beschikbaar voor woningen met een compatibele slimme slot-oplossing van Dar Tahara en komen beschikbaar naarmate die oplossing wordt uitgerold. Woningen zonder compatibel slim slot leveren deze registraties niet op.",
+    },
+    trust: {
+      eyebrow: "Onze belofte",
+      title: "Gescreende medewerkers. Toegang op afspraak. Transparante registraties.",
+      body: "Wanneer u iemand toegang tot uw huis toevertrouwt, verdient u wat ons betreft meer dan een belofte. Dar Tahara combineert screening van medewerkers, gecontroleerde toegang tot de woning en transparante toegangsregistraties tot een professionele dienst die is ontworpen rond veiligheid en verantwoording.",
+      pillars: [
+        {
+          title: "Gescreende medewerkers",
+          body: "Niemand werkt zelfstandig in de woning van een klant voordat onze screening en inwerking zijn afgerond.",
+        },
+        {
+          title: "Toegang op afspraak",
+          body: "Toegang is gekoppeld aan een echte afspraak en een afgebakend servicevenster, en wordt nooit permanent weggegeven.",
+        },
+        {
+          title: "Transparante registraties",
+          body: "U kunt de toegangsactiviteit inzien die betrekking heeft op uw eigen woning.",
+        },
+      ],
+    },
+    impact: {
+      eyebrow: "Eén model, drie uitkomsten",
+      title: "Professionele dienstverlening. Verantwoord werkgeverschap. Sterkere lokale gemeenschappen.",
+      subtitle:
+        "Dit zijn geen twee losse verhalen. Een bedrijf dat zijn mensen als professionals behandelt, is hetzelfde bedrijf dat u binnen uw huis kunt vertrouwen.",
+      groups: [
+        {
+          title: "Voor de klant",
+          items: [
+            "Professionele schoonmaak",
+            "Gescreende medewerkers",
+            "Gecontroleerde toegang tot de woning",
+            "Meer transparantie",
+          ],
+        },
+        {
+          title: "Voor de medewerker",
+          items: [
+            "Stabiel werk",
+            "Een eerlijk maandsalaris",
+            "Ziektekostendekking",
+            "Een professionele werkomgeving",
+          ],
+        },
+        {
+          title: "Voor de gemeenschap",
+          items: [
+            "Lokale arbeidskansen",
+            "Lokale economische bedrijvigheid",
+            "Vakkennis en opleiding",
+            "Banen die ontstaan naarmate Dar Tahara groeit",
+          ],
+        },
+      ],
+      chain: [
+        "Professionele dienstverlening",
+        "Verantwoord werkgeverschap",
+        "Sterkere lokale gemeenschappen",
+      ],
+    },
+    closing: {
+      eyebrow: "Waarom dit telt",
+      title: "Professionele standaarden. Menselijke impact.",
+      body: [
+        "Voor onze klanten betekent Dar Tahara een professionele schoonmaakdienst die is opgebouwd rond betrouwbaarheid, veiligheid en transparantie.",
+        "Voor onze medewerkers betekent het de kans op stabiel werk, een voorspelbaar inkomen en ziektekostendekking.",
+        "Voor de gemeenschappen die wij bedienen betekent het dat de groei van Dar Tahara werkgelegenheid kan creëren binnen het eigen gebied.",
+      ],
+      statement: "Een schoner huis. Een veiligere dienst. Een sterkere lokale gemeenschap.",
+      ctaPrimary: "Meld u aan voor early access",
+      ctaSecondary: "Lees onze missie & visie",
     },
   },
   footer: {
