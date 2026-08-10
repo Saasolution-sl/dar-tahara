@@ -16,6 +16,8 @@ import {
   earlyAccessOpenGraphLocales,
 } from "@/lib/early-access/social-metadata";
 import { prepareEarlyAccessPageView } from "@/lib/early-access/page-view-recorder";
+import { PageStructuredData } from "@/components/seo/structured-data";
+import { pages } from "@/lib/site";
 
 export const dynamic = "force-dynamic";
 
@@ -86,6 +88,16 @@ export default async function EarlyAccessPage({
 
   return (
     <div className="overflow-hidden" dir={dir}>
+      {/*
+        The highest-intent public page had site-level schema only, so crawlers
+        saw no WebPage entity for it and nothing tying it to the organization.
+      */}
+      <PageStructuredData
+        locale={typedLocale}
+        path={pages.earlyAccess}
+        name={copy.meta.title}
+        description={copy.meta.description}
+      />
       <section className="wash relative border-b border-border pb-16 pt-28 sm:pt-32 lg:pt-40">
         <div className="pointer-events-none absolute -right-40 top-20 h-80 w-80 rounded-full bg-accent/10 blur-3xl" aria-hidden />
         <div className="pointer-events-none absolute -left-32 bottom-0 h-72 w-72 rounded-full bg-primary/10 blur-3xl" aria-hidden />

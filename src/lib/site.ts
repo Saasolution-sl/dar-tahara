@@ -17,6 +17,8 @@ export const site = {
   defaultTitle: "Dar Tahara: Premium Home Care & Property Concierge",
   titleTemplate: `%s | ${siteName}`,
   defaultDescription,
+  /** English brand line, mirrored in `brand.tagline` for each locale. */
+  slogan: "Always arrive home to comfort.",
   logoUrl: `${siteUrl}/icon.svg`,
   defaultSocialImage: `${siteUrl}/${defaultLocale}/opengraph-image`,
   contactEmail: "hello@dartahara.com",
