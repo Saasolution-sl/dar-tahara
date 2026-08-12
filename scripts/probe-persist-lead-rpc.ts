@@ -13,12 +13,21 @@
  * which enumerates the RPCs exposed on the schema, so there is no possibility
  * of creating a lead as a side effect of asking.
  *
- *   npx tsx scripts/probe-persist-lead-rpc.ts
+ *   npx tsx scripts/probe-persist-lead-rpc.ts                       # production
+ *   npx tsx scripts/probe-persist-lead-rpc.ts --env .env.local      # staging
+ *
+ * The environment is selectable because staging drifting behind production is
+ * itself a failure mode: on 2026-08-11 production had the function and staging
+ * did not, so local development hit a 500 that production no longer had. A
+ * probe that can only see one environment cannot tell you that.
  */
 import { readFileSync } from "node:fs";
 
+const envFlag = process.argv.indexOf("--env");
+const envFile = envFlag !== -1 ? process.argv[envFlag + 1] : ".env.local.prod-backup";
+
 const env: Record<string, string> = {};
-for (const line of readFileSync(new URL("../.env.local.prod-backup", import.meta.url), "utf8").split(/\r?\n/)) {
+for (const line of readFileSync(new URL(`../${envFile}`, import.meta.url), "utf8").split(/\r?\n/)) {
   const m = /^([A-Z0-9_]+)=(.*)$/.exec(line.trim());
   if (m) env[m[1]] = m[2];
 }
