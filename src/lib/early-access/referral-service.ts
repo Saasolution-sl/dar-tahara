@@ -1,6 +1,7 @@
 import "server-only";
 import { serviceSelect, serviceInsert, serviceUpdate } from "@/lib/supabase-rpc";
 import { canCreditReferral } from "./referral";
+import { syncReferralRewards } from "./referral-rewards-bridge";
 
 type LeadRow = { id: string; referral_code: string | null; referred_by_code: string | null; verified_referral_count: number | null };
 
@@ -59,6 +60,22 @@ export async function creditReferralIfEligible(args: {
   await serviceUpdate("marketing_leads", `id=eq.${args.referredLeadId}`, {
     referred_by_lead_id: referrer.id,
   }).catch(() => {});
+
+  // Push the referrer's new reward state to Mautic so the reward emails have
+  // live numbers. Best-effort and after the durable write: the referral is
+  // already counted above, so a Mautic outage must not fail the credit. Logged
+  // rather than swallowed — a silently failing sync is indistinguishable from
+  // "nobody referred anyone" (the lesson from the page-view counter bug).
+  const rewardSync = await syncReferralRewards(referrer.id).catch((e) => ({
+    status: "failed" as const,
+    error: e instanceof Error ? e.message : String(e),
+  }));
+  if (rewardSync.status === "failed") {
+    console.error("[referral] reward sync to Mautic failed", {
+      referrerLeadId: referrer.id,
+      error: rewardSync.error,
+    });
+  }
 
   return { credited: true };
 }
