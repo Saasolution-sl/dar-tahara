@@ -110,3 +110,19 @@ export async function recentTokenCount(leadId: string, withinMs: number): Promis
   ).catch(() => [] as Array<{ id: string }>);
   return rows.length;
 }
+
+/**
+ * Every verification token ever issued to a lead.
+ *
+ * Used as the "have we already nudged this person" marker by the verification
+ * reminder job: signup issues exactly one token, so a count above one means the
+ * lead has already had a fresh link (from a reminder or a manual resend) and
+ * must not be mailed again. This deliberately avoids adding a `reminded_at`
+ * column, which would need a migration applied by hand to production.
+ */
+export async function totalTokenCount(leadId: string): Promise<number> {
+  const rows = await serviceSelect<Array<{ id: string }>>(
+    `email_verification_tokens?lead_id=eq.${leadId}&select=id`,
+  ).catch(() => [] as Array<{ id: string }>);
+  return rows.length;
+}
