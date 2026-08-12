@@ -128,14 +128,18 @@ export async function syncReferralRewardsFor(
 }
 
 /**
- * Re-push reward state for every lead that has at least one confirmed referral.
+ * Re-push reward state for every lead in the referral programme.
  *
  * Runs before the weekly campaign pass so the numbers in the emails are current
  * even for referrers whose per-event sync failed while Mautic was unavailable —
  * without it, a single failed push would leave a contact showing a stale
  * discount until their next referral, which may never come.
+ *
+ * The default limit covers the whole contact base rather than a page of it: a
+ * limit below the population silently leaves the oldest contacts unsynced, and
+ * an unsynced contact is invisible to the campaign rather than merely stale.
  */
-export async function backfillReferralRewards(limit = 200): Promise<{
+export async function backfillReferralRewards(limit = 2000): Promise<{
   attempted: number;
   synchronized: number;
   failures: number;
@@ -143,9 +147,18 @@ export async function backfillReferralRewards(limit = 200): Promise<{
   const client = mauticFromEnv();
   if (!client) return { attempted: 0, synchronized: 0, failures: 0 };
 
-  const bounded = Math.max(1, Math.min(1000, limit));
+  // Everyone holding a referral code, NOT just those with referrals already.
+  // Filtering on a count > 0 looks like a cheap optimization and is actively
+  // wrong: contacts at zero are the largest cohort and the ones the "0
+  // referrals" email targets. Left unsynced their Mautic count stays NULL,
+  // which never matches the campaign's `= 0` branch (SQL: NULL = 0 is NULL,
+  // not true), so they silently receive nothing — and their referral_link
+  // stays NULL too, leaving that email's only button with an empty href.
+  // Codes are minted at email verification, so this is exactly "in the
+  // referral programme".
+  const bounded = Math.max(1, Math.min(5000, limit));
   const candidates = await serviceSelect<Array<{ id: string }>>(
-    `marketing_leads?verified_referral_count=gt.0&select=id&order=updated_at.desc&limit=${bounded}`,
+    `marketing_leads?referral_code=not.is.null&select=id&order=updated_at.desc&limit=${bounded}`,
   ).catch(() => [] as Array<{ id: string }>);
 
   let synchronized = 0;
