@@ -13,7 +13,13 @@
 import { readFileSync } from "node:fs";
 
 const env: Record<string, string> = {};
-for (const line of readFileSync(new URL("../.env.local.prod-backup", import.meta.url), "utf8").split(/\r?\n/)) {
+// Environment is selectable so the same audit can check staging after a smoke
+// test, not only production. Defaults to production so existing usage is
+// unchanged.  --env .env.local  targets staging.
+const envFlag = process.argv.indexOf("--env");
+const envFile = envFlag !== -1 ? process.argv[envFlag + 1] : ".env.local.prod-backup";
+
+for (const line of readFileSync(new URL(`../${envFile}`, import.meta.url), "utf8").split(/\r?\n/)) {
   const m = /^([A-Z0-9_]+)=(.*)$/.exec(line.trim());
   if (m) env[m[1]] = m[2];
 }

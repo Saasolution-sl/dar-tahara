@@ -34,8 +34,13 @@ const TEST_EMAILS = [
 
 const confirm = process.argv.includes("--confirm");
 
+// Environment is selectable, and the project URL is printed before anything is
+// deleted, so the operator can see which database they are about to change.
+const envFlag = process.argv.indexOf("--env");
+const envFileName = envFlag !== -1 ? process.argv[envFlag + 1] : ".env.local.prod-backup";
+
 const env: Record<string, string> = {};
-for (const line of readFileSync(new URL("../.env.local.prod-backup", import.meta.url), "utf8").split(/\r?\n/)) {
+for (const line of readFileSync(new URL(`../${envFileName}`, import.meta.url), "utf8").split(/\r?\n/)) {
   const m = /^([A-Z0-9_]+)=(.*)$/.exec(line.trim());
   if (m) env[m[1]] = m[2];
 }
