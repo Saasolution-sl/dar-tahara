@@ -142,6 +142,25 @@ FIELDS=(
   "referral_code|Referral Code|text|core"
   "referred_by_code|Referred By Code|text|core"
   "verified_referral_count|Verified Referral Count|number|core"
+  # Referral reward state, derived from verified_referral_count and written by
+  # the referral-confirmed sync (src/lib/early-access/referral-rewards.ts). These
+  # are denormalized ONLY so the reward emails can print them as tokens; the
+  # count above stays the single source of truth and is never derived from these.
+  "referral_pct|Referral Discount Percent|number|core"
+  "referral_saving|Referral Saving EUR|number|core"
+  "referral_next_pct|Referral Next Percent|number|core"
+  # 191, not the varchar(64) default: the live link is ~54 chars
+  # (https://www.dartahara.com/<locale>/early-access?ref=<8-char code>), and at 64
+  # a slightly longer domain, code or appended parameter would truncate the URL
+  # silently — breaking the only call to action in every reward email.
+  "referral_link|Referral Link|url|core||191"
+  # The 10-cell progress-bar markup, precomputed server-side. Type MUST be `html`
+  # (Doctrine LONGTEXT): `text` and `url` fields are varchar(191) in Mautic 7 and
+  # this string is ~820 chars, so a `text` field would silently truncate it
+  # mid-tag and emit broken markup into the email. Alias is `referral_progress_html`
+  # (22 chars) rather than the handoff's `referral_progress_bar_html` (26), because
+  # Mautic truncates aliases at 25 and then spawns a duplicate on the next run.
+  "referral_progress_html|Referral Progress Bar HTML|html|core"
   "source_tracking_code|Source Tracking Code|text|core"
 
   # Attribution. Mautic reserves the bare utm_* aliases for its own native UTM
@@ -167,7 +186,7 @@ FIELDS=(
 )
 
 for spec in "${FIELDS[@]}"; do
-  IFS='|' read -r alias label ftype fgroup opts <<<"$spec"
+  IFS='|' read -r alias label ftype fgroup opts flen <<<"$spec"
   props='{}'
   if [[ "$ftype" == "boolean" ]]; then
     # Boolean contact fields REQUIRE yes/no labels or the API rejects them with a
@@ -183,7 +202,13 @@ for spec in "${FIELDS[@]}"; do
     done
     props="{\"list\":[${list}]}"
   fi
-  body="{\"label\":\"${label}\",\"alias\":\"${alias}\",\"type\":\"${ftype}\",\"group\":\"${fgroup}\",\"isPublished\":true,\"properties\":${props}}"
+  # Mautic's LeadField entity defaults charLengthLimit to 64, so EVERY text/url/
+  # select/email/phone custom field lands as varchar(64) unless a length is given
+  # — and an over-long value is then truncated silently, with no API error. Any
+  # field whose value can approach 64 characters must declare its own length.
+  len_json=""
+  [[ -n "${flen:-}" ]] && len_json=",\"charLengthLimit\":${flen}"
+  body="{\"label\":\"${label}\",\"alias\":\"${alias}\",\"type\":\"${ftype}\",\"group\":\"${fgroup}\",\"isPublished\":true${len_json},\"properties\":${props}}"
   # Remember the intended option list so the reconcile pass below can repair a
   # field whose vocabulary changed after it was first created.
   [[ -n "${opts:-}" ]] && WANT_OPTS["$alias"]="$opts"

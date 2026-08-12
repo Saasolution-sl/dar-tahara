@@ -164,6 +164,40 @@ test("translated legal pages carry a prevailing-language clause; English does no
   }
 });
 
+test("legal document bodies are translated in every locale, not English fallbacks", async () => {
+  const { getLegalCopy, PRIVACY_CONTACT, PRIVACY_CONTACT_SUFFIX } = await import("@/i18n/legal-copy");
+  const en = getLegalCopy("en");
+
+  for (const locale of locales) {
+    const copy = getLegalCopy(locale);
+    for (const doc of ["terms", "privacy"] as const) {
+      assert.equal(copy[doc].opening.length, en[doc].opening.length, `${locale}/${doc} lost a section`);
+      assert.equal(copy[doc].closing.length, en[doc].closing.length, `${locale}/${doc} lost a section`);
+      for (const group of ["opening", "closing"] as const) {
+        copy[doc][group].forEach((section, i) => {
+          assert.equal(
+            section.paragraphs.length,
+            en[doc][group][i].paragraphs.length,
+            `${locale}/${doc} section ${i} lost a paragraph`,
+          );
+          section.paragraphs.forEach((p) => assert.ok(p.length > 80, `${locale}/${doc} paragraph too short`));
+        });
+      }
+      if (locale === "en") continue;
+      // A field identical to English means the override never landed and the
+      // deep-merge silently fell back.
+      assert.notEqual(copy[doc].intro, en[doc].intro, `${locale}/${doc} intro is untranslated`);
+      assert.notEqual(
+        copy[doc].opening[0].paragraphs[0],
+        en[doc].opening[0].paragraphs[0],
+        `${locale}/${doc} body is untranslated`,
+      );
+    }
+    assert.ok(PRIVACY_CONTACT[locale].heading.length > 0);
+    assert.ok(PRIVACY_CONTACT_SUFFIX[locale].length > 10);
+  }
+});
+
 test("llms.txt returns plain text with official pages and verification guidance", async () => {
   const response = getLlms();
   assert.equal(response.status, 200);

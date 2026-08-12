@@ -184,11 +184,25 @@ Translated into all 6 non-English locales. **The English page does not display i
 
 Also localized in the same pass: `termsTitle`, `privacyTitle`, effective dates, and the meta descriptions — which **clears the last remaining duplicate-description finding** (previously 7× identical on each legal document).
 
-### Outstanding
+### Legal document bodies — translated
 
-**The legal document bodies remain English prose** under all 7 locales. The prevailing-language clause now protects that position legally and tells the reader plainly what they are looking at, so the risk the owner raised — *"the user cannot say I thought it was like this"* — is addressed.
+Both documents are now fully translated into all 6 non-English locales, rendered from `src/i18n/legal-copy.ts` with English as the deep-merged base.
 
-Translating the ~21 sections of Terms and Privacy into 6 languages is a substantial piece of legal-translation work in its own right and is the natural next step; the structure to receive it (`dict.legal.*`) now exists.
+| Document | Sections | Locales | English leaks |
+|---|---|---|---|
+| Terms of Service | 11 | 7 | 0 in translations |
+| Privacy Policy | 10 | 7 | 0 in translations |
+
+Two structural decisions:
+
+- **English remains the source of truth and the binding text.** Every locale is an override merged over it, so an untranslated field would fall back to English rather than vanish — a fallback that is safe *here specifically*, because an English paragraph inside a translated contract is the binding wording and the notice at the top already says so.
+- **Terms §3, §4 and the support block are not in this file.** They live in `@/lib/service-policy`, already translated, and were left there because they restate scheduling, subscription, discount and pause rules that must stay identical to the rules the booking flow actually enforces. Duplicating them into a second source would let the contract and the software drift apart.
+
+Renderings stay close to the English sentence structure on purpose. Where a more idiomatic phrasing would have shifted the scope of an obligation, the literal reading won.
+
+A test asserts, for every locale and both documents: section counts match English, paragraph counts match per section, no paragraph is suspiciously short, and neither the intro nor the first body paragraph is byte-identical to English — which is what a silently-failed override would look like.
+
+**Owner review still recommended.** These are competent professional translations, not certified legal translations. The prevailing-language clause means a discrepancy is resolved in favour of the English text rather than creating liability, but a Moroccan lawyer's read of the French and Arabic versions would be worth commissioning before high-volume trading.
 
 ---
 
