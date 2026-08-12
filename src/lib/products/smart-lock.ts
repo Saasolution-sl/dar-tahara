@@ -14,6 +14,16 @@ export const DIGITAL_SMART_LOCK_OFFER = {
   productCode: "digital_smart_lock_installation",
   currency: "EUR",
   price: 200,
+  /**
+   * The same figure in minor units, which is what any arithmetic must use.
+   * Percentage rewards on a float euro amount accumulate representation error
+   * (200 * 0.025 is not exactly 5 in binary floating point), so the referral
+   * engine works in cents end to end and only formats for display.
+   *
+   * Kept beside `price` rather than derived from it so the source of truth stays
+   * one literal per representation; a test asserts the two agree.
+   */
+  priceCents: 20_000,
   installationIncluded: true,
 } as const;
 
