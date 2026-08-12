@@ -25,12 +25,30 @@
  */
 import { readFileSync } from "node:fs";
 
-/** Test addresses to remove. Everything else is left alone. */
-const TEST_EMAILS = [
+/**
+ * Addresses to remove. Everything else is left alone.
+ *
+ * Overridable per run with `--emails a@b.com,c@d.com` so cleaning up after a
+ * smoke test does not require editing this file — an edit that is easy to
+ * commit by accident, and which would silently change what a later production
+ * run deletes.
+ */
+const DEFAULT_TEST_EMAILS = [
   "slsaasolution@gmail.com",
   "paradoxpartition@gmail.com",
   "othman.deraz@gmail.com",
-].map((e) => e.toLowerCase());
+];
+
+const emailsFlag = process.argv.indexOf("--emails");
+const TEST_EMAILS = (
+  emailsFlag !== -1 && process.argv[emailsFlag + 1]
+    ? process.argv[emailsFlag + 1].split(",")
+    : DEFAULT_TEST_EMAILS
+)
+  .map((e) => e.trim().toLowerCase())
+  .filter(Boolean);
+
+if (!TEST_EMAILS.length) throw new Error("No addresses to remove.");
 
 const confirm = process.argv.includes("--confirm");
 
@@ -76,9 +94,62 @@ type Session = {
   created_at: string;
 };
 
+/**
+ * Anonymous sessions cannot be matched by email, so they are removed by
+ * explicit id only — never by a pattern. A smoke test leaves a session behind
+ * when it fails before the lead is written, but on production an anonymous
+ * abandoned session is real funnel data. A `--before <date>` or
+ * `--orphans` sweep would eventually delete that, so it does not exist.
+ *
+ *   --list-sessions           print ids so you can pick
+ *   --session-ids a,b         delete exactly those
+ */
+const listSessions = process.argv.includes("--list-sessions");
+const sessionIdsFlag = process.argv.indexOf("--session-ids");
+const SESSION_IDS = (
+  sessionIdsFlag !== -1 && process.argv[sessionIdsFlag + 1]
+    ? process.argv[sessionIdsFlag + 1].split(",")
+    : []
+)
+  .map((s) => s.trim())
+  .filter(Boolean);
+
 async function main() {
   console.log(`Project: ${url}`);
   console.log(`Mode:    ${confirm ? "*** DELETING ***" : "dry run (nothing will change)"}\n`);
+
+  if (listSessions) {
+    const all = await get<Session & { lead_id: string | null }>(
+      "early_access_signup_sessions?select=id,email,normalized_email,mautic_contact_id,status,created_at,lead_id&order=created_at.asc",
+    );
+    console.log(`early_access_signup_sessions: ${all.length}`);
+    for (const s of all) {
+      console.log(
+        `  ${s.id}  ${s.created_at.slice(0, 19)}  ${s.email ?? "(anonymous)"}  ${s.status}` +
+          (s.lead_id ? "  lead=yes" : "  lead=none"),
+      );
+    }
+    return;
+  }
+
+  if (SESSION_IDS.length) {
+    const idList = `(${SESSION_IDS.map((id) => `"${id}"`).join(",")})`;
+    const found = await get<Session>(
+      `early_access_signup_sessions?select=id,email,normalized_email,mautic_contact_id,status,created_at&id=in.${idList}`,
+    );
+    console.log(`Sessions matched by id: ${found.length} of ${SESSION_IDS.length} requested`);
+    for (const s of found) {
+      console.log(`  ${s.id}  ${s.created_at.slice(0, 19)}  ${s.email ?? "(anonymous)"}  ${s.status}`);
+    }
+    if (!confirm) {
+      console.log("\nDry run complete. Nothing was changed. Re-run with --confirm to delete.");
+      return;
+    }
+    const gone = await del<{ id: string }>(`early_access_signup_sessions?id=in.${idList}`);
+    console.log(`\nDeleted ${gone.length} session(s).`);
+    return;
+  }
+
   console.log(`Targets: ${TEST_EMAILS.join(", ")}\n`);
 
   const leads = await get<Lead>(`marketing_leads?select=id,email,created_at,status&email=in.${inList}`);

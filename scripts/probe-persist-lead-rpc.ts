@@ -66,6 +66,13 @@ async function main() {
   for (const r of related) console.log(`  ${r}`);
   console.log(`\nTotal RPCs on the schema: ${rpcs.length}`);
 
+  // `--all` prints the full list so two environments can be diffed. A count
+  // difference tells you drift exists; only the names tell you what drifted.
+  if (process.argv.includes("--all")) {
+    console.log("\nAll RPCs:");
+    for (const r of rpcs) console.log(`  ${r}`);
+  }
+
   if (!present) {
     console.log(
       "\nEarly-access signup calls this function with no fallback, so signups are" +
