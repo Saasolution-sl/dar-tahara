@@ -103,3 +103,15 @@ test("tagsForLead reflects verified + facet tags, de-duplicated", () => {
   assert.ok(tags.includes("access-physical-key"));
   assert.equal(new Set(tags).size, tags.length); // no duplicates
 });
+
+test("tagsForLead maps DT-2026-4W social campaigns to DT-SOCIAL-* tags, preferring first-touch", () => {
+  const firstTouch = tagsForLead({ ...base, firstUtmCampaign: "dt_diaspora", lastUtmCampaign: "dt_arrival" });
+  assert.ok(firstTouch.includes("DT-SOCIAL-DIASPORA"));
+  assert.ok(!firstTouch.includes("DT-SOCIAL-ARRIVAL"));
+
+  const lastTouchOnly = tagsForLead({ ...base, lastUtmCampaign: "dt_remote_owner" });
+  assert.ok(lastTouchOnly.includes("DT-SOCIAL-REMOTE-OWNER"));
+
+  const unrelated = tagsForLead({ ...base, firstUtmCampaign: "early_access_2026" });
+  assert.ok(!unrelated.some((t) => t.startsWith("DT-SOCIAL-")));
+});
