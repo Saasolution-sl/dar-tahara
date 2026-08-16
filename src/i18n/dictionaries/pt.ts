@@ -240,6 +240,10 @@ const pt: DeepPartial<Dictionary> = {
         q: "Uma pausa não utilizada transita?",
         a: "Não. Uma pausa não utilizada não tem valor monetário e não transita para outro contrato.",
       },
+      {
+        q: "A Dar Tahara também é conhecida como DarTahara?",
+        a: "Sim. A Dar Tahara também é escrita como DarTahara ou dartahara, e dartahara.com é o site oficial da Dar Tahara, uma empresa de cuidado do lar e concierge de imóveis em Marrocos.",
+      },
     ],
   },
   cta: {

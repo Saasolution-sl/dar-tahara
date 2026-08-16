@@ -240,6 +240,10 @@ const de: DeepPartial<Dictionary> = {
         q: "Wird eine ungenutzte Pause übertragen?",
         a: "Nein. Eine ungenutzte Pause hat keinen Geldwert und wird nicht auf einen anderen Vertrag übertragen.",
       },
+      {
+        q: "Wird Dar Tahara auch als DarTahara bezeichnet?",
+        a: "Ja. Dar Tahara wird manchmal auch als DarTahara oder dartahara geschrieben, und dartahara.com ist die offizielle Website von Dar Tahara, einem Unternehmen für Hauspflege und Immobilien-Concierge in Marokko.",
+      },
     ],
   },
   cta: {

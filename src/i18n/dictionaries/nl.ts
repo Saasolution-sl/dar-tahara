@@ -240,6 +240,10 @@ const nl: DeepPartial<Dictionary> = {
         q: "Wordt een ongebruikte pauze overgedragen?",
         a: "Nee. Een ongebruikte pauze heeft geen geldwaarde en wordt niet overgedragen naar een ander contract.",
       },
+      {
+        q: "Wordt Dar Tahara ook wel DarTahara genoemd?",
+        a: "Ja. Dar Tahara wordt soms geschreven als DarTahara of dartahara, en dartahara.com is de officiële website van Dar Tahara, een professioneel woningverzorgings- en vastgoedconciërgebedrijf in Marokko.",
+      },
     ],
   },
   cta: {

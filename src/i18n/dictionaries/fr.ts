@@ -240,6 +240,10 @@ const fr: DeepPartial<Dictionary> = {
         q: "Une suspension non utilisée est-elle reportée ?",
         a: "Non. Une suspension non utilisée n'a aucune valeur monétaire et n'est pas reportée sur un autre contrat.",
       },
+      {
+        q: "Dar Tahara est-elle aussi connue sous le nom DarTahara ?",
+        a: "Oui. Dar Tahara s'écrit parfois DarTahara ou dartahara, et dartahara.com est le site officiel de Dar Tahara, une conciergerie résidentielle professionnelle au Maroc.",
+      },
     ],
   },
   cta: {

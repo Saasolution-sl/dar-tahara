@@ -17,6 +17,12 @@ export const site = {
   defaultTitle: "Dar Tahara: Premium Home Care & Property Concierge",
   titleTemplate: `%s | ${siteName}`,
   defaultDescription,
+  /**
+   * Alternate forms of the brand name search engines and AI systems should
+   * treat as the same entity as `siteName`. Used in structured data only —
+   * never substituted for `siteName` in visible copy.
+   */
+  alternateNames: ["DarTahara", "DarTahara.com"] as string[],
   /** English brand line, mirrored in `brand.tagline` for each locale. */
   slogan: "Always arrive home to comfort.",
   logoUrl: `${siteUrl}/icon.svg`,
