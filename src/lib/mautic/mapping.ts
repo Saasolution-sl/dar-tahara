@@ -157,6 +157,24 @@ const SOURCE_TAG: Record<string, string> = {
 };
 
 /**
+ * Map a utm_campaign value from the DT-2026-4W social campaign (dt_diaspora,
+ * dt_arrival, ...) to its DT-SOCIAL-* Mautic tag. Keyed on first-touch so a
+ * lead keeps the storyline that originally brought them in, even if a later
+ * visit carries a different campaign.
+ */
+const SOCIAL_CAMPAIGN_TAG: Record<string, string> = {
+  dt_diaspora: "DT-SOCIAL-DIASPORA",
+  dt_arrival: "DT-SOCIAL-ARRIVAL",
+  dt_remote_owner: "DT-SOCIAL-REMOTE-OWNER",
+  dt_community: "DT-SOCIAL-COMMUNITY",
+  dt_trust: "DT-SOCIAL-TRUST",
+  dt_education: "DT-SOCIAL-EDUCATION",
+  dt_security: "DT-SOCIAL-SECURITY",
+  dt_results: "DT-SOCIAL-RESULTS",
+  dt_conversion: "DT-SOCIAL-CONVERSION",
+};
+
+/**
  * The standardized tags for a lead. Always includes the campaign tags, plus the
  * verification state and any facet tags derivable from the lead. Returns a
  * de-duplicated list following the documented naming convention (§20).
@@ -170,6 +188,9 @@ export function tagsForLead(lead: LeadForSync): string[] {
 
   const src = (lead.firstUtmSource || lead.lastUtmSource || "").toLowerCase();
   if (SOURCE_TAG[src]) tags.add(SOURCE_TAG[src]);
+
+  const campaign = (lead.firstUtmCampaign || lead.lastUtmCampaign || "").toLowerCase();
+  if (SOCIAL_CAMPAIGN_TAG[campaign]) tags.add(SOCIAL_CAMPAIGN_TAG[campaign]);
 
   if (lead.propertyType && PROPERTY_TAG[lead.propertyType]) tags.add(PROPERTY_TAG[lead.propertyType]);
   if (lead.desiredFrequency && FREQUENCY_TAG[lead.desiredFrequency]) tags.add(FREQUENCY_TAG[lead.desiredFrequency]);

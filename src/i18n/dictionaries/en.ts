@@ -237,6 +237,10 @@
         q: "Does an unused pause carry over?",
         a: "No. An unused pause has no monetary value and does not carry over to another contract.",
       },
+      {
+        q: "Is Dar Tahara also known as DarTahara?",
+        a: "Yes. Dar Tahara is sometimes written as DarTahara or dartahara, and dartahara.com is the official website of Dar Tahara, a professional home care and property concierge company in Morocco.",
+      },
     ],
   },
   cta: {

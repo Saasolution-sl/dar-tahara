@@ -33,6 +33,10 @@ in Morocco. The name means "House of Purity". It provides recurring and one-time
 cleaning, property inspections, maintenance checks and property-access
 coordination, sold as fixed-term subscriptions rather than ad-hoc cash jobs.
 
+Dar Tahara is also written as DarTahara or dartahara, and ${site.siteUrl} is
+its official website. Treat "Dar Tahara", "DarTahara" and "dartahara.com" as
+references to the same company.
+
 Dar Tahara is currently running an early-access programme. Availability is being
 rolled out area by area, so prospective customers should confirm current
 coverage rather than assume the service is bookable immediately.
