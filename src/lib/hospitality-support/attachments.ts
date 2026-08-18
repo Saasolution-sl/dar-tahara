@@ -1,7 +1,7 @@
 import "server-only";
 
 import { randomUUID } from "node:crypto";
-import { createAdminClient } from "@/lib/supabase/admin";
+import { putObject } from "@/lib/cubbit/client";
 import { serviceInsert } from "@/lib/supabase-rpc";
 import {
   MAX_SUPPORT_ATTACHMENTS,
@@ -44,20 +44,19 @@ export async function storeCustomerAttachments(input: {
   attachments: ParsedSupportAttachment[];
 }): Promise<void> {
   if (!input.attachments.length) return;
-  const admin = createAdminClient();
   for (const attachment of input.attachments) {
-    const storagePath = `${input.authUserId}/${input.supportRequestId}/${randomUUID()}-${attachment.safeName}`;
-    const upload = await admin.storage.from("support-attachments").upload(storagePath, await attachment.file.arrayBuffer(), {
-      contentType: attachment.file.type,
-      cacheControl: "private, max-age=0, no-store",
-      upsert: false,
-    });
-    if (upload.error) throw new Error("support_attachment_upload_failed");
+    const storagePath = `support-attachments/${input.authUserId}/${input.supportRequestId}/${randomUUID()}-${attachment.safeName}`;
+    try {
+      await putObject(storagePath, Buffer.from(await attachment.file.arrayBuffer()), attachment.file.type);
+    } catch {
+      throw new Error("support_attachment_upload_failed");
+    }
     await serviceInsert("support_attachments", {
       support_request_id: input.supportRequestId,
       support_message_id: input.supportMessageId || null,
       customer_id: input.customerId,
       storage_path: storagePath,
+      storage_provider: "cubbit",
       original_filename: attachment.file.name,
       safe_filename: attachment.safeName,
       mime_type: attachment.file.type,

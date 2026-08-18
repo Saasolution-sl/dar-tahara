@@ -5,6 +5,7 @@ import { authorizeApi } from "@/lib/portal-auth";
 import { serviceInsert, serviceSelect } from "@/lib/supabase-rpc";
 import { monthsCoveredByPause } from "@/lib/pause-eligibility";
 import { generateInvoicePdf, money } from "@/lib/generate-invoice-pdf";
+import { getOrArchiveInvoicePdf } from "@/lib/invoice-archive";
 import { site } from "@/lib/site";
 import type { Locale } from "@/i18n/config";
 
@@ -77,7 +78,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ requ
       : null,
   ].filter((line): line is string => Boolean(line));
 
-  const pdf = await generateInvoicePdf({
+  const pdf = await getOrArchiveInvoicePdf(`pause-notices/${requestId}/${month}.pdf`, async () => generateInvoicePdf({
     docType: "Pause Notice",
     number: `PAUSE-${month}-${requestId.slice(0, 8).toUpperCase()}`,
     date: issueDate,
@@ -92,7 +93,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ requ
     notes: noteLines.join(" "),
     terms: `This notice is issued subject to Dar Tahara's Terms & Conditions: ${site.url}/${customer.preferred_language}/terms`,
     thanks: "Thank you for your patience: we look forward to caring for your home again soon.",
-  });
+  }));
 
   await serviceInsert("customer_activity", {
     customer_id: customerId,
