@@ -1,5 +1,6 @@
 import { AdminTable } from "@/components/admin/admin-table";
 import { SubscriptionStatusAction } from "@/components/admin/subscription-status-action";
+import { SubscriptionDurationAction } from "@/components/admin/subscription-duration-action";
 import { serviceSelect } from "@/lib/supabase-rpc";
 import { money } from "@/lib/portal-format";
 import { adminCopy } from "@/i18n/admin-copy";
@@ -24,10 +25,10 @@ export async function SubscriptionsTable({ officeIds }: { officeIds?: string[] }
   const officeFilter = officeIds ? `&customers.office_id=in.(${officeIds.join(",")})` : "";
   const rows = await serviceSelect<Array<{
     id: string; status: string; frequency: string; billing_interval: string; billed_price_cents: number;
-    currency: string; cancellation_status: string | null; operational_status: string;
+    currency: string; cancellation_status: string | null; operational_status: string; contract_duration_months: number | null;
     customers: { full_name: string };
   }>>(
-    `subscriptions?select=id,status,frequency,billing_interval,billed_price_cents,currency,cancellation_status,operational_status,${customersJoin}&order=created_at.desc&limit=500${officeFilter}`,
+    `subscriptions?select=id,status,frequency,billing_interval,billed_price_cents,currency,cancellation_status,operational_status,contract_duration_months,${customersJoin}&order=created_at.desc&limit=500${officeFilter}`,
   );
   return (
     <AdminTable
@@ -39,6 +40,7 @@ export async function SubscriptionsTable({ officeIds }: { officeIds?: string[] }
         r.status,
         r.frequency,
         r.billing_interval,
+        <SubscriptionDurationAction key={`${r.id}-duration`} id={r.id} contractDurationMonths={r.contract_duration_months} copy={dCopy.durationAction} />,
         money(r.billed_price_cents, r.currency),
         r.cancellation_status ? (CANCELLATION_LABELS[r.cancellation_status] || r.cancellation_status) : "Not available",
         <SubscriptionStatusAction key={r.id} id={r.id} operationalStatus={r.operational_status} copy={dCopy.statusAction} />,

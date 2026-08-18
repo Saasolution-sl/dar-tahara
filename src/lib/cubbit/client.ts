@@ -5,6 +5,7 @@ import {
   PutObjectCommand,
   GetObjectCommand,
   HeadObjectCommand,
+  ListObjectsV2Command,
   type PutObjectCommandInput,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -89,4 +90,26 @@ export async function presignPutUrl(key: string, contentType: string, expiresInS
   const { s3, bucket: bucketName } = getClient();
   const command = new PutObjectCommand({ Bucket: bucketName, Key: key, ContentType: contentType });
   return getSignedUrl(s3, command, { expiresIn: expiresInSeconds });
+}
+
+/**
+ * Sums every object's size in the bucket via paginated ListObjectsV2. Cubbit
+ * has no native per-bucket quota, so this is how usage-cap alerting has to
+ * work: walk the whole bucket. Capped at maxKeys to keep a single cron
+ * invocation bounded; returns truncated:true if the cap was hit before the
+ * listing finished (the reported total is then a lower bound, not exact).
+ */
+export async function getBucketUsageBytes(maxKeys = 200_000): Promise<{ totalBytes: number; objectCount: number; truncated: boolean }> {
+  const { s3, bucket: bucketName } = getClient();
+  let totalBytes = 0;
+  let objectCount = 0;
+  let continuationToken: string | undefined;
+  do {
+    const page = await s3.send(new ListObjectsV2Command({ Bucket: bucketName, ContinuationToken: continuationToken, MaxKeys: 1000 }));
+    for (const object of page.Contents ?? []) totalBytes += object.Size ?? 0;
+    objectCount += page.Contents?.length ?? 0;
+    continuationToken = page.IsTruncated ? page.NextContinuationToken : undefined;
+    if (objectCount >= maxKeys) return { totalBytes, objectCount, truncated: true };
+  } while (continuationToken);
+  return { totalBytes, objectCount, truncated: false };
 }

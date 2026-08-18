@@ -62,7 +62,7 @@ export type AdminCopy = {
     auditLog: { title: string; headers: [string, string, string, string, string] };
     customers: { title: string; headers: [string, string, string, string, string, string] };
     properties: { title: string; headers: [string, string, string, string, string] };
-    subscriptions: { title: string; headers: [string, string, string, string, string, string, string] };
+    subscriptions: { title: string; headers: [string, string, string, string, string, string, string, string] };
     complaints: { title: string; headers: [string, string, string, string, string, string, string]; recurringYes: string };
     employeesWorking: { title: string; headers: [string, string, string, string, string, string, string, string]; footnote: string };
     liveOperations: { title: string; headers: [string, string, string, string, string, string, string, string, string]; showing: string; footnote: string };
@@ -136,7 +136,7 @@ const en: AdminCopy = {
     auditLog: { title: "Audit log", headers: ["Time", "Actor", "Action", "Resource", "Identifier"] },
     customers: { title: "Customers", headers: ["Customer", "Email", "Status", "Created", "Last login", "Actions"] },
     properties: { title: "Properties", headers: ["Address", "City", "Customer", "Type", "Size"] },
-    subscriptions: { title: "Subscriptions", headers: ["Customer", "Status", "Frequency", "Billing", "Amount", "Cancellation", "Actions"] },
+    subscriptions: { title: "Subscriptions", headers: ["Customer", "Status", "Frequency", "Billing", "Duration", "Amount", "Cancellation", "Actions"] },
     complaints: { title: "Complaints", headers: ["Date", "Customer", "Category", "Office", "Status", "Recurring", "Resolved"], recurringYes: "Yes" },
     employeesWorking: { title: "Employees working", headers: ["Employee", "Number", "Office", "Status", "Avg cleaning", "Avg travel", "Visits", "Since"], footnote: "On shift means working or driving, matching the dashboard tile. Averages come from that employee's completed visits over the last 30 days." },
     liveOperations: { title: "Live operations", headers: ["Employee", "Number", "Office", "Status", "Current customer", "Address", "Expected end", "Next job", "Updated"], showing: "Showing status:", footnote: "Live staff status, the same records the Live operations board shows. By default this excludes finished, sick and offline: they are on the roster but not on a job. Add ?status=all to include them." },
@@ -210,7 +210,7 @@ const nl: AdminCopy = {
     auditLog: { title: "Auditlogboek", headers: ["Tijd", "Actor", "Actie", "Bron", "Identificatie"] },
     customers: { title: "Klanten", headers: ["Klant", "E-mail", "Status", "Aangemaakt", "Laatste login", "Acties"] },
     properties: { title: "Woningen", headers: ["Adres", "Stad", "Klant", "Type", "Grootte"] },
-    subscriptions: { title: "Abonnementen", headers: ["Klant", "Status", "Frequentie", "Facturering", "Bedrag", "Opzegging", "Acties"] },
+    subscriptions: { title: "Abonnementen", headers: ["Klant", "Status", "Frequentie", "Facturering", "Duur", "Bedrag", "Opzegging", "Acties"] },
     complaints: { title: "Klachten", headers: ["Datum", "Klant", "Categorie", "Vestiging", "Status", "Terugkerend", "Opgelost"], recurringYes: "Ja" },
     employeesWorking: { title: "Medewerkers aan het werk", headers: ["Medewerker", "Nummer", "Vestiging", "Status", "Gem. schoonmaak", "Gem. reistijd", "Bezoeken", "Sinds"], footnote: "Aan het werk betekent werkend of onderweg, gelijk aan de tegel op het dashboard. Gemiddelden komen uit de afgeronde bezoeken van de afgelopen 30 dagen." },
     liveOperations: { title: "Live operaties", headers: ["Medewerker", "Nummer", "Vestiging", "Status", "Huidige klant", "Adres", "Verwacht einde", "Volgende opdracht", "Bijgewerkt"], showing: "Toont status:", footnote: "Actuele personeelsstatus, dezelfde records als op het Live operaties-bord. Standaard zonder klaar, ziek en offline: zij staan wel op de lijst maar zijn niet op een opdracht. Gebruik ?status=all om ze mee te nemen." },
@@ -284,7 +284,7 @@ const fr: AdminCopy = {
     auditLog: { title: "Journal d’audit", headers: ["Heure", "Auteur", "Action", "Ressource", "Identifiant"] },
     customers: { title: "Clients", headers: ["Client", "E-mail", "Statut", "Créé le", "Dernière connexion", "Actions"] },
     properties: { title: "Propriétés", headers: ["Adresse", "Ville", "Client", "Type", "Taille"] },
-    subscriptions: { title: "Abonnements", headers: ["Client", "Statut", "Fréquence", "Facturation", "Montant", "Résiliation", "Actions"] },
+    subscriptions: { title: "Abonnements", headers: ["Client", "Statut", "Fréquence", "Facturation", "Durée", "Montant", "Résiliation", "Actions"] },
     complaints: { title: "Réclamations", headers: ["Date", "Client", "Catégorie", "Agence", "Statut", "Récurrent", "Résolu"], recurringYes: "Oui" },
     employeesWorking: { title: "Employés au travail", headers: ["Employé", "Numéro", "Agence", "Statut", "Nettoyage moy.", "Trajet moy.", "Visites", "Depuis"], footnote: "Au travail signifie en intervention ou en trajet, comme sur la tuile du tableau de bord. Les moyennes portent sur les visites terminées des 30 derniers jours." },
     liveOperations: { title: "Opérations en direct", headers: ["Employé", "Numéro", "Agence", "Statut", "Client actuel", "Adresse", "Fin prévue", "Prochaine mission", "Mis à jour"], showing: "Statut affiché :", footnote: "Statut du personnel en direct, les mêmes enregistrements que le tableau Opérations en direct. Par défaut hors terminé, malade et hors ligne : ils figurent au planning mais ne sont pas en mission. Ajoutez ?status=all pour les inclure." },
@@ -358,7 +358,7 @@ const ar: AdminCopy = {
     auditLog: { title: "سجل التدقيق", headers: ["الوقت", "الجهة الفاعلة", "الإجراء", "المورد", "المعرّف"] },
     customers: { title: "العملاء", headers: ["العميل", "البريد الإلكتروني", "الحالة", "تاريخ الإنشاء", "آخر تسجيل دخول", "الإجراءات"] },
     properties: { title: "العقارات", headers: ["العنوان", "المدينة", "العميل", "النوع", "الحجم"] },
-    subscriptions: { title: "الاشتراكات", headers: ["العميل", "الحالة", "التكرار", "الفوترة", "المبلغ", "الإلغاء", "الإجراءات"] },
+    subscriptions: { title: "الاشتراكات", headers: ["العميل", "الحالة", "التكرار", "الفوترة", "المدة", "المبلغ", "الإلغاء", "الإجراءات"] },
     complaints: { title: "الشكاوى", headers: ["التاريخ", "العميل", "الفئة", "المكتب", "الحالة", "متكرر", "تم الحل"], recurringYes: "نعم" },
     employeesWorking: { title: "الموظفون العاملون", headers: ["الموظف", "الرقم", "المكتب", "الحالة", "متوسط التنظيف", "متوسط التنقل", "الزيارات", "منذ"], footnote: "العمل يشمل التنفيذ والتنقل، مطابقًا لبطاقة لوحة المعلومات. المتوسطات محسوبة من الزيارات المكتملة خلال آخر 30 يومًا." },
     liveOperations: { title: "العمليات المباشرة", headers: ["الموظف", "الرقم", "المكتب", "الحالة", "العميل الحالي", "العنوان", "الانتهاء المتوقع", "المهمة التالية", "آخر تحديث"], showing: "الحالة المعروضة:", footnote: "الحالة المباشرة للموظفين، وهي نفس السجلات التي تعرضها لوحة العمليات المباشرة. تستثني افتراضيًا: منتهٍ ومريض وغير متصل، فهم ضمن الجدول لكن ليسوا في مهمة. أضف ‎?status=all‎ لتضمينهم." },
@@ -432,7 +432,7 @@ const es: AdminCopy = {
     auditLog: { title: "Registro de auditoría", headers: ["Hora", "Actor", "Acción", "Recurso", "Identificador"] },
     customers: { title: "Clientes", headers: ["Cliente", "Correo", "Estado", "Creado", "Último acceso", "Acciones"] },
     properties: { title: "Propiedades", headers: ["Dirección", "Ciudad", "Cliente", "Tipo", "Tamaño"] },
-    subscriptions: { title: "Suscripciones", headers: ["Cliente", "Estado", "Frecuencia", "Facturación", "Importe", "Cancelación", "Acciones"] },
+    subscriptions: { title: "Suscripciones", headers: ["Cliente", "Estado", "Frecuencia", "Facturación", "Duración", "Importe", "Cancelación", "Acciones"] },
     complaints: { title: "Reclamaciones", headers: ["Fecha", "Cliente", "Categoría", "Oficina", "Estado", "Recurrente", "Resuelta"], recurringYes: "Sí" },
     employeesWorking: { title: "Empleados trabajando", headers: ["Empleado", "Número", "Oficina", "Estado", "Limpieza media", "Trayecto medio", "Visitas", "Desde"], footnote: "Trabajando incluye en servicio y en trayecto, igual que la tarjeta del panel. Las medias proceden de las visitas completadas en los últimos 30 días." },
     liveOperations: { title: "Operaciones en vivo", headers: ["Empleado", "Número", "Oficina", "Estado", "Cliente actual", "Dirección", "Fin previsto", "Siguiente trabajo", "Actualizado"], showing: "Estado mostrado:", footnote: "Estado del personal en vivo, los mismos registros que muestra el panel de Operaciones en vivo. Por defecto excluye terminado, enfermo y desconectado: están en la plantilla pero no en un trabajo. Añada ?status=all para incluirlos." },
@@ -506,7 +506,7 @@ const de: AdminCopy = {
     auditLog: { title: "Prüfprotokoll", headers: ["Zeit", "Akteur", "Aktion", "Ressource", "Kennung"] },
     customers: { title: "Kunden", headers: ["Kunde", "E-Mail", "Status", "Erstellt", "Letzte Anmeldung", "Aktionen"] },
     properties: { title: "Immobilien", headers: ["Adresse", "Stadt", "Kunde", "Typ", "Größe"] },
-    subscriptions: { title: "Abonnements", headers: ["Kunde", "Status", "Häufigkeit", "Abrechnung", "Betrag", "Kündigung", "Aktionen"] },
+    subscriptions: { title: "Abonnements", headers: ["Kunde", "Status", "Häufigkeit", "Abrechnung", "Dauer", "Betrag", "Kündigung", "Aktionen"] },
     complaints: { title: "Beschwerden", headers: ["Datum", "Kunde", "Kategorie", "Niederlassung", "Status", "Wiederkehrend", "Gelöst"], recurringYes: "Ja" },
     employeesWorking: { title: "Mitarbeitende im Einsatz", headers: ["Mitarbeiter", "Nummer", "Niederlassung", "Status", "Ø Reinigung", "Ø Fahrt", "Einsätze", "Seit"], footnote: "Im Einsatz umfasst arbeitend und unterwegs, wie die Kachel im Dashboard. Durchschnitte stammen aus den abgeschlossenen Einsätzen der letzten 30 Tage." },
     liveOperations: { title: "Live-Einsätze", headers: ["Mitarbeiter", "Nummer", "Niederlassung", "Status", "Aktueller Kunde", "Adresse", "Voraussichtliches Ende", "Nächster Einsatz", "Aktualisiert"], showing: "Angezeigter Status:", footnote: "Live-Status der Mitarbeitenden, dieselben Datensätze wie auf der Live-Einsatztafel. Standardmäßig ohne fertig, krank und offline: sie stehen im Dienstplan, sind aber nicht im Einsatz. Mit ?status=all einbeziehen." },
@@ -580,7 +580,7 @@ const pt: AdminCopy = {
     auditLog: { title: "Registo de auditoria", headers: ["Hora", "Ator", "Ação", "Recurso", "Identificador"] },
     customers: { title: "Clientes", headers: ["Cliente", "E-mail", "Estado", "Criado", "Último início de sessão", "Ações"] },
     properties: { title: "Propriedades", headers: ["Morada", "Cidade", "Cliente", "Tipo", "Tamanho"] },
-    subscriptions: { title: "Subscrições", headers: ["Cliente", "Estado", "Frequência", "Faturação", "Montante", "Cancelamento", "Ações"] },
+    subscriptions: { title: "Subscrições", headers: ["Cliente", "Estado", "Frequência", "Faturação", "Duração", "Montante", "Cancelamento", "Ações"] },
     complaints: { title: "Reclamações", headers: ["Data", "Cliente", "Categoria", "Escritório", "Estado", "Recorrente", "Resolvida"], recurringYes: "Sim" },
     employeesWorking: { title: "Funcionários a trabalhar", headers: ["Funcionário", "Número", "Escritório", "Estado", "Limpeza média", "Deslocação média", "Visitas", "Desde"], footnote: "A trabalhar inclui em serviço e em deslocação, tal como o cartão do painel. As médias vêm das visitas concluídas nos últimos 30 dias." },
     liveOperations: { title: "Operações ao vivo", headers: ["Funcionário", "Número", "Escritório", "Estado", "Cliente atual", "Morada", "Fim previsto", "Próximo trabalho", "Atualizado"], showing: "Estado apresentado:", footnote: "Estado da equipa ao vivo, os mesmos registos que o painel de Operações ao vivo mostra. Por omissão exclui terminado, doente e offline: constam da escala mas não estão em serviço. Use ?status=all para os incluir." },
