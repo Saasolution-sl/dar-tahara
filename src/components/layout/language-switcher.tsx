@@ -53,7 +53,7 @@ export function LanguageSwitcher({
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={label}
+        aria-label={`${label}: ${locale.toUpperCase()} — ${localeMeta[locale].nativeLabel}`}
         onClick={() => setOpen((v) => !v)}
         className="inline-flex h-10 items-center gap-1.5 rounded-full border border-border px-3 text-sm text-foreground transition-colors hover:bg-secondary"
       >

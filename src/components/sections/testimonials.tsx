@@ -18,7 +18,7 @@ export function Testimonials({ dict }: { dict: Dictionary }) {
             <Reveal key={i} index={i}>
               <figure className="flex h-full flex-col rounded-[1.5rem] border border-border bg-card p-8 shadow-soft">
                 <Quote className="h-8 w-8 text-accent/30" />
-                <div className="mt-4 flex gap-0.5" aria-label="5 out of 5 stars">
+                <div className="mt-4 flex gap-0.5" role="img" aria-label="5 out of 5 stars">
                   {Array.from({ length: 5 }).map((_, s) => (
                     <Star key={s} className="h-4 w-4 fill-accent text-accent" />
                   ))}
