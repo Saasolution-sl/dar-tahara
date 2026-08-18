@@ -11,7 +11,7 @@ import {
 import { readAssistantAvailability } from "@/lib/assistant/availability-state";
 import { cn } from "@/lib/utils";
 
-type ChatCopy = {
+export type ChatCopy = {
   title: string;
   subtitle: string;
   open: string;
@@ -56,9 +56,17 @@ function getSessionId() {
   return id;
 }
 
-export function WebsiteChat({ locale, copy }: { locale: Locale; copy: ChatCopy }) {
+export function WebsiteChat({
+  locale,
+  copy,
+  initiallyOpen = false,
+}: {
+  locale: Locale;
+  copy: ChatCopy;
+  initiallyOpen?: boolean;
+}) {
   const [available, setAvailable] = React.useState(true);
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = React.useState(initiallyOpen);
   const [conversationId, setConversationId] = React.useState<string | null>(null);
   const [sessionLanguage, setSessionLanguage] = React.useState<Locale | null>(null);
   const [selectedLanguage, setSelectedLanguage] = React.useState<Locale | null>(null);

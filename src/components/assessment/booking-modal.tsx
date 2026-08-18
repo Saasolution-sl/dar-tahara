@@ -50,7 +50,7 @@ export function AssessmentBookingModal({
   open: boolean;
   onClose: () => void;
   locale: Locale;
-  dict: Dictionary;
+  dict: Pick<Dictionary, "booking" | "calculator">;
   sizeM2: number;
   frequency: FrequencyKey;
   overMax: boolean;

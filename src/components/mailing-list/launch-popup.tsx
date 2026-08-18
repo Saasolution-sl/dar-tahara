@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import { usePathname } from "next/navigation";
-import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import { X } from "lucide-react";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import type { Locale } from "@/i18n/config";
@@ -36,7 +35,6 @@ export function LaunchPopup({ locale, dict }: { locale: Locale; dict: Dictionary
   const pathname = usePathname();
   const route = pathname.split("/").filter(Boolean)[1];
   const isSuppressedRoute = route === "invite" || route === "early-access";
-  const reduce = useReducedMotion();
   const [open, setOpen] = React.useState(false);
   const [mounted, setMounted] = React.useState(false);
 
@@ -87,18 +85,12 @@ export function LaunchPopup({ locale, dict }: { locale: Locale; dict: Dictionary
 
   if (!mounted || isSuppressedRoute) return null;
 
-  return (
-    <AnimatePresence>
-      {open ? (
-        <motion.div
-          initial={{ opacity: 0, y: reduce ? 0 : 24 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0, y: reduce ? 0 : 24 }}
-          transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
+  return open ? (
+        <div
           role="dialog"
           aria-modal="false"
           aria-labelledby="dt-popup-title"
-          className="fixed inset-x-0 bottom-0 z-[70] mx-auto w-full max-w-md p-3 sm:inset-x-auto sm:bottom-5 sm:right-5 sm:p-0"
+          className="animate-popup-in fixed inset-x-0 bottom-0 z-[70] mx-auto w-full max-w-md p-3 sm:inset-x-auto sm:bottom-5 sm:right-5 sm:p-0"
         >
           <div className="relative overflow-hidden rounded-2xl border border-border bg-card p-6 shadow-lift sm:p-7">
             <button
@@ -120,8 +112,6 @@ export function LaunchPopup({ locale, dict }: { locale: Locale; dict: Dictionary
               <SubscribeForm locale={locale} dict={dict} source="homepage_popup" variant="popup" />
             </div>
           </div>
-        </motion.div>
-      ) : null}
-    </AnimatePresence>
-  );
+        </div>
+  ) : null;
 }

@@ -1,9 +1,6 @@
-"use client";
-
 import * as React from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { motion, useReducedMotion } from "framer-motion";
 import { ArrowRight, Sparkles, ShieldCheck, Star } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
@@ -21,22 +18,8 @@ export function Hero({
   dict: Dictionary;
   features: PublicFeatureState;
 }) {
-  const reduce = useReducedMotion();
   const h = dict.hero;
   const base = `/${locale}`;
-
-  const container = {
-    hidden: {},
-    visible: { transition: { staggerChildren: 0.09, delayChildren: 0.05 } },
-  };
-  const item = {
-    hidden: { opacity: 0, y: reduce ? 0 : 22 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: { duration: 0.8, ease: [0.22, 1, 0.36, 1] as const },
-    },
-  };
 
   const stats = [
     { value: h.stat1Value, label: h.stat1Label },
@@ -54,35 +37,21 @@ export function Hero({
 
       <div className="container grid items-center gap-14 lg:grid-cols-12 lg:gap-10">
         {/* Copy */}
-        <motion.div
-          variants={container}
-          initial="hidden"
-          animate="visible"
-          className="lg:col-span-6"
-        >
-          <motion.span variants={item} className="eyebrow">
+        <div className="lg:col-span-6">
+          <span className="eyebrow">
             <Sparkles className="h-3.5 w-3.5" />
             {h.eyebrow}
-          </motion.span>
+          </span>
 
-          <motion.h1
-            variants={item}
-            className="mt-5 text-display-lg text-foreground"
-          >
+          <h1 className="mt-5 text-display-lg text-foreground">
             {h.title}
-          </motion.h1>
+          </h1>
 
-          <motion.p
-            variants={item}
-            className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground"
-          >
+          <p className="mt-6 max-w-xl text-lg leading-relaxed text-muted-foreground">
             {h.subtitle}
-          </motion.p>
+          </p>
 
-          <motion.div
-            variants={item}
-            className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center"
-          >
+          <div className="mt-9 flex flex-col gap-3 sm:flex-row sm:items-center">
             <Link
               href={features.assessmentBookingEnabled ? `${base}#${sections.calculator}` : features.fallbackUrl}
               className={cn(buttonVariants({ variant: "primary", size: "lg" }))}
@@ -102,12 +71,9 @@ export function Hero({
             >
               {h.ctaTertiary}
             </Link>
-          </motion.div>
+          </div>
 
-          <motion.dl
-            variants={item}
-            className="mt-12 grid max-w-lg grid-cols-3 gap-6 border-t border-border pt-8"
-          >
+          <dl className="mt-12 grid max-w-lg grid-cols-3 gap-6 border-t border-border pt-8">
             {stats.map((s) => (
               <div key={s.label}>
                 <dt className="sr-only">{s.label}</dt>
@@ -121,16 +87,11 @@ export function Hero({
                 </dd>
               </div>
             ))}
-          </motion.dl>
-        </motion.div>
+          </dl>
+        </div>
 
         {/* Imagery */}
-        <motion.div
-          initial={{ opacity: 0, scale: reduce ? 1 : 1.04 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 1.1, ease: [0.22, 1, 0.36, 1] }}
-          className="relative lg:col-span-6"
-        >
+        <div className="relative lg:col-span-6">
           <div className="relative aspect-[4/5] w-full overflow-hidden rounded-[2rem] shadow-lift sm:aspect-[5/5] lg:aspect-[4/5]">
             <Image
               src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?auto=format&fit=crop&w=1200&q=80"
@@ -146,16 +107,12 @@ export function Hero({
           {/* Floating trust cards */}
           <FloatingCard
             className="-left-4 bottom-8 sm:-left-8"
-            delay={0.5}
-            reduce={!!reduce}
             icon={<ShieldCheck className="h-4 w-4 text-primary" />}
           >
             <span className="text-xs font-medium text-foreground">Vetted & insured team</span>
           </FloatingCard>
           <FloatingCard
             className="-right-3 top-10 sm:-right-6"
-            delay={0.7}
-            reduce={!!reduce}
             icon={
               <span className="flex">
                 {Array.from({ length: 5 }).map((_, i) => (
@@ -166,7 +123,7 @@ export function Hero({
           >
             <span className="text-xs font-medium text-foreground">Loved by 500+ homes</span>
           </FloatingCard>
-        </motion.div>
+        </div>
       </div>
     </section>
   );
@@ -176,20 +133,13 @@ function FloatingCard({
   children,
   icon,
   className,
-  delay,
-  reduce,
 }: {
   children: React.ReactNode;
   icon: React.ReactNode;
   className?: string;
-  delay: number;
-  reduce: boolean;
 }) {
   return (
-    <motion.div
-      initial={{ opacity: 0, y: reduce ? 0 : 16 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, delay, ease: [0.22, 1, 0.36, 1] }}
+    <div
       className={cn(
         "absolute z-10 flex items-center gap-2.5 rounded-2xl border border-border bg-card/90 px-4 py-3 shadow-lift backdrop-blur-md",
         className,
@@ -199,6 +149,6 @@ function FloatingCard({
         {icon}
       </span>
       {children}
-    </motion.div>
+    </div>
   );
 }

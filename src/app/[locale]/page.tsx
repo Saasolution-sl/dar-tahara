@@ -41,13 +41,18 @@ export default async function HomePage({
       <Why dict={dict} />
       <Services locale={typedLocale} dict={dict} />
       <Plans locale={typedLocale} dict={dict} />
-      <PricingCalculator locale={typedLocale} dict={dict} features={features} durationTiers={durationTiers} />
+      <PricingCalculator
+        locale={typedLocale}
+        dict={{ calculator: dict.calculator, booking: dict.booking }}
+        features={features}
+        durationTiers={durationTiers}
+      />
       <HowItWorks dict={dict} />
       <Audiences dict={dict} />
       <Testimonials dict={dict} />
       <MissionTeaser locale={typedLocale} dict={dict} />
       <PeopleTeaser locale={typedLocale} dict={dict} />
-      <Gallery dict={dict} />
+      <Gallery dict={dict.gallery} />
       <Faq dict={dict} />
       {features.earlyAccessEnabled ? <LaunchSignup locale={typedLocale} dict={dict} /> : null}
       <Cta locale={typedLocale} dict={dict} features={features} />

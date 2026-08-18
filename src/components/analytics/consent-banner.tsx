@@ -2,7 +2,6 @@
 
 import * as React from "react";
 import Link from "next/link";
-import { motion, useReducedMotion } from "framer-motion";
 import { Cookie } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
@@ -22,7 +21,6 @@ export function ConsentBanner({
   locale: Locale;
   dict: Dictionary["consent"];
 }) {
-  const reduce = useReducedMotion();
   const [consent, setConsentState] = React.useState<ConsentValue | null>(null);
   const [mounted, setMounted] = React.useState(false);
   const configured = Boolean(measurementId());
@@ -42,13 +40,10 @@ export function ConsentBanner({
   if (!open) return null;
 
   return (
-        <motion.div
-          initial={{ opacity: 0, y: reduce ? 0 : 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
+        <div
           role="region"
           aria-label={dict.aria}
-          className="fixed inset-x-0 bottom-0 z-[90] mx-auto w-full max-w-3xl p-3 sm:p-5"
+          className="animate-popup-in fixed inset-x-0 bottom-0 z-[90] mx-auto w-full max-w-3xl p-3 sm:p-5"
         >
           <div className="flex flex-col gap-4 rounded-2xl border border-border bg-card/95 p-5 shadow-lift backdrop-blur-md sm:flex-row sm:items-center sm:gap-6 sm:p-6">
             <Cookie className="hidden h-6 w-6 shrink-0 text-accent sm:block" aria-hidden />
@@ -78,6 +73,6 @@ export function ConsentBanner({
               </button>
             </div>
           </div>
-        </motion.div>
+        </div>
   );
 }
