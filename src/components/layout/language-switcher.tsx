@@ -115,13 +115,14 @@ export function LanguageSwitcher({
                   onNavigate?.();
                 }}
                 lang={localeMeta[l].hreflang}
-                dir={localeMeta[l].dir}
+                dir={isInline ? "ltr" : localeMeta[l].dir}
                 className={cn(
-                  "flex min-h-11 items-center justify-between gap-3 rounded-xl px-3 py-2 text-start text-sm transition-colors hover:bg-secondary",
+                  "flex min-h-11 items-center justify-between gap-3 rounded-xl px-3 py-2 text-sm transition-colors hover:bg-secondary",
+                  isInline ? "flex-row-reverse text-right" : "text-start",
                   l === locale ? "text-foreground" : "text-muted-foreground",
                 )}
               >
-                <span>{localeMeta[l].nativeLabel}</span>
+                <span dir={localeMeta[l].dir}>{localeMeta[l].nativeLabel}</span>
                 {l === locale ? <Check className="h-4 w-4 text-accent" /> : null}
               </Link>
             </li>
