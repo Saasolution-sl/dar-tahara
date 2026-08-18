@@ -72,10 +72,21 @@ export function Navbar({
   }, []);
 
   React.useEffect(() => {
-    document.body.style.overflow = open ? "hidden" : "";
+    if (!open) return;
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
     return () => {
-      document.body.style.overflow = "";
+      document.body.style.overflow = previousOverflow;
     };
+  }, [open]);
+
+  React.useEffect(() => {
+    if (!open) return;
+    const onKeyDown = (event: KeyboardEvent) => {
+      if (event.key === "Escape") setOpen(false);
+    };
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
   }, [open]);
 
   // "Why Dar Tahara" now lives inside the About menu, so the top-level row
@@ -193,6 +204,7 @@ export function Navbar({
             type="button"
             aria-label={open ? dict.close : dict.menu}
             aria-expanded={open}
+            aria-controls="mobile-navigation"
             onClick={() => setOpen((v) => !v)}
             className="inline-flex h-10 w-10 items-center justify-center rounded-full border border-border text-foreground"
           >
@@ -202,8 +214,14 @@ export function Navbar({
       </nav>
 
       {open ? (
-          <div className="animate-menu-in xl:hidden">
-            <div className="container flex flex-col gap-1 border-t border-border bg-background/95 pb-8 pt-4 backdrop-blur-xl">
+          <div
+            id="mobile-navigation"
+            className="animate-menu-in max-h-[calc(100dvh-4rem)] w-full max-w-full overflow-x-hidden overflow-y-auto overscroll-contain border-t border-border bg-background/95 backdrop-blur-xl [-webkit-overflow-scrolling:touch] lg:max-h-[calc(100dvh-5rem)] xl:hidden"
+          >
+            <div
+              className="container flex min-w-0 flex-col gap-1 pt-4"
+              style={{ paddingBottom: "max(2rem, env(safe-area-inset-bottom))" }}
+            >
               <p className="px-4 pb-1 pt-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground/70">
                 {dict.about}
               </p>
@@ -228,8 +246,13 @@ export function Navbar({
                   {l.label}
                 </Link>
               ))}
-              <div className="mt-3 flex items-center justify-between px-1">
-                <LanguageSwitcher locale={locale} label={dict.language} />
+              <div className="mt-3 min-w-0 px-1">
+                <LanguageSwitcher
+                  locale={locale}
+                  label={dict.language}
+                  presentation="inline"
+                  onNavigate={() => setOpen(false)}
+                />
               </div>
               <Link
                 href={accountHref}

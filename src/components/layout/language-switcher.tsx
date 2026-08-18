@@ -23,14 +23,20 @@ export function LanguageSwitcher({
   locale,
   label = "Language",
   className,
+  presentation = "dropdown",
+  onNavigate,
 }: {
   locale: Locale;
   label?: string;
   className?: string;
+  presentation?: "dropdown" | "inline";
+  onNavigate?: () => void;
 }) {
   const pathname = usePathname();
   const [open, setOpen] = React.useState(false);
   const ref = React.useRef<HTMLDivElement>(null);
+  const optionsId = React.useId();
+  const isInline = presentation === "inline";
 
   React.useEffect(() => {
     function onClick(e: MouseEvent) {
@@ -48,39 +54,70 @@ export function LanguageSwitcher({
   }
 
   return (
-    <div className={cn("relative", className)} ref={ref}>
+    <div className={cn(isInline ? "w-full" : "relative", className)} ref={ref}>
       <button
         type="button"
         aria-haspopup="listbox"
         aria-expanded={open}
-        aria-label={`${label}: ${locale.toUpperCase()} — ${localeMeta[locale].nativeLabel}`}
+        aria-controls={optionsId}
+        aria-label={
+          isInline
+            ? `${label}: ${localeMeta[locale].nativeLabel}`
+            : `${label}: ${locale.toUpperCase()} — ${localeMeta[locale].nativeLabel}`
+        }
         onClick={() => setOpen((v) => !v)}
-        className="inline-flex h-10 items-center gap-1.5 rounded-full border border-border px-3 text-sm text-foreground transition-colors hover:bg-secondary"
+        className={cn(
+          "items-center border border-border text-foreground transition-colors hover:bg-secondary",
+          isInline
+            ? "flex min-h-11 w-full gap-3 rounded-xl px-3 text-start text-base"
+            : "inline-flex h-10 gap-1.5 rounded-full px-3 text-sm",
+        )}
       >
-        <Globe className="h-[1.05rem] w-[1.05rem]" />
-        <span className="uppercase">{locale}</span>
-        <ChevronDown className={cn("h-3.5 w-3.5 transition-transform", open && "rotate-180")} />
+        <Globe className="h-[1.05rem] w-[1.05rem] shrink-0" aria-hidden />
+        {isInline ? (
+          <>
+            <span className="min-w-0 flex-1 font-medium">{label}</span>
+            <span className="truncate text-sm text-muted-foreground">
+              {localeMeta[locale].nativeLabel}
+            </span>
+          </>
+        ) : (
+          <span className="uppercase">{locale}</span>
+        )}
+        <ChevronDown
+          className={cn("h-3.5 w-3.5 shrink-0 transition-transform", open && "rotate-180")}
+          aria-hidden
+        />
       </button>
 
       {open ? (
         <ul
+          id={optionsId}
           role="listbox"
-          className="absolute end-0 z-50 mt-2 w-48 overflow-hidden rounded-2xl border border-border bg-card p-1.5 shadow-lift"
+          aria-label={label}
+          className={cn(
+            "mt-2 overflow-hidden rounded-2xl border border-border bg-card p-1.5",
+            isInline ? "w-full" : "absolute end-0 z-50 w-48 shadow-lift",
+          )}
         >
           {locales.map((l) => (
             <li key={l} role="option" aria-selected={l === locale}>
               <Link
                 href={pathFor(l)}
                 onClick={() => {
+                  document.documentElement.lang = localeMeta[l].hreflang;
+                  document.documentElement.dir = localeMeta[l].dir;
                   if (l !== locale) {
                     saveLocalePreference(l);
                     track("language_changed", { from: locale, to: l });
                   }
                   setOpen(false);
+                  onNavigate?.();
                 }}
                 lang={localeMeta[l].hreflang}
+                dir={localeMeta[l].dir}
                 className={cn(
-                  "flex items-center justify-between rounded-xl px-3 py-2 text-sm transition-colors hover:bg-secondary",
+                  "flex min-h-11 items-center justify-between gap-3 rounded-xl px-3 py-2 text-start text-sm transition-colors hover:bg-secondary",
                   l === locale ? "text-foreground" : "text-muted-foreground",
                 )}
               >
