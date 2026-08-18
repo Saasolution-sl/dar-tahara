@@ -6,7 +6,7 @@ export const fontSerif = Fraunces({
   weight: ["400", "500", "600", "700"],
   style: ["normal", "italic"],
   variable: "--font-serif",
-  display: "swap",
+  display: "optional",
 });
 
 /** Body sans: modern, highly legible, calm. */
@@ -14,5 +14,5 @@ export const fontSans = Hanken_Grotesk({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-sans",
-  display: "swap",
+  display: "optional",
 });

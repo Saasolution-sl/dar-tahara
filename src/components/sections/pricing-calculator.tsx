@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { motion } from "framer-motion";
 import { Check, ArrowRight, Sparkles, Info, Package, ShieldCheck } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
@@ -27,9 +26,15 @@ import { cn } from "@/lib/utils";
 import { Section, Container, SectionHeading } from "@/components/ui/section";
 import { Reveal } from "@/components/motion/reveal";
 import { buttonVariants } from "@/components/ui/button";
-import { AssessmentBookingModal } from "@/components/assessment/booking-modal";
 import Link from "next/link";
 import type { PublicFeatureState } from "@/lib/feature-flags";
+
+type CalculatorDictionary = Pick<Dictionary, "calculator" | "booking">;
+
+const LazyAssessmentBookingModal = React.lazy(async () => {
+  const imported = await import("@/components/assessment/booking-modal");
+  return { default: imported.AssessmentBookingModal };
+});
 
 function clampSize(n: number): number {
   return Math.min(Math.max(n, SIZE_LIMITS.min), SIZE_LIMITS.max);
@@ -42,7 +47,7 @@ export function PricingCalculator({
   durationTiers,
 }: {
   locale: Locale;
-  dict: Dictionary;
+  dict: CalculatorDictionary;
   features: PublicFeatureState;
   durationTiers: DurationTier[];
 }) {
@@ -364,19 +369,23 @@ export function PricingCalculator({
         </Reveal>
       </Container>
 
-      {features.assessmentBookingEnabled ? <AssessmentBookingModal
-        open={modalOpen}
-        onClose={() => setModalOpen(false)}
-        locale={locale}
-        dict={dict}
-        sizeM2={size}
-        frequency={frequency}
-        overMax={isCustom}
-        durationMonths={duration}
-        durationTiers={durationTiers}
-        monthlyEnabled={features.monthlySubscriptionEnabled}
-        annualEnabled={features.annualSubscriptionEnabled}
-      /> : null}
+      {features.assessmentBookingEnabled && modalOpen ? (
+        <React.Suspense fallback={null}>
+          <LazyAssessmentBookingModal
+            open
+            onClose={() => setModalOpen(false)}
+            locale={locale}
+            dict={dict}
+            sizeM2={size}
+            frequency={frequency}
+            overMax={isCustom}
+            durationMonths={duration}
+            durationTiers={durationTiers}
+            monthlyEnabled={features.monthlySubscriptionEnabled}
+            annualEnabled={features.annualSubscriptionEnabled}
+          />
+        </React.Suspense>
+      ) : null}
     </Section>
   );
 }
@@ -393,7 +402,7 @@ function ResultPanel({
   onBook,
   features,
 }: {
-  dict: Dictionary;
+  dict: CalculatorDictionary;
   result: ReturnType<typeof calculatePrice>;
   isCustom: boolean;
   frequencyLabel: string;
@@ -526,15 +535,12 @@ function ResultPanel({
           ) : null}
         </div>
         <div className="mt-1 flex items-baseline gap-2">
-          <motion.span
+          <span
             key={durationResult ? durationResult.discountedMonthlyCents : result.monthlyTotal}
-            initial={{ opacity: 0.4, y: 4 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.35, ease: [0.22, 1, 0.36, 1] }}
-            className="font-serif text-5xl tracking-tight text-foreground"
+            className="animate-price-in font-serif text-5xl tracking-tight text-foreground"
           >
             {formatEuro(durationResult ? durationResult.discountedMonthlyCents / 100 : result.monthlyTotal)}
-          </motion.span>
+          </span>
           <span className="text-sm text-muted-foreground">
             {irregular ? c.result.perWeek : c.result.perMonth}
           </span>

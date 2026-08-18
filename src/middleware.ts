@@ -69,6 +69,17 @@ export function localeForRequest(request: NextRequest) {
   }).locale;
 }
 
+/** Anonymous marketing requests have no session to refresh. */
+export function hasSupabaseAuthCookie(request: NextRequest) {
+  return request.cookies.getAll().some(({ name }) =>
+    name.startsWith("sb-") && (
+      name.includes("-auth-token") ||
+      name.endsWith("-access-token") ||
+      name.endsWith("-refresh-token")
+    ),
+  );
+}
+
 export async function middleware(request: NextRequest) {
   const host = request.headers.get("host")?.split(":")[0] || "";
 
@@ -89,7 +100,7 @@ export async function middleware(request: NextRequest) {
   let authResponse = NextResponse.next({ request: { headers: requestHeaders } });
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL;
   const supabaseKey = process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY || process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
-  if (supabaseUrl && supabaseKey) {
+  if (supabaseUrl && supabaseKey && hasSupabaseAuthCookie(request)) {
     const supabase = createServerClient(supabaseUrl, supabaseKey, {
       cookies: {
         getAll: () => request.cookies.getAll(),

@@ -27,8 +27,7 @@ const pairs = [
   },
 ];
 
-export function Gallery({ dict }: { dict: Dictionary }) {
-  const g = dict.gallery;
+export function Gallery({ dict: g }: { dict: Dictionary["gallery"] }) {
   return (
     <Section id={sections.gallery}>
       <Container>

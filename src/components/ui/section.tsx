@@ -15,7 +15,7 @@ export function Section({
 }: SectionProps) {
   return (
     <Tag
-      className={cn("py-20 sm:py-28 lg:py-32", bleed && "overflow-hidden", className)}
+      className={cn("content-auto py-20 sm:py-28 lg:py-32", bleed && "overflow-hidden", className)}
       {...props}
     />
   );

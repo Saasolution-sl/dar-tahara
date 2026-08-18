@@ -7,11 +7,11 @@ import { site, whatsappLink } from "@/lib/site";
 import { Navbar } from "@/components/layout/navbar";
 import { Footer } from "@/components/layout/footer";
 import { DetectionTracker } from "@/components/layout/detection-tracker";
-import { LaunchPopup } from "@/components/mailing-list/launch-popup";
+import { LaunchPopupLoader } from "@/components/mailing-list/launch-popup-loader";
 import { GoogleAnalytics } from "@/components/analytics/google-analytics";
 import { MauticTracking } from "@/components/analytics/mautic-tracking";
 import { ConsentBanner } from "@/components/analytics/consent-banner";
-import { WebsiteChat } from "@/components/assistant/website-chat";
+import { WebsiteChatLauncher } from "@/components/assistant/website-chat-launcher";
 import { shouldShowAssistantLauncher } from "@/lib/assistant/availability-state";
 import { featureEnabled } from "@/lib/feature-flags";
 import { buildLocalizedMetadata } from "@/lib/seo";
@@ -91,9 +91,9 @@ export default async function LocaleLayout({
       <Navbar locale={typedLocale} dict={dict.nav} whatsappHref={whatsappLink()} />
       <main id="main">{children}</main>
       <Footer locale={typedLocale} dict={dict} />
-      {newsletterEnabled ? <LaunchPopup locale={typedLocale} dict={dict.mailing} /> : null}
+      {newsletterEnabled ? <LaunchPopupLoader locale={typedLocale} dict={dict.mailing} /> : null}
       {shouldShowAssistantLauncher(assistantEnabled)
-        ? <WebsiteChat locale={typedLocale} copy={dict.assistant.chat} />
+        ? <WebsiteChatLauncher locale={typedLocale} copy={dict.assistant.chat} />
         : null}
     </>
   );

@@ -88,7 +88,7 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
                 </li>
               ))}
               <li className="pt-2">
-                <span className="mb-2 block text-xs font-medium uppercase tracking-widest text-muted-foreground/70">
+                <span className="mb-2 block text-xs font-medium uppercase tracking-widest text-muted-foreground">
                   {f.followUs}
                 </span>
                 <div className="flex gap-2">
@@ -118,7 +118,7 @@ export function Footer({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             <Link href={`${base}/terms`} className="transition-colors hover:text-foreground">{f.terms}</Link>
             <Link href={`${base}/privacy`} className="transition-colors hover:text-foreground">{f.privacy}</Link>
           </div>
-          <p className="text-xs text-muted-foreground/70">{f.madeWith}</p>
+          <p className="text-xs text-muted-foreground">{f.madeWith}</p>
         </div>
       </div>
     </footer>

@@ -51,7 +51,7 @@ export function Logo({
         >
           Dar Tahara
         </span>
-        <span className="text-[0.58rem] font-sans font-medium uppercase tracking-widest text-accent">
+        <span className="text-[0.58rem] font-sans font-semibold uppercase tracking-widest text-gold-700 dark:text-accent">
           House of Purity
         </span>
       </span>

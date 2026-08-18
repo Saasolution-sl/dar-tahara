@@ -2,6 +2,7 @@ import "server-only";
 
 import { serviceSelect } from "@/lib/supabase-rpc";
 import { redirect } from "next/navigation";
+import { unstable_cache } from "next/cache";
 import { isActive } from "@/lib/feature-flag-state";
 
 export { isActive } from "@/lib/feature-flag-state";
@@ -60,7 +61,7 @@ const defaults: Record<FeatureKey, Omit<FeatureFlag, "key">> = Object.fromEntrie
   }]),
 ) as Record<FeatureKey, Omit<FeatureFlag, "key">>;
 
-export async function getFeatureFlags(): Promise<FeatureFlag[]> {
+const getCachedFeatureFlags = unstable_cache(async (): Promise<FeatureFlag[]> => {
   try {
     const rows = await serviceSelect<FeatureFlag[]>(
       "feature_flags?select=key,name,description,enabled,starts_at,ends_at,public_disabled_message,fallback_cta_label,fallback_cta_url,updated_at,updated_by&order=key.asc",
@@ -70,6 +71,13 @@ export async function getFeatureFlags(): Promise<FeatureFlag[]> {
   } catch {
     return FEATURE_KEYS.map((key) => ({ key, ...defaults[key] }));
   }
+}, ["public-feature-flags-v1"], {
+  revalidate: 60,
+  tags: ["feature-flags"],
+});
+
+export async function getFeatureFlags(): Promise<FeatureFlag[]> {
+  return getCachedFeatureFlags();
 }
 
 export async function getFeatureFlag(key: FeatureKey): Promise<FeatureFlag> {

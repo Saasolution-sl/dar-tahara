@@ -3,6 +3,10 @@ const nextConfig = {
   reactStrictMode: true,
   poweredByHeader: false,
   output: "standalone",
+  // Metadata is locale-specific but entirely local. Resolve it into <head>
+  // instead of streaming tags into <body>, where HTML-only crawlers and
+  // Lighthouse can miss the description/canonical before hydration.
+  htmlLimitedBots: /.*/,
   images: {
     formats: ["image/avif", "image/webp"],
     remotePatterns: [

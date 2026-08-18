@@ -1,6 +1,7 @@
 import "server-only";
 
 import { serviceSelect } from "@/lib/supabase-rpc";
+import { unstable_cache } from "next/cache";
 import { DEFAULT_DURATION_TIERS, type DurationCode, type DurationTier } from "@/lib/subscription-duration";
 
 /**
@@ -41,7 +42,7 @@ function rowToTier(row: DurationTierRow): DurationTier {
 }
 
 /** All configured duration tiers (enabled and disabled), ordered for display. Falls back to defaults on any DB error. */
-export async function getDurationTiers(): Promise<DurationTier[]> {
+const getCachedDurationTiers = unstable_cache(async (): Promise<DurationTier[]> => {
   try {
     const rows = await serviceSelect<DurationTierRow[]>(
       "subscription_duration_tiers?select=code,months,discount_basis_points,pause_eligible,max_pause_months,max_pauses_per_contract,recommended,enabled,display_order&order=display_order.asc",
@@ -51,6 +52,13 @@ export async function getDurationTiers(): Promise<DurationTier[]> {
   } catch {
     return DEFAULT_DURATION_TIERS;
   }
+}, ["public-subscription-duration-tiers-v1"], {
+  revalidate: 300,
+  tags: ["subscription-duration-tiers"],
+});
+
+export async function getDurationTiers(): Promise<DurationTier[]> {
+  return getCachedDurationTiers();
 }
 
 /** Only the tiers a customer may currently select. */

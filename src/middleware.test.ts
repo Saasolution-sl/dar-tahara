@@ -2,7 +2,7 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { NextRequest } from "next/server";
 import { localeCookieName } from "./i18n/config";
-import { localeForRequest, localeRedirectResponse } from "./middleware";
+import { hasSupabaseAuthCookie, localeForRequest, localeRedirectResponse } from "./middleware";
 
 type RequestOptions = {
   acceptLanguage?: string;
@@ -125,5 +125,21 @@ test("provides the document locale for localized and standalone auth routes", ()
   assert.equal(
     localeForRequest(request("/forgot-password", { acceptLanguage: "nl-NL,nl;q=0.9" })),
     "nl",
+  );
+});
+
+test("only refreshes Supabase auth when a session cookie exists", () => {
+  assert.equal(hasSupabaseAuthCookie(request("/en")), false);
+  assert.equal(
+    hasSupabaseAuthCookie(request("/en", { cookie: "sb-project-auth-token.0=encoded" })),
+    true,
+  );
+  assert.equal(
+    hasSupabaseAuthCookie(request("/en", { cookie: "sb-access-token=token" })),
+    true,
+  );
+  assert.equal(
+    hasSupabaseAuthCookie(request("/en", { cookie: `${localeCookieName}=fr; consent=accepted` })),
+    false,
   );
 });

@@ -3,7 +3,6 @@
 import * as React from "react";
 import Link from "next/link";
 import { Menu, X, ChevronDown } from "lucide-react";
-import { motion, AnimatePresence } from "framer-motion";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import { sections, pages } from "@/lib/site";
@@ -49,15 +48,27 @@ export function Navbar({
   }, []);
 
   React.useEffect(() => {
-    fetch("/api/auth/me", { cache: "no-store" })
-      .then((response) => response.json())
-      .then((value: { authenticated?: boolean; destination?: string }) => {
-        if (value.authenticated && value.destination) {
-          setAuthenticated(true);
-          setAccountHref(value.destination);
-        }
-      })
-      .catch(() => undefined);
+    const probe = () => {
+      fetch("/api/auth/me", { cache: "no-store" })
+        .then((response) => response.json())
+        .then((value: { authenticated?: boolean; destination?: string }) => {
+          if (value.authenticated && value.destination) {
+            setAuthenticated(true);
+            setAccountHref(value.destination);
+          }
+        })
+        .catch(() => undefined);
+    };
+    const idleWindow = window as Window & {
+      requestIdleCallback?: (callback: () => void, options?: { timeout: number }) => number;
+      cancelIdleCallback?: (id: number) => void;
+    };
+    if (idleWindow.requestIdleCallback) {
+      const idleId = idleWindow.requestIdleCallback(probe, { timeout: 3_000 });
+      return () => idleWindow.cancelIdleCallback?.(idleId);
+    }
+    const timeoutId = window.setTimeout(probe, 2_000);
+    return () => window.clearTimeout(timeoutId);
   }, []);
 
   React.useEffect(() => {
@@ -95,7 +106,7 @@ export function Navbar({
       )}
     >
       <nav className="container flex h-16 items-center justify-between gap-4 lg:h-20">
-        <Link href={base} aria-label="Dar Tahara home" className="shrink-0">
+        <Link href={base} aria-label="Dar Tahara House of Purity home" className="shrink-0">
           <Logo variant="wordmark" />
         </Link>
 
@@ -131,15 +142,10 @@ export function Navbar({
               />
             </button>
 
-            <AnimatePresence>
-              {aboutOpen ? (
-                <motion.div
+            {aboutOpen ? (
+                <div
                   id="nav-about-menu"
-                  initial={{ opacity: 0, y: -6 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -6 }}
-                  transition={{ duration: 0.18, ease: [0.22, 1, 0.36, 1] }}
-                  className="absolute start-0 top-full z-50 min-w-56 pt-2"
+                  className="animate-menu-in absolute start-0 top-full z-50 min-w-56 pt-2"
                 >
                   <div className="overflow-hidden rounded-2xl border border-border bg-background/95 p-1.5 shadow-lift backdrop-blur-xl">
                     {aboutLinks.map((l) => (
@@ -153,9 +159,8 @@ export function Navbar({
                       </Link>
                     ))}
                   </div>
-                </motion.div>
+                </div>
               ) : null}
-            </AnimatePresence>
           </li>
 
           {links.map((l) => (
@@ -196,15 +201,8 @@ export function Navbar({
         </div>
       </nav>
 
-      <AnimatePresence>
-        {open ? (
-          <motion.div
-            initial={{ opacity: 0, y: -8 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -8 }}
-            transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
-            className="xl:hidden"
-          >
+      {open ? (
+          <div className="animate-menu-in xl:hidden">
             <div className="container flex flex-col gap-1 border-t border-border bg-background/95 pb-8 pt-4 backdrop-blur-xl">
               <p className="px-4 pb-1 pt-2 text-xs font-semibold uppercase tracking-widest text-muted-foreground/70">
                 {dict.about}
@@ -250,9 +248,8 @@ export function Navbar({
                 WhatsApp
               </Link>
             </div>
-          </motion.div>
+          </div>
         ) : null}
-      </AnimatePresence>
     </header>
   );
 }

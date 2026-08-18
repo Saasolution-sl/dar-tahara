@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidateTag } from "next/cache";
 import { authorizeApi } from "@/lib/portal-auth";
 import {
   FEATURE_KEYS,
@@ -75,6 +76,8 @@ async function patchFeatureFlag(req: NextRequest) {
     req.headers.get("user-agent")?.slice(0, 500) || null,
     update,
   ));
+
+  revalidateTag("feature-flags");
 
   return NextResponse.json(rows[0]);
 }
