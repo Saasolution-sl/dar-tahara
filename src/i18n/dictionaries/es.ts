@@ -218,7 +218,7 @@ const es: DeepPartial<Dictionary> = {
       },
       {
         q: "¿Las suscripciones más largas cuestan menos?",
-        a: "Sí. Los descuentos estándar por duración son 5 % para seis meses, 10 % para nueve meses y 15 % para doce meses. La suscripción de tres meses utiliza el precio estándar.",
+        a: "Sí. Los descuentos estándar por duración son 5 % para seis meses, 10 % para nueve meses y 15 % para doce meses. La suscripción de tres meses utiliza el precio estándar. Las suscripciones de 9 y 12 meses también incluyen una limpieza a fondo gratuita al año, además del descuento por duración.",
       },
       {
         q: "¿Cuándo puede aprobarse una pausa?",
@@ -289,6 +289,7 @@ const es: DeepPartial<Dictionary> = {
       "12_month": { name: "12 meses", tag: "Ahorra 15 %" },
       bestValue: "Mejor opción",
       pauseBenefit: "Beneficio de pausa",
+      freeDeepClean: "Limpieza a fondo anual gratis",
     },
     result: {
       heading: "Tu estimación",
@@ -312,6 +313,7 @@ const es: DeepPartial<Dictionary> = {
       durationSavings: "Ahorras",
       minimumContractValue: "Valor mínimo del contrato",
       pauseBenefitNote: "Una pausa aprobada de hasta dos meses consecutivos",
+      freeDeepCleanNote: "Incluye una limpieza a fondo gratuita al año, además de tu descuento por duración.",
       chooseDuration: "Elige una duración de suscripción para ver el precio de tu contrato.",
     },
     custom: {
@@ -370,6 +372,7 @@ const es: DeepPartial<Dictionary> = {
       duration: "Duración de la suscripción",
       durationDiscount: "Descuento de contrato",
       minimumContractValue: "Valor mínimo del contrato",
+      freeDeepClean: "Incluye 1 limpieza a fondo gratis/año",
       estMonthly: "Suscripción mensual estimada",
       assessment: "Evaluación única del hogar",
       doorlockInstallation: "Instalación de cerradura inteligente",

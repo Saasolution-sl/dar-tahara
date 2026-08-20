@@ -218,7 +218,7 @@ const pt: DeepPartial<Dictionary> = {
       },
       {
         q: "As subscrições mais longas custam menos?",
-        a: "Sim. Os descontos padrão por duração são 5% para seis meses, 10% para nove meses e 15% para doze meses. A subscrição de três meses utiliza o preço padrão.",
+        a: "Sim. Os descontos padrão por duração são 5% para seis meses, 10% para nove meses e 15% para doze meses. A subscrição de três meses utiliza o preço padrão. As subscrições de 9 e 12 meses também incluem uma limpeza profunda gratuita por ano, além do desconto de duração.",
       },
       {
         q: "Quando pode ser aprovada uma pausa?",
@@ -289,6 +289,7 @@ const pt: DeepPartial<Dictionary> = {
       "12_month": { name: "12 Meses", tag: "Poupe 15%" },
       bestValue: "Melhor opção",
       pauseBenefit: "Benefício de pausa",
+      freeDeepClean: "Limpeza profunda anual grátis",
     },
     result: {
       heading: "A sua estimativa",
@@ -312,6 +313,7 @@ const pt: DeepPartial<Dictionary> = {
       durationSavings: "Poupa",
       minimumContractValue: "Valor mínimo do contrato",
       pauseBenefitNote: "Uma pausa aprovada de até dois meses consecutivos",
+      freeDeepCleanNote: "Inclui uma limpeza profunda gratuita por ano, além do seu desconto de duração.",
       chooseDuration: "Escolha uma duração de subscrição para ver o preço do seu contrato.",
     },
     custom: {
@@ -370,6 +372,7 @@ const pt: DeepPartial<Dictionary> = {
       duration: "Duração da subscrição",
       durationDiscount: "Desconto de contrato",
       minimumContractValue: "Valor mínimo do contrato",
+      freeDeepClean: "Inclui 1 limpeza profunda grátis/ano",
       estMonthly: "Subscrição mensal estimada",
       assessment: "Avaliação única da casa",
       doorlockInstallation: "Instalação de fechadura inteligente",

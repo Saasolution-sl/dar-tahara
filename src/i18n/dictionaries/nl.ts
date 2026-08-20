@@ -218,7 +218,7 @@ const nl: DeepPartial<Dictionary> = {
       },
       {
         q: "Kosten langere abonnementen minder?",
-        a: "Ja. De standaardkortingen op looptijd zijn 5% voor zes maanden, 10% voor negen maanden en 15% voor twaalf maanden. Het abonnement van drie maanden gebruikt de standaardprijs.",
+        a: "Ja. De standaardkortingen op looptijd zijn 5% voor zes maanden, 10% voor negen maanden en 15% voor twaalf maanden. Het abonnement van drie maanden gebruikt de standaardprijs. De abonnementen van 9 en 12 maanden omvatten ook één gratis grondige schoonmaak per jaar, bovenop de looptijdkorting.",
       },
       {
         q: "Wanneer kan een pauze worden goedgekeurd?",
@@ -289,6 +289,7 @@ const nl: DeepPartial<Dictionary> = {
       "12_month": { name: "12 maanden", tag: "Bespaar 15%" },
       bestValue: "Beste keuze",
       pauseBenefit: "Pauzeregeling",
+      freeDeepClean: "Gratis jaarlijkse grondige schoonmaak",
     },
     result: {
       heading: "Uw schatting",
@@ -312,6 +313,7 @@ const nl: DeepPartial<Dictionary> = {
       durationSavings: "U bespaart",
       minimumContractValue: "Minimale contractwaarde",
       pauseBenefitNote: "Eén goedgekeurde pauze van maximaal twee aaneengesloten maanden",
+      freeDeepCleanNote: "Inclusief één gratis grondige schoonmaak per jaar, bovenop uw looptijdkorting.",
       chooseDuration: "Kies een abonnementsduur om uw contractprijs te zien.",
     },
     custom: {
@@ -370,6 +372,7 @@ const nl: DeepPartial<Dictionary> = {
       duration: "Abonnementsduur",
       durationDiscount: "Contractkorting",
       minimumContractValue: "Minimale contractwaarde",
+      freeDeepClean: "Incl. 1 gratis grondige schoonmaak/jaar",
       estMonthly: "Geschat maandabonnement",
       assessment: "Eenmalige Woningbeoordeling",
       doorlockInstallation: "Installatie slimme deurslot",

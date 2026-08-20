@@ -2,7 +2,7 @@
 
 import * as React from "react";
 import { AnimatePresence, motion } from "framer-motion";
-import { X, ShieldCheck, Loader2, Lock, KeyRound, Wifi } from "lucide-react";
+import { X, ShieldCheck, Loader2, Lock, KeyRound, Wifi, Gift } from "lucide-react";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import type { Locale } from "@/i18n/config";
 import type { FrequencyKey } from "@/lib/pricing";
@@ -111,6 +111,7 @@ export function AssessmentBookingModal({
     ),
     [sizeM2, frequency, effectiveOverMax, form.doorlockInstallationRequested, durationMonths, durationTiers],
   );
+  const includesFreeDeepClean = durationTiers.find((t) => t.months === durationMonths)?.includesFreeDeepClean ?? false;
 
   function set<K extends keyof typeof form>(key: K, value: (typeof form)[K]) {
     setForm((f) => ({ ...f, [key]: value }));
@@ -287,6 +288,12 @@ export function AssessmentBookingModal({
                   ) : null}
                   {quote.durationDiscountPercent > 0 ? (
                     <Row label={b.summary.durationDiscount} value={`${quote.durationDiscountPercent}%`} />
+                  ) : null}
+                  {includesFreeDeepClean ? (
+                    <div className="flex items-center gap-1.5 text-primary">
+                      <Gift className="h-3.5 w-3.5 shrink-0" aria-hidden />
+                      <dt className="text-xs font-medium">{b.summary.freeDeepClean}</dt>
+                    </div>
                   ) : null}
                   <Row
                     label={b.summary.estMonthly}

@@ -215,7 +215,7 @@
       },
       {
         q: "Do longer subscriptions cost less?",
-        a: "Yes. The standard duration discounts are 5% for six months, 10% for nine months, and 15% for twelve months. The three-month subscription uses the standard price.",
+        a: "Yes. The standard duration discounts are 5% for six months, 10% for nine months, and 15% for twelve months. The three-month subscription uses the standard price. The 9- and 12-month subscriptions also include one complimentary deep clean per year, on top of the duration discount.",
       },
       {
         q: "When can a pause be approved?",
@@ -286,6 +286,7 @@
       "12_month": { name: "12 Months", tag: "Save 15%" },
       bestValue: "Best Value",
       pauseBenefit: "Pause Benefit",
+      freeDeepClean: "Free annual deep clean",
     },
     result: {
       heading: "Your estimate",
@@ -309,6 +310,7 @@
       durationSavings: "You save",
       minimumContractValue: "Minimum contract value",
       pauseBenefitNote: "One approved pause of up to two consecutive months",
+      freeDeepCleanNote: "Includes one complimentary deep clean per year, on top of your duration discount.",
       chooseDuration: "Choose a subscription duration to see your contract price.",
     },
     custom: {
@@ -367,6 +369,7 @@
       duration: "Subscription duration",
       durationDiscount: "Contract discount",
       minimumContractValue: "Minimum contract value",
+      freeDeepClean: "Includes 1 free deep clean/year",
       estMonthly: "Estimated monthly subscription",
       assessment: "One-time Home Assessment",
       doorlockInstallation: "Smart door-lock installation",
