@@ -18,8 +18,9 @@ declare global {
  * - Loads mtc.js from NEXT_PUBLIC_MAUTIC_BASE_URL only when tracking is enabled
  *   AND the visitor has accepted analytics: so no Mautic cookie or request
  *   happens before consent (brief §26/§32).
- * - Loads asynchronously via next/script afterInteractive, so it never blocks
- *   render and the page is fully usable if Mautic is blocked or down (§38).
+ * - Loads asynchronously via next/script lazyOnload (idle time, after paint),
+ *   so it never blocks render and the page is fully usable if Mautic is
+ *   blocked or down (§38).
  * - Sends a pageview on load and on each client-side route change. It sends only
  *   the URL/path: never an email, phone, address or any submitted field (§26).
  * - Identification after submission is handled server-side (the API creates the
@@ -61,7 +62,7 @@ export function MauticTracking() {
   const src = `${base.replace(/\/$/, "")}/mtc.js`;
 
   return (
-    <Script id="mautic-tracking" strategy="afterInteractive">
+    <Script id="mautic-tracking" strategy="lazyOnload">
       {`
         (function(w,d,t,u,n,a,m){w['MauticTrackingObject']=n;
           w[n]=w[n]||function(){(w[n].q=w[n].q||[]).push(arguments)};
