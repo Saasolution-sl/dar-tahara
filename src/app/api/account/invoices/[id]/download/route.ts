@@ -8,6 +8,7 @@ import { frequencies, type FrequencyKey } from "@/lib/pricing";
 import { calculateAssessmentQuote, buildAnnualInvoiceBreakdown, ANNUAL_DISCOUNT_PERCENT } from "@/lib/assessment";
 import { DEFAULT_DURATION_TIERS } from "@/lib/subscription-duration";
 import { site } from "@/lib/site";
+import { getOrArchiveInvoicePdf } from "@/lib/invoice-archive";
 import type { Locale } from "@/i18n/config";
 
 export const runtime = "nodejs";
@@ -165,7 +166,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     const includedInvoiceNote = (details.includedInvoiceIds?.length ?? 0) > 0
       ? `${details.includedInvoiceIds?.length} outstanding standard invoice(s), totalling ${cents(details.includedInvoiceOutstandingCents)}, are included for resolution and are not charged a second time.`
       : "No outstanding standard invoices were absorbed into this settlement.";
-    const pdf = await generateInvoicePdf({
+    const generate = async () => generateInvoicePdf({
       docType: isDraftExample
         ? "Example - Early-Termination Settlement Invoice"
         : "Early-Termination Settlement Invoice",
@@ -210,6 +211,9 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
       terms: `This settlement is issued subject to Dar Tahara's Terms & Conditions: ${site.url}/${customer.preferred_language}/terms`,
       thanks: "Thank you for choosing Dar Tahara.",
     });
+    // A draft settlement is only a preview and can still change before it's
+    // finalized, so it must never be cached; a finalized one is immutable.
+    const pdf = isDraftExample ? await generate() : await getOrArchiveInvoicePdf(`invoices/${id}.pdf`, generate);
     await serviceInsert("customer_activity", { customer_id: customerId, event_type: "invoice_downloaded", resource_type: "invoice", resource_id: id, public_summary: "Early-termination settlement invoice downloaded" });
     return new NextResponse(new Uint8Array(pdf), {
       headers: {
@@ -230,7 +234,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
   const { subtotalCents, frequencyDiscountCents, durationDiscountCents, annualDiscountCents, totalCents } = breakdown;
   const trueListMonthlyCents = subtotalCents / 12;
 
-  const pdf = await generateInvoicePdf({
+  const pdf = await getOrArchiveInvoicePdf(`invoices/${id}.pdf`, async () => generateInvoicePdf({
     docType: "Invoice",
     number: invoice.invoice_number || invoice.stripe_invoice_id || id.slice(0, 8).toUpperCase(),
     date: issueDate,
@@ -263,7 +267,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ id: 
     },
     terms: `This invoice is issued subject to Dar Tahara's Terms & Conditions: ${site.url}/${customer.preferred_language}/terms`,
     thanks: "Thank you for choosing Dar Tahara.",
-  });
+  }));
 
   await serviceInsert("customer_activity", { customer_id: customerId, event_type: "invoice_downloaded", resource_type: "invoice", resource_id: id, public_summary: "Invoice downloaded" });
 

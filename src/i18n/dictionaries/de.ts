@@ -218,7 +218,7 @@ const de: DeepPartial<Dictionary> = {
       },
       {
         q: "Kosten längere Abos weniger?",
-        a: "Ja. Die Standardrabatte je nach Laufzeit sind 5 % für sechs Monate, 10 % für neun Monate und 15 % für zwölf Monate. Das Drei-Monats-Abo nutzt den Standardpreis.",
+        a: "Ja. Die Standardrabatte je nach Laufzeit sind 5 % für sechs Monate, 10 % für neun Monate und 15 % für zwölf Monate. Das Drei-Monats-Abo nutzt den Standardpreis. Die 9- und 12-Monats-Abos beinhalten zusätzlich eine kostenlose Grundreinigung pro Jahr, zusätzlich zum Laufzeitrabatt.",
       },
       {
         q: "Wann kann eine Pause genehmigt werden?",
@@ -289,6 +289,7 @@ const de: DeepPartial<Dictionary> = {
       "12_month": { name: "12 Monate", tag: "15 % sparen" },
       bestValue: "Bester Wert",
       pauseBenefit: "Pausenregelung",
+      freeDeepClean: "Kostenlose jährliche Grundreinigung",
     },
     result: {
       heading: "Ihre Schätzung",
@@ -312,6 +313,7 @@ const de: DeepPartial<Dictionary> = {
       durationSavings: "Sie sparen",
       minimumContractValue: "Mindestvertragswert",
       pauseBenefitNote: "Eine genehmigte Pause von bis zu zwei aufeinanderfolgenden Monaten",
+      freeDeepCleanNote: "Beinhaltet eine kostenlose Grundreinigung pro Jahr, zusätzlich zu Ihrem Laufzeitrabatt.",
       chooseDuration: "Wählen Sie eine Abo-Laufzeit, um Ihren Vertragspreis zu sehen.",
     },
     custom: {
@@ -370,6 +372,7 @@ const de: DeepPartial<Dictionary> = {
       duration: "Abo-Laufzeit",
       durationDiscount: "Vertragsrabatt",
       minimumContractValue: "Mindestvertragswert",
+      freeDeepClean: "Inkl. 1 kostenlose Grundreinigung/Jahr",
       estMonthly: "Geschätztes Monatsabo",
       assessment: "Einmalige Wohnungsbewertung",
       doorlockInstallation: "Installation eines smarten Türschlosses",

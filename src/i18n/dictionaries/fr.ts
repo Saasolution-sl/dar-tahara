@@ -218,7 +218,7 @@ const fr: DeepPartial<Dictionary> = {
       },
       {
         q: "Les abonnements plus longs coûtent-ils moins cher ?",
-        a: "Oui. Les remises standard de durée sont de 5 % pour six mois, 10 % pour neuf mois et 15 % pour douze mois. L'abonnement de trois mois utilise le prix standard.",
+        a: "Oui. Les remises standard de durée sont de 5 % pour six mois, 10 % pour neuf mois et 15 % pour douze mois. L'abonnement de trois mois utilise le prix standard. Les abonnements de 9 et 12 mois incluent également un nettoyage en profondeur gratuit par an, en plus de la remise de durée.",
       },
       {
         q: "Quand une suspension peut-elle être approuvée ?",
@@ -289,6 +289,7 @@ const fr: DeepPartial<Dictionary> = {
       "12_month": { name: "12 mois", tag: "Économisez 15 %" },
       bestValue: "Meilleure offre",
       pauseBenefit: "Avantage suspension",
+      freeDeepClean: "Nettoyage en profondeur annuel gratuit",
     },
     result: {
       heading: "Votre estimation",
@@ -312,6 +313,7 @@ const fr: DeepPartial<Dictionary> = {
       durationSavings: "Vous économisez",
       minimumContractValue: "Valeur minimale du contrat",
       pauseBenefitNote: "Une suspension approuvée allant jusqu'à deux mois consécutifs",
+      freeDeepCleanNote: "Inclut un nettoyage en profondeur gratuit par an, en plus de votre remise de durée.",
       chooseDuration: "Choisissez une durée d'abonnement pour voir le prix de votre contrat.",
     },
     custom: {
@@ -370,6 +372,7 @@ const fr: DeepPartial<Dictionary> = {
       duration: "Durée de l'abonnement",
       durationDiscount: "Remise de contrat",
       minimumContractValue: "Valeur minimale du contrat",
+      freeDeepClean: "Inclut 1 nettoyage en profondeur gratuit/an",
       estMonthly: "Abonnement mensuel estimé",
       assessment: "Évaluation ponctuelle du logement",
       doorlockInstallation: "Installation de serrure connectée",

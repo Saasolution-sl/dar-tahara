@@ -2,12 +2,14 @@ import { NextRequest, NextResponse } from "next/server";
 import { authorizeApi } from "@/lib/portal-auth";
 import { createAdminClient } from "@/lib/supabase/admin";
 import { serviceSelect } from "@/lib/supabase-rpc";
+import { presignGetUrl } from "@/lib/cubbit/client";
 import { downloadSupportAttachment } from "@/lib/hospitality-support/client";
 import { requireOwnedSupportRequest } from "@/lib/hospitality-support/repository";
 
 type AttachmentRow = {
   id: string;
   storage_path: string | null;
+  storage_provider: "supabase" | "cubbit" | null;
   external_url: string | null;
   safe_filename: string;
   mime_type: string;
@@ -25,10 +27,18 @@ export async function GET(_req: NextRequest, context: { params: Promise<{ id: st
     return NextResponse.json({ error: "attachment_not_found" }, { status: 404 });
   }
   const rows = await serviceSelect<AttachmentRow[]>(
-    `support_attachments?id=eq.${encodeURIComponent(attachmentId)}&support_request_id=eq.${encodeURIComponent(id)}&customer_id=eq.${encodeURIComponent(auth.context.customerId)}&visibility=eq.customer&select=id,storage_path,external_url,safe_filename,mime_type,size_bytes&limit=1`,
+    `support_attachments?id=eq.${encodeURIComponent(attachmentId)}&support_request_id=eq.${encodeURIComponent(id)}&customer_id=eq.${encodeURIComponent(auth.context.customerId)}&visibility=eq.customer&select=id,storage_path,storage_provider,external_url,safe_filename,mime_type,size_bytes&limit=1`,
   );
   const attachment = rows[0];
   if (!attachment) return NextResponse.json({ error: "attachment_not_found" }, { status: 404 });
+  if (attachment.storage_path && attachment.storage_provider === "cubbit") {
+    try {
+      const signedUrl = await presignGetUrl(attachment.storage_path, 60, attachment.safe_filename);
+      return NextResponse.redirect(signedUrl);
+    } catch {
+      return NextResponse.json({ error: "attachment_unavailable" }, { status: 502 });
+    }
+  }
   if (attachment.storage_path) {
     const admin = createAdminClient();
     const signed = await admin.storage.from("support-attachments").createSignedUrl(attachment.storage_path, 60, { download: attachment.safe_filename });

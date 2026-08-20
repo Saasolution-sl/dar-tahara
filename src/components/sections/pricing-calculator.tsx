@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Check, ArrowRight, Sparkles, Info, Package, ShieldCheck } from "lucide-react";
+import { Check, ArrowRight, Sparkles, Info, Package, ShieldCheck, Gift } from "lucide-react";
 import type { Locale } from "@/i18n/config";
 import type { Dictionary } from "@/i18n/dictionaries/en";
 import {
@@ -311,6 +311,12 @@ export function PricingCalculator({
                         {tier.recommended ? (
                           <Sparkles className="absolute left-1.5 top-1.5 h-3.5 w-3.5 text-accent" aria-hidden />
                         ) : null}
+                        {tier.includesFreeDeepClean ? (
+                          <span className="absolute -top-2 left-1/2 z-10 flex -translate-x-1/2 items-center gap-1 whitespace-nowrap rounded-full border border-primary/30 bg-primary px-2 py-0.5 text-[0.55rem] font-semibold uppercase leading-none tracking-wider text-primary-foreground shadow-soft">
+                            <Gift className="h-2.5 w-2.5" aria-hidden />
+                            {c.duration.freeDeepClean}
+                          </span>
+                        ) : null}
                         <span className="font-serif text-sm leading-tight text-foreground sm:text-base">
                           {meta.name}
                         </span>
@@ -554,6 +560,12 @@ function ResultPanel({
           <p className="mt-3 flex gap-2 rounded-xl bg-secondary/60 px-3.5 py-3 text-xs leading-relaxed text-muted-foreground">
             <Package className="mt-0.5 h-4 w-4 shrink-0 text-accent" aria-hidden />
             <span>{c.materialsNote}</span>
+          </p>
+        ) : null}
+        {!irregular && durationResult?.tier.includesFreeDeepClean ? (
+          <p className="mt-3 flex gap-2 rounded-xl border border-primary/20 bg-primary/10 px-3.5 py-3 text-xs leading-relaxed text-foreground dark:bg-primary/15">
+            <Gift className="mt-0.5 h-4 w-4 shrink-0 text-primary" aria-hidden />
+            <span>{c.result.freeDeepCleanNote}</span>
           </p>
         ) : null}
         {!irregular && durationResult?.tier.pauseEligible ? (

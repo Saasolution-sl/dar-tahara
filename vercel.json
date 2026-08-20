@@ -15,6 +15,10 @@
     {
       "path": "/api/jobs/billing-collection",
       "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/jobs/cubbit-storage-usage",
+      "schedule": "37 2 * * *"
     }
   ]
 }
