@@ -80,15 +80,31 @@ export function hasSupabaseAuthCookie(request: NextRequest) {
   );
 }
 
-export async function middleware(request: NextRequest) {
+/**
+ * Redirect any host other than the canonical site domain (the bare apex,
+ * self-hosted staging's own container host, etc.) to https://site.domain.
+ *
+ * The URL `host` setter only updates the port when the assigned string
+ * itself contains one; given a bare hostname like site.domain it leaves
+ * whatever port the URL already had. Behind the self-hosted staging
+ * reverse proxy, request.nextUrl carries the container's internal :3000,
+ * so without clearing url.port explicitly this used to redirect to
+ * https://www.dartahara.com:3000/ instead of the real canonical URL.
+ */
+export function canonicalHostRedirectResponse(request: NextRequest): NextResponse | null {
   const host = request.headers.get("host")?.split(":")[0] || "";
+  if (!host || host === site.domain || host === "localhost" || host === "127.0.0.1") return null;
 
-  if (host && host !== site.domain && host !== "localhost" && host !== "127.0.0.1") {
-    const url = request.nextUrl.clone();
-    url.protocol = "https";
-    url.host = site.domain;
-    return NextResponse.redirect(url, 308);
-  }
+  const url = request.nextUrl.clone();
+  url.protocol = "https";
+  url.host = site.domain;
+  url.port = "";
+  return NextResponse.redirect(url, 308);
+}
+
+export async function middleware(request: NextRequest) {
+  const canonicalRedirect = canonicalHostRedirectResponse(request);
+  if (canonicalRedirect) return canonicalRedirect;
 
   // Locale detection is entirely request-local. Return before Supabase auth
   // refresh so automatic redirects never add a network request.

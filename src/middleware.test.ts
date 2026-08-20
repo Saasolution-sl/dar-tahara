@@ -2,16 +2,23 @@ import { test } from "node:test";
 import assert from "node:assert/strict";
 import { NextRequest } from "next/server";
 import { localeCookieName } from "./i18n/config";
-import { hasSupabaseAuthCookie, localeForRequest, localeRedirectResponse } from "./middleware";
+import {
+  canonicalHostRedirectResponse,
+  hasSupabaseAuthCookie,
+  localeForRequest,
+  localeRedirectResponse,
+} from "./middleware";
 
 type RequestOptions = {
   acceptLanguage?: string;
   cookie?: string;
+  host?: string;
 };
 
 function request(pathname: string, options: RequestOptions = {}) {
-  return new NextRequest(`http://localhost${pathname}`, {
+  return new NextRequest(`http://${options.host || "localhost"}${pathname}`, {
     headers: {
+      host: options.host || "localhost",
       ...(options.acceptLanguage ? { "accept-language": options.acceptLanguage } : {}),
       ...(options.cookie ? { cookie: options.cookie } : {}),
     },
@@ -126,6 +133,23 @@ test("provides the document locale for localized and standalone auth routes", ()
     localeForRequest(request("/forgot-password", { acceptLanguage: "nl-NL,nl;q=0.9" })),
     "nl",
   );
+});
+
+test("canonical host redirect clears a leaked port instead of preserving it", () => {
+  const response = canonicalHostRedirectResponse(
+    request("/en/plans", { host: "staging.dartahara.com:3000" }),
+  );
+  assert.ok(response, "a non-canonical host should redirect");
+  assert.equal(response.status, 308);
+  assert.equal(response.headers.get("location"), "https://www.dartahara.com/en/plans");
+});
+
+test("canonical host redirect passes through the real canonical domain untouched", () => {
+  assert.equal(
+    canonicalHostRedirectResponse(request("/en/plans", { host: "www.dartahara.com" })),
+    null,
+  );
+  assert.equal(canonicalHostRedirectResponse(request("/en/plans")), null);
 });
 
 test("only refreshes Supabase auth when a session cookie exists", () => {
