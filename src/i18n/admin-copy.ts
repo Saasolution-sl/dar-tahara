@@ -13,7 +13,7 @@ export type AdminCopy = {
     signOut: string;
     nav: {
       dashboard: string; kpiBaseline: string; assessments: string; customers: string; properties: string; subscriptions: string;
-      pauseRequests: string; deepCleanRequests: string; invoices: string; features: string; auditLog: string; assistant: string;
+      pauseRequests: string; deepCleanRequests: string; acUnits: string; invoices: string; features: string; auditLog: string; assistant: string;
       teamProfiles: string; offices: string;
     };
   };
@@ -44,6 +44,15 @@ export type AdminCopy = {
     actions: { startReview: string; approve: string; reject: string; complete: string };
     prompts: { notes: string };
     freeLabel: string; noMatch: string;
+  };
+  acUnits: {
+    title: string; subtitleSuffix: string; searchPlaceholder: string;
+    columns: { customer: string; property: string; unit: string; coverage: string; status: string; maintenance: string; billing: string; nextAction: string };
+    coverageLabels: { included: string; paid_addon: string };
+    billingOkLabel: string; billingMismatchLabel: string;
+    actions: { replace: string; retire: string; sync: string };
+    prompts: { replaceReason: string; replaceTargetUnitId: string; retireReason: string };
+    noMatch: string;
   };
   invoicesAdmin: {
     title: string; subtitleSuffix: string; searchPlaceholder: string;
@@ -87,7 +96,7 @@ const en: AdminCopy = {
     nav: {
       dashboard: "Dashboard", kpiBaseline: "KPI Baseline", teamProfiles: "Team profiles", offices: "Offices",
       assessments: "Assessments", customers: "Customers", properties: "Properties", subscriptions: "Subscriptions",
-      pauseRequests: "Pause requests", deepCleanRequests: "Deep-clean requests", invoices: "Invoices", features: "Feature settings", auditLog: "Audit log", assistant: "Assistant",
+      pauseRequests: "Pause requests", deepCleanRequests: "Deep-clean requests", acUnits: "AC units", invoices: "Invoices", features: "Feature settings", auditLog: "Audit log", assistant: "Assistant",
     },
   },
   common: {
@@ -120,6 +129,15 @@ const en: AdminCopy = {
     prompts: { notes: "Notes (visible to the customer for approve/reject)" },
     freeLabel: "Free",
     noMatch: "No deep-clean requests match this view.",
+  },
+  acUnits: {
+    title: "Air-conditioning units", subtitleSuffix: "units", searchPlaceholder: "Search customer or email",
+    columns: { customer: "Customer", property: "Property", unit: "Unit", coverage: "Coverage", status: "Status", maintenance: "Maintenance", billing: "Billing", nextAction: "Next action" },
+    coverageLabels: { included: "Included", paid_addon: "Paid add-on" },
+    billingOkLabel: "In sync", billingMismatchLabel: "Billing mismatch",
+    actions: { replace: "Replace included unit", retire: "Retire", sync: "Synchronize Stripe quantity" },
+    prompts: { replaceReason: "Reason (removed / replaced / moved_property / incorrect_before_maintenance / admin_correction)", replaceTargetUnitId: "New included AC unit ID", retireReason: "Reason for retiring this unit" },
+    noMatch: "No AC units match this view.",
   },
   invoicesAdmin: {
     title: "Invoices", subtitleSuffix: "invoices",
@@ -161,7 +179,7 @@ const nl: AdminCopy = {
     nav: {
       dashboard: "Dashboard", kpiBaseline: "KPI-basislijn", teamProfiles: "Teamprofielen", offices: "Vestigingen",
       assessments: "Beoordelingen", customers: "Klanten", properties: "Woningen", subscriptions: "Abonnementen",
-      pauseRequests: "Pauzeverzoeken", deepCleanRequests: "Verzoeken voor grondige schoonmaak", invoices: "Facturen", features: "Functie-instellingen", auditLog: "Auditlogboek", assistant: "Assistent",
+      pauseRequests: "Pauzeverzoeken", deepCleanRequests: "Verzoeken voor grondige schoonmaak", acUnits: "Airco's", invoices: "Facturen", features: "Functie-instellingen", auditLog: "Auditlogboek", assistant: "Assistent",
     },
   },
   common: {
@@ -195,6 +213,7 @@ const nl: AdminCopy = {
     freeLabel: "Gratis",
     noMatch: "Geen verzoeken voor grondige schoonmaak komen overeen met deze weergave.",
   },
+  acUnits: en.acUnits,
   invoicesAdmin: {
     title: "Facturen", subtitleSuffix: "facturen",
     searchPlaceholder: "Zoek op referentie of klant",
@@ -235,7 +254,7 @@ const fr: AdminCopy = {
     nav: {
       dashboard: "Tableau de bord", kpiBaseline: "Indicateurs clés", teamProfiles: "Profils d'équipe", offices: "Agences",
       assessments: "Évaluations", customers: "Clients", properties: "Propriétés", subscriptions: "Abonnements",
-      pauseRequests: "Demandes de pause", deepCleanRequests: "Demandes de nettoyage en profondeur", invoices: "Factures", features: "Paramètres des fonctionnalités", auditLog: "Journal d’audit", assistant: "Assistant",
+      pauseRequests: "Demandes de pause", deepCleanRequests: "Demandes de nettoyage en profondeur", acUnits: "Climatiseurs", invoices: "Factures", features: "Paramètres des fonctionnalités", auditLog: "Journal d’audit", assistant: "Assistant",
     },
   },
   common: {
@@ -269,6 +288,7 @@ const fr: AdminCopy = {
     freeLabel: "Gratuit",
     noMatch: "Aucune demande de nettoyage en profondeur ne correspond à cette vue.",
   },
+  acUnits: en.acUnits,
   invoicesAdmin: {
     title: "Factures", subtitleSuffix: "factures",
     searchPlaceholder: "Rechercher par référence ou client",
@@ -309,7 +329,7 @@ const ar: AdminCopy = {
     nav: {
       dashboard: "لوحة التحكم", kpiBaseline: "مؤشرات الأداء الأساسية", teamProfiles: "ملفات الفريق", offices: "المكاتب",
       assessments: "التقييمات", customers: "العملاء", properties: "العقارات", subscriptions: "الاشتراكات",
-      pauseRequests: "طلبات الإيقاف المؤقت", deepCleanRequests: "طلبات التنظيف العميق", invoices: "الفواتير", features: "إعدادات الميزات", auditLog: "سجل التدقيق", assistant: "المساعد",
+      pauseRequests: "طلبات الإيقاف المؤقت", deepCleanRequests: "طلبات التنظيف العميق", acUnits: "وحدات التكييف", invoices: "الفواتير", features: "إعدادات الميزات", auditLog: "سجل التدقيق", assistant: "المساعد",
     },
   },
   common: {
@@ -343,6 +363,7 @@ const ar: AdminCopy = {
     freeLabel: "مجاني",
     noMatch: "لا توجد طلبات تنظيف عميق تطابق هذا العرض.",
   },
+  acUnits: en.acUnits,
   invoicesAdmin: {
     title: "الفواتير", subtitleSuffix: "فواتير",
     searchPlaceholder: "البحث بالمرجع أو العميل",
@@ -383,7 +404,7 @@ const es: AdminCopy = {
     nav: {
       dashboard: "Panel", kpiBaseline: "Indicadores clave", teamProfiles: "Perfiles de equipo", offices: "Oficinas",
       assessments: "Evaluaciones", customers: "Clientes", properties: "Propiedades", subscriptions: "Suscripciones",
-      pauseRequests: "Solicitudes de pausa", deepCleanRequests: "Solicitudes de limpieza profunda", invoices: "Facturas", features: "Configuración de funciones", auditLog: "Registro de auditoría", assistant: "Asistente",
+      pauseRequests: "Solicitudes de pausa", deepCleanRequests: "Solicitudes de limpieza profunda", acUnits: "Aires acondicionados", invoices: "Facturas", features: "Configuración de funciones", auditLog: "Registro de auditoría", assistant: "Asistente",
     },
   },
   common: {
@@ -417,6 +438,7 @@ const es: AdminCopy = {
     freeLabel: "Gratis",
     noMatch: "Ninguna solicitud de limpieza profunda coincide con esta vista.",
   },
+  acUnits: en.acUnits,
   invoicesAdmin: {
     title: "Facturas", subtitleSuffix: "facturas",
     searchPlaceholder: "Buscar por referencia o cliente",
@@ -457,7 +479,7 @@ const de: AdminCopy = {
     nav: {
       dashboard: "Übersicht", kpiBaseline: "KPI-Basislinie", teamProfiles: "Teamprofile", offices: "Niederlassungen",
       assessments: "Bewertungen", customers: "Kunden", properties: "Immobilien", subscriptions: "Abonnements",
-      pauseRequests: "Pausenanträge", deepCleanRequests: "Grundreinigungsanfragen", invoices: "Rechnungen", features: "Funktionseinstellungen", auditLog: "Prüfprotokoll", assistant: "Assistent",
+      pauseRequests: "Pausenanträge", deepCleanRequests: "Grundreinigungsanfragen", acUnits: "Klimaanlagen", invoices: "Rechnungen", features: "Funktionseinstellungen", auditLog: "Prüfprotokoll", assistant: "Assistent",
     },
   },
   common: {
@@ -491,6 +513,7 @@ const de: AdminCopy = {
     freeLabel: "Kostenlos",
     noMatch: "Keine Grundreinigungsanfragen entsprechen dieser Ansicht.",
   },
+  acUnits: en.acUnits,
   invoicesAdmin: {
     title: "Rechnungen", subtitleSuffix: "Rechnungen",
     searchPlaceholder: "Nach Referenz oder Kunde suchen",
@@ -531,7 +554,7 @@ const pt: AdminCopy = {
     nav: {
       dashboard: "Painel", kpiBaseline: "Base de KPIs", teamProfiles: "Perfis de equipa", offices: "Escritórios",
       assessments: "Avaliações", customers: "Clientes", properties: "Propriedades", subscriptions: "Subscrições",
-      pauseRequests: "Pedidos de pausa", deepCleanRequests: "Pedidos de limpeza profunda", invoices: "Faturas", features: "Definições de funcionalidades", auditLog: "Registo de auditoria", assistant: "Assistente",
+      pauseRequests: "Pedidos de pausa", deepCleanRequests: "Pedidos de limpeza profunda", acUnits: "Ar condicionado", invoices: "Faturas", features: "Definições de funcionalidades", auditLog: "Registo de auditoria", assistant: "Assistente",
     },
   },
   common: {
@@ -565,6 +588,7 @@ const pt: AdminCopy = {
     freeLabel: "Grátis",
     noMatch: "Nenhum pedido de limpeza profunda corresponde a esta vista.",
   },
+  acUnits: en.acUnits,
   invoicesAdmin: {
     title: "Faturas", subtitleSuffix: "faturas",
     searchPlaceholder: "Pesquisar por referência ou cliente",

@@ -473,6 +473,108 @@ export async function retrieveStripeSubscription(
 }
 
 /**
+ * AC maintenance add-on: unlike the base subscription price (created fresh
+ * per subscription via createSubscriptionPrice), this is a single fixed
+ * price reused across every customer, so it is created once (see
+ * scripts/setup-ac-addon-price.ts) and referenced by ID from configuration,
+ * matching "the Stripe Price is the billing authority" rather than
+ * scattering the amount through the app. Never hardcode this ID in frontend
+ * code; it's read server-side only.
+ */
+export function acAddonPriceId(): string {
+  const id = process.env.STRIPE_AC_ADDON_PRICE_ID;
+  if (!id) throw new Error("ac_addon_price_not_configured");
+  return id;
+}
+
+/** One-time setup: creates the fixed recurring AC add-on Price (and its Product). Not called at request time, only from the setup script. */
+export async function createAcAddonPrice(): Promise<StripePrice & { product: string }> {
+  const params = new URLSearchParams();
+  params.set("currency", defaultCurrency());
+  params.set("unit_amount", "400");
+  params.set("recurring[interval]", "month");
+  params.set("product_data[name]", "Additional Air Conditioning Maintenance");
+  params.set(
+    "product_data[metadata][description]",
+    "Twice-yearly preventative maintenance cleaning for one additional registered air-conditioning unit at the subscribed Dar Tahara property.",
+  );
+  params.set("metadata[service_type]", "ac_maintenance");
+  params.set("metadata[billing_type]", "subscription_addon");
+  params.set("metadata[frequency]", "twice_yearly");
+  params.set("metadata[unit_type]", "air_conditioner");
+  params.set("metadata[brand]", "dar_tahara");
+  return stripePost<StripePrice & { product: string }>("prices", params, "ac_addon_price_setup_v1");
+}
+
+export type StripeSubscriptionItem = {
+  id: string;
+  object: "subscription_item";
+  subscription: string;
+  price: { id: string };
+  quantity: number;
+};
+
+/** Lists the live items on a subscription, used to find (or confirm the absence of) the AC add-on item before adding/updating/removing it. */
+export async function listSubscriptionItems(subscriptionId: string): Promise<StripeSubscriptionItem[]> {
+  const res = await stripeGet<{ data: StripeSubscriptionItem[] }>(
+    `subscription_items?subscription=${encodeURIComponent(subscriptionId)}`,
+  );
+  return res.data;
+}
+
+/** Finds the AC add-on item on a subscription, if one exists (by price ID, not by array position). */
+export async function findAcAddonSubscriptionItem(subscriptionId: string): Promise<StripeSubscriptionItem | null> {
+  const items = await listSubscriptionItems(subscriptionId);
+  const priceId = acAddonPriceId();
+  return items.find((item) => item.price.id === priceId) ?? null;
+}
+
+/**
+ * Adds the AC add-on as a new item on an already-live subscription (going
+ * from 0 to N>0 paid units). Quantity must be the caller's database-computed
+ * paid-unit count (computeAdditionalAcCount in ac-maintenance.ts), never
+ * incremented/decremented directly, so Stripe can never drift from the DB.
+ */
+export async function addAcAddonSubscriptionItem(input: {
+  subscriptionId: string;
+  quantity: number;
+  idempotencyKey: string;
+}): Promise<StripeSubscriptionItem> {
+  const params = new URLSearchParams();
+  params.set("subscription", input.subscriptionId);
+  params.set("price", acAddonPriceId());
+  params.set("quantity", String(input.quantity));
+  params.set("proration_behavior", "create_prorations");
+  params.set("metadata[service_type]", "ac_maintenance");
+  return stripePost<StripeSubscriptionItem>("subscription_items", params, input.idempotencyKey);
+}
+
+/** Updates the quantity of an existing AC add-on item (adding/removing paid units while at least one remains). */
+export async function updateAcAddonSubscriptionItemQuantity(input: {
+  subscriptionItemId: string;
+  quantity: number;
+  idempotencyKey: string;
+}): Promise<StripeSubscriptionItem> {
+  const params = new URLSearchParams();
+  params.set("quantity", String(input.quantity));
+  params.set("proration_behavior", "create_prorations");
+  return stripePost<StripeSubscriptionItem>(
+    `subscription_items/${encodeURIComponent(input.subscriptionItemId)}`, params, input.idempotencyKey,
+  );
+}
+
+/** Removes the AC add-on item entirely (going from N>0 paid units to 0). */
+export async function removeAcAddonSubscriptionItem(input: {
+  subscriptionItemId: string;
+  idempotencyKey: string;
+}): Promise<{ id: string; deleted: boolean }> {
+  return stripeDelete<{ id: string; deleted: boolean }>(
+    `subscription_items/${encodeURIComponent(input.subscriptionItemId)}?proration_behavior=create_prorations`,
+    input.idempotencyKey,
+  );
+}
+
+/**
  * One-off Checkout Session for paying a specific outstanding invoice via a
  * secure payment link. Created fresh at redemption time (never pre-created
  * and stored), the `payment_links` row's own `expires_at` is the real

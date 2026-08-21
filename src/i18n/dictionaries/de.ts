@@ -244,6 +244,34 @@ const de: DeepPartial<Dictionary> = {
         q: "Wird Dar Tahara auch als DarTahara bezeichnet?",
         a: "Ja. Dar Tahara wird manchmal auch als DarTahara oder dartahara geschrieben, und dartahara.com ist die offizielle Website von Dar Tahara, einem Unternehmen für Hauspflege und Immobilien-Concierge in Marokko.",
       },
+      {
+        q: "Ist die Klimaanlagenwartung in meinem Abo enthalten?",
+        a: "Ja. Ein aktives Dar-Tahara-Abo umfasst die Wartungsreinigung für eine registrierte Klimaanlage, bis zu zweimal pro 12-monatigem Leistungszeitraum.",
+      },
+      {
+        q: "Ich habe mehr als eine Klimaanlage. Kann Dar Tahara auch die anderen warten?",
+        a: "Ja. Zusätzliche registrierte Klimaanlagen können für 4 € pro Monat und Gerät zu Ihrem Abo hinzugefügt werden. Jede abgedeckte zusätzliche Einheit erhält dieselbe zweimal jährliche Wartungsreinigung, solange ihre Abdeckung aktiv ist.",
+      },
+      {
+        q: "Warum muss ich eine bestimmte Klimaanlage auswählen?",
+        a: "Ihre inkludierte Wartungsleistung ist an eine bestimmte Klimaanlage gebunden, damit wir stets dasselbe Gerät warten und eine genaue Servicehistorie führen können.",
+      },
+      {
+        q: "Kann ich meine zwei inkludierten Wartungsbesuche auf zwei verschiedenen Klimaanlagen nutzen?",
+        a: "Nein. Beide inkludierten Wartungsbesuche gelten für dieselbe registrierte Klimaanlage. Zusätzliche Geräte können separat für 4 € pro Monat und Gerät hinzugefügt werden.",
+      },
+      {
+        q: "Kann ich ändern, welche Klimaanlage inkludiert ist?",
+        a: "Normalerweise bleibt die inkludierte Einheit mit Ihrem Abo-Leistungszeitraum verbunden. Wird das Gerät ersetzt, entfernt, oder ziehen Sie um, kontaktieren Sie Dar Tahara, damit wir die registrierte Einheit korrekt aktualisieren.",
+      },
+      {
+        q: "Was passiert, wenn ich später eine weitere Klimaanlage hinzufüge?",
+        a: "Sie können über Ihr Dar-Tahara-Konto eine weitere Klimaanlage registrieren. Jede zusätzliche abgedeckte Einheit kostet 4 € pro Monat.",
+      },
+      {
+        q: "Beinhaltet die Klimaanlagenwartung Reparaturen?",
+        a: "Nein. Die inkludierte Leistung ist eine vorbeugende Wartungsreinigung. Stellen wir einen offensichtlichen technischen Defekt oder Reparaturbedarf fest, melden wir Ihnen das, aber die technische Klimatechnik-Reparatur ist ein separater Dienst, sofern Dar Tahara diesen nicht ausdrücklich anbietet.",
+      },
     ],
   },
   cta: {

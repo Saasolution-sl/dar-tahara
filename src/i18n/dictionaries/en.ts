@@ -241,6 +241,34 @@
         q: "Is Dar Tahara also known as DarTahara?",
         a: "Yes. Dar Tahara is sometimes written as DarTahara or dartahara, and dartahara.com is the official website of Dar Tahara, a professional home care and property concierge company in Morocco.",
       },
+      {
+        q: "Is air-conditioning maintenance included with my subscription?",
+        a: "Yes. An active Dar Tahara subscription includes maintenance cleaning for one registered air-conditioning unit, up to twice per 12-month benefit period.",
+      },
+      {
+        q: "I have more than one air conditioner. Can Dar Tahara maintain the others?",
+        a: "Yes. Additional registered air-conditioning units can be added to your subscription for €4 per month per unit. Each covered additional unit receives the same twice-yearly maintenance cleaning benefit while its coverage is active.",
+      },
+      {
+        q: "Why do I have to select a specific air conditioner?",
+        a: "Your included maintenance benefit is connected to one specific air-conditioning unit so we can maintain the same unit consistently and keep an accurate service history.",
+      },
+      {
+        q: "Can I use my two included maintenance visits on two different air conditioners?",
+        a: "No. Both included maintenance visits apply to the same registered air-conditioning unit. Additional units can be added separately for €4 per month per unit.",
+      },
+      {
+        q: "Can I change which air conditioner is included?",
+        a: "Normally the included unit remains connected to your subscription benefit period. If the unit is replaced, removed, or you move property, contact Dar Tahara so we can update the registered unit correctly.",
+      },
+      {
+        q: "What happens if I add another AC later?",
+        a: "You can register another air-conditioning unit through your Dar Tahara account. Additional covered units cost €4 per month each.",
+      },
+      {
+        q: "Does AC maintenance include repairs?",
+        a: "No. The included service is preventative maintenance cleaning. If we identify an apparent technical fault or repair requirement, we can report the issue to you, but technical HVAC repair is separate unless Dar Tahara explicitly offers such a service.",
+      },
     ],
   },
   cta: {

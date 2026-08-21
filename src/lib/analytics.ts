@@ -49,7 +49,19 @@ export type AnalyticsEvent =
   | "pause_request_approved"
   | "pause_request_rejected"
   | "subscription_paused"
-  | "subscription_resumed";
+  | "subscription_resumed"
+  // AC maintenance benefit (coarse only: unit counts and statuses, never a
+  // room label, address, brand/model/serial number or other identifying
+  // detail as a prop).
+  | "ac_registered"
+  | "included_ac_selected"
+  | "additional_ac_added"
+  | "additional_ac_removed"
+  | "ac_maintenance_booked"
+  | "ac_maintenance_completed"
+  | "ac_maintenance_due"
+  | "ac_replaced"
+  | "stripe_ac_quantity_mismatch";
 
 type Props = Record<string, string | number | boolean>;
 

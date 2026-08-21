@@ -244,6 +244,34 @@ const fr: DeepPartial<Dictionary> = {
         q: "Dar Tahara est-elle aussi connue sous le nom DarTahara ?",
         a: "Oui. Dar Tahara s'écrit parfois DarTahara ou dartahara, et dartahara.com est le site officiel de Dar Tahara, une conciergerie résidentielle professionnelle au Maroc.",
       },
+      {
+        q: "L'entretien de la climatisation est-il inclus dans mon abonnement ?",
+        a: "Oui. Un abonnement Dar Tahara actif inclut le nettoyage d'entretien d'un climatiseur enregistré, jusqu'à deux fois par période de bénéfice de 12 mois.",
+      },
+      {
+        q: "J'ai plusieurs climatiseurs. Dar Tahara peut-il entretenir les autres ?",
+        a: "Oui. Des climatiseurs supplémentaires enregistrés peuvent être ajoutés à votre abonnement pour 4 € par mois et par unité. Chaque unité supplémentaire couverte bénéficie du même entretien deux fois par an tant que sa couverture est active.",
+      },
+      {
+        q: "Pourquoi dois-je sélectionner un climatiseur spécifique ?",
+        a: "Votre entretien inclus est rattaché à un climatiseur spécifique afin que nous puissions entretenir toujours le même appareil et conserver un historique d'entretien précis.",
+      },
+      {
+        q: "Puis-je utiliser mes deux visites d'entretien incluses sur deux climatiseurs différents ?",
+        a: "Non. Les deux visites d'entretien incluses s'appliquent au même climatiseur enregistré. Des unités supplémentaires peuvent être ajoutées séparément pour 4 € par mois et par unité.",
+      },
+      {
+        q: "Puis-je changer le climatiseur inclus ?",
+        a: "En temps normal, l'unité incluse reste rattachée à votre période de bénéfice d'abonnement. Si l'appareil est remplacé, retiré, ou si vous changez de logement, contactez Dar Tahara afin que nous mettions à jour correctement l'unité enregistrée.",
+      },
+      {
+        q: "Que se passe-t-il si j'ajoute un autre climatiseur plus tard ?",
+        a: "Vous pouvez enregistrer un autre climatiseur depuis votre compte Dar Tahara. Chaque unité supplémentaire couverte coûte 4 € par mois.",
+      },
+      {
+        q: "L'entretien de la climatisation inclut-il les réparations ?",
+        a: "Non. Le service inclus est un nettoyage d'entretien préventif. Si nous identifions une anomalie technique apparente ou un besoin de réparation, nous pouvons vous le signaler, mais la réparation technique du système est un service distinct, sauf si Dar Tahara le propose explicitement.",
+      },
     ],
   },
   cta: {

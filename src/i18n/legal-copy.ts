@@ -83,6 +83,17 @@ const en: LegalCopy = {
           "Our Privacy Policy explains personal-data processing. We may update these Terms prospectively; the version accepted at checkout is recorded with your booking. These Terms are governed by Moroccan law, and disputes are subject to the competent Moroccan courts unless mandatory consumer law provides otherwise.",
         ],
       },
+      {
+        heading: "9. Air-conditioning maintenance benefit",
+        paragraphs: [
+          "An active Dar Tahara subscription includes preventative maintenance cleaning for one registered air-conditioning unit at the subscribed property, up to twice per rolling 12-month benefit period. This included benefit is associated with one specific registered physical air-conditioning unit, identified and tracked by its own internal record, not by a room name or description alone; renaming or redescribing a unit does not change which physical unit the benefit applies to and does not create an additional entitlement.",
+          "The included benefit cannot be transferred between air-conditioning units simply to obtain additional maintenance visits. Changing which unit is the included unit is only made through Dar Tahara, for a legitimate reason such as the unit being permanently removed, replaced, the customer moving property, an incorrect unit having been registered before any maintenance occurred, or another Dar Tahara-approved correction; the maintenance history of a replaced unit remains attached to that unit's own record.",
+          "Additional air-conditioning units may be registered and added to the subscription for a recurring fee per unit, disclosed at the time of registration and shown in the subscription summary and invoices. Each additional unit that is registered and actively covered receives the same maintenance benefit described above, up to twice per rolling 12-month benefit period, for as long as its coverage remains active.",
+          "A maintenance benefit can only be used while the corresponding subscription, or the specific unit's paid coverage, is active. Coverage that has ended, whether through cancellation, non-payment or removal of a unit, does not carry forward, and no future maintenance visit is promised or available after the corresponding coverage has ended unless the subscription or unit coverage is renewed or reinstated. An unused maintenance visit does not become a cash credit, refund or discount, is not transferable to another unit, another property or another customer, and does not carry over beyond its own benefit period once that period ends.",
+          "The included and additional-unit benefits described in this section are preventative maintenance cleaning. They do not include technical HVAC repair, refrigerant work or component replacement. Where an apparent technical fault or repair need is identified during a visit, Dar Tahara will report it to the customer; performing the repair itself is a separate service, only where Dar Tahara explicitly offers it.",
+          "This section supplements and does not override the subscription duration, cancellation and renewal terms described elsewhere in these Terms and in the Subscription pause benefit section; where those terms determine that a subscription or a unit's coverage is not active, the maintenance benefit described in this section is not available for that period.",
+        ],
+      },
     ],
   },
   privacy: {

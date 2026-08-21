@@ -244,6 +244,34 @@ const es: DeepPartial<Dictionary> = {
         q: "¿Se conoce también a Dar Tahara como DarTahara?",
         a: "Sí. Dar Tahara también se escribe como DarTahara o dartahara, y dartahara.com es el sitio web oficial de Dar Tahara, una empresa de cuidado del hogar y conserjería de propiedades en Marruecos.",
       },
+      {
+        q: "¿El mantenimiento de aire acondicionado está incluido en mi suscripción?",
+        a: "Sí. Una suscripción activa de Dar Tahara incluye limpieza de mantenimiento para un aparato de aire acondicionado registrado, hasta dos veces por período de beneficio de 12 meses.",
+      },
+      {
+        q: "Tengo más de un aire acondicionado. ¿Puede Dar Tahara mantener los demás?",
+        a: "Sí. Puedes añadir aparatos de aire acondicionado adicionales registrados a tu suscripción por 4 € al mes por unidad. Cada unidad adicional cubierta recibe el mismo beneficio de limpieza de mantenimiento dos veces al año mientras su cobertura esté activa.",
+      },
+      {
+        q: "¿Por qué tengo que seleccionar un aire acondicionado específico?",
+        a: "Tu beneficio de mantenimiento incluido está vinculado a un aparato de aire acondicionado específico para que podamos mantener siempre el mismo aparato y conservar un historial de servicio preciso.",
+      },
+      {
+        q: "¿Puedo usar mis dos visitas de mantenimiento incluidas en dos aires acondicionados diferentes?",
+        a: "No. Ambas visitas de mantenimiento incluidas se aplican al mismo aparato de aire acondicionado registrado. Puedes añadir unidades adicionales por separado por 4 € al mes por unidad.",
+      },
+      {
+        q: "¿Puedo cambiar qué aire acondicionado está incluido?",
+        a: "Normalmente, la unidad incluida permanece vinculada a tu período de beneficio de la suscripción. Si el aparato se sustituye, se retira o cambias de propiedad, contacta con Dar Tahara para que actualicemos correctamente la unidad registrada.",
+      },
+      {
+        q: "¿Qué ocurre si añado otro aire acondicionado más adelante?",
+        a: "Puedes registrar otro aparato de aire acondicionado desde tu cuenta de Dar Tahara. Cada unidad adicional cubierta cuesta 4 € al mes.",
+      },
+      {
+        q: "¿El mantenimiento de aire acondicionado incluye reparaciones?",
+        a: "No. El servicio incluido es limpieza de mantenimiento preventivo. Si detectamos un posible fallo técnico o la necesidad de una reparación, te lo comunicaremos, pero la reparación técnica de climatización es un servicio aparte, salvo que Dar Tahara lo ofrezca explícitamente.",
+      },
     ],
   },
   cta: {

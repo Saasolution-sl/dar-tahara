@@ -13,6 +13,7 @@ import {
   type SubscriptionPropertySummary,
 } from "@/components/portal/SubscriptionPropertyAccordion";
 import { AddSubscriptionModal } from "@/components/portal/AddSubscriptionModal";
+import { AcMaintenanceSection } from "@/components/portal/AcMaintenanceSection";
 import { getDictionary } from "@/i18n/dictionaries";
 import { portalCopy } from "@/i18n/portal-copy";
 import type { Locale } from "@/i18n/config";
@@ -667,6 +668,15 @@ export default async function SubscriptionsPage({
                         />
                       </ActionPanel>
                     </div>
+
+                    {subscription.status === "active" ? (
+                      <AcMaintenanceSection
+                        subscriptionId={subscription.id}
+                        propertyId={subscription.property_id}
+                        locale={locale}
+                        copy={copy.acMaintenance}
+                      />
+                    ) : null}
                   </section>
                 ))}
               </div>

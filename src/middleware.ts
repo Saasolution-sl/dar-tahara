@@ -26,6 +26,8 @@ function skipsLocaleRedirect(pathname: string) {
     pathname.startsWith("/regional-manager/") ||
     pathname === "/assessment" ||
     pathname.startsWith("/assessment/") ||
+    pathname === "/ac-maintenance" ||
+    pathname.startsWith("/ac-maintenance/") ||
     PUBLIC_FILE.test(pathname)
   );
 }

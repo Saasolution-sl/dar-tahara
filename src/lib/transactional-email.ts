@@ -27,7 +27,11 @@ export type TransactionalTemplate =
   | "final_settlement_generated"
   | "final_settlement_reminder"
   | "cancellation_completed"
-  | "cancellation_voided";
+  | "cancellation_voided"
+  | "ac_registered"
+  | "ac_addon_activated"
+  | "ac_maintenance_due"
+  | "ac_maintenance_completed";
 
 type TemplateCopy = { subject: string; heading: string; body: string; cta: string; secondaryCta?: string };
 type LocaleCopy = { greeting: string; footer: string; templates: Record<TransactionalTemplate, TemplateCopy> };
@@ -63,6 +67,10 @@ const COPY: Record<Locale, LocaleCopy> = {
       final_settlement_reminder: { subject: "Reminder: final settlement {reference} is still unpaid", heading: "Your settlement payment deadline is approaching", body: "Your final settlement of {amount} for subscription {reference} remains unpaid. Please complete payment by {date} to finalise the cancellation and avoid it being voided.", cta: "Pay settlement" },
       cancellation_completed: { subject: "Your subscription has been cancelled", heading: "Cancellation complete", body: "Subscription {reference} has been cancelled and future services have been stopped. Thank you for being a Dar Tahara customer.", cta: "View account" },
       cancellation_voided: { subject: "Your cancellation request has been voided", heading: "Cancellation voided: settlement unpaid", body: "The final settlement for subscription {reference} was not paid by the deadline, so the cancellation request has been voided and your original contract continues. Services remain suspended until the outstanding balance is resolved.", cta: "View invoices" },
+      ac_registered: { subject: "Your air conditioner has been registered", heading: "Your AC is registered", body: "Your air-conditioning unit {details} has been registered for {reference}. Maintenance cleaning up to twice per 12 months is included with your subscription for this unit.", cta: "View AC maintenance" },
+      ac_addon_activated: { subject: "Your additional AC maintenance is active", heading: "Additional AC coverage is active", body: "Maintenance cleaning for {details} is now active at {amount}. It includes the same twice-yearly maintenance benefit as your included unit.", cta: "View AC maintenance" },
+      ac_maintenance_due: { subject: "Your AC maintenance is due soon", heading: "Time for your AC maintenance", body: "Your air-conditioning maintenance for {details} is now available to schedule. Book your visit at a time that suits you.", cta: "Book maintenance" },
+      ac_maintenance_completed: { subject: "Your AC maintenance is complete", heading: "AC maintenance completed", body: "Maintenance cleaning for {details} was completed on {date}. Your before and after photos and service report are available in your account.", cta: "View service report" },
     },
   },
   nl: {
@@ -95,6 +103,10 @@ const COPY: Record<Locale, LocaleCopy> = {
       final_settlement_reminder: { subject: "Herinnering: eindafrekening {reference} is nog onbetaald", heading: "Uw betalingstermijn voor de afrekening nadert", body: "Uw eindafrekening van {amount} voor abonnement {reference} staat nog open. Voltooi de betaling vóór {date} om de opzegging af te ronden en te voorkomen dat deze vervalt.", cta: "Afrekening betalen" },
       cancellation_completed: { subject: "Uw abonnement is opgezegd", heading: "Opzegging voltooid", body: "Abonnement {reference} is opgezegd en toekomstige diensten zijn stopgezet. Bedankt dat u klant was bij Dar Tahara.", cta: "Account bekijken" },
       cancellation_voided: { subject: "Uw opzeggingsverzoek is vervallen", heading: "Opzegging vervallen: afrekening onbetaald", body: "De eindafrekening voor abonnement {reference} is niet vóór de deadline betaald, waardoor het opzeggingsverzoek is vervallen en uw oorspronkelijke contract wordt voortgezet. De diensten blijven opgeschort totdat het openstaande bedrag is voldaan.", cta: "Facturen bekijken" },
+      ac_registered: { subject: "Uw airco is geregistreerd", heading: "Uw airco is geregistreerd", body: "Uw airco-eenheid {details} is geregistreerd voor {reference}. Onderhoudsreiniging tot twee keer per 12 maanden is inbegrepen in uw abonnement voor deze eenheid.", cta: "Airco-onderhoud bekijken" },
+      ac_addon_activated: { subject: "Uw extra airco-onderhoud is actief", heading: "Extra airco-dekking is actief", body: "Onderhoudsreiniging voor {details} is nu actief voor {amount}. Dit omvat hetzelfde tweejaarlijkse onderhoudsvoordeel als uw inbegrepen eenheid.", cta: "Airco-onderhoud bekijken" },
+      ac_maintenance_due: { subject: "Uw airco-onderhoud is binnenkort verschuldigd", heading: "Tijd voor uw airco-onderhoud", body: "Het onderhoud van uw airco {details} kan nu worden ingepland. Boek uw bezoek op een moment dat u uitkomt.", cta: "Onderhoud boeken" },
+      ac_maintenance_completed: { subject: "Uw airco-onderhoud is voltooid", heading: "Airco-onderhoud voltooid", body: "Onderhoudsreiniging voor {details} is voltooid op {date}. Uw voor- en na-foto's en het servicerapport zijn beschikbaar in uw account.", cta: "Servicerapport bekijken" },
     },
   },
   fr: {
@@ -127,6 +139,10 @@ const COPY: Record<Locale, LocaleCopy> = {
       final_settlement_reminder: { subject: "Rappel : le décompte final {reference} reste impayé", heading: "Votre délai de paiement du décompte approche", body: "Votre décompte final de {amount} pour l’abonnement {reference} reste impayé. Merci de régler avant le {date} pour finaliser la résiliation et éviter son annulation.", cta: "Payer le décompte" },
       cancellation_completed: { subject: "Votre abonnement a été résilié", heading: "Résiliation terminée", body: "L’abonnement {reference} a été résilié et les services futurs ont été arrêtés. Merci d’avoir été client chez Dar Tahara.", cta: "Voir le compte" },
       cancellation_voided: { subject: "Votre demande de résiliation a été annulée", heading: "Résiliation annulée : décompte impayé", body: "Le décompte final de l’abonnement {reference} n’a pas été payé avant l’échéance ; la demande de résiliation est donc annulée et votre contrat initial se poursuit. Les services restent suspendus jusqu’au règlement du solde dû.", cta: "Voir les factures" },
+      ac_registered: { subject: "Votre climatiseur a été enregistré", heading: "Votre climatiseur est enregistré", body: "Votre climatiseur {details} a été enregistré pour {reference}. Le nettoyage d'entretien jusqu'à deux fois par 12 mois est inclus dans votre abonnement pour cette unité.", cta: "Voir l'entretien de climatisation" },
+      ac_addon_activated: { subject: "Votre entretien de climatisation supplémentaire est actif", heading: "La couverture climatisation supplémentaire est active", body: "Le nettoyage d'entretien de {details} est désormais actif pour {amount}. Il inclut le même avantage d'entretien deux fois par an que votre unité incluse.", cta: "Voir l'entretien de climatisation" },
+      ac_maintenance_due: { subject: "Votre entretien de climatisation arrive à échéance", heading: "C'est le moment de l'entretien de votre climatiseur", body: "L'entretien de votre climatiseur {details} est désormais disponible à la réservation. Réservez votre visite au moment qui vous convient.", cta: "Réserver l'entretien" },
+      ac_maintenance_completed: { subject: "Votre entretien de climatisation est terminé", heading: "Entretien de climatisation terminé", body: "Le nettoyage d'entretien de {details} a été effectué le {date}. Vos photos avant/après et le rapport de service sont disponibles dans votre compte.", cta: "Voir le rapport de service" },
     },
   },
   ar: {
@@ -159,6 +175,10 @@ const COPY: Record<Locale, LocaleCopy> = {
       final_settlement_reminder: { subject: "تذكير: التسوية النهائية {reference} لا تزال غير مدفوعة", heading: "موعد دفع التسوية يقترب", body: "لا تزال تسويتك النهائية البالغة {amount} لاشتراك {reference} غير مدفوعة. يرجى إتمام الدفع قبل {date} لإتمام الإلغاء وتجنب إبطاله.", cta: "دفع التسوية" },
       cancellation_completed: { subject: "تم إلغاء اشتراكك", heading: "اكتمل الإلغاء", body: "تم إلغاء الاشتراك {reference} وتم إيقاف الخدمات المستقبلية. شكراً لكونك عميلاً لدى دار طهارة.", cta: "عرض الحساب" },
       cancellation_voided: { subject: "تم إبطال طلب إلغاء اشتراكك", heading: "تم إبطال الإلغاء: التسوية غير مدفوعة", body: "لم تُدفع التسوية النهائية لاشتراك {reference} قبل الموعد النهائي، لذا تم إبطال طلب الإلغاء واستمرار عقدك الأصلي. تبقى الخدمات موقوفة حتى يتم تسوية الرصيد المستحق.", cta: "عرض الفواتير" },
+      ac_registered: { subject: "تم تسجيل جهاز التكييف الخاص بك", heading: "تم تسجيل جهاز التكييف الخاص بك", body: "تم تسجيل جهاز تكييف الهواء الخاص بك {details} ضمن {reference}. تنظيف الصيانة حتى مرتين كل 12 شهراً مشمول في اشتراكك لهذه الوحدة.", cta: "عرض صيانة التكييف" },
+      ac_addon_activated: { subject: "تم تفعيل صيانة التكييف الإضافية الخاصة بك", heading: "تغطية التكييف الإضافية مفعّلة", body: "تنظيف الصيانة لـ{details} مفعّل الآن مقابل {amount}. يشمل نفس امتياز الصيانة مرتين سنوياً مثل وحدتك المشمولة.", cta: "عرض صيانة التكييف" },
+      ac_maintenance_due: { subject: "موعد صيانة التكييف الخاص بك يقترب", heading: "حان وقت صيانة جهاز التكييف الخاص بك", body: "أصبحت صيانة جهاز التكييف الخاص بك {details} متاحة الآن للجدولة. احجز زيارتك في الوقت الذي يناسبك.", cta: "حجز الصيانة" },
+      ac_maintenance_completed: { subject: "اكتملت صيانة التكييف الخاص بك", heading: "اكتملت صيانة التكييف", body: "اكتمل تنظيف الصيانة لـ{details} بتاريخ {date}. صور ما قبل وما بعد الخدمة وتقرير الخدمة متاحة في حسابك.", cta: "عرض تقرير الخدمة" },
     },
   },
   es: {
@@ -191,6 +211,10 @@ const COPY: Record<Locale, LocaleCopy> = {
       final_settlement_reminder: { subject: "Recordatorio: la liquidación final {reference} sigue sin pagarse", heading: "Tu plazo de pago de la liquidación se acerca", body: "Tu liquidación final de {amount} para la suscripción {reference} sigue pendiente de pago. Completa el pago antes del {date} para finalizar la cancelación y evitar que se anule.", cta: "Pagar liquidación" },
       cancellation_completed: { subject: "Tu suscripción ha sido cancelada", heading: "Cancelación completada", body: "La suscripción {reference} ha sido cancelada y los servicios futuros se han detenido. Gracias por ser cliente de Dar Tahara.", cta: "Ver cuenta" },
       cancellation_voided: { subject: "Tu solicitud de cancelación ha sido anulada", heading: "Cancelación anulada: liquidación impagada", body: "La liquidación final de la suscripción {reference} no se pagó antes del plazo, por lo que la solicitud de cancelación ha sido anulada y tu contrato original continúa. Los servicios permanecen suspendidos hasta que se resuelva el saldo pendiente.", cta: "Ver facturas" },
+      ac_registered: { subject: "Se ha registrado tu aire acondicionado", heading: "Tu aire acondicionado está registrado", body: "Tu aparato de aire acondicionado {details} se ha registrado para {reference}. La limpieza de mantenimiento hasta dos veces cada 12 meses está incluida en tu suscripción para esta unidad.", cta: "Ver mantenimiento de AC" },
+      ac_addon_activated: { subject: "Tu mantenimiento adicional de aire acondicionado está activo", heading: "La cobertura adicional de AC está activa", body: "La limpieza de mantenimiento de {details} ya está activa por {amount}. Incluye el mismo beneficio de mantenimiento dos veces al año que tu unidad incluida.", cta: "Ver mantenimiento de AC" },
+      ac_maintenance_due: { subject: "Tu mantenimiento de aire acondicionado vence pronto", heading: "Es hora de tu mantenimiento de AC", body: "El mantenimiento de tu aire acondicionado {details} ya está disponible para programar. Reserva tu visita cuando te convenga.", cta: "Reservar mantenimiento" },
+      ac_maintenance_completed: { subject: "Tu mantenimiento de aire acondicionado se ha completado", heading: "Mantenimiento de AC completado", body: "La limpieza de mantenimiento de {details} se completó el {date}. Tus fotos de antes y después y el informe de servicio están disponibles en tu cuenta.", cta: "Ver informe de servicio" },
     },
   },
   de: {
@@ -223,6 +247,10 @@ const COPY: Record<Locale, LocaleCopy> = {
       final_settlement_reminder: { subject: "Erinnerung: Endabrechnung {reference} ist weiterhin unbezahlt", heading: "Ihre Zahlungsfrist für die Abrechnung läuft bald ab", body: "Ihre Endabrechnung über {amount} für Abonnement {reference} ist weiterhin unbezahlt. Bitte zahlen Sie bis {date}, um die Kündigung abzuschließen und eine Aufhebung zu vermeiden.", cta: "Abrechnung bezahlen" },
       cancellation_completed: { subject: "Ihr Abonnement wurde gekündigt", heading: "Kündigung abgeschlossen", body: "Abonnement {reference} wurde gekündigt und zukünftige Leistungen wurden eingestellt. Vielen Dank, dass Sie Kunde bei Dar Tahara waren.", cta: "Konto ansehen" },
       cancellation_voided: { subject: "Ihre Kündigungsanfrage wurde aufgehoben", heading: "Kündigung aufgehoben: Abrechnung unbezahlt", body: "Die Endabrechnung für Abonnement {reference} wurde nicht fristgerecht bezahlt, daher wurde die Kündigungsanfrage aufgehoben und Ihr ursprünglicher Vertrag wird fortgesetzt. Die Leistungen bleiben ausgesetzt, bis der ausstehende Betrag beglichen ist.", cta: "Rechnungen ansehen" },
+      ac_registered: { subject: "Ihre Klimaanlage wurde registriert", heading: "Ihre Klimaanlage ist registriert", body: "Ihre Klimaanlage {details} wurde für {reference} registriert. Die Wartungsreinigung bis zu zweimal pro 12 Monate ist für diese Einheit in Ihrem Abo enthalten.", cta: "Klimaanlagenwartung ansehen" },
+      ac_addon_activated: { subject: "Ihre zusätzliche Klimaanlagenwartung ist aktiv", heading: "Zusätzliche Klimaabdeckung ist aktiv", body: "Die Wartungsreinigung für {details} ist jetzt für {amount} aktiv. Sie umfasst dieselbe zweimal jährliche Wartungsleistung wie Ihre inkludierte Einheit.", cta: "Klimaanlagenwartung ansehen" },
+      ac_maintenance_due: { subject: "Ihre Klimaanlagenwartung steht bald an", heading: "Zeit für Ihre Klimaanlagenwartung", body: "Die Wartung Ihrer Klimaanlage {details} kann jetzt geplant werden. Buchen Sie Ihren Termin zu einem passenden Zeitpunkt.", cta: "Wartung buchen" },
+      ac_maintenance_completed: { subject: "Ihre Klimaanlagenwartung ist abgeschlossen", heading: "Klimaanlagenwartung abgeschlossen", body: "Die Wartungsreinigung für {details} wurde am {date} abgeschlossen. Ihre Vorher-Nachher-Fotos und der Servicebericht sind in Ihrem Konto verfügbar.", cta: "Servicebericht ansehen" },
     },
   },
   pt: {
@@ -255,6 +283,10 @@ const COPY: Record<Locale, LocaleCopy> = {
       final_settlement_reminder: { subject: "Lembrete: o acerto final {reference} continua por pagar", heading: "O seu prazo de pagamento do acerto está a aproximar-se", body: "O seu acerto final de {amount} para a subscrição {reference} continua por pagar. Efetue o pagamento até {date} para finalizar o cancelamento e evitar que seja anulado.", cta: "Pagar acerto" },
       cancellation_completed: { subject: "A sua subscrição foi cancelada", heading: "Cancelamento concluído", body: "A subscrição {reference} foi cancelada e os serviços futuros foram interrompidos. Obrigado por ser cliente Dar Tahara.", cta: "Ver conta" },
       cancellation_voided: { subject: "O seu pedido de cancelamento foi anulado", heading: "Cancelamento anulado: acerto por pagar", body: "O acerto final da subscrição {reference} não foi pago dentro do prazo, pelo que o pedido de cancelamento foi anulado e o seu contrato original continua. Os serviços permanecem suspensos até que o saldo em dívida seja resolvido.", cta: "Ver faturas" },
+      ac_registered: { subject: "O seu ar condicionado foi registado", heading: "O seu ar condicionado está registado", body: "A sua unidade de ar condicionado {details} foi registada para {reference}. A limpeza de manutenção até duas vezes por 12 meses está incluída na sua subscrição para esta unidade.", cta: "Ver manutenção de AC" },
+      ac_addon_activated: { subject: "A sua manutenção adicional de ar condicionado está ativa", heading: "A cobertura adicional de AC está ativa", body: "A limpeza de manutenção de {details} já está ativa por {amount}. Inclui o mesmo benefício de manutenção duas vezes por ano da sua unidade incluída.", cta: "Ver manutenção de AC" },
+      ac_maintenance_due: { subject: "A sua manutenção de ar condicionado está prestes a vencer", heading: "Está na hora da manutenção do seu AC", body: "A manutenção do seu ar condicionado {details} já está disponível para agendamento. Marque a sua visita numa altura que lhe convenha.", cta: "Agendar manutenção" },
+      ac_maintenance_completed: { subject: "A sua manutenção de ar condicionado está concluída", heading: "Manutenção de AC concluída", body: "A limpeza de manutenção de {details} foi concluída em {date}. As suas fotos de antes e depois e o relatório de serviço estão disponíveis na sua conta.", cta: "Ver relatório de serviço" },
     },
   },
 };

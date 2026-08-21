@@ -244,6 +244,34 @@ const nl: DeepPartial<Dictionary> = {
         q: "Wordt Dar Tahara ook wel DarTahara genoemd?",
         a: "Ja. Dar Tahara wordt soms geschreven als DarTahara of dartahara, en dartahara.com is de officiële website van Dar Tahara, een professioneel woningverzorgings- en vastgoedconciërgebedrijf in Marokko.",
       },
+      {
+        q: "Is airco-onderhoud inbegrepen in mijn abonnement?",
+        a: "Ja. Een actief Dar Tahara-abonnement omvat onderhoudsreiniging voor één geregistreerde airco-eenheid, tot twee keer per periode van 12 maanden.",
+      },
+      {
+        q: "Ik heb meer dan één airco. Kan Dar Tahara ook de andere onderhouden?",
+        a: "Ja. Extra geregistreerde airco-eenheden kunnen aan uw abonnement worden toegevoegd voor € 4 per maand per eenheid. Elke gedekte extra eenheid krijgt hetzelfde tweejaarlijkse onderhoudsvoordeel zolang de dekking actief is.",
+      },
+      {
+        q: "Waarom moet ik een specifieke airco selecteren?",
+        a: "Uw inbegrepen onderhoudsvoordeel is gekoppeld aan één specifieke airco-eenheid, zodat we steeds hetzelfde toestel kunnen onderhouden en een nauwkeurige onderhoudsgeschiedenis kunnen bijhouden.",
+      },
+      {
+        q: "Kan ik mijn twee inbegrepen onderhoudsbezoeken gebruiken voor twee verschillende airco's?",
+        a: "Nee. Beide inbegrepen onderhoudsbezoeken gelden voor dezelfde geregistreerde airco-eenheid. Extra eenheden kunnen afzonderlijk worden toegevoegd voor € 4 per maand per eenheid.",
+      },
+      {
+        q: "Kan ik wijzigen welke airco inbegrepen is?",
+        a: "Normaal gesproken blijft de inbegrepen eenheid gekoppeld aan uw abonnementsperiode. Als het toestel wordt vervangen, verwijderd, of u verhuist, neem dan contact op met Dar Tahara zodat wij de geregistreerde eenheid correct kunnen bijwerken.",
+      },
+      {
+        q: "Wat gebeurt er als ik later nog een airco toevoeg?",
+        a: "U kunt via uw Dar Tahara-account nog een airco-eenheid registreren. Elke extra gedekte eenheid kost € 4 per maand.",
+      },
+      {
+        q: "Omvat airco-onderhoud ook reparaties?",
+        a: "Nee. De inbegrepen dienst is preventieve onderhoudsreiniging. Als we een schijnbaar technisch defect of reparatiebehoefte vaststellen, kunnen we u dit melden, maar technische airco-reparatie is een aparte dienst, tenzij Dar Tahara deze uitdrukkelijk aanbiedt.",
+      },
     ],
   },
   cta: {

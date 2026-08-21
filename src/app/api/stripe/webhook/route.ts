@@ -18,6 +18,7 @@ import { createPaymentLinkRecord } from "@/lib/billing-links";
 import { cancelStripeSubscription } from "@/lib/stripe";
 import { addUtcMonthsClamped } from "@/lib/early-termination-calculator";
 import { serviceWindowAfterPayment } from "@/lib/subscription-activation";
+import { reconcileAcStripeQuantity } from "@/lib/ac-billing-sync";
 
 export const runtime = "nodejs";
 
@@ -652,6 +653,10 @@ async function subscriptionSynced(sub: SubscriptionObject) {
   }
   const local = localRows[0];
   if (!local) return;
+  // Best-effort AC add-on quantity reconciliation on every sync: catches
+  // drift from a dashboard-side quantity edit or a missed prior event, not
+  // just changes this app itself initiated.
+  await reconcileAcStripeQuantity(local.id);
   let providerCancelAtPeriodEnd = Boolean(sub.cancel_at_period_end);
   if (local?.billing_interval === "annual" && !providerCancelAtPeriodEnd) {
     try {
