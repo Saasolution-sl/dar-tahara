@@ -33,3 +33,7 @@ Risks: R-001, R-002, R-013
 ## Residual work and boundary
 
 The workflow has not run on a repository host and is not yet a required merge check. Gitleaks full-history execution, CodeQL result ingestion, dependency-review behavior, Dependabot operation, alert routing, and test-secret rejection therefore remain operationally unverified. GitHub secret scanning, push protection and Dependabot security updates remain settings-level actions. Activate these only after REM-002 identifies the authoritative repository and management approves branch/release governance. No production or repository setting was changed by this work.
+
+## Hosted verification update
+
+GitHub pull request 65 executed the workflow on 2026-08-21. The quality/dependency job and both CodeQL checks passed. Gitleaks detected a documented false positive in continuity-planning prose; its exact historical fingerprint is recorded in `.gitleaksignore`, and the prose was clarified to avoid future matches. GitHub dependency alerts were enabled through the repository API after Dependency Review reported that the dependency graph prerequisite was disabled. A green rerun remains required before merge.
