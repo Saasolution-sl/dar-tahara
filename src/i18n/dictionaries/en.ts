@@ -439,6 +439,11 @@
       addressLine1: "Address",
       addressLine2: "Apartment, floor (optional)",
       postalCode: "Postal code (optional)",
+      airConditioningUnits: "Air-conditioning units at this property (optional)",
+    },
+    acMaintenance: {
+      title: "Air-conditioning maintenance",
+      body: "Your Dar Tahara subscription includes maintenance cleaning for one air-conditioning unit, up to twice per 12 months. If this property has more than one, you can register and cover the others from your account once your subscription is active, for €4/month per additional unit.",
     },
     doorlock: {
       title: "Smart door-lock installation",

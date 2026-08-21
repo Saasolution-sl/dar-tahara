@@ -43,6 +43,8 @@ export type AssessmentBookingInput = {
   timeSlot: TimeSlot;
   doorlockInstallationRequested: boolean;
   doorlockInternetConfirmed: boolean;
+  /** Customer's own declared count, stored on properties.air_conditioning_units. Not a billing input: real AC coverage is registered per-unit from the dashboard once the subscription is active (see ac-maintenance.ts). */
+  airConditioningUnits: number | null;
   propertyAccuracyAccepted: true;
   termsAccepted: true;
 };
@@ -227,6 +229,7 @@ export function validateAssessmentBooking(
   const alternateDate = b.alternateDate ? validDate(b.alternateDate, minDate) : null;
   const doorlockInstallationRequested = b.doorlockInstallationRequested === true;
   const doorlockInternetConfirmed = b.doorlockInternetConfirmed === true;
+  const airConditioningUnits = numberInRange(b.airConditioningUnits, 0, 50);
 
   if (!locale || !fullName || !email || !EMAIL_RE.test(email) || !phone) {
     return { ok: false, error: "invalid_customer" };
@@ -277,6 +280,7 @@ export function validateAssessmentBooking(
     timeSlot,
     doorlockInstallationRequested,
     doorlockInternetConfirmed,
+    airConditioningUnits,
     propertyAccuracyAccepted: true,
     termsAccepted: true,
   };

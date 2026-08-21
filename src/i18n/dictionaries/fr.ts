@@ -442,6 +442,11 @@ const fr: DeepPartial<Dictionary> = {
       addressLine1: "Adresse",
       addressLine2: "Appartement, étage (facultatif)",
       postalCode: "Code postal (facultatif)",
+      airConditioningUnits: "Climatiseurs dans ce logement (facultatif)",
+    },
+    acMaintenance: {
+      title: "Entretien de la climatisation",
+      body: "Votre abonnement Dar Tahara inclut le nettoyage d'entretien d'un climatiseur, jusqu'à deux fois par 12 mois. Si ce logement en compte plusieurs, vous pourrez enregistrer et couvrir les autres depuis votre compte une fois votre abonnement actif, pour 4 € par mois et par unité supplémentaire.",
     },
     doorlock: {
       title: "Installation de serrure connectée",

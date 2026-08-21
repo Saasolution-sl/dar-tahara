@@ -442,6 +442,11 @@ const de: DeepPartial<Dictionary> = {
       addressLine1: "Adresse",
       addressLine2: "Wohnung, Etage (optional)",
       postalCode: "Postleitzahl (optional)",
+      airConditioningUnits: "Klimaanlagen in dieser Immobilie (optional)",
+    },
+    acMaintenance: {
+      title: "Klimaanlagenwartung",
+      body: "Ihr Dar-Tahara-Abo umfasst die Wartungsreinigung für eine Klimaanlage, bis zu zweimal pro 12 Monate. Hat diese Immobilie mehr als eine, können Sie die übrigen registrieren und abdecken lassen, sobald Ihr Abo aktiv ist, für 4 € pro Monat und zusätzliche Einheit.",
     },
     doorlock: {
       title: "Installation eines smarten Türschlosses",

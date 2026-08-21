@@ -442,6 +442,11 @@ const nl: DeepPartial<Dictionary> = {
       addressLine1: "Adres",
       addressLine2: "Appartement, verdieping (optioneel)",
       postalCode: "Postcode (optioneel)",
+      airConditioningUnits: "Airco-eenheden in deze woning (optioneel)",
+    },
+    acMaintenance: {
+      title: "Airco-onderhoud",
+      body: "Uw Dar Tahara-abonnement omvat onderhoudsreiniging voor één airco-eenheid, tot twee keer per 12 maanden. Heeft deze woning er meer dan één, dan kunt u de overige registreren en laten dekken via uw account zodra uw abonnement actief is, voor € 4 per maand per extra eenheid.",
     },
     doorlock: {
       title: "Installatie slimme deurslot",

@@ -442,6 +442,11 @@ const pt: DeepPartial<Dictionary> = {
       addressLine1: "Morada",
       addressLine2: "Apartamento, andar (opcional)",
       postalCode: "Código postal (opcional)",
+      airConditioningUnits: "Ares condicionados neste imóvel (opcional)",
+    },
+    acMaintenance: {
+      title: "Manutenção de ar condicionado",
+      body: "A sua subscrição Dar Tahara inclui limpeza de manutenção para um ar condicionado, até duas vezes por 12 meses. Se este imóvel tiver mais do que um, pode registar e cobrir os restantes a partir da sua conta assim que a subscrição estiver ativa, por 4 € por mês por unidade adicional.",
     },
     doorlock: {
       title: "Instalação de fechadura inteligente",

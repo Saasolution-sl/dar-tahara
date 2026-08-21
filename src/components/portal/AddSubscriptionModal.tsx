@@ -92,6 +92,7 @@ type FormState = {
   petDetails: string;
   smoking: boolean;
   accessNotes: string;
+  airConditioningUnits: string;
   frequency: FrequencyKey;
   billingInterval: BillingInterval;
   durationMonths: DurationMonths;
@@ -139,6 +140,7 @@ export function AddSubscriptionModal({
     petDetails: "",
     smoking: false,
     accessNotes: "",
+    airConditioningUnits: "",
     frequency: "biweekly",
     billingInterval: "monthly",
     durationMonths: defaultDuration,
@@ -224,6 +226,7 @@ export function AddSubscriptionModal({
           smoking: form.smoking,
           condition: form.condition,
           accessNotes: form.accessNotes || null,
+          airConditioningUnits: form.airConditioningUnits === "" ? null : Number(form.airConditioningUnits),
           frequency: form.frequency,
           billingInterval: form.billingInterval,
           durationMonths: form.durationMonths,
@@ -400,6 +403,14 @@ export function AddSubscriptionModal({
                     ))}
                   </select>
                 </Field>
+                <Field label={b.fields.airConditioningUnits}>
+                  <input
+                    type="number" min={0} max={50}
+                    value={form.airConditioningUnits}
+                    onChange={(event) => update("airConditioningUnits", event.target.value)}
+                    className={inputClass(false)}
+                  />
+                </Field>
                 <Field label={b.fields.accessNotes} className="sm:col-span-2">
                   <textarea rows={3} value={form.accessNotes} onChange={(event) => update("accessNotes", event.target.value)} className={cn(inputClass(false), "h-auto py-3")} />
                 </Field>
@@ -428,6 +439,11 @@ export function AddSubscriptionModal({
                     {formatMoneyFromCents(quote.assessmentPriceCents, locale)}
                   </p>
                 </div>
+              </div>
+
+              <div className="mt-4 rounded-2xl border border-border bg-secondary/40 p-4">
+                <p className="font-medium text-foreground">{dict.booking.acMaintenance.title}</p>
+                <p className="mt-1 text-xs leading-relaxed text-muted-foreground">{dict.booking.acMaintenance.body}</p>
               </div>
 
               <div className="mt-5 space-y-3 rounded-2xl border border-border p-4">
