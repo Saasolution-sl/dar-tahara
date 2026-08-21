@@ -93,9 +93,33 @@ export function hasSupabaseAuthCookie(request: NextRequest) {
  * so without clearing url.port explicitly this used to redirect to
  * https://www.dartahara.com:3000/ instead of the real canonical URL.
  */
+/**
+ * The deployment's own configured host (e.g. staging.dartahara.com on the
+ * self-hosted staging build), read from the same NEXT_PUBLIC_SITE_URL build
+ * arg deploy-app.sh already injects per environment. site.domain is a
+ * hardcoded production alias (see site.ts) and must never be the only
+ * allowed host, or every non-production deployment permanently redirects
+ * to production instead of serving its own build.
+ */
+function deploymentHost(): string | null {
+  const configured = process.env.NEXT_PUBLIC_SITE_URL;
+  if (!configured) return null;
+  try {
+    return new URL(configured).hostname;
+  } catch {
+    return null;
+  }
+}
+
 export function canonicalHostRedirectResponse(request: NextRequest): NextResponse | null {
   const host = request.headers.get("host")?.split(":")[0] || "";
-  if (!host || host === site.domain || host === "localhost" || host === "127.0.0.1") return null;
+  if (
+    !host ||
+    host === site.domain ||
+    host === "localhost" ||
+    host === "127.0.0.1" ||
+    host === deploymentHost()
+  ) return null;
 
   const url = request.nextUrl.clone();
   url.protocol = "https";

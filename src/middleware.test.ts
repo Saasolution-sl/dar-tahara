@@ -152,6 +152,23 @@ test("canonical host redirect passes through the real canonical domain untouched
   assert.equal(canonicalHostRedirectResponse(request("/en/plans")), null);
 });
 
+test("canonical host redirect passes through a self-hosted deployment's own configured host", () => {
+  const previous = process.env.NEXT_PUBLIC_SITE_URL;
+  process.env.NEXT_PUBLIC_SITE_URL = "https://staging.dartahara.com";
+  try {
+    assert.equal(
+      canonicalHostRedirectResponse(request("/en/plans", { host: "staging.dartahara.com" })),
+      null,
+      "staging must serve its own build, not redirect to production",
+    );
+    // A genuinely unexpected host still redirects even with NEXT_PUBLIC_SITE_URL set.
+    assert.ok(canonicalHostRedirectResponse(request("/en/plans", { host: "evil.example.com" })));
+  } finally {
+    if (previous === undefined) delete process.env.NEXT_PUBLIC_SITE_URL;
+    else process.env.NEXT_PUBLIC_SITE_URL = previous;
+  }
+});
+
 test("only refreshes Supabase auth when a session cookie exists", () => {
   assert.equal(hasSupabaseAuthCookie(request("/en")), false);
   assert.equal(
