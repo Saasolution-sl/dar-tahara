@@ -1,0 +1,1 @@
+incident_id,reported_at_utc,severity,status,summary,incident_commander,scribe,systems_or_data,containment_at_utc,recovery_at_utc,legal_assessment,root_cause,corrective_actions,evidence_location,closed_at_utc

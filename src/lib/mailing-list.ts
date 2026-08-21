@@ -1,3 +1,5 @@
+import { isIP } from "node:net";
+
 /**
  * Mailing-list domain logic, pure, framework-agnostic helpers shared by the
  * API route, the tests and (where relevant) the client. No secrets here.
@@ -76,10 +78,12 @@ export function validateSubscribe(body: unknown): SubscribeValidation {
 const RATE_LIMIT = { windowMs: 60_000, max: 5 };
 const hits = new Map<string, { count: number; resetAt: number }>();
 
+export type RateLimitPolicy = { windowMs: number; max: number };
+
 export function rateLimit(
   key: string,
   now = Date.now(),
-  policy: { windowMs: number; max: number } = RATE_LIMIT,
+  policy: RateLimitPolicy = RATE_LIMIT,
 ): { allowed: boolean; retryAfterMs: number } {
   const entry = hits.get(key);
   if (!entry || now > entry.resetAt) {
@@ -93,12 +97,25 @@ export function rateLimit(
   return { allowed: true, retryAfterMs: 0 };
 }
 
-/** Best-effort client IP from proxy headers (Vercel / Cloudflare / generic). */
+function validIp(value: string | undefined): string | null {
+  if (!value) return null;
+  const candidate = value.trim();
+  return isIP(candidate) ? candidate.toLowerCase() : null;
+}
+
+/**
+ * Client IP supplied by the trusted reverse proxy.
+ *
+ * Caddy appends the peer address to X-Forwarded-For. Selecting from the right
+ * prevents a caller-controlled left-most value from bypassing rate limits.
+ * Set TRUSTED_PROXY_HOPS only when the production proxy chain is deliberately
+ * changed and verified.
+ */
 export function clientIpFromHeaders(headers: Headers): string {
-  return (
-    headers.get("x-real-ip") ||
-    headers.get("x-forwarded-for")?.split(",")[0].trim() ||
-    headers.get("cf-connecting-ip") ||
-    "unknown"
-  );
+  const hops = Math.max(1, Number.parseInt(process.env.TRUSTED_PROXY_HOPS || "1", 10) || 1);
+  const chain = (headers.get("x-forwarded-for") || "")
+    .split(",")
+    .map((value) => validIp(value))
+    .filter((value): value is string => Boolean(value));
+  return chain.at(-hops) || "unknown";
 }

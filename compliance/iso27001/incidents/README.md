@@ -1,3 +1,7 @@
 # Incident management
 
-No operational incident procedure or register is claimed. The next phase must create an actionable process and template covering detection, reporting, severity, containment, investigation, eradication, recovery, evidence, communications, personal-data-breach assessment and lessons learned, followed by a tabletop exercise.
+The repository contains an incident procedure, security-event catalogue,
+register and tabletop template. No operational effectiveness is claimed until
+management names primary/backup responders and channels, high/critical alert
+delivery is exercised, protected log retention is verified, and a tabletop is
+completed with corrective actions.

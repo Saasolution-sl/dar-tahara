@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { clientIpFromHeaders, rateLimit } from "@/lib/mailing-list";
+import { clientIpFromHeaders } from "@/lib/mailing-list";
+import { rateLimitShared } from "@/lib/rate-limit";
 import { isFeedbackReason, isOpaqueToken } from "@/lib/early-access/funnel";
 import {
   recordFunnelEvent,
@@ -12,7 +13,7 @@ export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   const ip = clientIpFromHeaders(req.headers);
-  if (!rateLimit(`ea-feedback:${ip}`).allowed) {
+  if (!(await rateLimitShared(`ea-feedback:${ip}`)).allowed) {
     return NextResponse.json({ ok: false }, { status: 429 });
   }
   const body = await req.json().catch(() => null) as {

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { validateSubscribe, rateLimit, clientIpFromHeaders } from "@/lib/mailing-list";
+import { validateSubscribe, clientIpFromHeaders } from "@/lib/mailing-list";
+import { rateLimitShared } from "@/lib/rate-limit";
 import {
   callRpc,
   isSupabaseConfigured,
@@ -18,8 +19,7 @@ export async function POST(req: NextRequest) {
   if (!await featureEnabled("newsletter_signup_enabled")) return NextResponse.json({ok:false,error:"feature_disabled"},{status:403});
   const ip = clientIpFromHeaders(req.headers);
 
-  // Rate limit (per IP, best-effort per instance).
-  const rl = rateLimit(`subscribe:${ip}`);
+  const rl = await rateLimitShared(`subscribe:${ip}`);
   if (!rl.allowed) {
     return NextResponse.json(
       { ok: false, error: "rate_limited" },

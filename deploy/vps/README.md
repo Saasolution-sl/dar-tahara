@@ -17,10 +17,44 @@ they are not copied into this repository.
 - HTTPS API: `https://supabase.dartahara.com`
 - PostgreSQL: not publicly exposed
 - Studio: not publicly exposed
-- Backups: `/srv/dartahara/backups`, retained for 14 days
+- Backups: encrypted Restic snapshots in a separate S3-compatible repository
 
 The Kong host ports bind to `127.0.0.1` only. Caddy exposes only Supabase API
 paths; the dashboard/root route returns 404.
+
+## Encrypted off-site backups and restore tests
+
+1. Install Restic 0.15 or newer and copy `backup.env.example` to
+   `/etc/dar-tahara/backup.env`; make that file and the separate Restic password
+   file root-owned and mode `0600`.
+2. Use a dedicated bucket and S3 identity in an approved region. Grant only the
+   permissions Restic needs for that bucket. Configure an owned alert webhook.
+3. Initialize once with `restic init`, then install `backup-supabase.sh` and the
+   root cron entry. The database dump streams directly from PostgreSQL into the
+   encrypted repository and the self-hosted Storage volume is captured in a
+   separate encrypted snapshot. The dump is not retained as plaintext on the VPS.
+4. Run `test-supabase-restore.sh` after initial setup and at least quarterly.
+   The script downloads the newest encrypted snapshot into a temporary mode-0700
+   directory, restores it into a network-isolated disposable PostgreSQL
+   container, restores the object-volume snapshot, records duration/database
+   relation/object file and byte counts, and removes the plaintext test data.
+5. Retain each generated file under `/srv/dartahara/restore-evidence` in the ISMS
+   evidence store. Investigate every missed backup or failed restore as a
+   security/continuity event.
+
+The operations owner must verify the repository is truly on different failure
+infrastructure from the production VPS. A local S3 gateway or a bucket backed by
+the same host does not satisfy the off-site requirement.
+
+## Host verification
+
+Run `verify-host-hardening.sh` as root after provisioning, after material host or
+network changes, and monthly. It is read-only and fails when the firewall, SSH
+key-only access, NTP, automatic security updates, Docker socket permissions,
+ASLR, private service bindings, or container privilege boundaries are not as
+required. Store its timestamped output with the vulnerability scan in the ISMS
+evidence store; a passing repository scan is not evidence that the live host is
+hardened.
 
 ## Production cutover to Supabase Cloud
 

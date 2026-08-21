@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { TERMS_VERSION, validateAssessmentBooking } from "@/lib/assessment";
-import { clientIpFromHeaders, rateLimit } from "@/lib/mailing-list";
+import { clientIpFromHeaders } from "@/lib/mailing-list";
+import { rateLimitShared } from "@/lib/rate-limit";
 import { authorizeApi } from "@/lib/portal-auth";
 import { isSameOrigin } from "@/lib/request-security";
 import {
@@ -45,7 +46,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "application_not_configured" }, { status: 503 });
   }
 
-  const limit = rateLimit(
+  const limit = await rateLimitShared(
     `account-new-assessment:${auth.context.user.id}:${clientIpFromHeaders(req.headers)}`,
   );
   if (!limit.allowed) {

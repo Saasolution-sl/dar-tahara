@@ -3,7 +3,9 @@ import "server-only";
 import { redirect } from "next/navigation";
 import type { User } from "@supabase/supabase-js";
 import { createClient } from "@/lib/supabase/server";
+import { privilegedSessionNeedsStepUp } from "@/lib/mfa-policy";
 import { dashboardForRoles, safeNextPath } from "@/lib/portal-routing";
+import { emitSecurityEvent } from "@/lib/security-events";
 
 export { dashboardForRoles, safeNextPath } from "@/lib/portal-routing";
 
@@ -24,6 +26,7 @@ export type AuthContext = {
   customerStatus: string | null;
   staffActive: boolean | null;
   officeIds: string[];
+  aal: string | null;
 };
 
 export async function getAuthContext(): Promise<AuthContext | null> {
@@ -31,11 +34,12 @@ export async function getAuthContext(): Promise<AuthContext | null> {
     const supabase = await createClient();
     const { data: { user }, error } = await supabase.auth.getUser();
     if (error || !user) return null;
-    const [{ data: roleRows }, { data: customer }, { data: staff }, { data: officeRows }] = await Promise.all([
+    const [{ data: roleRows }, { data: customer }, { data: staff }, { data: officeRows }, { data: assurance }] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", user.id),
       supabase.from("customers").select("id,status").eq("auth_user_id", user.id).maybeSingle(),
       supabase.from("staff_members").select("active").eq("auth_user_id", user.id).maybeSingle(),
       supabase.from("regional_manager_offices").select("office_id").eq("user_id", user.id),
+      supabase.auth.mfa.getAuthenticatorAssuranceLevel(),
     ]);
     const roles = (roleRows || []).map((row) => row.role).filter(isAppRole);
     return {
@@ -45,6 +49,7 @@ export async function getAuthContext(): Promise<AuthContext | null> {
       customerStatus: customer?.status || null,
       staffActive: staff ? staff.active : null,
       officeIds: (officeRows || []).map((row) => row.office_id),
+      aal: assurance?.currentLevel || null,
     };
   } catch {
     return null;
@@ -79,6 +84,9 @@ export async function requireAuth(next = "/account"): Promise<AuthContext> {
 export async function requireRole(allowed: readonly AppRole[]): Promise<AuthContext> {
   const context = await requireAuth();
   if (!context.roles.some((role) => allowed.includes(role))) redirect(dashboardForRoles(context.roles));
+  if (privilegedSessionNeedsStepUp(context.roles, context.aal)) {
+    redirect(`/security/mfa?next=${encodeURIComponent(dashboardForRoles(context.roles))}`);
+  }
   return context;
 }
 
@@ -87,7 +95,12 @@ export async function authorizeApi(allowed?: readonly AppRole[]) {
   if (!context) return { ok: false as const, status: 401 as const, error: "unauthorized" };
   if (isBlocked(context)) return { ok: false as const, status: 403 as const, error: "account_suspended" };
   if (allowed && !context.roles.some((role) => allowed.includes(role))) {
+    await emitSecurityEvent({ type: "authorization_denied", severity: "medium", actorId: context.user.id, metadata: { required_roles: allowed.join(",") } });
     return { ok: false as const, status: 403 as const, error: "forbidden" };
+  }
+  if (privilegedSessionNeedsStepUp(context.roles, context.aal)) {
+    await emitSecurityEvent({ type: "privileged_mfa_required", severity: "medium", actorId: context.user.id });
+    return { ok: false as const, status: 403 as const, error: "mfa_required" };
   }
   return { ok: true as const, context };
 }

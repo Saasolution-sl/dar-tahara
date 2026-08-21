@@ -2,7 +2,8 @@ import "server-only";
 import type { NextRequest } from "next/server";
 import { TERMS_VERSION, validateAssessmentBooking } from "@/lib/assessment";
 import { isServiceRoleConfigured, serviceInsert, serviceUpdate, serviceUpsert } from "@/lib/supabase-rpc";
-import { rateLimit, clientIpFromHeaders } from "@/lib/mailing-list";
+import { clientIpFromHeaders } from "@/lib/mailing-list";
+import { rateLimitShared } from "@/lib/rate-limit";
 import { featureEnabled } from "@/lib/feature-flags";
 import { getDurationTiers } from "@/lib/subscription-duration-config";
 import { createAdminClient } from "@/lib/supabase/admin";
@@ -30,7 +31,7 @@ export async function createAssessmentCheckout(
     return { ok: false, error: "application_not_configured", status: 503 };
   }
   // Rate-limit checkout-session creation per IP (curbs abuse & rapid double-clicks).
-  const rl = rateLimit(`assessment-checkout:${clientIpFromHeaders(req.headers)}`);
+  const rl = await rateLimitShared(`assessment-checkout:${clientIpFromHeaders(req.headers)}`);
   if (!rl.allowed) return { ok: false, error: "rate_limited", status: 429 };
   const durationTiers = await getDurationTiers();
   const parsed = validateAssessmentBooking(body, new Date(), durationTiers);
@@ -94,7 +95,7 @@ export async function createAssessmentCheckout(
         terms: true,
         doorlockInternetConfirmed: value.doorlockInternetConfirmed,
         acceptedAt: new Date().toISOString(),
-        ip: req.headers.get("x-forwarded-for")?.split(",")[0]?.trim() || null,
+        ip: clientIpFromHeaders(req.headers),
         userAgent: req.headers.get("user-agent")?.slice(0, 500) || null,
       },
       status: "submitted",

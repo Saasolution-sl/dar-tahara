@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { normalizeEmail, isValidEmail, validateSubscribe, rateLimit } from "./mailing-list";
+import { clientIpFromHeaders, normalizeEmail, isValidEmail, validateSubscribe, rateLimit } from "./mailing-list";
 
 test("normalizeEmail trims and lowercases", () => {
   assert.equal(normalizeEmail("  Test.User@Example.COM "), "test.user@example.com");
@@ -74,4 +74,15 @@ test("rateLimit supports a scoped higher-frequency policy", () => {
     assert.equal(rateLimit(key, t0, { windowMs: 60_000, max: 20 }).allowed, true);
   }
   assert.equal(rateLimit(key, t0, { windowMs: 60_000, max: 20 }).allowed, false);
+});
+
+test("client IP uses the trusted right-hand proxy hop, not a spoofed first value", () => {
+  const headers = new Headers({ "x-forwarded-for": "198.51.100.99, 203.0.113.8" });
+  assert.equal(clientIpFromHeaders(headers), "203.0.113.8");
+});
+
+test("client IP rejects malformed and out-of-range proxy values", () => {
+  assert.equal(clientIpFromHeaders(new Headers({ "x-forwarded-for": "attacker" })), "unknown");
+  assert.equal(clientIpFromHeaders(new Headers({ "x-forwarded-for": "999.2.3.4" })), "unknown");
+  assert.equal(clientIpFromHeaders(new Headers({ "x-forwarded-for": "2001:db8:::1" })), "unknown");
 });

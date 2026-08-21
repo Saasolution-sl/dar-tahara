@@ -1,6 +1,6 @@
 # Prioritized remediation backlog
 
-Status: **DRAFT — APPROVAL REQUIRED BEFORE IMPLEMENTATION**
+Status: **TECHNICAL IMPLEMENTATION AUTHORIZED — MANAGEMENT/PRODUCTION GATES REMAIN**
 
 | ID | Priority | Finding / affected system | ISO controls / risk | Proposed solution | Acceptance test and evidence | Rollback | Human approval |
 | --- | --- | --- | --- | --- | --- | --- | --- |
@@ -27,4 +27,7 @@ Status: **DRAFT — APPROVAL REQUIRED BEFORE IMPLEMENTATION**
 
 ## Recommended first implementation batch
 
-After approval, execute REM-001 through REM-004 as one controlled Phase 0/1 batch: patch dependencies; establish authoritative repository protections and security CI; then perform read-only production database authorization verification. These changes address the clearest current exposure while generating evidence for later ISMS work. REM-005 should begin in parallel only after management approves backup location, encryption ownership and RTO/RPO assumptions.
+Technical implementation for REM-001 through REM-009 is underway under the
+owner's 2026-08-21 instruction. The source controls and local verification do
+not replace the stated production, management, legal, role-assignment or
+operating-evidence gates.
