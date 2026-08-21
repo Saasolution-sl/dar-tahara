@@ -64,7 +64,7 @@ export function GoogleAnalytics() {
       <Script
         id="ga-src"
         src={`https://www.googletagmanager.com/gtag/js?id=${id}`}
-        strategy="afterInteractive"
+        strategy="lazyOnload"
       />
       <Script id="ga-init" strategy="afterInteractive">
         {`

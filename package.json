@@ -10,6 +10,9 @@
     "lint": "set ESLINT_USE_FLAT_CONFIG=false&& eslint src --no-cache",
     "typecheck": "tsc --noEmit",
     "test": "tsx --conditions=react-server --test \"src/**/*.test.ts\"",
+    "security:audit": "npm audit --audit-level=high",
+    "security:audit:production": "npm audit --omit=dev --audit-level=high",
+    "security:secrets": "tsx scripts/scan-secrets.ts",
     "check:i18n": "tsx scripts/check-i18n.ts",
     "check:bundle2:staging": "tsx scripts/verify-bundle-02-staging.ts"
   },
@@ -28,7 +31,7 @@
     "franc": "6.2.0",
     "libphonenumber-js": "^1.13.9",
     "lucide-react": "^0.468.0",
-    "next": "^15.5.20",
+    "next": "^15.5.23",
     "next-themes": "^0.4.4",
     "pdf-lib": "^1.17.1",
     "qrcode": "^1.5.4",
@@ -45,8 +48,8 @@
     "@types/react-dom": "^19.0.3",
     "autoprefixer": "^10.4.20",
     "eslint": "^9.18.0",
-    "eslint-config-next": "^15.5.20",
-    "postcss": "^8.5.1",
+    "eslint-config-next": "^15.5.23",
+    "postcss": "^8.5.26",
     "tailwindcss": "^3.4.17",
     "tailwindcss-animate": "^1.0.7",
     "tsx": "^4.23.0",
@@ -54,7 +57,8 @@
   },
   "overrides": {
     "next": {
-      "postcss": "8.5.19"
-    }
+      "postcss": "8.5.26"
+    },
+    "sharp": "0.35.3"
   }
 }

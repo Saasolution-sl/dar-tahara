@@ -35,6 +35,7 @@ export function SubscribeForm({
   const [status, setStatus] = React.useState<Status>("idle");
   const [errorKey, setErrorKey] = React.useState<keyof Dictionary["mailing"]["errors"] | null>(null);
   const [token, setToken] = React.useState<string | null>(null);
+  const [started, setStarted] = React.useState(false);
   const startedRef = React.useRef(false);
   const emailId = React.useId();
   const errId = React.useId();
@@ -44,6 +45,11 @@ export function SubscribeForm({
       startedRef.current = true;
       track("mailing_list_signup_started", { source });
     }
+    // Defer mounting Turnstile (its own script + challenge iframe/workers)
+    // until the visitor shows intent to submit, instead of on every page
+    // load: it was competing with hydration for main-thread time on the
+    // homepage's LCP text paint.
+    setStarted(true);
   }
 
   async function onSubmit(e: React.FormEvent) {
@@ -144,7 +150,7 @@ export function SubscribeForm({
         </button>
       </div>
 
-      <TurnstileWidget onToken={setToken} />
+      {started ? <TurnstileWidget onToken={setToken} /> : null}
 
       {errorKey ? (
         <p id={errId} className="mt-2 text-xs text-red-600 dark:text-red-400" role="alert">
