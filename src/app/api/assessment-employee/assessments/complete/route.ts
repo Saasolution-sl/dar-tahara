@@ -4,6 +4,8 @@ import { validateAssessmentFieldSubmission } from "@/lib/assessment-field-submis
 import { authorizeApi } from "@/lib/portal-auth";
 import { isSameOrigin } from "@/lib/request-security";
 import { createAdminClient } from "@/lib/supabase/admin";
+import { inspectAttachmentBytes } from "@/lib/file-security";
+import { approvedRetentionDays } from "@/lib/retention-control";
 import { serviceDelete, serviceInsert, serviceSelect, serviceUpdate } from "@/lib/supabase-rpc";
 import { sendTransactionalEmail } from "@/lib/transactional-email";
 import type { Locale } from "@/i18n/config";
@@ -73,12 +75,17 @@ export async function POST(req: NextRequest) {
   const extension = evidence.type === "image/png" ? "png" : evidence.type === "image/webp" ? "webp" : "jpg";
   const storagePath = `${auth.context.user.id}/${assessment.id}/${randomUUID()}.${extension}`;
   const confirmedAt = new Date();
-  const retentionDeleteAfter = new Date(confirmedAt.getTime() + 90 * 86400000);
+  const retentionDays = await approvedRetentionDays("assessment_confirmation_evidence");
+  const retentionDeleteAfter = retentionDays
+    ? new Date(confirmedAt.getTime() + retentionDays * 86_400_000)
+    : null;
   const storage = createAdminClient().storage.from("assessment-confirmations");
   let confirmationStored = false;
 
   try {
-    const upload = await storage.upload(storagePath, Buffer.from(await evidence.arrayBuffer()), {
+    const evidenceBytes = new Uint8Array(await evidence.arrayBuffer());
+    const inspection = await inspectAttachmentBytes(evidenceBytes, evidence.type);
+    const upload = await storage.upload(storagePath, evidenceBytes, {
       contentType: evidence.type,
       cacheControl: "private, max-age=0",
       upsert: false,
@@ -116,7 +123,12 @@ export async function POST(req: NextRequest) {
       evidence_storage_path: storagePath,
       confirmed_services: value.services,
       customer_confirmed_at: confirmedAt.toISOString(),
-      retention_delete_after: retentionDeleteAfter.toISOString(),
+      retention_delete_after: retentionDeleteAfter?.toISOString() || null,
+      scan_status: inspection.status,
+      scan_engine: inspection.engine,
+      scan_signature: inspection.signature,
+      content_sha256: inspection.sha256,
+      scanned_at: inspection.scannedAt,
     });
     confirmationStored = true;
 
@@ -150,7 +162,7 @@ export async function POST(req: NextRequest) {
           employeeNumber: staff.employee_number,
           confirmationReference: confirmation.id,
           confirmedServices: value.services,
-          evidenceRetentionDeleteAfter: retentionDeleteAfter.toISOString(),
+          evidenceRetentionDeleteAfter: retentionDeleteAfter?.toISOString() || null,
         },
       }),
       serviceInsert("audit_logs", {

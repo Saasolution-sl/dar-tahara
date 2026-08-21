@@ -148,21 +148,27 @@ All Knowledge Builder, gap and provider-event tables have RLS enabled and no ano
 
 ## Environment and retention
 
-Besides the standard assistant/provider variables in `.env.example`, configure:
+Besides the standard assistant/provider variables in `.env.example`, configure
+the authenticated job secrets:
 
 ```env
-ASSISTANT_KNOWLEDGE_GAP_RETENTION_DAYS=365
-ASSISTANT_PROVIDER_EVENT_RETENTION_DAYS=90
 ASSISTANT_JOB_SECRET=
 CRON_SECRET=
 ```
 
 `vercel.json` schedules `GET /api/jobs/assistant` daily. Vercel supplies `Authorization: Bearer $CRON_SECRET`; external schedulers may instead call `POST` with `ASSISTANT_JOB_SECRET`. The database validates positive retention periods and deletes expired gap samples and provider telemetry.
 
+Retention periods are not environment defaults. Legal/Privacy and the record
+owner must approve and enable `assistant_knowledge_gaps` and
+`assistant_provider_events` in `retention_policy_rules`; an active legal hold,
+overdue approval or disabled `RETENTION_EXECUTION_ENABLED` switch blocks deletion
+and records the decision.
+
 ## Deployment
 
 1. Back up the database.
-2. Apply `20260716151742_assistant_knowledge_builder.sql` in staging.
+2. Apply `20260716151742_assistant_knowledge_builder.sql` and the current ISO
+   control migration in staging.
 3. Configure the Supabase service role and optional provider settings server-side.
 4. Run `npm run typecheck`, `npm test`, `npm run check:i18n` and `npm run build`.
 5. Test website and WhatsApp conversations in every supported language.

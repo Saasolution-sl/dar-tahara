@@ -1,7 +1,8 @@
 import "server-only";
 
 import { randomUUID } from "node:crypto";
-import { putObject } from "@/lib/cubbit/client";
+import { deleteObject, putObject } from "@/lib/cubbit/client";
+import { inspectAttachmentBytes, type FileInspection } from "@/lib/file-security";
 import { serviceInsert } from "@/lib/supabase-rpc";
 import {
   MAX_SUPPORT_ATTACHMENTS,
@@ -14,6 +15,7 @@ export type ParsedSupportAttachment = {
   file: File;
   input: SupportAttachmentInput;
   safeName: string;
+  inspection: FileInspection;
 };
 
 export async function parseSupportAttachments(formData: FormData): Promise<ParsedSupportAttachment[]> {
@@ -23,9 +25,11 @@ export async function parseSupportAttachments(formData: FormData): Promise<Parse
     const error = validateAttachment(file);
     if (error) throw new Error(error);
     const bytes = new Uint8Array(await file.arrayBuffer());
+    const inspection = await inspectAttachmentBytes(bytes, file.type);
     return {
       file,
       safeName: safeAttachmentFilename(file.name),
+      inspection,
       input: {
         fileName: safeAttachmentFilename(file.name),
         mimeType: file.type,
@@ -51,17 +55,27 @@ export async function storeCustomerAttachments(input: {
     } catch {
       throw new Error("support_attachment_upload_failed");
     }
-    await serviceInsert("support_attachments", {
-      support_request_id: input.supportRequestId,
-      support_message_id: input.supportMessageId || null,
-      customer_id: input.customerId,
-      storage_path: storagePath,
-      storage_provider: "cubbit",
-      original_filename: attachment.file.name,
-      safe_filename: attachment.safeName,
-      mime_type: attachment.file.type,
-      size_bytes: attachment.file.size,
-      visibility: "customer",
-    });
+    try {
+      await serviceInsert("support_attachments", {
+        support_request_id: input.supportRequestId,
+        support_message_id: input.supportMessageId || null,
+        customer_id: input.customerId,
+        storage_path: storagePath,
+        storage_provider: "cubbit",
+        original_filename: attachment.file.name,
+        safe_filename: attachment.safeName,
+        mime_type: attachment.file.type,
+        size_bytes: attachment.file.size,
+        visibility: "customer",
+        scan_status: attachment.inspection.status,
+        scan_engine: attachment.inspection.engine,
+        scan_signature: attachment.inspection.signature,
+        content_sha256: attachment.inspection.sha256,
+        scanned_at: attachment.inspection.scannedAt,
+      });
+    } catch {
+      await deleteObject(storagePath).catch(() => undefined);
+      throw new Error("support_attachment_metadata_failed");
+    }
   }
 }

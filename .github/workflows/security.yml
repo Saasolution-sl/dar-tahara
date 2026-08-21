@@ -37,6 +37,7 @@ jobs:
       - run: npm ci
       - run: npm run security:audit:production
       - run: npm run security:audit
+      - run: npm run security:drift
       - run: npm run typecheck
       - run: npm run lint
         env:

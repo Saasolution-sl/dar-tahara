@@ -3,7 +3,6 @@
 import * as React from "react";
 import type { PortalCopy } from "@/i18n/portal-copy";
 import { buttonVariants } from "@/components/ui/button";
-import { createClient } from "@/lib/supabase/client";
 import { track } from "@/lib/analytics";
 import { cn } from "@/lib/utils";
 
@@ -62,30 +61,12 @@ export function PauseRequestModal({
     }
     if (file) {
       try {
-        const urlRes = await fetch(`/api/account/pause-requests/${data.id}/attachment-upload-url`, {
+        const attachmentForm = new FormData();
+        attachmentForm.set("attachment", file);
+        await fetch(`/api/account/pause-requests/${data.id}/attachment-upload-url`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ fileName: file.name, mimeType: file.type, sizeBytes: file.size }),
+          body: attachmentForm,
         });
-        const urlData = (await urlRes.json().catch(() => ({}))) as { uploadUrl?: string; storagePath?: string; safeFilename?: string };
-        if (urlRes.ok && urlData.uploadUrl && urlData.storagePath) {
-          const putRes = await fetch(urlData.uploadUrl, { method: "PUT", headers: { "Content-Type": file.type }, body: file });
-          if (putRes.ok) {
-            const supabase = createClient();
-            const { data: userData } = await supabase.auth.getUser();
-            const userId = userData.user?.id;
-            if (userId) {
-              const { data: customer } = await supabase.from("customers").select("id").eq("auth_user_id", userId).maybeSingle();
-              if (customer) {
-                await supabase.from("pause_request_attachments").insert({
-                  pause_request_id: data.id, customer_id: customer.id, uploaded_by: userId,
-                  storage_path: urlData.storagePath, storage_provider: "cubbit",
-                  original_filename: file.name, mime_type: file.type, size_bytes: file.size,
-                });
-              }
-            }
-          }
-        }
       } catch {
         // The pause request itself already succeeded; a failed attachment upload is not fatal.
       }

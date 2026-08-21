@@ -1,3 +1,7 @@
 # Business continuity
 
-RTO/RPO values are not approved. The next phase must conduct a business impact analysis covering the customer portal, scheduling and property-entry operations, data and identity services, billing, support and messaging, and source and deployment systems. It must also document supplier dependencies and run a measured recovery exercise.
+RTO/RPO values are not approved. `business-impact-analysis.md` provides the
+service/dependency decision worksheet; `recovery-and-exercise-plan.md` and
+`exercise-template.md` provide the measured recovery record. Business owners
+must approve impacts/objectives and complete the exercise before these are
+operating evidence.

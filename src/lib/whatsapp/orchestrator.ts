@@ -1,6 +1,7 @@
 import "server-only";
 import { randomUUID } from "node:crypto";
 import { isLocale, type Locale } from "@/i18n/config";
+import { runApprovedRetention } from "@/lib/retention-control";
 import { answerPublicAssistant, isAssistantDisabledError } from "@/lib/assistant/public-service";
 import {
   LANGUAGE_CLARIFICATION,
@@ -677,10 +678,11 @@ export async function retryDueEscalations(limit = 10): Promise<{ attempted: numb
 }
 
 export async function runWhatsAppRetention(): Promise<Record<string, number>> {
-  const messageDays = Number(process.env.WHATSAPP_MESSAGE_RETENTION_DAYS || 90);
-  const auditDays = Number(process.env.WHATSAPP_AUDIT_RETENTION_DAYS || 365);
-  return serviceRpc("cleanup_whatsapp_retention", {
-    message_retention_days: messageDays,
-    audit_retention_days: auditDays,
+  return runApprovedRetention({
+    categories: ["whatsapp_messages", "whatsapp_audit"],
+    execute: (days) => serviceRpc("cleanup_whatsapp_retention", {
+      message_retention_days: days.whatsapp_messages,
+      audit_retention_days: days.whatsapp_audit,
+    }),
   });
 }

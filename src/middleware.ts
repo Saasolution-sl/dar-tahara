@@ -3,6 +3,7 @@ import { createServerClient } from "@supabase/ssr";
 import { localeCookieName, locales } from "./i18n/config";
 import { resolveLocale } from "./lib/geo-language";
 import { site } from "./lib/site";
+import { applyContentSecurityPolicy } from "./lib/content-security-policy";
 
 const PUBLIC_FILE = /\.(.*)$/;
 export const requestLocaleHeader = "x-dar-tahara-locale";
@@ -104,12 +105,12 @@ export function canonicalHostRedirectResponse(request: NextRequest): NextRespons
 
 export async function middleware(request: NextRequest) {
   const canonicalRedirect = canonicalHostRedirectResponse(request);
-  if (canonicalRedirect) return canonicalRedirect;
+  if (canonicalRedirect) return applyContentSecurityPolicy(canonicalRedirect);
 
   // Locale detection is entirely request-local. Return before Supabase auth
   // refresh so automatic redirects never add a network request.
   const localeRedirect = localeRedirectResponse(request);
-  if (localeRedirect) return localeRedirect;
+  if (localeRedirect) return applyContentSecurityPolicy(localeRedirect);
 
   const requestHeaders = new Headers(request.headers);
   requestHeaders.set(requestLocaleHeader, localeForRequest(request));
@@ -131,7 +132,7 @@ export async function middleware(request: NextRequest) {
     await supabase.auth.getUser();
   }
 
-  return authResponse;
+  return applyContentSecurityPolicy(authResponse);
 }
 
 export const config = {
