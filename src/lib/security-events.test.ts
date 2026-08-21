@@ -7,11 +7,19 @@ test("security events are structured, UTC timestamped and metadata bounded", () 
     type: "authorization_denied",
     severity: "medium",
     actorId: "user-1",
-    metadata: { route_class: "admin", ignored: { secret: true }, long: "x".repeat(500) },
+    metadata: {
+      route_class: "admin",
+      ignored: { secret: true },
+      long: "x".repeat(500),
+      access_token: "must-not-survive",
+      customer_email: "person@example.test",
+    },
   }, new Date("2026-08-21T10:00:00Z"));
   assert.equal(event.occurredAt, "2026-08-21T10:00:00.000Z");
   assert.equal(event.metadata.route_class, "admin");
   assert.equal("ignored" in event.metadata, false);
+  assert.equal("access_token" in event.metadata, false);
+  assert.equal("customer_email" in event.metadata, false);
   assert.equal(String(event.metadata.long).length, 200);
   assert.match(event.eventId, /^[0-9a-f-]{36}$/);
 });

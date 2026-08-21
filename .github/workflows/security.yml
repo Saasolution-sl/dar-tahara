@@ -37,6 +37,7 @@ jobs:
       - run: npm ci
       - run: npm run security:audit:production
       - run: npm run security:audit
+      - run: npm run security:drift
       - run: npm run typecheck
       - run: npm run lint
         env:
@@ -130,7 +131,7 @@ jobs:
       - name: Scan source, secrets and infrastructure configuration
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          trivy-version: v0.74.0
+          version: v0.74.0
           scan-type: fs
           scan-ref: .
           scanners: vuln,secret,misconfig
@@ -144,7 +145,7 @@ jobs:
       - name: Scan the production image
         uses: aquasecurity/trivy-action@ed142fd0673e97e23eac54620cfb913e5ce36c25 # v0.36.0
         with:
-          trivy-version: v0.74.0
+          version: v0.74.0
           image-ref: dar-tahara:${{ github.sha }}
           scanners: vuln,secret,misconfig
           severity: HIGH,CRITICAL

@@ -6,6 +6,7 @@ import {
   GetObjectCommand,
   HeadObjectCommand,
   ListObjectsV2Command,
+  DeleteObjectCommand,
   type PutObjectCommandInput,
 } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
@@ -54,6 +55,11 @@ export async function putObject(key: string, body: Uint8Array | Buffer, contentT
   await s3.send(new PutObjectCommand({ Bucket: bucketName, Key: key, Body: body, ContentType: contentType, ...extra }));
 }
 
+export async function deleteObject(key: string): Promise<void> {
+  const { s3, bucket: bucketName } = getClient();
+  await s3.send(new DeleteObjectCommand({ Bucket: bucketName, Key: key }));
+}
+
 export async function objectExists(key: string): Promise<boolean> {
   const { s3, bucket: bucketName } = getClient();
   try {
@@ -83,12 +89,6 @@ export async function presignGetUrl(key: string, expiresInSeconds: number, downl
     Key: key,
     ...(downloadFilename ? { ResponseContentDisposition: `attachment; filename*=UTF-8''${encodeURIComponent(downloadFilename)}` } : {}),
   });
-  return getSignedUrl(s3, command, { expiresIn: expiresInSeconds });
-}
-
-export async function presignPutUrl(key: string, contentType: string, expiresInSeconds: number): Promise<string> {
-  const { s3, bucket: bucketName } = getClient();
-  const command = new PutObjectCommand({ Bucket: bucketName, Key: key, ContentType: contentType });
   return getSignedUrl(s3, command, { expiresIn: expiresInSeconds });
 }
 

@@ -25,9 +25,10 @@ Status: **TECHNICAL IMPLEMENTATION AUTHORIZED — MANAGEMENT/PRODUCTION GATES RE
 | REM-019 | P3 | No internal audit or management review | Clauses 9.2, 9.3; A.5.35 | Independent internal audit and management package after remediation | Auditor competence/independence, findings and minutes | Not applicable | Yes—management |
 | REM-020 | P3 | No machine-readable drift reporting | A.5.36, A.8.9, A.8.16 | Detect RLS, branch, MFA, port, dependency, logging and backup drift | Controlled negative test produces failing check and ticket | Disable only with approved exception | Yes—control owners |
 
-## Recommended first implementation batch
+## Implementation note
 
-Technical implementation for REM-001 through REM-009 is underway under the
-owner's 2026-08-21 instruction. The source controls and local verification do
-not replace the stated production, management, legal, role-assignment or
-operating-evidence gates.
+Technical implementation packages for REM-001 through REM-020 have been
+prepared under the owner's 2026-08-21 instruction. The living status record
+identifies which source controls exist and which production, management, legal,
+role-assignment and operating-evidence gates remain. A prepared template or
+source control is never treated as approval or sustained operating evidence.

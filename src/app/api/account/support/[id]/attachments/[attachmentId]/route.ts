@@ -14,6 +14,7 @@ type AttachmentRow = {
   safe_filename: string;
   mime_type: string;
   size_bytes: number;
+  scan_status: "quarantined" | "clean" | "clean_signature_only" | "rejected" | "legacy_unverified";
 };
 
 export async function GET(_req: NextRequest, context: { params: Promise<{ id: string; attachmentId: string }> }) {
@@ -27,7 +28,7 @@ export async function GET(_req: NextRequest, context: { params: Promise<{ id: st
     return NextResponse.json({ error: "attachment_not_found" }, { status: 404 });
   }
   const rows = await serviceSelect<AttachmentRow[]>(
-    `support_attachments?id=eq.${encodeURIComponent(attachmentId)}&support_request_id=eq.${encodeURIComponent(id)}&customer_id=eq.${encodeURIComponent(auth.context.customerId)}&visibility=eq.customer&select=id,storage_path,storage_provider,external_url,safe_filename,mime_type,size_bytes&limit=1`,
+    `support_attachments?id=eq.${encodeURIComponent(attachmentId)}&support_request_id=eq.${encodeURIComponent(id)}&customer_id=eq.${encodeURIComponent(auth.context.customerId)}&visibility=eq.customer&scan_status=in.(clean,clean_signature_only)&select=id,storage_path,storage_provider,external_url,safe_filename,mime_type,size_bytes,scan_status&limit=1`,
   );
   const attachment = rows[0];
   if (!attachment) return NextResponse.json({ error: "attachment_not_found" }, { status: 404 });

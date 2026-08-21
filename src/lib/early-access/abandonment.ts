@@ -2,7 +2,8 @@ import "server-only";
 
 import { mauticFromEnv } from "@/lib/mautic/env";
 import type { MauticClient } from "@/lib/mautic/client";
-import { serviceSelect, serviceUpdate, serviceUpdateMinimal } from "@/lib/supabase-rpc";
+import { runApprovedRetention } from "@/lib/retention-control";
+import { serviceRpc, serviceSelect, serviceUpdate, serviceUpdateMinimal } from "@/lib/supabase-rpc";
 import {
   abandonmentConfig,
   dueReminderNumber,
@@ -256,30 +257,16 @@ export async function runEarlyAccessAbandonmentJob(): Promise<AbandonmentRunResu
   });
 }
 
-/** Remove recoverable form PII after the configured operational window. */
-export async function purgeStaleSignupSessionPii(): Promise<void> {
-  const parsed = Number(process.env.EARLY_ACCESS_PARTIAL_RETENTION_DAYS);
-  const days = Number.isFinite(parsed) ? Math.max(7, Math.min(365, parsed)) : 30;
-  const now = new Date().toISOString();
-  const cutoff = new Date(Date.now() - days * 86_400_000).toISOString();
-  await serviceUpdateMinimal(
-    "early_access_signup_sessions",
-    `last_activity_at=lt.${cutoff}&pii_purged_at=is.null`,
-    {
-      partial_payload: {},
-      email: null,
-      normalized_email: null,
-      email_present: false,
-      reminder_consent: false,
-      resume_token_hash: null,
-      resume_token_expires_at: null,
-      feedback_token_hash: null,
-      feedback_token_expires_at: null,
-      reminder_claimed_at: null,
-      reminder_claimed_number: null,
-      pii_purged_at: now,
-    },
-  );
+/** Remove recoverable form PII only under the approved central schedule. */
+export async function purgeStaleSignupSessionPii() {
+  return runApprovedRetention({
+    categories: ["early_access_partial_pii"],
+    execute: async (days) => ({
+      purged: await serviceRpc<number>("cleanup_early_access_partial_pii", {
+        retention_days: days.early_access_partial_pii,
+      }),
+    }),
+  });
 }
 
 export async function updateAbandonedMauticStatus(

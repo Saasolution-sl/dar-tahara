@@ -2,6 +2,7 @@ import "server-only";
 
 import { createHash } from "node:crypto";
 import type { Locale } from "@/i18n/config";
+import { runApprovedRetention } from "@/lib/retention-control";
 import { isServiceRoleConfigured, serviceInsert, serviceRpc, serviceSelect, serviceUpdate } from "@/lib/supabase-rpc";
 import { redactForReasoning } from "./reasoning-provider";
 import type { AssistantIntent, RetrievedKnowledge } from "./types";
@@ -313,9 +314,12 @@ export async function loadKnowledgeBuilderDashboard() {
 }
 
 export async function runAssistantKnowledgeRetention() {
-  return serviceRpc<Record<string, number>>("cleanup_assistant_knowledge_retention", {
-    knowledge_gap_retention_days: Math.max(1, Number(process.env.ASSISTANT_KNOWLEDGE_GAP_RETENTION_DAYS || 365)),
-    provider_event_retention_days: Math.max(1, Number(process.env.ASSISTANT_PROVIDER_EVENT_RETENTION_DAYS || 90)),
+  return runApprovedRetention({
+    categories: ["assistant_knowledge_gaps", "assistant_provider_events"],
+    execute: (days) => serviceRpc<Record<string, number>>("cleanup_assistant_knowledge_retention", {
+      knowledge_gap_retention_days: days.assistant_knowledge_gaps,
+      provider_event_retention_days: days.assistant_provider_events,
+    }),
   });
 }
 

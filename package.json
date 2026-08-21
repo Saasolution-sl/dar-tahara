@@ -13,6 +13,7 @@
     "security:audit": "npm audit --audit-level=high",
     "security:audit:production": "npm audit --omit=dev --audit-level=high",
     "security:secrets": "tsx scripts/scan-secrets.ts",
+    "security:drift": "tsx scripts/iso27001-drift-report.ts",
     "check:i18n": "tsx scripts/check-i18n.ts",
     "check:bundle2:staging": "tsx scripts/verify-bundle-02-staging.ts"
   },
