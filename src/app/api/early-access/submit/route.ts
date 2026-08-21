@@ -5,7 +5,8 @@ import { parseAttribution, type Attribution } from "@/lib/early-access/attributi
 import { persistSubmission } from "@/lib/early-access/persistence";
 import { sendVerificationEmail } from "@/lib/early-access/email";
 import { syncLeadAfterSubmit } from "@/lib/early-access/sync-bridge";
-import { rateLimit, clientIpFromHeaders } from "@/lib/mailing-list";
+import { clientIpFromHeaders } from "@/lib/client-ip";
+import { rateLimitShared } from "@/lib/rate-limit";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { isServiceRoleConfigured } from "@/lib/supabase-rpc";
 import { isLocale, defaultLocale, type Locale } from "@/i18n/config";
@@ -29,7 +30,7 @@ export async function POST(req: NextRequest) {
   if (!await featureEnabled("early_access_enabled")) return NextResponse.json({ok:false,error:"feature_disabled"},{status:403});
   const ip = clientIpFromHeaders(req.headers);
 
-  const rl = rateLimit(`early-access:${ip}`);
+  const rl = await rateLimitShared(`early-access:${ip}`);
   if (!rl.allowed) {
     return NextResponse.json(
       { ok: false, error: "rate_limited" },

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { clientIpFromHeaders, rateLimit } from "@/lib/mailing-list";
+import { clientIpFromHeaders } from "@/lib/client-ip";
+import { rateLimitShared } from "@/lib/rate-limit";
 import { isOpaqueToken } from "@/lib/early-access/funnel";
 import { resumeSignupSession } from "@/lib/early-access/funnel-server";
 
@@ -7,7 +8,7 @@ export const runtime = "nodejs";
 
 export async function POST(req: NextRequest) {
   const ip = clientIpFromHeaders(req.headers);
-  if (!rateLimit(`ea-resume:${ip}`).allowed) return NextResponse.json({ ok: false }, { status: 429 });
+  if (!(await rateLimitShared(`ea-resume:${ip}`)).allowed) return NextResponse.json({ ok: false }, { status: 429 });
   const body = await req.json().catch(() => null) as { token?: unknown } | null;
   if (!isOpaqueToken(body?.token)) return NextResponse.json({ ok: false }, { status: 400 });
   try {

@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { buildAuthCallbackUrl } from "@/lib/auth-redirect";
 import { featureEnabled } from "@/lib/feature-flags";
-import { clientIpFromHeaders, rateLimit } from "@/lib/mailing-list";
+import { clientIpFromHeaders } from "@/lib/client-ip";
+import { rateLimitShared } from "@/lib/rate-limit";
 import { safeNextPath } from "@/lib/portal-routing";
 import { isSameOrigin } from "@/lib/request-security";
 import { createClient } from "@/lib/supabase/server";
@@ -11,7 +12,7 @@ const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
 export async function POST(req: NextRequest) {
   if (!isSameOrigin(req)) return NextResponse.json({ error: "invalid_request" }, { status: 403 });
-  const limit = rateLimit(`signup:${clientIpFromHeaders(req.headers)}`);
+  const limit = await rateLimitShared(`signup:${clientIpFromHeaders(req.headers)}`);
   if (!limit.allowed) return NextResponse.json({ error: "signup_failed" }, { status: 429 });
   if (!await featureEnabled("customer_registration_enabled")) return NextResponse.json({ error: "registration_disabled" }, { status: 403 });
 

@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { classifyPasswordUpdateError } from "@/lib/auth-password";
-import {
-  clientIpFromHeaders,
-  rateLimit,
-} from "@/lib/mailing-list";
+import { clientIpFromHeaders } from "@/lib/client-ip";
+import { rateLimitShared } from "@/lib/rate-limit";
 import { authorizeApi } from "@/lib/portal-auth";
 import { isSameOrigin } from "@/lib/request-security";
 import { createClient } from "@/lib/supabase/server";
@@ -20,7 +18,7 @@ export async function POST(req: NextRequest) {
       { status: auth.status },
     );
   }
-  const limit = rateLimit(
+  const limit = await rateLimitShared(
     `profile-password:${auth.context.user.id}:${clientIpFromHeaders(req.headers)}`,
   );
   if (!limit.allowed) {

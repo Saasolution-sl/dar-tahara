@@ -2,7 +2,7 @@
 
 Date: 2026-08-21
 
-Status: **Implemented in the worktree; repository activation and enforcement pending**
+Status: **Active on GitHub; continuing operational review required**
 
 Controls: A.5.17, A.5.21, A.8.8, A.8.12, A.8.25, A.8.29, A.8.32
 
@@ -36,4 +36,17 @@ The workflow has not run on a repository host and is not yet a required merge ch
 
 ## Hosted verification update
 
-GitHub pull request 65 executed the workflow on 2026-08-21. The quality/dependency job and both CodeQL checks passed. Gitleaks detected a documented false positive in continuity-planning prose; its exact historical fingerprint is recorded in `.gitleaksignore`, and the prose was clarified to avoid future matches. GitHub dependency alerts were enabled through the repository API after Dependency Review reported that the dependency graph prerequisite was disabled. A green rerun remains required before merge.
+GitHub pull request 65 executed the workflow on 2026-08-21. After the documented
+Gitleaks false-positive correction, the pull request merged and post-merge run
+`32466510778` completed successfully at commit
+`5927201863e03c128f921656efd0fa7b0b161728`. GitHub dependency graph/security
+updates, secret scanning, push protection and private vulnerability reporting
+are active. Ruleset `21137818` makes the named security jobs strict required
+checks for `main`, requires pull requests and signed commits, blocks force-push
+and deletion, and has no bypass actors.
+
+The repository has one collaborator, so a one-review requirement would make
+every change unmergeable. Independent approval remains a governance residual
+until a second qualified reviewer is appointed. GitHub did not enable
+non-provider secret patterns or validity checks, so Gitleaks/full-history and
+push protection remain the compensating controls.

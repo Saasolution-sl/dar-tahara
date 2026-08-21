@@ -1,7 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import { defaultLocale, isLocale, type Locale } from "@/i18n/config";
 import { featureEnabled } from "@/lib/feature-flags";
-import { clientIpFromHeaders, rateLimit } from "@/lib/mailing-list";
+import { clientIpFromHeaders } from "@/lib/client-ip";
+import { rateLimitShared } from "@/lib/rate-limit";
 import { isServiceRoleConfigured } from "@/lib/supabase-rpc";
 import { verifyTurnstile } from "@/lib/turnstile";
 import { parseAttribution, type Attribution } from "@/lib/early-access/attribution";
@@ -21,7 +22,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ ok: false, error: "feature_disabled" }, { status: 403 });
   }
   const ip = clientIpFromHeaders(req.headers);
-  const limit = rateLimit(`early-access-lead:${ip}`);
+  const limit = await rateLimitShared(`early-access-lead:${ip}`);
   if (!limit.allowed) {
     return NextResponse.json({ ok: false, error: "rate_limited" }, {
       status: 429,

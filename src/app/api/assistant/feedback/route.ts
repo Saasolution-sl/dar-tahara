@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isServiceRoleConfigured, serviceInsert, serviceSelect, serviceUpdate } from "@/lib/supabase-rpc";
-import { clientIpFromHeaders, rateLimit } from "@/lib/mailing-list";
+import { clientIpFromHeaders } from "@/lib/client-ip";
+import { rateLimitShared } from "@/lib/rate-limit";
 import { isSameOrigin } from "@/lib/request-security";
 
 export const runtime = "nodejs";
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest) {
     || !["helpful", "unhelpful"].includes(String(body.rating))) {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
-  const limit = rateLimit(`assistant-feedback:${body.sessionId.slice(0, 100)}:${clientIpFromHeaders(req.headers)}`);
+  const limit = await rateLimitShared(`assistant-feedback:${body.sessionId.slice(0, 100)}:${clientIpFromHeaders(req.headers)}`);
   if (!limit.allowed) return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   const rows = await serviceSelect<Array<{ metadata: Record<string, unknown> | null }>>(
     `assistant_conversations?id=eq.${encodeURIComponent(body.conversationId)}&select=metadata&limit=1`,

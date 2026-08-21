@@ -1,2 +1,3 @@
-# Daily 02:15 UTC PostgreSQL custom-format backup with 14-day retention.
-15 2 * * * claude-admin /srv/dartahara/backup-supabase.sh
+# Daily 02:15 UTC encrypted off-site PostgreSQL backup. Cron also emails any
+# unhandled output when MAILTO is configured on the host.
+15 2 * * * root /srv/dartahara/backup-supabase.sh
