@@ -1,7 +1,7 @@
 import "server-only";
 import { headers } from "next/headers";
 import { serviceInsert, serviceSelect, isServiceRoleConfigured } from "@/lib/supabase-rpc";
-import { clientIpFromHeaders } from "@/lib/mailing-list";
+import { clientIpFromHeaders } from "@/lib/client-ip";
 import { hashIp } from "./request-meta";
 import { parseAttribution } from "./attribution";
 import { buildPageViewRow, isLikelyBot, type PageViewStat } from "./page-views";

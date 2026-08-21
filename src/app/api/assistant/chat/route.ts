@@ -5,7 +5,8 @@ import {
   answerPublicAssistant,
   isAssistantDisabledError,
 } from "@/lib/assistant/public-service";
-import { clientIpFromHeaders, rateLimit } from "@/lib/mailing-list";
+import { clientIpFromHeaders } from "@/lib/client-ip";
+import { rateLimitShared } from "@/lib/rate-limit";
 import { isSameOrigin } from "@/lib/request-security";
 
 export const runtime = "nodejs";
@@ -28,7 +29,7 @@ export async function POST(req: NextRequest) {
   if (!message.trim()) {
     return NextResponse.json({ error: "message_required" }, { status: 400 });
   }
-  const limit = rateLimit(`assistant-chat:${typeof body?.sessionId === "string" ? body.sessionId.slice(0, 100) : clientIpFromHeaders(req.headers)}`);
+  const limit = await rateLimitShared(`assistant-chat:${typeof body?.sessionId === "string" ? body.sessionId.slice(0, 100) : clientIpFromHeaders(req.headers)}`);
   if (!limit.allowed) {
     return NextResponse.json({ error: "rate_limited" }, {
       status: 429,

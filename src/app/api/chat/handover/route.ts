@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createWebsiteHandover } from "@/lib/assistant/website-handover";
-import { clientIpFromHeaders, rateLimit } from "@/lib/mailing-list";
+import { clientIpFromHeaders } from "@/lib/client-ip";
+import { rateLimitShared } from "@/lib/rate-limit";
 import { isSameOrigin } from "@/lib/request-security";
 
 export const runtime = "nodejs";
@@ -17,7 +18,7 @@ export async function POST(req: NextRequest) {
     || body.sessionId.length < 8 || body.sessionId.length > 200) {
     return NextResponse.json({ error: "bad_request" }, { status: 400 });
   }
-  const limit = rateLimit(`assistant-handover:${body.sessionId.slice(0, 100)}:${clientIpFromHeaders(req.headers)}`);
+  const limit = await rateLimitShared(`assistant-handover:${body.sessionId.slice(0, 100)}:${clientIpFromHeaders(req.headers)}`);
   if (!limit.allowed) return NextResponse.json({ error: "rate_limited" }, { status: 429 });
   try {
     return NextResponse.json(await createWebsiteHandover({

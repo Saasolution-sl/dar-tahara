@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import { clientIpFromHeaders, rateLimit } from "@/lib/mailing-list";
+import { clientIpFromHeaders } from "@/lib/client-ip";
+import { rateLimitShared } from "@/lib/rate-limit";
 import { isServiceRoleConfigured } from "@/lib/supabase-rpc";
 import {
   createOrRestoreSignupSession,
@@ -20,15 +21,14 @@ function credentials(input: unknown): SessionCredentials | undefined {
 
 function limited(req: NextRequest, scope: string, highFrequency = false) {
   const ip = clientIpFromHeaders(req.headers);
-  return rateLimit(
+  return rateLimitShared(
     `${scope}:${ip}`,
-    Date.now(),
     highFrequency ? { windowMs: 60_000, max: 120 } : undefined,
   );
 }
 
 export async function POST(req: NextRequest) {
-  const limit = limited(req, "ea-session-create");
+  const limit = await limited(req, "ea-session-create");
   if (!limit.allowed) return NextResponse.json({ ok: false }, { status: 429 });
   if (isLikelyBot(req.headers.get("user-agent"))) return NextResponse.json({ ok: false });
   if (!isServiceRoleConfigured()) return NextResponse.json({ ok: false }, { status: 503 });
@@ -56,7 +56,7 @@ export async function PATCH(req: NextRequest) {
   // Autosave is debounced but legitimately emits more than the generic five
   // requests/minute used for unauthenticated forms. Every mutation below also
   // requires an unguessable per-session token.
-  const limit = limited(req, "ea-session-update", true);
+  const limit = await limited(req, "ea-session-update", true);
   if (!limit.allowed) return NextResponse.json({ ok: false }, { status: 429 });
   if (!isServiceRoleConfigured()) return NextResponse.json({ ok: false }, { status: 503 });
   const body = await req.json().catch(() => null) as Record<string, unknown> | null;

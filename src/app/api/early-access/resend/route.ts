@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isValidEmail, normalizeEmail } from "@/lib/early-access/schema";
-import { rateLimit, clientIpFromHeaders } from "@/lib/mailing-list";
+import { clientIpFromHeaders } from "@/lib/client-ip";
+import { rateLimitShared } from "@/lib/rate-limit";
 import { serviceSelect, serviceInsert, isServiceRoleConfigured } from "@/lib/supabase-rpc";
 import { generateVerificationToken, hashToken, tokenExpiry } from "@/lib/early-access/token";
 import { recentTokenCount } from "@/lib/early-access/persistence";
@@ -21,7 +22,7 @@ type LeadRow = { id: string; email: string; status: string; preferred_language: 
  */
 export async function POST(req: NextRequest) {
   const ip = clientIpFromHeaders(req.headers);
-  const rl = rateLimit(`ea-resend:${ip}`);
+  const rl = await rateLimitShared(`ea-resend:${ip}`);
   if (!rl.allowed) {
     return NextResponse.json({ ok: true }, { status: 200 }); // uniform, no signal
   }

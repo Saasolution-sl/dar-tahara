@@ -1,9 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { isLocale } from "@/i18n/config";
-import {
-  clientIpFromHeaders,
-  rateLimit,
-} from "@/lib/mailing-list";
+import { clientIpFromHeaders } from "@/lib/client-ip";
+import { rateLimitShared } from "@/lib/rate-limit";
 import { authorizeApi } from "@/lib/portal-auth";
 import { isSameOrigin } from "@/lib/request-security";
 import {
@@ -37,7 +35,7 @@ export async function POST(req: NextRequest) {
     );
   }
 
-  const limit = rateLimit(
+  const limit = await rateLimitShared(
     `payment-method-setup:${auth.context.user.id}:${clientIpFromHeaders(req.headers)}`,
   );
   if (!limit.allowed) {

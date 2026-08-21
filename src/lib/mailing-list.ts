@@ -76,10 +76,12 @@ export function validateSubscribe(body: unknown): SubscribeValidation {
 const RATE_LIMIT = { windowMs: 60_000, max: 5 };
 const hits = new Map<string, { count: number; resetAt: number }>();
 
+export type RateLimitPolicy = { windowMs: number; max: number };
+
 export function rateLimit(
   key: string,
   now = Date.now(),
-  policy: { windowMs: number; max: number } = RATE_LIMIT,
+  policy: RateLimitPolicy = RATE_LIMIT,
 ): { allowed: boolean; retryAfterMs: number } {
   const entry = hits.get(key);
   if (!entry || now > entry.resetAt) {
@@ -91,14 +93,4 @@ export function rateLimit(
   }
   entry.count += 1;
   return { allowed: true, retryAfterMs: 0 };
-}
-
-/** Best-effort client IP from proxy headers (Vercel / Cloudflare / generic). */
-export function clientIpFromHeaders(headers: Headers): string {
-  return (
-    headers.get("x-real-ip") ||
-    headers.get("x-forwarded-for")?.split(",")[0].trim() ||
-    headers.get("cf-connecting-ip") ||
-    "unknown"
-  );
 }

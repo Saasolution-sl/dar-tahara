@@ -20,8 +20,21 @@ The register contains references only. Sensitive evidence must be stored in an a
 | E-014 | Supabase connector observation | Database owner | Connected-service assessment record | 2026-08-21 | A.8.3, A.8.8, A.8.13 | Project inactive/table query timeout; not production proof |
 | E-015 | Security headers | Engineering/Operations | `next.config.mjs`, Caddy files | 2026-08-21 | A.8.20, A.8.24, A.8.26 | Partial; live headers and CSP unverified/missing |
 | E-016 | REM-001 dependency remediation | Engineering | `evidence/A.8/REM-001-dependency-remediation.md`, `package.json`, `package-lock.json` | 2026-08-21 | A.5.21, A.8.8, A.8.29 | Worktree verified: both audits clean; 661 tests, typecheck, lint and build passed; release pending |
-| E-017 | REM-003 security-gate implementation | Engineering/Security | `evidence/A.8/REM-003-security-gates.md`, `.github/`, `scripts/scan-secrets.ts` | 2026-08-21 | A.5.17, A.5.21, A.8.8, A.8.12, A.8.25, A.8.29, A.8.32 | Definitions and local checks verified; hosted execution/enforcement pending |
+| E-017 | REM-003 security-gate implementation | Engineering/Security | `evidence/A.8/REM-003-security-gates.md`, `.github/`, GitHub run `32466510778` | 2026-08-21 | A.5.17, A.5.21, A.8.8, A.8.12, A.8.25, A.8.29, A.8.32 | Hosted post-merge run passed; native scanning/security updates active |
+| E-018 | GitHub repository protection export | Engineering owner | Repository ruleset `21137818`; GitHub security settings API record | 2026-08-21 | A.5.15, A.5.18, A.8.4, A.8.32 | PR/signed/strict green gates active; no bypass; independent reviewer unavailable |
+| E-019 | Authorization drift audit | Database owner | `supabase/tests/iso27001_production_authorization_audit.sql`; local PostgreSQL execution record | 2026-08-21 | A.5.15-A.5.18, A.8.2, A.8.3 | Local migrated schema passed; 98/98 public tables RLS; production run pending |
+| E-020 | Encrypted backup and isolated restore controls | Operations | `deploy/vps/backup-supabase.sh`, `test-supabase-restore.sh`, `backup.env.example` | 2026-08-21 | A.5.30, A.8.13, A.8.14 | Shell syntax verified; off-site deployment and completed restore evidence pending |
+| E-021 | Privileged AAL2 and shared abuse control | Security/Engineering | `src/lib/mfa-policy.ts`, `/security/mfa`, shared limiter migration/code/tests, Supabase config | 2026-08-21 | A.5.16-A.5.18, A.8.5, A.8.6, A.8.20, A.8.26 | Unit/build passed; atomic allow/block and browser-role denial verified locally; production rollout pending |
+| E-022 | Infrastructure scanning/hardening controls | Security/Operations | Trivy workflow job; local clean-tree/runtime-image scans; `deploy/vps/verify-host-hardening.sh` | 2026-08-21 | A.8.7-A.8.9, A.8.20-A.8.22 | Clean tracked-tree scan; runtime image 0 High/Critical after removing unused npm; hosted scan/live-host output pending |
+| E-023 | Incident detection/response baseline | Incident Manager | Structured event implementation, event catalogue, procedure, register and tabletop template | 2026-08-21 | A.5.24-A.5.28, A.6.8, A.8.15-A.8.17 | Code/tests passed; named responders, alert exercise, protected retention and tabletop pending |
+| E-024 | Local ignored-secret observation | Engineering owner | Restricted local scan record; HA-015 (no secret value stored here) | 2026-08-21 | A.5.17, A.8.2, A.8.12 | Same Stripe test secret present in three Git-ignored local files; full-history/current repository gates clean; rotation and backup deletion pending |
 
 ## Evidence gaps
 
-All 93 controls require additional operating evidence before certification. Highest-priority evidence: live RLS/privilege export, repository/release settings, privileged-user inventory and MFA proof, host/container scan, backup restoration record, monitoring alerts, incident exercise, supplier contracts/DPA records, employee lifecycle evidence, physical/property-access procedure, approved policies, internal audit and management review minutes.
+All controls still require sustained operating evidence before certification.
+Highest-priority remaining evidence: live RLS/privilege export, independent
+repository reviewer, privileged-user/factor inventory and MFA recovery proof,
+host/container scan, off-site backup restoration record, protected log retention,
+alert-to-incident test, incident exercise, supplier contracts/DPA records,
+employee lifecycle evidence, physical/property-access drill, approved policies,
+internal audit and management review minutes.
