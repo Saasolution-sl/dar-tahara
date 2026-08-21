@@ -5,7 +5,6 @@
 /build
 .DS_Store
 *.pem
-.env
 .env*.local
 # Backups/copies of env files. `.env*.local` does NOT match `.env.local.bak`,
 # so without this a saved copy of real credentials is committable.
@@ -14,7 +13,6 @@
 # ...and `.env.*.backup` does not match `.env.local.prod-backup` either, so
 # match any env file with "backup" anywhere in the name.
 .env*backup*
-!.env.example
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
@@ -31,4 +29,10 @@ agentdb.rvf*
 
 .vercel
 
-.vercel
+.projects/cache
+.projects/vault
+.projects/state.test.json
+.projects/state.local.test.json
+.env
+.env.*
+!.env.example
