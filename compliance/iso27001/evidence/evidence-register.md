@@ -32,7 +32,7 @@ The register contains references only. Sensitive evidence must be stored in an a
 | E-026 | CSP and upload protection | Engineering/Operations | CSP middleware/report endpoint; file-signature/scanner code/tests; attachment migration/routes | 2026-08-21 | A.8.7, A.8.12, A.8.20, A.8.26, A.8.28 | Source/unit evidence prepared; live report review, enforcement and scanner detection test pending |
 | E-027 | Protected security-event log | Security/Privacy | Event schema/redaction tests; append-only hashed table; off-host sink support; logging procedure | 2026-08-21 | A.5.33, A.5.34, A.8.15-A.8.17 | Source/unit evidence prepared; sink/access/retention and review evidence pending |
 | E-028 | P2/P3 governance package | ISMS manager | Policy, supplier, SDLC, property drill, training, BIA/recovery, audit/review and corrective-action templates | 2026-08-21 | Clauses 7-10; A.5.19-A.5.23, A.5.29-A.5.37, A.6, A.7.2, A.7.9, A.8.25-A.8.33 | Draft artifacts only; named approvals and completed records explicitly pending |
-| E-029 | Machine-readable control drift gate | Security/Engineering | `security:drift`, controlled negative unit test and GitHub quality gate | 2026-08-21 | A.5.36, A.8.9, A.8.16 | Local/PR verification pending at time of entry; merge/run IDs to be added after green checks |
+| E-029 | Machine-readable control drift gate and P2/P3 protected merge | Security/Engineering | `security:drift`; controlled negative test; PR `#78`; signed merge `e44c56f`; runs `32484372781` and `32484643961` | 2026-08-21 | A.5.36, A.8.9, A.8.16, A.8.25, A.8.29, A.8.32 | All five PR checks and all applicable post-merge checks passed; GitHub and Forgejo `main` synchronized |
 
 ## Evidence gaps
 
