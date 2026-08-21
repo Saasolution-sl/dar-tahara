@@ -1,0 +1,59 @@
+name: dar-tahara-security-receiver
+
+services:
+  volume-init:
+    image: node:22-alpine
+    user: root
+    command: ["chown", "-R", "1000:1000", "/data"]
+    volumes:
+      - security-events:/data
+    read_only: true
+    cap_drop:
+      - ALL
+    cap_add:
+      - CHOWN
+    security_opt:
+      - no-new-privileges:true
+
+  receiver:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: dar-tahara-security-receiver:local
+    container_name: dar-tahara-security-receiver
+    restart: unless-stopped
+    env_file:
+      - .env
+    environment:
+      DATA_DIR: /data
+      LISTEN_HOST: 0.0.0.0
+      LISTEN_PORT: "8080"
+      MAX_EVENT_BYTES: "65536"
+    volumes:
+      - security-events:/data
+    networks:
+      - public
+    read_only: true
+    tmpfs:
+      - /tmp:size=16m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    depends_on:
+      volume-init:
+        condition: service_completed_successfully
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:8080/healthz').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+      start_period: 15s
+
+volumes:
+  security-events:
+
+networks:
+  public:
+    external: true
+    name: public-net

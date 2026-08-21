@@ -1,0 +1,14 @@
+category,system,record_description,retention_trigger,retention_days,legal_basis_or_obligation,record_owner,legal_privacy_approver,approval_date,next_review_date,deletion_method,supplier_deletion_method,backup_expiry,legal_hold_scope,status
+customer_account,Supabase/Auth,"Customer identity, profile and account records",Account closure,,,,,,,,,,,DECISION REQUIRED
+property_service,Supabase,"Property, assessment, booking and service records",Service completion or contract end,,,,,,,,,,,DECISION REQUIRED
+billing_finance,Supabase/Stripe,"Invoices, payments, refunds and financial evidence",Transaction or fiscal-period close,,,,,,,,,,,LEGAL/FINANCE DECISION REQUIRED
+support_content,Supabase/Cubbit/Support,"Support messages and attachments",Ticket closure,,,,,,,,,,,DECISION REQUIRED
+marketing_leads,Supabase/Mautic,"Early-access, referral and marketing lead records",Consent withdrawal or last engagement,,,,,,,,,,,LEGAL/PRIVACY DECISION REQUIRED
+security_audit,Supabase/Security receiver,"Security, audit and access event records",Event occurrence,,,,,,,,,,,DECISION REQUIRED
+employee_hr,Supabase/HR,"Employee, contractor and lifecycle records",Employment or contract end,,,,,,,,,,,LEGAL/HR DECISION REQUIRED
+whatsapp_messages,Supabase/WhatsApp,"WhatsApp messages and processed webhook records",Message receipt,,,,,,,,,,,LEGAL/PRIVACY DECISION REQUIRED
+whatsapp_audit,Supabase/WhatsApp,"WhatsApp bot audit and decision records",Event occurrence,,,,,,,,,,,DECISION REQUIRED
+assistant_knowledge_gaps,Supabase/Assistant,"Assistant knowledge-gap observations",Last observation,,,,,,,,,,,DECISION REQUIRED
+assistant_provider_events,Supabase/Assistant,"Assistant provider telemetry and event records",Provider event occurrence,,,,,,,,,,,DECISION REQUIRED
+early_access_partial_pii,Supabase/Early Access,"Incomplete signup session contact and form data",Last signup activity,,,,,,,,,,,LEGAL/PRIVACY DECISION REQUIRED
+assessment_confirmation_evidence,Supabase Storage/Assessments,"Customer identity-confirmation evidence images",Customer confirmation,,,,,,,,,,,LEGAL/OPERATIONS DECISION REQUIRED

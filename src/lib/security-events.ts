@@ -39,9 +39,13 @@ function safeMetadata(input: Record<string, unknown> | undefined) {
 
 async function deliver(url: string, event: SecurityEvent, scope: string) {
   try {
+    const deliveryToken = process.env.SECURITY_EVENT_DELIVERY_TOKEN;
     const response = await fetch(url, {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: {
+        "Content-Type": "application/json",
+        ...(deliveryToken ? { Authorization: `Bearer ${deliveryToken}` } : {}),
+      },
       body: JSON.stringify(event),
       signal: AbortSignal.timeout(10_000),
       cache: "no-store",
