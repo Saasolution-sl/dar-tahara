@@ -1,4 +1,5 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { randomBytes } from "node:crypto";
 
 const STAGING_PROJECT_REF = "ehzrroohsmwdkebezhiy";
 
@@ -30,7 +31,7 @@ const clientOptions = {
   },
 };
 const admin = createClient(url, secret, clientOptions);
-const stamp = `${Date.now()}.${Math.random().toString(36).slice(2, 8)}`;
+const stamp = `${Date.now()}.${randomBytes(8).toString("hex")}`;
 const password = `Codex-Bundle2-${stamp}-Aa1!`;
 const users: TestUser[] = [
   { key: "a", email: `bundle2.rls.${stamp}.a@example.com`, expectedRoles: ["applicant"] },
