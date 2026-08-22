@@ -1,6 +1,6 @@
 # Staging identity and CSP evidence cycle — 2026-08-22
 
-Evidence state: **TECHNICAL TESTS VERIFIED — BROWSER JOURNEY WINDOW OPEN**
+Evidence state: **DEPLOYED TECHNICAL TESTS VERIFIED — BROWSER UI JOURNEY OPEN**
 
 No credentials, user identifiers or secret values are retained here.
 
@@ -26,17 +26,21 @@ No credentials, user identifiers or secret values are retained here.
 - Neither project published a table to `supabase_realtime`; no application
   Realtime subscription was found.
 - Production public, login, MFA, account and admin responses carried CSP
-  report-only where middleware applied. Staging enforcement was previously
-  verified from the deployed runtime (`enforced=true`, `reportOnly=false`).
+  report-only where middleware applied. After deployment of merge `d46435d8`,
+  staging public, login, MFA, account and admin routes carried enforced CSP and
+  no report-only header from the application runtime.
 - The current production seven-day log contains one controlled `script-src`
   report in the legacy minimized format. That format has no origin/route fields,
   so it cannot independently prove the affected journey.
 
 ## Remediation and remaining gate
 
-The report endpoint now sanitizes full CSP URLs to origin-only fields and a
-coarse route class; paths, identifiers, queries, fragments and content are not
-stored. Unit tests verify this minimization. Production must remain report-only
-until the enriched build is deployed, at least seven consecutive days of
-representative traffic are collected, staging browser journeys pass and an
-Operations/CSP rollback owner is assigned.
+The report endpoint sanitizes full CSP URLs to origin-only fields and a coarse
+route class; paths, identifiers, queries, fragments and content are not stored.
+Unit tests verify this minimization. A controlled staging event at
+2026-08-22 14:00:29 UTC proved the deployed record contained only the expected
+origins, directives, status, line number and `customer_portal` class. It was
+also found in the independent receiver. Production must remain report-only
+until at least seven consecutive days of enriched representative traffic are
+collected, the browser UI journey is completed and an Operations/CSP rollback
+owner authorizes enforcement.
