@@ -1,4 +1,5 @@
 import { createClient } from "@supabase/supabase-js";
+import { randomBytes } from "node:crypto";
 import { privilegedSessionNeedsStepUp } from "../src/lib/mfa-policy";
 
 const STAGING_PROJECT_REF = "ehzrroohsmwdkebezhiy";
@@ -16,7 +17,7 @@ const options = {
   auth: { autoRefreshToken: false, persistSession: false, detectSessionInUrl: false },
 };
 const admin = createClient(url, secret, options);
-const stamp = `${Date.now()}.${Math.random().toString(36).slice(2, 8)}`;
+const stamp = `${Date.now()}.${randomBytes(8).toString("hex")}`;
 const email = `${PREFIX}${stamp}@example.com`;
 const password = `Iso-Staging-${stamp}-Aa1!`;
 const employeeNumber = `ISO-STG-${Date.now()}`;
