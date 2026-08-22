@@ -37,6 +37,23 @@ control set and therefore cannot satisfy the independence requirement.
    continuity exercise, employee training cycle, property-access drill or
    supplier contract/DPA review was evidenced.
 
+## Subsequent management-direction implementation
+
+Later on 2026-08-22, management fixed the initial geography/boundary as Morocco,
+assigned the executive approver plus temporary ISMS/incident escalation roles,
+confirmed cleaners as employees and directed attributable time-limited property
+access. Organization, role, location, asset, supplier, feature, data-flow, risk,
+legal and SoA registers were populated. Morocco-focused retention and
+impact-based RTO/RPO proposals, a restore plan, tabletop and training material
+were prepared. Transient staging customer/staff isolation tests passed with zero
+leftovers, and CSP evidence was enhanced to retain only sanitized origin/route
+information.
+
+These are design/implementation improvements, not closure of the findings:
+Legal/Privacy, Finance, HR, Operations and the independent auditor remain
+unassigned; the legal entity/sites are incomplete; exercises, approvals, audit
+and management review have not occurred.
+
 Conclusion: technical readiness improved materially, but certification readiness
 is blocked by operating evidence and organizational decisions. Management should
 complete the retention/scope/risk/BIA decisions, appoint an independent auditor,
