@@ -1,0 +1,5 @@
+location_id,location_name,country,city,address,location_type,in_scope,activities,owner,status,evidence_or_action
+LOC-001,Distributed operations,Morocco,TBD,TBD,Distributed operational territory,Yes,"Customer-property services; employee operations; remote administration",Operations,TBD owner,"Cities and operational coverage require confirmation; HA-017"
+LOC-002,Registered office,Morocco,TBD,TBD,Registered office,Yes,"Legal registration; management; records custody",Executive management,Pending registration,"Final registered address required; HA-017"
+LOC-003,Production cloud services,External provider locations,Multiple,Provider controlled,Cloud supplier boundary,Yes as dependency,"Application hosting; database; Auth; Storage; email; payments",Service owners,Active,"Supplier regions and cross-border transfers require Legal/Privacy review; HA-006/HA-021"
+LOC-004,VPS staging and security services,External provider location,TBD,Provider controlled,Cloud supplier boundary,Yes as dependency,"Protected staging; malware scanner; security-event receiver",Operations,TBD owner,"Hosting legal entity and region require verification; HA-018"

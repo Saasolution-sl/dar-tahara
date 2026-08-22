@@ -33,7 +33,14 @@ const rows = await response.json();
 const groups = new Map();
 for (const row of rows) {
   const metadata = row.metadata || {};
-  const groupKey = [metadata.effective_directive || "unknown", metadata.violated_directive || "unknown", metadata.disposition || "unknown"].join(" | ");
+  const groupKey = [
+    metadata.route_class || "unknown",
+    metadata.document_origin || "unknown",
+    metadata.blocked_origin || "unknown",
+    metadata.effective_directive || "unknown",
+    metadata.violated_directive || "unknown",
+    metadata.disposition || "unknown",
+  ].join(" | ");
   groups.set(groupKey, (groups.get(groupKey) || 0) + 1);
 }
 
@@ -43,5 +50,5 @@ console.log(JSON.stringify({
   totalReports: rows.length,
   firstReport: rows[0]?.occurred_at || null,
   lastReport: rows.at(-1)?.occurred_at || null,
-  groups: [...groups.entries()].map(([directives, count]) => ({ directives, count })),
+  groups: [...groups.entries()].map(([routeAndDirectives, count]) => ({ routeAndDirectives, count })),
 }, null, 2));

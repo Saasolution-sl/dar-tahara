@@ -31,8 +31,10 @@ email contents are excluded from the repository.
 ## CSP
 
 - Production returned the expected report-only policy on sampled public/login
-  pages. The seven-day summary contained one labelled rollout-test report and no
-  established operational violation trend.
+  pages. The seven-day summary contained one event generated during the known
+  controlled rollout test and no established operational violation trend. The
+  stored event itself did not retain a test label or enough origin detail to
+  independently attribute it; E-033 addresses that evidence-quality gap.
 - Protected staging returned an enforced CSP header and no report-only header
   from the deployed application runtime. Production enforcement remains gated
   until the representative-traffic observation period is complete.

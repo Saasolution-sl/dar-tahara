@@ -1,0 +1,9 @@
+role,current_person,appointment_state,authority_or_responsibility,required_deputy_or_successor,review_trigger,human_action
+Executive/Management Approver,Othman Deraz,Assigned,"Scope and resource approval; legal holds until Legal/Privacy is assigned; residual-risk decisions",TBD,Annual or organizational change,HA-001
+ISMS Manager,Othman Deraz,Temporary,"Maintain ISMS; coordinate owners; evidence; review and improvement",Dedicated security/compliance owner as organization grows,Quarterly and at growth milestone,HA-019
+Legal/Privacy Owner,TBD,Unassigned,"Legal interpretation; privacy; CNDP; transfers; retention approval",TBD,Immediate appointment required,HA-018
+Finance Owner,TBD,Unassigned,"Financial access; tax/accounting retention; Stripe governance",TBD,Immediate appointment required,HA-018
+HR Owner,TBD,Unassigned,"Employee lifecycle; screening; terms; training; discipline; offboarding",TBD,Before personnel evidence cycle,HA-018
+Operations and CSP Rollback Owner,TBD,Unassigned,"Operational control; production rollback authority; property access; continuity",TBD,Before production CSP enforcement,HA-018
+Incident Management Escalation,Othman Deraz,Temporary,"Management escalation and incident authority",Operational/technical responders,Before tabletop,HA-020
+Independent Internal Auditor,TBD,Unassigned,"Competent and independent assessment of the ISMS",Not applicable,After operating evidence is available,HA-011

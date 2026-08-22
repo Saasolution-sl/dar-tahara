@@ -1,23 +1,25 @@
 # Retention governance approval pack
 
-Status: **DECISION PACK — NO RETENTION PERIOD IS APPROVED BY THIS DOCUMENT**
+Status: **PROPOSED SCHEDULE — NO RETENTION PERIOD OR ACTIVATION IS APPROVED BY THIS DOCUMENT**
 
 Owners: Legal/Privacy, Finance, HR, Operations and the ISMS Manager
 
 The linked `retention-approval-register.csv` is the complete decision worksheet
-for the 13 categories already enforced by the application control plane. Empty
-periods are intentional: jurisdiction, contractual obligations, claim periods,
-data-subject expectations and operational needs must be decided by the named
-record owner and Legal/Privacy. A repository author cannot make those decisions.
+for the 13 categories supported by the application control plane. It contains
+impact-based working proposals, not approved legal periods. Every row remains
+`PROPOSED — LEGAL REVIEW REQUIRED`; approval dates, review dates and activation
+approval are deliberately empty. The statutory candidates and source links are
+explained in `retention-schedule-proposal.md`.
 
 ## Required decisions
 
-For every row, record the trigger as well as the number of days. Decide how
-closure, inactive accounts, minors, disputes, tax evidence, employee claims,
-consent withdrawal and supplier copies affect the period. Identify deletion in
-Supabase/Auth, Cubbit, Stripe, Mautic, support systems and backups. Define the
-legal-hold scope and who can create/release a hold. Legal interpretations are
-**LEGAL REVIEW REQUIRED**.
+For every row, Legal/Privacy and the record owner must confirm or replace the
+proposal and trigger. Decide how closure, inactive accounts, minors, disputes,
+tax evidence, employee claims, consent withdrawal and supplier copies affect
+the period. Identify deletion in Supabase/Auth, Cubbit, Stripe, Mautic, support
+systems and backups. Until a Legal/Privacy owner is appointed, only the
+Executive/Management Approver may authorize or release a legal hold, and only
+after legal advice. Legal interpretations are **LEGAL REVIEW REQUIRED**.
 
 ## Activation sequence
 
