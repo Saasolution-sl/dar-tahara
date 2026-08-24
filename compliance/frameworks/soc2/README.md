@@ -37,6 +37,8 @@ audit completion.
 - `exception-register.csv` - transparent exception lifecycle.
 - `remediation-backlog.csv` - proposed work, not authorization to remediate.
 - `readiness-report-2026-08-24.md` - executive first-run report.
+- `management-direction-2026-08-24.md` - direction to begin the assessed
+  38-criterion remediation scope; formal signed decisions remain open.
 
 ## Evidence rule
 

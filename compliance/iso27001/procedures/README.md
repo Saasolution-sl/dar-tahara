@@ -10,3 +10,7 @@ secure development/change, upload quarantine, protected logging, awareness,
 Finance/payment controls and property-access drills. Approval and completed live
 records remain required. Full HR joiner/mover/leaver and vulnerability-response
 procedures remain part of the P1 human/legal workstream.
+
+The SOC 2 CC1.1 design adds policy governance, ethical reporting and
+acknowledgement handling. Its register is a schema only; personnel records remain
+restricted, and no acknowledgement is claimed until it actually occurs.
