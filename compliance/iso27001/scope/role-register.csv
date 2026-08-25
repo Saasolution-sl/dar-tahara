@@ -7,3 +7,5 @@ HR Owner,TBD,Unassigned,"Employee lifecycle; screening; terms; training; discipl
 Operations and CSP Rollback Owner,TBD,Unassigned,"Operational control; production rollback authority; property access; continuity",TBD,Before production CSP enforcement,HA-018
 Incident Management Escalation,Othman Deraz,Temporary,"Management escalation and incident authority",Operational/technical responders,Before tabletop,HA-020
 Independent Internal Auditor,TBD,Unassigned,"Competent and independent assessment of the ISMS",Not applicable,After operating evidence is available,HA-011
+Controls Oversight Executive Chair,Othman Deraz,Proposed temporary,"Convene oversight; provide management information; resource decisions; respond to independent challenge",Permanent entity governance role,Before first CC1.2 meeting,HA-025
+Independent Controls Oversight Member,TBD,Unassigned,"Challenge management and control performance; approve quorate minutes; escalate unresolved deficiencies",Named independent alternate,Before first CC1.2 meeting,HA-025

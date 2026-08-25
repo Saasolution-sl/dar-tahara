@@ -94,8 +94,11 @@ services unless activation evidence supersedes that register.
 ## 6. People
 
 Othman Deraz is the executive approver and temporary ISMS manager/incident
-escalation owner. Legal/Privacy, Finance, HR, Operations/CSP rollback,
-operational incident responders and independent internal auditor are unassigned.
+escalation owner. A pre-incorporation Security and Controls Oversight Committee
+design proposes Othman as temporary executive chair, but the independent member
+is unassigned and no quorate meeting has occurred. Legal/Privacy, Finance, HR,
+Operations/CSP rollback, operational incident responders and the independent
+internal auditor are also unassigned.
 Cleaners are treated as Dar Tahara employees for the current control design.
 
 The final description must identify actual personnel populations, contractors,
