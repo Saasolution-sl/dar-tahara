@@ -93,12 +93,16 @@ services unless activation evidence supersedes that register.
 
 ## 6. People
 
-Othman Deraz is the executive approver and temporary ISMS manager/incident
-escalation owner. A pre-incorporation Security and Controls Oversight Committee
-design proposes Othman as temporary executive chair, but the independent member
-is unassigned and no quorate meeting has occurred. Legal/Privacy, Finance, HR,
-Operations/CSP rollback, operational incident responders and the independent
-internal auditor are also unassigned.
+Othman Deraz is the executive approver, CFO & Founder and temporary ISMS
+manager/incident escalation owner. The approved pre-incorporation Security and
+Controls Oversight Committee comprises Aziz Bouzekri (CEO), Yasmina Amaach
+(COO) and Othman Deraz (temporary executive chair). All three are executive
+management; the independent member is unassigned and no independently quorate
+meeting has occurred. The first management session is dated 2026-08-28, with
+exact time/location open. Legal/Privacy, HR, Operations/CSP rollback,
+operational incident responders and the independent internal auditor are also
+unassigned. The CFO title does not by itself close the separate Finance control-
+owner appointment and deputy evidence gate.
 Cleaners are treated as Dar Tahara employees for the current control design.
 
 The final description must identify actual personnel populations, contractors,

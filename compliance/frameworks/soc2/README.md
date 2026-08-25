@@ -44,15 +44,20 @@ audit completion.
   address, with operating gates stated explicitly.
 - `mailbox-activation-2026-08-25.md` - verified creation, groupware sync and
   controlled delivery test for `security@dartahara.com` without credentials.
-- `controls-oversight-charter.md` - proposed board-equivalent oversight mandate,
-  composition, independence, quorum, cadence and evidence rules for CC1.2.
+- `controls-oversight-charter.md` - approved board-equivalent management
+  oversight mandate, composition, independence, quorum, cadence and evidence
+  rules for CC1.2; the independent member remains unappointed.
 - `controls-oversight-meeting-template.md` and
   `controls-oversight-calendar.csv` - truthful meeting record and proposed
   operating schedule; blank/proposed entries are not meeting evidence.
-- `controls-oversight-initial-meeting-pack-2026-09-05.md` - pre-populated status
-  and decision pack for the proposed first meeting; not minutes or approval.
-- `cc1-2-approval-pack-2026-08-25.md` - the management decisions and independent
-  appointment needed to activate the CC1.2 design.
+- `controls-oversight-initial-meeting-pack-2026-08-28.md` - canonical
+  pre-populated status and decision pack for the scheduled first management
+  meeting; not minutes or operating evidence. The former 2026-09-05 path is
+  retained as a superseded link stub.
+- `cc1-2-approval-pack-2026-08-25.md` and
+  `cc1-2-management-approval-and-scheduling-2026-08-25.md` - approved structure,
+  executive members, meeting date, distribution evidence and remaining
+  independent-appointment/logistics gates.
 
 ## Evidence rule
 

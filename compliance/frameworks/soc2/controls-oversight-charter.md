@@ -1,8 +1,10 @@
 # Security and Controls Oversight Committee charter
 
-Status: **PROPOSED — MANAGEMENT APPROVAL AND INDEPENDENT MEMBER APPOINTMENT REQUIRED**
+Status: **APPROVED BY MANAGEMENT — INDEPENDENT MEMBER APPOINTMENT AND OPERATION REQUIRED**
 
 Control: `DT-GOV-008`
+
+Approver / effective date: **Othman Deraz / 2026-08-25**
 
 Framework mapping: SOC 2 CC1.2, CC1.5, CC4.1 and CC4.2; ISO/IEC 27001:2022
 clauses 5.1, 9.2, 9.3 and 10.
@@ -19,11 +21,13 @@ independent internal auditor/CPA.
 The charter must be reconciled with the final SARL governance arrangements and
 legal advice after incorporation.
 
-## Proposed composition
+## Approved management composition
 
-- **Executive chair:** Othman Deraz, proposed temporary chair and accountable
-  executive. The chair supplies management information, resources and decisions
-  but is not treated as independent from management.
+- **Executive chair:** Othman Deraz, CFO & Founder, temporary chair and
+  accountable executive. The chair supplies management information, resources
+  and decisions but is not treated as independent from management.
+- **Management member:** Aziz Bouzekri, CEO.
+- **Management member:** Yasmina Amaach, COO.
 - **Independent oversight member:** one named person who is not responsible for
   designing or operating the controls under review and who can challenge the
   chair. Appointment is required before the committee can claim independent
@@ -34,10 +38,12 @@ legal advice after incorporation.
   external specialists:** attend when relevant, without losing or substituting
   their separate responsibilities.
 
-Independence, relevant competence, conflicts, confidentiality and authority to
-access evidence must be documented for the independent member. A consultant who
-designed or operated a sampled control is not independent for oversight of that
-work without an additional independent challenger.
+All three appointed members are executive management and do not satisfy the
+independent-from-management requirement. Independence, relevant competence,
+conflicts, confidentiality and authority to access evidence must be documented
+for the additional independent member. A consultant who designed or operated a
+sampled control is not independent for oversight of that work without an
+additional independent challenger.
 
 ## Authority and responsibilities
 
