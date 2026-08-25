@@ -1,8 +1,12 @@
 # Policy governance and acknowledgement procedure
 
-Status: **DESIGN IMPLEMENTED - MANAGEMENT, HR AND LEGAL APPROVAL REQUIRED**
+Status: **APPROVED BY MANAGEMENT - HR/LEGAL REVIEW AND ISSUANCE OPEN**
 
 Control: `DT-GOV-001`
+
+Owner: **Othman Deraz (temporary)**
+
+Approver / effective date: **Othman Deraz / 2026-08-25**
 
 Framework mappings: ISO/IEC 27001 clauses 5 and 7.5, Annex A 5.1 and 6.3;
 SOC 2 CC1.1, CC2.2 and CC5.3.
@@ -32,10 +36,13 @@ SOC 2 CC1.1, CC2.2 and CC5.3.
 ## Ethical reporting and deviations
 
 Personnel report suspected misconduct, conflicts, inaccurate evidence,
-unsupported compliance claims, security events or control bypasses through the
-owned security/management channel. If that channel or manager is implicated,
-the reporter uses the approved alternate escalation route. Good-faith reporting
-must not result in retaliation.
+unsupported compliance claims, security events or control bypasses through
+`security@dartahara.com`, activated and delivery-tested on 2026-08-25. First
+authorized login and monitoring must be confirmed before this address is issued
+to personnel. If that channel or its owner is implicated, the reporter
+escalates directly to executive management;
+Othman Deraz is the temporary alternate owner pending appointment of an
+independent deputy. Good-faith reporting must not result in retaliation.
 
 The receiving owner preserves the report, limits access, assesses incident/legal
 implications and records either:
@@ -62,3 +69,10 @@ policy was issued.
 
 Use `policy-acknowledgement-register-template.csv` as a schema only. Actual
 personnel records belong in the restricted evidence store.
+
+## Approval record
+
+Management approved this procedure, Information Security Policy v0.2, Othman
+Deraz as temporary owner and `security@dartahara.com` as the confidential
+reporting address on 2026-08-25. See
+`../../frameworks/soc2/management-approval-cc1-1-2026-08-25.md`.

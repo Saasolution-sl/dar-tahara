@@ -1,10 +1,14 @@
 # Information security policy
 
-Status: **DRAFT — Approval required**
+Status: **APPROVED BY MANAGEMENT — ISSUANCE AND OPERATING EVIDENCE OPEN**
 
-Policy owner: **To be appointed**
+Policy owner: **Othman Deraz (temporary)**
 
-Approver / effective date / next review: **TBD by management**
+Approver: **Othman Deraz**
+
+Effective date: **2026-08-25**
+
+Next review: **2027-08-25, or earlier after a material change**
 
 ## Purpose and scope
 
@@ -30,7 +34,10 @@ reported promptly through the approved reporting or management escalation path.
 Good-faith reports are handled confidentially to the extent reasonably possible
 and must not lead to retaliation. Management, HR and Legal must define the final
 investigation, disciplinary and whistleblowing arrangements under applicable
-law before this section becomes operational.
+law before those employment and disciplinary elements become operational. The
+approved confidential reporting address is `security@dartahara.com`. The
+mailbox was activated on 2026-08-25; monitored access and the independent
+alternate must be confirmed before personnel issuance.
 
 Managers and control owners must model the approved requirements, communicate
 them to personnel, investigate deviations consistently, preserve relevant
@@ -57,4 +64,4 @@ repository.
 | Version | Date | Change | Approval |
 | --- | --- | --- | --- |
 | 0.1 | 2026-08-21 | Initial readiness draft | Not approved |
-| 0.2 | 2026-08-24 | Added CC1.1 integrity, ethical conduct, reporting and acknowledgement design | Not approved |
+| 0.2 | 2026-08-24 | Added CC1.1 integrity, ethical conduct, reporting and acknowledgement design | Approved by Othman Deraz on 2026-08-25 |

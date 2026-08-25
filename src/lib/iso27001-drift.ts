@@ -25,7 +25,19 @@ export const ISO27001_DRIFT_CHECKS: DriftCheck[] = [
   { id: "ASSESSMENT-EVIDENCE-LIFECYCLE", file: "src/app/api/assessment-employee/assessments/complete/route.ts", required: ["inspectAttachmentBytes", "approvedRetentionDays", "assessment_confirmation_evidence"] },
   { id: "RETENTION-GATING", file: "src/lib/retention-control.ts", required: ["active_legal_hold", "retention_rule_unapproved", "RETENTION_EXECUTION_ENABLED"] },
   { id: "APPEND-ONLY-LOG", file: "supabase/migrations/20260821122147_iso27001_p2_p3_controls.sql", required: ["security_event_log_is_append_only", "payload_sha256"] },
-  { id: "ISMS-POLICIES", file: "compliance/iso27001/policies/information-security-policy.md", required: ["Approval required", "Policy owner", "ISO/IEC 27001:2022"] },
+  {
+    id: "ISMS-POLICIES",
+    file: "compliance/iso27001/policies/information-security-policy.md",
+    required: [
+      "APPROVED BY MANAGEMENT",
+      "Policy owner:",
+      "Approver:",
+      "Effective date:",
+      "Next review:",
+      "security@dartahara.com",
+      "ISO/IEC 27001:2022",
+    ],
+  },
   { id: "INTERNAL-AUDIT", file: "compliance/iso27001/audits/internal-audit-program.md", required: ["independence", "corrective action", "management review"] },
 ];
 

@@ -39,6 +39,11 @@ audit completion.
 - `readiness-report-2026-08-24.md` - executive first-run report.
 - `management-direction-2026-08-24.md` - direction to begin the assessed
   38-criterion remediation scope; formal signed decisions remain open.
+- `management-approval-cc1-1-2026-08-25.md` - approval of Information Security
+  Policy v0.2, the acknowledgement procedure, temporary owner and reporting
+  address, with operating gates stated explicitly.
+- `mailbox-activation-2026-08-25.md` - verified creation, groupware sync and
+  controlled delivery test for `security@dartahara.com` without credentials.
 
 ## Evidence rule
 
